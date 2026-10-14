@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture G - Répétition Espacée</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 Culture G</h1>
+        <p>Répétition espacée - Entraînement quotidien</p>
+        <select id="themeFilter" class="theme-selector" onchange="loadNextCard()">
+            <option value="Tous">Tous les thèmes</option>
+            <option value="Sciences">Sciences</option>
+            <option value="Histoire">Histoire</option>
+            <option value="Géographie">Géographie</option>
+        </select>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+        🎉 Félicitations ! Vous avez révisé toutes les cartes prévues pour aujourd'hui.
+    </div>
+
+    <div id="cardContainer" class="card-container">
+        <div id="flashcard" class="card" onclick="showAnswer()">
+            <span id="cardTag" class="tag">Thème</span>
+            <div id="questionText" class="question">La question apparaîtra ici.</div>
+            
+            <div id="answerSection" class="answer-section">
+                <div id="answerText" class="answer">La réponse</div>
+                <div id="explanationText" class="explanation">L'explication détaillée.</div>
+                <div class="buttons">
+                    <button class="btn-wrong" onclick="handleAnswer(false, event)">Oublié (0j)</button>
+                    <button class="btn-correct" onclick="handleAnswer(true, event)">Je savais !</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats" id="statsDisplay">Cartes à réviser aujourd'hui : 0</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
