@@ -72,7 +72,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Perte de cœur visible : ligne « 💔 −1 cœur » dans le bandeau rouge + cœur qui clignote (`renderHearts({ risk })`),
   puis cœur qui éclate et rangée qui tremble au clic sur Continuer (`renderHearts({ lost })`). Aussi dans les Paires.
 - Clavier : une fois vu (`keyboardHeightSeen`), la classe `keyboard-open` RESTE (le clavier se ferme une fraction de
-  seconde entre deux questions → sinon saut de taille). `fitToKeyboard` calcule avec la hauteur mémorisée.
+  seconde entre deux questions → sinon saut de taille). `fitToKeyboard` calcule avec la hauteur mémorisée,
+  enregistrée sur l'appareil (localStorage `kultivo_keyboard` : {full, kb}), réutilisée si même taille d'écran.
+  Zoom photo : pointerdown (preventDefault + setPointerCapture) puis ouverture au pointerup ; la vue agrandie
+  ignore les touches 0,4 s.
   Détection : le champ a le focus ET l'écran visible a rétréci de
   plus de 150 px par rapport à la hauteur max mémorisée (`updateKeyboardMode`). PAS juste le focus : le jeu met le
   focus automatiquement à chaque question sans ouvrir le clavier,

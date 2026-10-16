@@ -1790,6 +1790,27 @@ let fullViewportHeight = 0;
 let keyboardHeightSeen = 0;   // hauteur visible quand le clavier est ouvert (0 = jamais vu)
 window.addEventListener('orientationchange', () => { fullViewportHeight = 0; keyboardHeightSeen = 0; });
 
+/* La hauteur « clavier ouvert » est enregistrée sur l'appareil (avec la hauteur sans clavier qui va avec) :
+   dès la première question après un relancement, la mise en page est déjà la bonne. */
+const KEYBOARD_KEY = 'kultivo_keyboard';
+function loadKeyboardMemory() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(KEYBOARD_KEY) || 'null');
+        const vv = window.visualViewport;
+        const full = vv ? vv.height : window.innerHeight;
+        // Même écran (même orientation, même taille) que lors de l'enregistrement ?
+        if (saved && Math.abs(saved.full - full) < 40) {
+            fullViewportHeight = saved.full;
+            keyboardHeightSeen = saved.kb;
+        }
+    } catch (err) { /* stockage indisponible : on recalculera */ }
+}
+function saveKeyboardMemory() {
+    try {
+        localStorage.setItem(KEYBOARD_KEY, JSON.stringify({ full: Math.round(fullViewportHeight), kb: Math.round(keyboardHeightSeen) }));
+    } catch (err) { /* tant pis */ }
+}
+
 function updateKeyboardMode() {
     const vv = window.visualViewport;
     const focused = document.activeElement === $('userInput');
@@ -1798,7 +1819,10 @@ function updateKeyboardMode() {
     // Le curseur peut être dans le champ sans que le clavier soit ouvert (focus automatique) :
     // on ne passe en compact que si l'écran visible a vraiment rétréci.
     const keyboardShown = height < fullViewportHeight - 150;
-    if (focused && keyboardShown) keyboardHeightSeen = height;   // hauteur d'écran AVEC clavier, mémorisée
+    if (focused && keyboardShown && Math.abs(height - keyboardHeightSeen) > 2) {
+        keyboardHeightSeen = height;   // hauteur d'écran AVEC clavier, mémorisée et enregistrée
+        saveKeyboardMemory();
+    }
     // Une fois le clavier vu, on garde la mise en page compacte : entre deux questions, le clavier se ferme
     // une fraction de seconde puis se rouvre ; sans ça, tout changerait de taille à chaque question.
     document.body.classList.toggle('keyboard-open', keyboardHeightSeen > 0);
@@ -3022,6 +3046,7 @@ function bindEvents() {
     // Une nouvelle photo change la hauteur une fois chargée : on réajuste
     $('questionPhotoImg').addEventListener('load', () => { fitToKeyboard(); keepAnswerVisible(); });
     if (window.visualViewport) window.visualViewport.addEventListener('resize', onViewport);
+    loadKeyboardMemory();   // hauteur clavier enregistrée lors d'une partie précédente
     updateKeyboardMode();   // mesure la hauteur d'écran sans clavier dès le lancement
     // Le clavier s'ouvre en animation : on réajuste plusieurs fois pendant qu'il apparaît
     $('userInput').addEventListener('focus', () => [50, 300, 700].forEach(ms => setTimeout(onViewport, ms)));
@@ -3076,13 +3101,27 @@ function bindEvents() {
     // la photo bouge et le clic n'arrive plus dessus. preventDefault garde aussi le clavier ouvert.
     // Toucher : on empêche seulement le clavier de se fermer (sinon la photo bouge sous le doigt).
     // Tap complet (clic) : on ouvre. Ouvrir dès le toucher refermait aussitôt la photo à la fin du même tap.
-    $('questionPhotoImg').addEventListener('pointerdown', e => e.preventDefault());
-    $('questionPhotoImg').addEventListener('click', () => {
-        $('photoZoomImg').src = $('questionPhotoImg').src;
+    // La photo « capture » le doigt dès qu'il la touche et s'ouvre quand il se relève, même si la page
+    // a bougé entre-temps. La vue agrandie ignore les touches pendant 0,4 s (sinon le même tap la refermerait).
+    let photoPressed = false;
+    let zoomOpenedAt = 0;
+    const photo = $('questionPhotoImg');
+    photo.addEventListener('pointerdown', e => {
+        e.preventDefault();   // garde le clavier ouvert : la photo ne bouge pas sous le doigt
+        photoPressed = true;
+        try { photo.setPointerCapture(e.pointerId); } catch (err) { /* ancien navigateur */ }
+    });
+    photo.addEventListener('pointercancel', () => { photoPressed = false; });
+    photo.addEventListener('pointerup', () => {
+        if (!photoPressed) return;
+        photoPressed = false;
+        $('photoZoomImg').src = photo.src;
         $('photoZoomCredit').textContent = $('questionPhotoCredit').textContent;
         $('photoZoom').hidden = false;
+        zoomOpenedAt = Date.now();
     });
     $('photoZoom').addEventListener('click', () => {
+        if (Date.now() - zoomOpenedAt < 400) return;
         $('photoZoom').hidden = true;
         if (state.phase === 'answering') $('userInput').focus();
     });
