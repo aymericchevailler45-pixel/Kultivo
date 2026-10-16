@@ -137,7 +137,6 @@
                         </div>
                         <p class="muted" id="profileNext"></p>
                         <button type="button" id="soundBtn" class="sound-toggle"></button>
-                        <button type="button" id="reportsBtn" class="sound-toggle" hidden></button>
                     </div>
                     <div class="hero-tiles">
                         <div class="tile"><span class="tile-label">🔥 Série</span><b id="tileStreak">—</b></div>
@@ -321,18 +320,6 @@
             <div class="report-reasons" id="reportReasons" role="radiogroup"></div>
             <textarea id="reportComment" class="report-comment" rows="2" placeholder="Un détail à ajouter ? (facultatif)"></textarea>
             <button type="button" id="reportSendBtn" class="btn btn-green btn-full" disabled>Envoyer le signalement</button>
-        </div>
-    </div>
-
-    <!-- MES SIGNALEMENTS (profil) -->
-    <div id="reportsModal" class="modal-overlay" hidden>
-        <div class="modal-content reports-sheet" role="dialog" aria-modal="true" aria-labelledby="reportsTitle">
-            <button type="button" id="closeReportsBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
-            <h2 id="reportsTitle">🚩 Mes signalements</h2>
-            <p>Copie la liste et envoie-la pour que les questions soient corrigées.</p>
-            <pre class="reports-text" id="reportsText"></pre>
-            <button type="button" id="copyReportsBtn" class="btn btn-green btn-full">Copier la liste</button>
-            <button type="button" id="clearReportsBtn" class="btn btn-ghost btn-full">Tout effacer</button>
         </div>
     </div>
 

@@ -1192,21 +1192,14 @@ main { overflow-x: clip; }
     font: inherit;
     resize: vertical;
 }
-.reports-sheet { max-width: 520px; }
-.reports-text {
-    max-height: 45vh;
-    margin: 0 0 14px;
-    padding: 12px;
-    overflow: auto;
+/* « Je ne sais pas » : un vrai bouton avec contour, pas juste du texte */
+#skipBtn {
     border: 2px solid var(--line);
-    border-radius: 14px;
-    background: var(--bg);
+    background: var(--surface);
     color: var(--ink);
-    font: inherit;
-    font-size: 0.85rem;
-    text-align: left;
-    white-space: pre-wrap;
+    box-shadow: 0 4px 0 var(--line);
 }
+#skipBtn:active { box-shadow: 0 0 0 transparent; }
 
 .confetti { position: fixed; inset: 0; z-index: 70; width: 100%; height: 100%; pointer-events: none; }
 @media (max-width: 600px) {

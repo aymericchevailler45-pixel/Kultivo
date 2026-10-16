@@ -271,7 +271,7 @@ function defaultData() {
         frozenDays: {},                  // jours manqués sauvés par un gel de série
         selfLevel: null,                 // niveau annoncé à l'accueil : 'beginner', 'average' ou 'expert'
         welcomeGift: false,              // cadeau de bienvenue déjà donné
-        reports: []                      // questions signalées : [{ id, theme, q, expected, typed, reason, comment, day }]
+        reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
 
@@ -1041,8 +1041,6 @@ function renderProfile() {
 
     $('profileTitle').textContent = `🎖️ ${current.name}`;
     renderSoundBtn();
-    $('reportsBtn').hidden = data.reports.length === 0;
-    $('reportsBtn').textContent = `🚩 Mes signalements (${data.reports.length})`;
     $('profileXp').textContent = `${data.xp} XP`;
     if (next) {
         const span = next.xp - current.xp;
@@ -2496,27 +2494,7 @@ function sendReport() {
     });
     saveData();
     $('reportModal').hidden = true;
-    showToast('🚩 Merci ! Question signalée (liste dans ton profil).');
-}
-
-/** Le texte à copier : une fiche par question signalée. */
-function reportsText() {
-    const list = state.data.reports;
-    const lines = [`Kultivo — ${plural(list.length, 'signalement', 'signalements')}`];
-    list.forEach((r, i) => {
-        lines.push('');
-        lines.push(`${i + 1}) Question n° ${r.id} (${r.theme}) — ${r.reason}`);
-        lines.push(`Q : ${r.q}`);
-        lines.push(`Réponse attendue : ${r.expected}`);
-        if (r.typed) lines.push(`Ma réponse : ${r.typed}`);
-        if (r.comment) lines.push(`Commentaire : ${r.comment}`);
-    });
-    return lines.join('\n');
-}
-
-function openReportsModal() {
-    $('reportsText').textContent = reportsText();
-    $('reportsModal').hidden = false;
+    showToast('🚩 Merci ! Ton signalement nous aide à améliorer les questions.');
 }
 
 /* ---------- Accueil du premier lancement ---------- */
@@ -2944,18 +2922,8 @@ function bindEvents() {
     $('reportBtn').addEventListener('click', openReportModal);
     $('closeReportBtn').addEventListener('click', () => { $('reportModal').hidden = true; });
     $('reportSendBtn').addEventListener('click', sendReport);
-    $('reportsBtn').addEventListener('click', openReportsModal);
-    $('closeReportsBtn').addEventListener('click', () => { $('reportsModal').hidden = true; });
-    $('copyReportsBtn').addEventListener('click', () => copyText(reportsText(), $('copyReportsBtn')));
-    $('clearReportsBtn').addEventListener('click', () => {
-        if (!confirm('Effacer tous tes signalements ?')) return;
-        state.data.reports = [];
-        saveData();
-        $('reportsModal').hidden = true;
-        renderProfile();
-    });
-    ['reportModal', 'reportsModal'].forEach(id => {
-        $(id).addEventListener('click', e => { if (e.target === $(id)) $(id).hidden = true; });
+    $('reportModal').addEventListener('click', e => {
+        if (e.target === $('reportModal')) $('reportModal').hidden = true;
     });
 
     $('quitStayBtn').addEventListener('click', closeQuitModal);
@@ -2999,11 +2967,9 @@ function bindEvents() {
             $('streakModal').hidden = true;
             return;
         }
-        for (const id of ['reportModal', 'reportsModal']) {
-            if (!$(id).hidden) {
-                if (e.key === 'Escape') $(id).hidden = true;
-                return;   // fenêtre ouverte : Entrée ne doit pas valider la question derrière
-            }
+        if (!$('reportModal').hidden) {
+            if (e.key === 'Escape') $('reportModal').hidden = true;
+            return;   // fenêtre ouverte : Entrée ne doit pas valider la question derrière
         }
         if (!$('quitModal').hidden) {
             if (e.key === 'Escape') closeQuitModal();
