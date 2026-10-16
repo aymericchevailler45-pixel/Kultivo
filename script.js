@@ -1832,10 +1832,12 @@ function updateKeyboardMode() {
 /** Clavier ouvert : mesure la place libre sous « Vérifier » et la donne à l'image et à la question
     (variable CSS --fit). On vérifie après coup que rien ne passe sous le clavier, sinon on réduit. */
 function fitToKeyboard() {
+    // Pendant la correction (ou hors leçon), on ne touche à rien : même taille que pendant la question
+    if (state.phase !== 'answering' || $('studyScreen').hidden) return;
     const root = document.documentElement.style;
     root.setProperty('--fit', '0px');
     const vv = window.visualViewport;
-    if (!vv || !document.body.classList.contains('keyboard-open') || $('studyScreen').hidden || state.phase !== 'answering') return;
+    if (!vv || !document.body.classList.contains('keyboard-open')) return;
     // On calcule avec la hauteur « clavier ouvert » mémorisée, même si le clavier n'est pas encore revenu
     const visible = keyboardHeightSeen || vv.height;
     const free = () => visible - ($('answerActions').getBoundingClientRect().bottom + window.scrollY) - 12;

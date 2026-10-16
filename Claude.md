@@ -77,7 +77,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Zoom photo : pointerdown (preventDefault + setPointerCapture) puis ouverture au pointerup ; la vue agrandie
   ignore les touches 0,4 s et ferme le clavier (blur). Petite loupe 🔍 dans le coin de la photo.
   `keyboard-open` AUSSI pendant la correction : même format que la question (l'utilisateur ne veut aucun
-  changement de taille). Zoom : champ readOnly + blur + focus sur la vue agrandie pour fermer le clavier.
+  changement de taille ; `fitToKeyboard` ne fait RIEN hors phase « answering », sinon --fit retombait à 0). Zoom : champ readOnly + blur + focus sur la vue agrandie pour fermer le clavier.
   Détection : le champ a le focus ET l'écran visible a rétréci de
   plus de 150 px par rapport à la hauteur max mémorisée (`updateKeyboardMode`). PAS juste le focus : le jeu met le
   focus automatiquement à chaque question sans ouvrir le clavier,
