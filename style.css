@@ -1185,7 +1185,7 @@ main { overflow-x: clip; }
 .end-extra:empty { display: none; }
 
 /* Récap de fin de leçon : tuiles qui apparaissent l'une après l'autre */
-.end-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 440px; }
+.end-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 440px; }
 .end-stat {
     --tone: var(--line);
     --tone-ink: var(--ink);
@@ -1207,11 +1207,15 @@ main { overflow-x: clip; }
     padding: 4px 4px;
     background: var(--tone);
     color: var(--tone-ink);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 900;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
     text-align: center;
     text-transform: uppercase;
+    /* toujours sur une ligne : les trois bandeaux ont la même hauteur */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .end-stat-value { font-size: 1.6rem; font-weight: 900; line-height: 1.1; }
 .tone-gold   { --tone: var(--gold);   --tone-ink: var(--on-gold); }
