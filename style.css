@@ -493,9 +493,21 @@ main { overflow-x: clip; }
 
 /* Monuments : la photo, avec l'auteur et la licence en tout petit dessous */
 .question-photo { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 0; }
-.question-photo img { width: 100%; max-width: 440px; height: 220px; object-fit: cover; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+/* La photo est montrée EN ENTIER (pas recadrée) : la statue de la Liberté garde sa tête */
+.question-photo img { display: block; width: auto; height: auto; max-width: 100%; max-height: 240px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
 .question-photo figcaption { color: var(--muted); font-size: 0.65rem; text-align: center; }
-@media (max-width: 600px) { .question-photo img { height: 170px; } }
+@media (max-width: 600px) { .question-photo img { max-height: 190px; } }
+
+/* Clavier ouvert : tout se resserre pour garder question, réponse et boutons à l'écran */
+body.keyboard-open .card-view { gap: 8px; }
+body.keyboard-open .card-view .tags { display: none; }
+body.keyboard-open .question { font-size: 1.05rem; line-height: 1.25; }
+body.keyboard-open .question-flag .flag-img { height: 54px; }
+body.keyboard-open .question-rebus { gap: 8px; }
+body.keyboard-open .question-rebus .emoji-img { width: 36px; height: 36px; }
+body.keyboard-open .question-photo img { max-height: 110px; border-radius: 10px; }
+body.keyboard-open .question-photo figcaption { display: none; }
+body.keyboard-open .lesson-head { margin-bottom: 8px; }
 
 /* Rébus : les emojis en grand, alignés comme une phrase */
 .question-rebus { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }

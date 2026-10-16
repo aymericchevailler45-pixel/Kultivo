@@ -70,6 +70,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (pas de SELECT). JAMAIS de clé service_role dans le code. Prochaines étapes : sauvegarde en ligne, classement.
 - Perte de cœur visible : ligne « 💔 −1 cœur » dans le bandeau rouge + cœur qui clignote (`renderHearts({ risk })`),
   puis cœur qui éclate et rangée qui tremble au clic sur Continuer (`renderHearts({ lost })`). Aussi dans les Paires.
+- Clavier ouvert (téléphone) : classe `keyboard-open` sur body (`updateKeyboardMode`) → images, question et étiquettes
+  réduites pour garder « Vérifier » visible. Photos de monuments jamais recadrées (max-height, pas object-fit: cover).
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.
 - Téléphone (≤ 600-700 px) : barre du haut sur une ligne (logo `icons/icon-192.png` + compteurs compacts,

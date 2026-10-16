@@ -1782,6 +1782,15 @@ function nextPairGrid() {
     else showPairsGrid();
 }
 
+/** Clavier ouvert = le champ de réponse a le focus ET l'écran visible a nettement rétréci.
+    Le style « keyboard-open » réduit alors images et question pour que tout tienne au-dessus du clavier. */
+function updateKeyboardMode() {
+    const vv = window.visualViewport;
+    const focused = document.activeElement === $('userInput');
+    const shrunk = vv ? vv.height < window.innerHeight - 120 : focused;
+    document.body.classList.toggle('keyboard-open', focused && shrunk);
+}
+
 /** Clavier ouvert sur téléphone : si toute la question tient au-dessus du clavier, on remonte en haut
     de l'écran ; sinon on fait défiler juste assez pour voir les boutons (la barre du haut reste collée). */
 function keepAnswerVisible() {
@@ -2960,8 +2969,11 @@ function bindEvents() {
     }, { passive: true });
 
     // Téléphone : quand le clavier s'ouvre, on garde la question ET les boutons à l'écran
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', keepAnswerVisible);
-    $('userInput').addEventListener('focus', () => setTimeout(keepAnswerVisible, 350));
+    // + mode compact pendant que le clavier est ouvert (images et question plus petites)
+    const onViewport = () => { updateKeyboardMode(); keepAnswerVisible(); };
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', onViewport);
+    $('userInput').addEventListener('focus', () => setTimeout(onViewport, 350));
+    $('userInput').addEventListener('blur', () => setTimeout(updateKeyboardMode, 150));
 
     $('onboardNext').addEventListener('click', onboardNext);
     $('onboardSkip').addEventListener('click', () => finishOnboarding('level'));
