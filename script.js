@@ -3031,6 +3031,17 @@ function bindEvents() {
     $('reportBtn').addEventListener('click', openReportModal);
     $('closeReportBtn').addEventListener('click', () => { $('reportModal').hidden = true; });
     $('reportSendBtn').addEventListener('click', sendReport);
+    // Photo de monument : un tap l'affiche en grand, un autre la referme (et le clavier revient)
+    $('questionPhotoImg').addEventListener('click', () => {
+        $('photoZoomImg').src = $('questionPhotoImg').src;
+        $('photoZoomCredit').textContent = $('questionPhotoCredit').textContent;
+        $('photoZoom').hidden = false;
+    });
+    $('photoZoom').addEventListener('click', () => {
+        $('photoZoom').hidden = true;
+        if (state.phase === 'answering') $('userInput').focus();
+    });
+
     $('reportModal').addEventListener('click', e => {
         if (e.target === $('reportModal')) $('reportModal').hidden = true;
     });
@@ -3074,6 +3085,10 @@ function bindEvents() {
         }
         if (e.key === 'Escape' && !$('streakModal').hidden) {
             $('streakModal').hidden = true;
+            return;
+        }
+        if (!$('photoZoom').hidden) {
+            if (e.key === 'Escape' || e.key === 'Enter') $('photoZoom').click();
             return;
         }
         if (!$('reportModal').hidden) {

@@ -496,18 +496,37 @@ main { overflow-x: clip; }
 /* La photo est montrée EN ENTIER (pas recadrée) : la statue de la Liberté garde sa tête */
 .question-photo img { display: block; width: auto; height: auto; max-width: 100%; max-height: 240px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
 .question-photo figcaption { color: var(--muted); font-size: 0.65rem; text-align: center; }
+.question-photo img { cursor: zoom-in; }
+
+/* Photo en grand (tap sur la photo), retap pour fermer */
+.photo-zoom {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.88);
+    cursor: zoom-out;
+}
+.photo-zoom img { max-width: 100%; max-height: 82vh; border-radius: 12px; }
+.photo-zoom p { margin: 0; color: #d6dbe6; font-size: 0.75rem; text-align: center; }
+.photo-zoom .zoom-hint { color: #ffffff; font-size: 0.85rem; font-weight: 700; }
 @media (max-width: 600px) { .question-photo img { max-height: 150px; } }
 
 /* Clavier ouvert : tout se resserre pour garder question, réponse et boutons à l'écran */
-body.keyboard-open .card-view { gap: 8px; }
-body.keyboard-open .card-view .tag { padding: 0 8px; font-size: 0.72rem; }   /* le thème reste visible, en petit */
-body.keyboard-open .question { font-size: 1rem; line-height: 1.25; }
-body.keyboard-open .question-flag .flag-img { height: 54px; }
-body.keyboard-open .question-rebus { gap: 8px; }
-body.keyboard-open .question-rebus .emoji-img { width: 36px; height: 36px; }
-body.keyboard-open .question-photo img { max-height: 70px; border-radius: 8px; }
+body.keyboard-open .card-view { gap: 10px; }
+body.keyboard-open .card-view .tag { padding: 1px 10px; font-size: 0.8rem; }   /* le thème reste visible, en petit */
+body.keyboard-open .question { font-size: 1.12rem; line-height: 1.28; }
+body.keyboard-open .question-flag .flag-img { height: 70px; }
+body.keyboard-open .question-rebus { gap: 10px; }
+body.keyboard-open .question-rebus .emoji-img { width: 46px; height: 46px; }
+body.keyboard-open .question-photo img { max-height: 100px; border-radius: 10px; }
 body.keyboard-open .question-photo figcaption { display: none; }
-body.keyboard-open .lesson-head { margin-bottom: 6px; }
+body.keyboard-open .lesson-head { margin-bottom: 8px; }
 
 /* Barre du haut des leçons plus fine sur téléphone, et encore plus avec le clavier ouvert */
 @media (max-width: 600px) {
@@ -516,14 +535,14 @@ body.keyboard-open .lesson-head { margin-bottom: 6px; }
     .lesson-head .progress { height: 12px; }
     .hearts { font-size: 1rem; min-width: 3rem; }
 }
-body.keyboard-open .lesson-head { gap: 6px; padding-top: calc(2px + env(safe-area-inset-top, 0px)); padding-bottom: 2px; }
-body.keyboard-open .lesson-head .icon-btn { width: 28px; height: 28px; font-size: 0.95rem; }
-body.keyboard-open .lesson-head .progress { height: 9px; }
-body.keyboard-open .hearts { font-size: 0.85rem; letter-spacing: 1px; min-width: 2.6rem; }
-body.keyboard-open .answer-input { padding: 7px 12px; font-size: 1.05rem; border-bottom-width: 3px; }
-body.keyboard-open #answerActions { gap: 6px; }
-body.keyboard-open #answerActions .btn { padding: 8px 10px; font-size: 0.95rem; box-shadow: 0 3px 0 var(--btn-deep); }
-body.keyboard-open #answerActions #hintBtn { width: 42px; }
+body.keyboard-open .lesson-head { gap: 8px; padding-top: calc(3px + env(safe-area-inset-top, 0px)); padding-bottom: 3px; }
+body.keyboard-open .lesson-head .icon-btn { width: 32px; height: 32px; font-size: 1.05rem; }
+body.keyboard-open .lesson-head .progress { height: 11px; }
+body.keyboard-open .hearts { font-size: 0.95rem; letter-spacing: 1px; min-width: 2.8rem; }
+body.keyboard-open .answer-input { padding: 9px 12px; font-size: 1.1rem; border-bottom-width: 3px; }
+body.keyboard-open #answerActions { gap: 8px; }
+body.keyboard-open #answerActions .btn { padding: 10px 10px; font-size: 1rem; box-shadow: 0 3px 0 var(--btn-deep); }
+body.keyboard-open #answerActions #hintBtn { width: 46px; }
 body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 
 /* Rébus : les emojis en grand, alignés comme une phrase */
