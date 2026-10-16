@@ -1825,8 +1825,8 @@ function updateKeyboardMode() {
     }
     // Une fois le clavier vu, on garde la mise en page compacte : entre deux questions, le clavier se ferme
     // une fraction de seconde puis se rouvre ; sans ça, tout changerait de taille à chaque question.
-    // Seulement pendant qu'on répond : pendant la correction, le clavier est fermé → taille normale
-    document.body.classList.toggle('keyboard-open', keyboardHeightSeen > 0 && state.phase === 'answering');
+    // Même format pendant la question ET sa correction (demande de l'utilisateur) : la taille ne change jamais
+    document.body.classList.toggle('keyboard-open', keyboardHeightSeen > 0);
 }
 
 /** Clavier ouvert : mesure la place libre sous « Vérifier » et la donne à l'image et à la question
@@ -3122,12 +3122,20 @@ function bindEvents() {
         $('photoZoomCredit').textContent = $('questionPhotoCredit').textContent;
         $('photoZoom').hidden = false;
         zoomOpenedAt = Date.now();
-        $('userInput').blur();   // on ferme le clavier pour profiter de la photo (il revient à la fermeture)
+        // Fermer le clavier : champ verrouillé + curseur retiré + focus donné à la vue agrandie
+        // (un simple blur() ne suffit pas sur certains téléphones)
+        const input = $('userInput');
+        input.readOnly = true;
+        input.blur();
+        $('photoZoom').focus({ preventScroll: true });
     });
     $('photoZoom').addEventListener('click', () => {
         if (Date.now() - zoomOpenedAt < 400) return;
         $('photoZoom').hidden = true;
-        if (state.phase === 'answering') $('userInput').focus();
+        if (state.phase === 'answering') {
+            $('userInput').readOnly = false;
+            $('userInput').focus();   // le clavier revient pour répondre
+        }
     });
 
     $('reportModal').addEventListener('click', e => {
