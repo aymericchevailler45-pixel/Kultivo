@@ -75,7 +75,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   seconde entre deux questions → sinon saut de taille). `fitToKeyboard` calcule avec la hauteur mémorisée,
   enregistrée sur l'appareil (localStorage `kultivo_keyboard` : {full, kb}), réutilisée si même taille d'écran.
   Zoom photo : pointerdown (preventDefault + setPointerCapture) puis ouverture au pointerup ; la vue agrandie
-  ignore les touches 0,4 s.
+  ignore les touches 0,4 s et ferme le clavier (blur). Petite loupe 🔍 dans le coin de la photo.
+  `keyboard-open` seulement en phase « answering » : taille normale pendant la correction.
   Détection : le champ a le focus ET l'écran visible a rétréci de
   plus de 150 px par rapport à la hauteur max mémorisée (`updateKeyboardMode`). PAS juste le focus : le jeu met le
   focus automatiquement à chaque question sans ouvrir le clavier,

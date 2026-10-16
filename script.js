@@ -1825,7 +1825,8 @@ function updateKeyboardMode() {
     }
     // Une fois le clavier vu, on garde la mise en page compacte : entre deux questions, le clavier se ferme
     // une fraction de seconde puis se rouvre ; sans ça, tout changerait de taille à chaque question.
-    document.body.classList.toggle('keyboard-open', keyboardHeightSeen > 0);
+    // Seulement pendant qu'on répond : pendant la correction, le clavier est fermé → taille normale
+    document.body.classList.toggle('keyboard-open', keyboardHeightSeen > 0 && state.phase === 'answering');
 }
 
 /** Clavier ouvert : mesure la place libre sous « Vérifier » et la donne à l'image et à la question
@@ -2045,6 +2046,7 @@ function showCard() {
     input.focus();
     // Le clavier reste souvent ouvert d'une question à l'autre : on ajuste AVANT que l'écran soit redessiné
     // (calcul immédiat, pas après coup), puis la question apparaît en fondu rapide.
+    updateKeyboardMode();   // nouvelle question : mode compact AVANT l'affichage (taille clavier connue)
     fitToKeyboard();
     keepAnswerVisible();
     const view = $('cardView');
@@ -2080,6 +2082,7 @@ function verify(skipped = false) {
     $('answerActions').hidden = true;
     $('hintPanel').hidden = true;
     showFeedback(verdict, skipped);
+    updateKeyboardMode();   // correction : retour à la taille normale
     playSound(ok ? 'good' : 'bad');
 }
 
@@ -3119,6 +3122,7 @@ function bindEvents() {
         $('photoZoomCredit').textContent = $('questionPhotoCredit').textContent;
         $('photoZoom').hidden = false;
         zoomOpenedAt = Date.now();
+        $('userInput').blur();   // on ferme le clavier pour profiter de la photo (il revient à la fermeture)
     });
     $('photoZoom').addEventListener('click', () => {
         if (Date.now() - zoomOpenedAt < 400) return;
