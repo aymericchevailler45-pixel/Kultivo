@@ -3032,7 +3032,10 @@ function bindEvents() {
     $('closeReportBtn').addEventListener('click', () => { $('reportModal').hidden = true; });
     $('reportSendBtn').addEventListener('click', sendReport);
     // Photo de monument : un tap l'affiche en grand, un autre la referme (et le clavier revient)
-    $('questionPhotoImg').addEventListener('click', () => {
+    // « pointerdown » (dès que le doigt touche) et non « click » : sinon le clavier se ferme d'abord,
+    // la photo bouge et le clic n'arrive plus dessus. preventDefault garde aussi le clavier ouvert.
+    $('questionPhotoImg').addEventListener('pointerdown', e => {
+        e.preventDefault();
         $('photoZoomImg').src = $('questionPhotoImg').src;
         $('photoZoomCredit').textContent = $('questionPhotoCredit').textContent;
         $('photoZoom').hidden = false;
