@@ -1985,6 +1985,11 @@ function showCard() {
     $('rebusTag').hidden = !item.q.rebus;
     $('questionPhoto').hidden = !item.q.photo;         // monuments : photo + auteur et licence (obligatoire)
     if (item.q.photo) {
+        // Taille connue à l'avance : la place est réservée avant le chargement (pas de saut d'affichage)
+        if (item.q.photoSize) {
+            $('questionPhotoImg').width = item.q.photoSize[0];
+            $('questionPhotoImg').height = item.q.photoSize[1];
+        }
         $('questionPhotoImg').src = item.q.photo;
         $('questionPhotoCredit').textContent = item.q.credit || '';
     }
@@ -2009,8 +2014,14 @@ function showCard() {
     hideFeedback();
     updateProgress();
     input.focus();
-    // Le clavier reste souvent ouvert d'une question à l'autre : on réajuste aussi à chaque nouvelle question
-    setTimeout(() => { fitToKeyboard(); keepAnswerVisible(); }, 0);
+    // Le clavier reste souvent ouvert d'une question à l'autre : on ajuste AVANT que l'écran soit redessiné
+    // (calcul immédiat, pas après coup), puis la question apparaît en fondu rapide.
+    fitToKeyboard();
+    keepAnswerVisible();
+    const view = $('cardView');
+    view.classList.remove('is-entering');
+    void view.offsetWidth;
+    view.classList.add('is-entering');
 }
 
 function shake(node) {
@@ -3058,8 +3069,10 @@ function bindEvents() {
     // Photo de monument : un tap l'affiche en grand, un autre la referme (et le clavier revient)
     // « pointerdown » (dès que le doigt touche) et non « click » : sinon le clavier se ferme d'abord,
     // la photo bouge et le clic n'arrive plus dessus. preventDefault garde aussi le clavier ouvert.
-    $('questionPhotoImg').addEventListener('pointerdown', e => {
-        e.preventDefault();
+    // Toucher : on empêche seulement le clavier de se fermer (sinon la photo bouge sous le doigt).
+    // Tap complet (clic) : on ouvre. Ouvrir dès le toucher refermait aussitôt la photo à la fin du même tap.
+    $('questionPhotoImg').addEventListener('pointerdown', e => e.preventDefault());
+    $('questionPhotoImg').addEventListener('click', () => {
         $('photoZoomImg').src = $('questionPhotoImg').src;
         $('photoZoomCredit').textContent = $('questionPhotoCredit').textContent;
         $('photoZoom').hidden = false;
