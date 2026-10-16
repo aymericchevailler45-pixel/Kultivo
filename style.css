@@ -496,7 +496,7 @@ main { overflow-x: clip; }
 /* La photo est montrée EN ENTIER (pas recadrée) : la statue de la Liberté garde sa tête */
 .question-photo img { display: block; width: auto; height: auto; max-width: 100%; max-height: 240px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
 .question-photo figcaption { color: var(--muted); font-size: 0.65rem; text-align: center; }
-@media (max-width: 600px) { .question-photo img { max-height: 190px; } }
+@media (max-width: 600px) { .question-photo img { max-height: 150px; } }
 
 /* Clavier ouvert : tout se resserre pour garder question, réponse et boutons à l'écran */
 body.keyboard-open .card-view { gap: 8px; }
@@ -505,7 +505,7 @@ body.keyboard-open .question { font-size: 1rem; line-height: 1.25; }
 body.keyboard-open .question-flag .flag-img { height: 54px; }
 body.keyboard-open .question-rebus { gap: 8px; }
 body.keyboard-open .question-rebus .emoji-img { width: 36px; height: 36px; }
-body.keyboard-open .question-photo img { max-height: 84px; border-radius: 10px; }
+body.keyboard-open .question-photo img { max-height: 70px; border-radius: 8px; }
 body.keyboard-open .question-photo figcaption { display: none; }
 body.keyboard-open .lesson-head { margin-bottom: 6px; }
 
@@ -520,7 +520,11 @@ body.keyboard-open .lesson-head { gap: 6px; padding-top: calc(2px + env(safe-are
 body.keyboard-open .lesson-head .icon-btn { width: 28px; height: 28px; font-size: 0.95rem; }
 body.keyboard-open .lesson-head .progress { height: 9px; }
 body.keyboard-open .hearts { font-size: 0.85rem; letter-spacing: 1px; min-width: 2.6rem; }
-body.keyboard-open .answer-input { padding: 10px 12px; }
+body.keyboard-open .answer-input { padding: 7px 12px; font-size: 1.05rem; border-bottom-width: 3px; }
+body.keyboard-open #answerActions { gap: 6px; }
+body.keyboard-open #answerActions .btn { padding: 8px 10px; font-size: 0.95rem; box-shadow: 0 3px 0 var(--btn-deep); }
+body.keyboard-open #answerActions #hintBtn { width: 42px; }
+body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 
 /* Rébus : les emojis en grand, alignés comme une phrase */
 .question-rebus { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
@@ -731,10 +735,10 @@ body.keyboard-open .answer-input { padding: 10px 12px; }
     .card-view, .pairs-view { gap: 14px; }
     .question { font-size: 1.3rem; }
     .tag { padding: 2px 10px; font-size: 0.8rem; }
-    .answer-input { padding: 12px 14px; font-size: 1.15rem; }
+    .answer-input { padding: 10px 14px; font-size: 1.1rem; }
     /* Une seule ligne : [💡] [Je ne sais pas] [Vérifier], pour tout voir au-dessus du clavier */
     #answerActions { flex-direction: row; gap: 8px; }
-    #answerActions .btn { padding: 12px 10px; font-size: 1rem; }
+    #answerActions .btn { padding: 11px 10px; font-size: 1rem; }
     #answerActions #checkBtn { order: 3; flex: 1; }
     #answerActions #hintBtn  { order: 1; flex: none; width: 48px; padding-inline: 0; font-size: 0; }
     #answerActions #hintBtn::before { content: '💡'; font-size: 1.2rem; }
