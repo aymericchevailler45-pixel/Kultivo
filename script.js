@@ -574,6 +574,8 @@ function renderStreakModal() {
         if (key > today) cell.classList.add('is-future');
         grid.append(cell);
     }
+    // Cases vides jusqu'à 6 semaines complètes : le calendrier garde la même taille chaque mois
+    for (let i = offset + daysInMonth; i < 42; i++) grid.append(el('span', 'cal-empty'));
 }
 
 function moveCalendar(delta) {
@@ -1526,6 +1528,7 @@ function startSession(requestedMode, level = 0) {
         placeStep: 0,
         placeRight: 0,
         placeWrong: 0,
+        lastAnswer: null,
         startedAt: Date.now(),
         verdict: null,
         phase: 'idle'
@@ -1791,9 +1794,29 @@ function tickTimer() {
     if (left <= 0 && state.phase !== 'over') {
         stopTimer();
         $('quitModal').hidden = true;   // le sprint se termine même si la popup « Quitter ? » est ouverte
+        state.lastAnswer = countLastSprintAnswer();
         hideFeedback();
         endSession(true);
     }
+}
+
+/** Fin du sprint : la réponse en cours compte, même si on n'a pas eu le temps de cliquer sur
+    « Vérifier » (texte tapé) ou sur « Continuer » (réponse déjà vérifiée). Renvoie true, false ou null. */
+function countLastSprintAnswer() {
+    let ok = null;
+    if (state.phase === 'answering') {
+        const typed = $('userInput').value.trim();
+        if (typed) ok = judge(typed, state.current.q.a, state.current.q.q) !== 'wrong';
+    } else if (state.phase === 'feedback') {
+        ok = state.verdict !== 'wrong';
+    }
+    if (ok === null) return null;
+    recordResult(state.current.q.id, ok);
+    if (ok) {
+        state.correct++;
+        addXp(XP_SPRINT_CORRECT);
+    }
+    return ok;
 }
 
 /* ---------- Déroulé d'une leçon ---------- */
@@ -2154,7 +2177,9 @@ function endSession(win) {
         setEnd({
             emoji: record ? '🏅' : '⚡',
             title: 'Sprint terminé',
-            text: record ? '🎉 Nouveau record !' : `Ton record : ${plural(state.data.best.sprint, 'bonne réponse', 'bonnes réponses')}.`,
+            text: (record ? '🎉 Nouveau record !' : `Ton record : ${plural(state.data.best.sprint, 'bonne réponse', 'bonnes réponses')}.`)
+                + (state.lastAnswer === true ? '\n✅ Ta dernière réponse a été comptée : juste !'
+                 : state.lastAnswer === false ? '\n❌ Ta dernière réponse a été comptée : fausse.' : ''),
             stats: [
                 { icon: '⚡', label: 'Bonnes', value: state.correct, format: v => String(v), tone: 'green' },
                 statXp(),

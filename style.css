@@ -175,6 +175,7 @@ body {
 .cal-head .icon-btn:disabled { opacity: 0.3; cursor: default; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
 .cal-dow { padding-bottom: 4px; color: var(--muted); font-size: 0.75rem; font-weight: 900; }
+.cal-empty { aspect-ratio: 1; }   /* même taille qu'un jour : 6 lignes toujours pleines */
 .cal-day {
     display: grid;
     place-items: center;
