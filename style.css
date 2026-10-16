@@ -519,6 +519,10 @@ main { overflow-x: clip; }
 
 /* Clavier ouvert : tout se resserre pour garder question, réponse et boutons à l'écran */
 body.keyboard-open .card-view { gap: 10px; }
+/* Clavier ouvert : la leçon occupe exactement l'écran visible, les boutons se collent au-dessus du clavier */
+body.keyboard-open .lesson { min-height: var(--vvh, 100dvh); padding-bottom: 8px; }
+body.keyboard-open .card-view { flex: 1; }
+body.keyboard-open #answerActions { margin-top: auto; }
 body.keyboard-open .card-view .tag { padding: 1px 10px; font-size: 0.8rem; }   /* le thème reste visible, en petit */
 body.keyboard-open .question { font-size: 1.12rem; line-height: 1.28; }
 body.keyboard-open .question-flag .flag-img { height: 70px; }

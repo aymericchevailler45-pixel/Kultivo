@@ -1797,6 +1797,8 @@ function updateKeyboardMode() {
     // on ne passe en compact que si l'écran visible a vraiment rétréci.
     const keyboardShown = height < fullViewportHeight - 150;
     document.body.classList.toggle('keyboard-open', focused && keyboardShown);
+    // Hauteur visible au-dessus du clavier : sert à coller les boutons juste au-dessus de lui
+    document.documentElement.style.setProperty('--vvh', `${Math.round(height)}px`);
 }
 
 /** Clavier ouvert sur téléphone : si toute la question tient au-dessus du clavier, on remonte en haut
