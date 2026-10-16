@@ -993,7 +993,9 @@ function renderProfile() {
     const grid = $('badgeGrid');
     grid.replaceChildren();
     let earned = 0;
-    BADGES.forEach(b => {
+    // Ordre d'affichage : à récupérer, puis obtenus, puis verrouillés
+    const rank = b => !data.badges[b.id] ? 2 : data.claimedBadges[b.id] ? 1 : 0;
+    [...BADGES].sort((a, b) => rank(a) - rank(b)).forEach(b => {
         const has = !!data.badges[b.id];
         const claimed = !!data.claimedBadges[b.id]; // NOUVEAU
         if (has) earned++;
@@ -1016,7 +1018,10 @@ function renderProfile() {
             // On crée un vrai bouton vert, bien large et visible
             const claimBtn = el('button', 'btn btn-green btn-full');
             claimBtn.type = 'button';
-            claimBtn.textContent = `🎁 Récupérer ${COIN_BADGE} 🪙`;
+            // « Récupérer » est masqué sur téléphone (cases plus étroites)
+            const claimWord = el('span', 'chip-unit');
+            claimWord.textContent = 'Récupérer ';
+            claimBtn.replaceChildren('🎁 ', claimWord, `+${COIN_BADGE} 🪙`);
             claimBtn.style.marginTop = 'auto';
             claimBtn.style.padding = '8px'; // Légèrement plus fin pour bien s'intégrer à la carte
             claimBtn.style.fontSize = '0.95rem';

@@ -134,6 +134,7 @@ body {
     white-space: nowrap;
 }
 .brand-logo { flex: none; width: 34px; height: 34px; border-radius: 10px; }
+.chip { white-space: nowrap; }
 
 .chips { display: flex; align-items: center; gap: 8px; }
 
@@ -223,8 +224,8 @@ body {
 /* Pas assez de place sur les côtés : on masque les décors */
 /* Téléphone : décors plus petits et discrets, à moitié cachés dans les marges */
 @media (max-width: 700px) {
-    .map-decorations { --zone-w: calc(100% - 64px); }
-    .map-decorations .decor-badge { --size: 38px !important; opacity: 0.6; }
+    .map-decorations .decor-badge { --size: 38px !important; opacity: 0.6; left: 26px; }
+    .map-decorations .decor-badge.right { left: calc(100% - 26px); }
 }
 @media (max-width: 1100px) { .lesson-decor    { display: none; } }
 
@@ -544,10 +545,15 @@ body.has-feedback .lesson { padding-bottom: 17rem; }
     .question { font-size: 1.3rem; }
     .tag { padding: 2px 10px; font-size: 0.8rem; }
     .answer-input { padding: 12px 14px; font-size: 1.15rem; }
-    #answerActions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    #answerActions #checkBtn { grid-column: 1 / -1; }
-    #answerActions #hintBtn[hidden] + #skipBtn { grid-column: 1 / -1; }
+    /* Une seule ligne : [💡] [Je ne sais pas] [Vérifier], pour tout voir au-dessus du clavier */
+    #answerActions { flex-direction: row; gap: 8px; }
     #answerActions .btn { padding: 12px 10px; font-size: 1rem; }
+    #answerActions #checkBtn { order: 3; flex: 1; }
+    #answerActions #hintBtn  { order: 1; flex: none; width: 48px; padding-inline: 0; font-size: 0; }
+    #answerActions #hintBtn::before { content: '💡'; font-size: 1.2rem; }
+    #answerActions #skipBtn  { order: 2; flex: none; padding-inline: 8px; }
+    .card-view { gap: 12px; }
+    .tags { gap: 6px; }
     .pairs-help { margin-top: -6px; font-size: 0.9rem; }
     .pair-btn { min-height: 52px; font-size: 0.95rem; }
 }
@@ -780,6 +786,8 @@ body.has-feedback .lesson { padding-bottom: 17rem; }
     .chips { flex-wrap: nowrap; gap: 5px; }
     .chip { padding: 4px 9px; gap: 4px; font-size: 0.9rem; }
     .chip-unit { display: none; }
+    /* Bouton « à revoir » affiché : pas assez de place, on ne garde que le logo */
+    .topbar:has(#reviewBtn:not([hidden])) .brand-name { display: none; }
 }
 
 /* Profil : onglets visibles seulement sur téléphone, une section à la fois */
@@ -957,6 +965,14 @@ body.has-feedback .lesson { padding-bottom: 17rem; }
 .badge-name { font-weight: 900; }
 .badge-desc { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
 .badge.is-locked { border-color: var(--line); opacity: 0.5; filter: grayscale(1); }
+@media (max-width: 600px) {
+    .badge-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .badge { padding: 10px 6px; gap: 2px; border-radius: 14px; }
+    .badge-icon { font-size: 1.6rem; }
+    .badge-name { font-size: 0.8rem; line-height: 1.2; }
+    .badge-desc { font-size: 0.7rem; line-height: 1.25; }
+    .badge .btn { padding: 6px 4px !important; font-size: 0.8rem !important; margin-top: 4px !important; }
+}
 
 /* Minuteur du sprint */
 .timer {
