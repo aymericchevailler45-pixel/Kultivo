@@ -86,6 +86,18 @@ const PLACEMENT_PASS = 2;       // bonnes réponses pour valider une étape
 
 /* ---------- Petits utilitaires ---------- */
 
+/** Les données gardent l'emoji (« 🇵🇹 »), mais on affiche la vraie image du dossier flags/ :
+    plus nette, et identique sur tous les téléphones. « 🇵🇹 » → flags/pt.svg */
+function flagImg(emoji) {
+    const code = [...emoji].map(c => String.fromCharCode(c.codePointAt(0) - 0x1F1E6 + 97)).join('');
+    const img = document.createElement('img');
+    img.className = 'flag-img';
+    img.src = `flags/${code}.svg`;
+    img.alt = 'Drapeau';
+    img.draggable = false;
+    return img;
+}
+
 const $ = id => document.getElementById(id);
 
 function el(tag, className) {
@@ -1673,7 +1685,11 @@ function showPairsGrid() {
         b.dataset.side = side;
         b.dataset.idx = String(i);
         if (grid.matched.has(i)) { b.classList.add('is-matched'); b.disabled = true; }
-        if (side === 'left' && f.bigLeft) b.classList.add('is-big');   // drapeaux en grand
+        if (side === 'left' && f.bigLeft) {   // drapeaux : une vraie image à la place de l'emoji
+            b.classList.add('is-big');
+            b.replaceChildren(flagImg(text));
+            b.setAttribute('aria-label', 'Drapeau');
+        }
         b.addEventListener('click', () => pickPair(b));
         return b;
     };
@@ -1905,8 +1921,8 @@ function showCard() {
                     : state.mode === 'placement' ? `Placement · étape ${state.placeStep + 1}/${PLACEMENT_STEPS}`
                     : 'Défi';
     $('questionText').textContent = item.q.q;
-    $('questionFlag').hidden = !item.q.flag;           // questions « Drapeaux » : grand drapeau
-    $('questionFlag').textContent = item.q.flag || '';
+    $('questionFlag').hidden = !item.q.flag;           // questions « Drapeaux » : grand drapeau en image
+    $('questionFlag').replaceChildren(...(item.q.flag ? [flagImg(item.q.flag)] : []));
 
     // Indices : on repart de zéro à chaque carte (et pas d'indice en défi du jour ni en sprint)
     state.hintUsed = new Set();

@@ -491,9 +491,13 @@ main { overflow-x: clip; }
     text-wrap: balance;
 }
 
-.question-flag { font-size: 6rem; line-height: 1; text-align: center; }
-@media (max-width: 600px) { .question-flag { font-size: 4.5rem; } }
-.pair-btn.is-big { font-size: 2.2rem; line-height: 1; }
+/* Drapeaux en image : léger contour pour les drapeaux à fond blanc (Japon, Suisse…) */
+.flag-img { display: block; width: auto; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12); }
+.question-flag { display: flex; justify-content: center; }
+.question-flag .flag-img { height: 130px; max-width: 100%; object-fit: contain; }
+@media (max-width: 600px) { .question-flag .flag-img { height: 96px; } }
+.pair-btn.is-big { display: flex; align-items: center; justify-content: center; }
+.pair-btn.is-big .flag-img { height: 34px; border-radius: 4px; box-shadow: none; }
 
 .answer-input {
     width: 100%;
@@ -628,8 +632,8 @@ main { overflow-x: clip; }
 }
 .order-card:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
 .order-card.is-placed { border-color: var(--orange); box-shadow: 0 4px 0 var(--orange); }
-/* Réserve : petites étiquettes côte à côte, au-dessus de la frise */
-.order-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-bottom: 12px; border-bottom: 2px solid var(--line); }
+/* Réserve : petites étiquettes côte à côte, sous la frise */
+.order-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-top: 12px; border-top: 2px solid var(--line); }
 .order-pool .order-card { flex: 0 1 auto; min-height: 40px; padding: 8px 12px; text-align: center; font-size: 0.95rem; }
 .order-slot .order-card { min-height: 40px; padding: 8px 12px; }
 @media (max-width: 600px) {

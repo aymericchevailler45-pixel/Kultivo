@@ -96,7 +96,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 ## État actuel
 - 617 questions, 14 thèmes (dont « Drapeaux » : ids 2100-2149, champ `flag` = emoji affiché en grand,
   question identique « À quel pays appartient ce drapeau ? »). Famille de paires « Drapeaux » (connus, `bigLeft`).
-  Les drapeaux emoji ne s'affichent pas sur Windows : l'utilisateur s'en fiche (jeu pensé pour téléphone).
+  Affichage en VRAIES IMAGES (dossier `flags/`, SVG de flagcdn.com, libres de droits) via `flagImg(emoji)` :
+  l'utilisateur trouve les emojis « moins propres ». Les données gardent l'emoji ; nouveau drapeau → télécharger
+  https://flagcdn.com/<code>.svg dans `flags/` et l'ajouter à `FILES` dans `sw.js`.
+- Frises : la frise EN HAUT, les cartes à placer EN DESSOUS (préférence de l'utilisateur), en étiquettes compactes.
 - Avant les drapeaux : 567 questions, 13 thèmes. Le 2026-10-16 : +100 questions difficiles (ids 2000-2099, d 4 à 5),
   réparties au prorata des thèmes (mythologie comprise). Total : 142 avec d ≥ 4, dont 78 avec d ≥ 4,5.
 - Exemple de l'utilisateur pour une vraie question dure : demander le NOM du marteau de Thor, pas qui le porte.
