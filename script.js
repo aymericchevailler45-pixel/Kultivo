@@ -2616,6 +2616,29 @@ function bindEvents() {
     $('calPrev').addEventListener('click', () => moveCalendar(-1));
     $('calNext').addEventListener('click', () => moveCalendar(1));
 
+    // Calendrier : balayer vers la gauche = mois suivant, vers la droite = mois précédent
+    let calSwipe = null;
+    $('streakModal').addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        calSwipe = e.touches.length === 1 ? { x: t.clientX, y: t.clientY, time: Date.now() } : null;
+    }, { passive: true });
+    $('streakModal').addEventListener('touchend', e => {
+        if (!calSwipe) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - calSwipe.x;
+        const dy = t.clientY - calSwipe.y;
+        const quick = Date.now() - calSwipe.time < 600;
+        calSwipe = null;
+        if (!quick || Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+        const btn = dx < 0 ? $('calNext') : $('calPrev');
+        if (btn.disabled) return;
+        moveCalendar(dx < 0 ? 1 : -1);
+        const grid = $('calGrid');
+        grid.classList.remove('slide-from-left', 'slide-from-right');
+        void grid.offsetWidth;   // relance l'animation
+        grid.classList.add(dx < 0 ? 'slide-from-right' : 'slide-from-left');
+    }, { passive: true });
+
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
         closeQuitModal();
