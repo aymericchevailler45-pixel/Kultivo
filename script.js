@@ -1787,8 +1787,10 @@ function nextPairGrid() {
 function updateKeyboardMode() {
     const vv = window.visualViewport;
     const focused = document.activeElement === $('userInput');
-    const shrunk = vv ? vv.height < window.innerHeight - 120 : focused;
-    document.body.classList.toggle('keyboard-open', focused && shrunk);
+    // Sur un écran tactile, le champ actif = clavier ouvert (plus fiable que de deviner sa taille)
+    const touch = window.matchMedia('(pointer: coarse)').matches;
+    const shrunk = vv ? vv.height < window.innerHeight - 120 : false;
+    document.body.classList.toggle('keyboard-open', focused && (touch || shrunk));
 }
 
 /** Clavier ouvert sur téléphone : si toute la question tient au-dessus du clavier, on remonte en haut
@@ -1796,9 +1798,11 @@ function updateKeyboardMode() {
 function keepAnswerVisible() {
     const vv = window.visualViewport;
     if (!vv || $('studyScreen').hidden || state.phase !== 'answering') return;
+    // Si tout tient au-dessus du clavier : on remonte tout en haut (barre des vies et question visibles).
+    // Sinon : on défile juste assez pour voir les boutons, sans laisser de vide en dessous.
     const actionsBottom = $('answerActions').getBoundingClientRect().bottom + window.scrollY;
     const visible = vv.height;
-    window.scrollTo(0, actionsBottom <= visible ? 0 : actionsBottom - visible + 12);
+    window.scrollTo(0, actionsBottom + 8 <= visible ? 0 : actionsBottom - visible + 8);
 }
 
 /** Profil sur téléphone : n'affiche qu'une section à la fois (sur grand écran, tout reste visible). */
@@ -2972,7 +2976,8 @@ function bindEvents() {
     // + mode compact pendant que le clavier est ouvert (images et question plus petites)
     const onViewport = () => { updateKeyboardMode(); keepAnswerVisible(); };
     if (window.visualViewport) window.visualViewport.addEventListener('resize', onViewport);
-    $('userInput').addEventListener('focus', () => setTimeout(onViewport, 350));
+    // Le clavier s'ouvre en animation : on réajuste plusieurs fois pendant qu'il apparaît
+    $('userInput').addEventListener('focus', () => [50, 300, 700].forEach(ms => setTimeout(onViewport, ms)));
     $('userInput').addEventListener('blur', () => setTimeout(updateKeyboardMode, 150));
 
     $('onboardNext').addEventListener('click', onboardNext);

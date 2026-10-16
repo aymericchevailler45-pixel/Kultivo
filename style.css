@@ -500,14 +500,15 @@ main { overflow-x: clip; }
 
 /* Clavier ouvert : tout se resserre pour garder question, réponse et boutons à l'écran */
 body.keyboard-open .card-view { gap: 8px; }
-body.keyboard-open .card-view .tags { display: none; }
-body.keyboard-open .question { font-size: 1.05rem; line-height: 1.25; }
+body.keyboard-open .card-view .tag { padding: 0 8px; font-size: 0.72rem; }   /* le thème reste visible, en petit */
+body.keyboard-open .question { font-size: 1rem; line-height: 1.25; }
 body.keyboard-open .question-flag .flag-img { height: 54px; }
 body.keyboard-open .question-rebus { gap: 8px; }
 body.keyboard-open .question-rebus .emoji-img { width: 36px; height: 36px; }
-body.keyboard-open .question-photo img { max-height: 110px; border-radius: 10px; }
+body.keyboard-open .question-photo img { max-height: 84px; border-radius: 10px; }
 body.keyboard-open .question-photo figcaption { display: none; }
-body.keyboard-open .lesson-head { margin-bottom: 8px; }
+body.keyboard-open .lesson-head { margin-bottom: 6px; }
+body.keyboard-open .answer-input { padding: 10px 12px; }
 
 /* Rébus : les emojis en grand, alignés comme une phrase */
 .question-rebus { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
