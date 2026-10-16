@@ -18,8 +18,8 @@
    - les niveaux 10, 20, 30… sont des DÉFIS : ils n'ont pas de questions
      propres, ils piochent dans les 9 niveaux précédents. Le champ
      niveau: de chaque question n'est donc plus utilisé pour jouer ;
-   - les niveaux 5, 15, 25… sont des niveaux PAIRES (grilles à associer,
-     voir pairs.js) et les niveaux 8, 18, 28… des niveaux ORDRE (frises à
+   - les niveaux 3, 13, 23… sont des niveaux PAIRES (grilles à associer,
+     voir pairs.js) et les niveaux 6, 16, 26… des niveaux ORDRE (frises à
      remettre dans l'ordre, voir order.js) : pas de questions non plus.
 
    POUR AJOUTER UNE QUESTION : ajoute-la dans questions.js avec un
@@ -50,8 +50,8 @@ const TOTAL_LEVELS = 120;
 
     const PER_LEVEL = 5;        // taille visée d'un niveau (si TOTAL_LEVELS = null)
     const EVERY = 10;           // un défi tous les 10 niveaux (doit être égal à CHALLENGE_EVERY de script.js)
-    const PAIRS_AT = 5;         // niveau Paires au milieu de chaque bloc : 5, 15, 25… (comme PAIRS_AT de script.js)
-    const ORDER_AT = 8;         // niveau Ordre : 8, 18, 28… (comme ORDER_AT de script.js)
+    const PAIRS_AT = 3;         // niveau Paires : 3, 13, 23… (comme PAIRS_AT de script.js)
+    const ORDER_AT = 6;         // niveau Ordre : 6, 16, 26… (comme ORDER_AT de script.js)
     const isSpecial = lvl => lvl % EVERY === 0 || lvl % EVERY === PAIRS_AT || lvl % EVERY === ORDER_AT;
     const JITTER = 0.08;        // flou de la progression (0 = tri strict par difficulté)
     const HARD = 4.5;           // à partir de cette difficulté, une question est « très pointue »

@@ -10,7 +10,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - `script.js` : toute la logique (état, sauvegarde, leçons, révisions, XP, boutique, badges).
 - `questions.js` : `QUESTIONS` (id, theme, d, q, a, exp, niveau) et `LEVEL_NAMES`.
 - `levels.js` : répartit automatiquement les questions dans les niveaux (voir plus bas).
-- `order.js` : `ORDER_FAMILIES` (15 familles, ~210 cartes `[texte, valeur de tri, valeur affichée, d]`)
+- `order.js` : `ORDER_FAMILIES` (16 familles, ~225 cartes, dont « Vitesses » `[texte, valeur de tri, valeur affichée, d]`)
   pour les niveaux Ordre. Jamais deux valeurs identiques dans une famille.
 - `pairs.js` : `PAIR_FAMILIES` (14 familles, ~285 paires `[gauche, droite, d]`) pour les niveaux Paires.
 - `manifest.json`, `sw.js`, `icons/` : application installable (PWA). Service worker « réseau d'abord »
@@ -28,7 +28,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Révisions : questions ratées reviennent en priorité (tirage pondéré, 3 à 8 par leçon),
   répétition espacée (`REVIEW_DAYS`) : une question bien connue revient de plus en plus rarement.
 - 120 niveaux (depuis le 2026-10-16), un Défi tous les 10 niveaux (pioche dans les 9 niveaux précédents, 10 questions, 2 cœurs).
-- Niveaux Paires (mode `pairs`) : 5, 15, 25… 95 (`PAIRS_AT`), icône 🔗, bleu sur la carte. 3 grilles de 5 paires
+- Niveaux Paires (mode `pairs`) : 3, 13, 23… 113 (`PAIRS_AT`), icône 🔗, bleu sur la carte. 3 grilles de 5 paires
   de familles différentes (thèmes différents si possible), paires choisies près de la difficulté du niveau
   (`pairTarget` ≈ 1,2 → 4,3). 3 cœurs, une mauvaise association = 1 cœur, cœur de secours possible.
   2 XP par paire. Statistiques par paire dans `pairStats` (clé « famille:élément de gauche ») :
@@ -38,7 +38,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (`launchConfetti`, sauf révision et si mouvement réduit). Réglage `sound` dans le profil (`soundBtn`)
   et petite icône 🔊/🔇 dans la barre des leçons (`lessonSoundBtn`), pas de menu Paramètres (pas la place).
 - Grilles de paires : une seule grille CSS (`#pairsGrid`), cases placées ligne par ligne → même hauteur à gauche et à droite.
-- Niveaux Ordre (mode `order`) : 8, 18… 118 (`ORDER_AT`), losange orange ⏳. 3 frises (`ORDER_ROUNDS`)
+- Niveaux Ordre (mode `order`) : 6, 16… 116 (`ORDER_AT`), losange orange ⏳. 3 frises (`ORDER_ROUNDS`)
   de 4 cartes (< niv. 40), 5 (< 85), 6 ensuite. On touche une carte → 1er emplacement libre ; on touche une carte
   placée → elle revient. Après « Vérifier » : bon ordre + valeurs affichées (vert/rouge, « Tu avais mis… »).
   Frise fausse = 1 cœur max. 2 XP par carte bien placée. Début du parcours : cartes espacées dans le classement.
@@ -80,8 +80,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 
 ## levels.js (important)
 - Lit `QUESTIONS`, écrase `q.niveau` et `LEVEL_NAMES`. Le champ `niveau` du fichier questions n'est qu'un secours.
-- 120 niveaux = 84 de questions (6 ou 7 chacun) + 12 Paires (x5) + 12 Ordre (x8) + 12 défis (x0).
-  Bloc type : Q Q Q Q 🔗 Q Q ⏳ Q 🏆. L'utilisateur ne veut pas perdre de niveaux de questions. Déterministe (même résultat pour tous).
+- 120 niveaux = 84 de questions (6 ou 7 chacun) + 12 Paires (x3) + 12 Ordre (x6) + 12 défis (x0).
+  Bloc type : Q Q 🔗 Q Q ⏳ Q Q Q 🏆 (choisi par l'utilisateur). L'utilisateur ne veut pas perdre de niveaux de questions. Déterministe (même résultat pour tous).
 - La difficulté monte doucement (≈1,3 → 4,3 sur 100 niveaux), questions très dures (d ≥ 4,5) à partir du niveau ~55 (1 à 2 par niveau),
   thèmes équilibrés sur tout le parcours, au plus 2 questions du même thème par niveau.
 - Pour ajouter une question : ligne avec un `id` jamais utilisé (≥ 2000), un `theme`, un `d` de 1 à 5. C'est tout.

@@ -3,7 +3,7 @@
 /* ============================================================
    KULTIVO — les familles de paires (niveaux « Paires »)
    ============================================================
-   Les niveaux 5, 15, 25… 95 sont des niveaux Paires : 3 grilles de
+   Les niveaux 3, 13, 23… 113 sont des niveaux Paires : 3 grilles de
    5 paires à associer (gauche ↔ droite), tirées de familles différentes.
 
    Chaque famille : id, theme, title (titre affiché), left / right (ce que

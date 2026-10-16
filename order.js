@@ -3,7 +3,7 @@
 /* ============================================================
    KULTIVO — les familles « Remets dans l'ordre » (niveaux Ordre)
    ============================================================
-   Les niveaux 8, 18, 28… sont des niveaux Ordre : 3 frises à la suite.
+   Les niveaux 6, 16, 26… 116 sont des niveaux Ordre : 3 frises à la suite.
    Chaque frise montre 4 à 6 cartes mélangées à ranger dans l'ordre.
 
    Chaque famille : id, theme, title, prompt (la consigne),
@@ -157,6 +157,27 @@ const ORDER_FAMILIES = [
             ['Rhinocéros blanc', 2300, 'environ 2,3 tonnes', 3.5],
             ['Éléphant d’Afrique', 6000, 'environ 6 tonnes', 2],
             ['Baleine bleue', 150000, 'environ 150 tonnes', 1.5]
+        ]
+    },
+    {
+        id: 'vitesses', theme: 'Sciences', title: 'Vitesses',
+        prompt: 'Du plus lent au plus rapide', ends: ['Plus lent', 'Plus rapide'],
+        items: [
+            ['Escargot', 0.05, 'environ 0,05 km/h', 1.5],
+            ['Tortue terrestre', 0.3, 'environ 0,3 km/h', 2],
+            ['Humain qui marche', 5, 'environ 5 km/h', 1.5],
+            ['Usain Bolt (en pointe)', 44, 'environ 44 km/h', 3],
+            ['Cheval au galop', 65, 'environ 65 km/h', 3],
+            ['Guépard', 110, 'environ 110 km/h', 2],
+            ['TGV (en service commercial)', 320, '320 km/h', 2.5],
+            ['Formule 1 (vitesse de pointe)', 360, 'environ 360 km/h', 3.5],
+            ['Faucon pèlerin en piqué', 390, 'environ 390 km/h', 4],
+            ['Bugatti Chiron', 420, '420 km/h (bridée)', 4],
+            ['Avion de ligne (en croisière)', 900, 'environ 900 km/h', 2.5],
+            ['Son (dans l’air)', 1235, 'environ 1 235 km/h', 3],
+            ['Avion de chasse Rafale', 1900, 'environ 1 900 km/h', 3.5],
+            ['Station spatiale internationale', 27600, 'environ 27 600 km/h', 4],
+            ['Lumière', 1080000000, 'environ 1 milliard de km/h (300 000 km/s)', 1.5]
         ]
     },
     {

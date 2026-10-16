@@ -62,15 +62,15 @@ const MAX_LEVEL = (maxQuestionLevel + 1) % CHALLENGE_EVERY === 0
 
 const isChallenge = n => n % CHALLENGE_EVERY === 0;
 
-// Niveaux Paires (5, 15, 25…) : des grilles à associer, voir pairs.js
-const PAIRS_AT = 5;              // doit être égal à PAIRS_AT de levels.js
+// Niveaux Paires (3, 13, 23…) : des grilles à associer, voir pairs.js
+const PAIRS_AT = 3;              // doit être égal à PAIRS_AT de levels.js
 const PAIRS_GRIDS = 3;           // grilles par niveau Paires
 const PAIRS_PER_GRID = 5;        // paires par grille
 const XP_PAIR = 2;               // par paire trouvée
 const isPairs = n => n % CHALLENGE_EVERY === PAIRS_AT;
 
-// Niveaux Ordre (8, 18, 28…) : des frises à remettre dans l'ordre, voir order.js
-const ORDER_AT = 8;              // doit être égal à ORDER_AT de levels.js
+// Niveaux Ordre (6, 16, 26…) : des frises à remettre dans l'ordre, voir order.js
+const ORDER_AT = 6;              // doit être égal à ORDER_AT de levels.js
 const ORDER_ROUNDS = 3;          // frises par niveau Ordre
 const XP_ORDER_CARD = 2;         // par carte bien placée
 const isOrder = n => n % CHALLENGE_EVERY === ORDER_AT;
@@ -1574,7 +1574,7 @@ function startSession(requestedMode, level = 0) {
 
 /* ---------- Niveaux Paires ---------- */
 
-/** Difficulté visée par un niveau Paires : environ 1,2 au niveau 5, 4,3 au niveau 95. */
+/** Difficulté visée par un niveau Paires : environ 1,1 au niveau 3, 4,4 au niveau 113. */
 const pairTarget = level => 1 + 3.5 * level / MAX_LEVEL;
 
 /** Choisit 3 familles (de thèmes différents si possible) ayant assez de paires du bon niveau. */
