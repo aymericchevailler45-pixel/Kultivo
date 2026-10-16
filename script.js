@@ -1784,13 +1784,19 @@ function nextPairGrid() {
 
 /** Clavier ouvert = le champ de réponse a le focus ET l'écran visible a nettement rétréci.
     Le style « keyboard-open » réduit alors images et question pour que tout tienne au-dessus du clavier. */
+// Hauteur de l'écran visible SANS clavier (la plus grande vue depuis le lancement ou le dernier changement d'orientation)
+let fullViewportHeight = 0;
+window.addEventListener('orientationchange', () => { fullViewportHeight = 0; });
+
 function updateKeyboardMode() {
     const vv = window.visualViewport;
     const focused = document.activeElement === $('userInput');
-    // Sur un écran tactile, le champ actif = clavier ouvert (plus fiable que de deviner sa taille)
-    const touch = window.matchMedia('(pointer: coarse)').matches;
-    const shrunk = vv ? vv.height < window.innerHeight - 120 : false;
-    document.body.classList.toggle('keyboard-open', focused && (touch || shrunk));
+    const height = vv ? vv.height : window.innerHeight;
+    fullViewportHeight = Math.max(fullViewportHeight, height);
+    // Le curseur peut être dans le champ sans que le clavier soit ouvert (focus automatique) :
+    // on ne passe en compact que si l'écran visible a vraiment rétréci.
+    const keyboardShown = height < fullViewportHeight - 150;
+    document.body.classList.toggle('keyboard-open', focused && keyboardShown);
 }
 
 /** Clavier ouvert sur téléphone : si toute la question tient au-dessus du clavier, on remonte en haut
@@ -2976,6 +2982,7 @@ function bindEvents() {
     // + mode compact pendant que le clavier est ouvert (images et question plus petites)
     const onViewport = () => { updateKeyboardMode(); keepAnswerVisible(); };
     if (window.visualViewport) window.visualViewport.addEventListener('resize', onViewport);
+    updateKeyboardMode();   // mesure la hauteur d'écran sans clavier dès le lancement
     // Le clavier s'ouvre en animation : on réajuste plusieurs fois pendant qu'il apparaît
     $('userInput').addEventListener('focus', () => [50, 300, 700].forEach(ms => setTimeout(onViewport, ms)));
     $('userInput').addEventListener('blur', () => setTimeout(updateKeyboardMode, 150));
