@@ -1860,7 +1860,8 @@ function keepAnswerVisible() {
     // Sinon : on défile juste assez pour voir les boutons, sans laisser de vide en dessous.
     const actionsBottom = $('answerActions').getBoundingClientRect().bottom + window.scrollY;
     const visible = vv.height;
-    window.scrollTo(0, actionsBottom + 8 <= visible ? 0 : actionsBottom - visible + 8);
+    const target = actionsBottom + 8 <= visible ? 0 : Math.round(actionsBottom - visible + 8);
+    if (Math.abs(window.scrollY - target) > 2) window.scrollTo(0, target);   // pas de défilement inutile
 }
 
 /** Profil sur téléphone : n'affiche qu'une section à la fois (sur grand écran, tout reste visible). */
@@ -2051,10 +2052,6 @@ function showCard() {
     updateKeyboardMode();   // nouvelle question : mode compact AVANT l'affichage (taille clavier connue)
     fitToKeyboard();
     keepAnswerVisible();
-    const view = $('cardView');
-    view.classList.remove('is-entering');
-    void view.offsetWidth;
-    view.classList.add('is-entering');
 }
 
 function shake(node) {

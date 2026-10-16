@@ -90,7 +90,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   habituel : tailles « à mi-chemin » (ni trop grand, ni trop petit). Photo de monument : tap = plein écran
   (`photoZoom`, avec crédit), retap = retour. Pas de boutons collés au clavier (refusé) : à la place,
   `fitToKeyboard` mesure la place libre sous « Vérifier » et agrandit image + question (variable CSS --fit),
-  appelé AVANT affichage dans showCard + fondu 0,15 s. Photos : `photoSize` [l, h] pour réserver la place.
+  appelé AVANT affichage dans showCard (fondu retiré : il donnait un « clignement »). Photos : `photoSize` [l, h] pour réserver la place.
   Zoom photo : pointerdown = preventDefault seulement, ouverture au click (sinon le même tap la refermait).
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.
