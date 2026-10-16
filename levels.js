@@ -38,11 +38,11 @@ if (typeof QUESTIONS === 'undefined' || typeof LEVEL_NAMES === 'undefined') {
 const AUTO_LEVELS = true;
 const AUTO_LEVEL_NAMES = true;   // false = garder les noms de niveaux de questions.js
 
-/* Nombre total de niveaux de la carte, défis compris (140 = 98 niveaux de
-   questions + 14 niveaux Paires + 14 niveaux Ordre + 14 défis, le dernier
+/* Nombre total de niveaux de la carte, défis compris (150 = 105 niveaux de
+   questions + 15 niveaux Paires + 15 niveaux Ordre + 15 défis, le dernier
    niveau étant un défi).
    null = automatique : environ 5 questions par niveau. */
-const TOTAL_LEVELS = 140;
+const TOTAL_LEVELS = 150;
 
 
 (function assignLevels() {
@@ -80,7 +80,8 @@ const TOTAL_LEVELS = 140;
         'Cap des géants', 'Le grand large', 'Panthéon', 'Les cimes', 'Rareté absolue',
         'Maîtrise totale', 'Grand voyage', 'Hors des sentiers', 'Tour du monde', 'Esprit vif',
         'Sans frontières', 'Énigmes en images', 'Cap au large', 'Tête bien faite', 'Les initiés',
-        'Haute culture', 'Dernière ligne droite', 'Avant l’apothéose', 'L’ultime marche', 'Le dernier pas'
+        'Haute culture', 'Merveilles du monde', 'Grand tour', 'Pierres et légendes', 'Patrimoine',
+        'Les explorateurs', 'Vue d’ensemble', 'Grand chelem', 'Dernière ligne droite', 'Avant l’apothéose', 'L’ultime marche', 'Le dernier pas'
     ];
 
     const oldMax = Math.max(1, ...QUESTIONS.map(q => q.niveau || 1));

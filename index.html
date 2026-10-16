@@ -167,7 +167,7 @@
                     <div class="badge-grid" id="badgeGrid"></div>
                 </article>
             </div>
-            <p class="credits">Emojis et cerveau du logo : Twemoji (CC BY 4.0) · Drapeaux : flagcdn.com</p>
+            <p class="credits">Emojis et cerveau du logo : Twemoji (CC BY 4.0) · Drapeaux : flagcdn.com · Photos des monuments : Wikimedia Commons (auteurs et licences sous chaque photo)</p>
         </section>
 
         <!-- PREMIER LANCEMENT : accueil en quelques écrans (niveau, objectif, test de placement) -->
@@ -210,6 +210,10 @@
                 <h2 class="question" id="questionText"></h2>
                 <div class="question-flag" id="questionFlag" aria-hidden="true" hidden></div>
                 <div class="question-rebus" id="questionRebus" aria-hidden="true" hidden></div>
+                <figure class="question-photo" id="questionPhoto" hidden>
+                    <img id="questionPhotoImg" alt="Photo du monument à trouver">
+                    <figcaption id="questionPhotoCredit"></figcaption>
+                </figure>
 
                 <input type="text" id="userInput" class="answer-input"
                        placeholder="Ta réponse"

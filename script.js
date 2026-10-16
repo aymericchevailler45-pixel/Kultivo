@@ -1938,6 +1938,11 @@ function showCard() {
     $('questionRebus').hidden = !item.q.rebus;         // rébus : emojis en images, dans l'ordre des mots
     $('questionRebus').replaceChildren(...(item.q.rebus || []).map(emojiImg));
     $('rebusTag').hidden = !item.q.rebus;
+    $('questionPhoto').hidden = !item.q.photo;         // monuments : photo + auteur et licence (obligatoire)
+    if (item.q.photo) {
+        $('questionPhotoImg').src = item.q.photo;
+        $('questionPhotoCredit').textContent = item.q.credit || '';
+    }
 
     // Indices : on repart de zéro à chaque carte (et pas d'indice en défi du jour ni en sprint)
     state.hintUsed = new Set();

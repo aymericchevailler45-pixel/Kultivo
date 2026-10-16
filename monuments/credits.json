@@ -1,0 +1,218 @@
+{
+ "eiffel": {
+  "file": "eiffel.jpg",
+  "artist": "Benh LIEU SONG",
+  "license": "Public domain",
+  "source": "https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg"
+ },
+ "liberte": {
+  "file": "liberte.jpg",
+  "artist": "AskALotl",
+  "license": "CC0",
+  "source": "https://commons.wikimedia.org/wiki/File:Front_view_of_Statue_of_Liberty_(cropped).jpg"
+ },
+ "colisee": {
+  "file": "colisee.jpg",
+  "artist": "FeaturedPics",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Colosseo_2020.jpg"
+ },
+ "taj-mahal": {
+  "file": "taj-mahal.jpg",
+  "artist": "Yann; edited by Jim Carter",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Taj_Mahal_(Edited).jpeg"
+ },
+ "muraille": {
+  "file": "muraille.jpg",
+  "artist": "Severin.stalder",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:The_Great_Wall_of_China_at_Jinshanling-edit.jpg"
+ },
+ "gizeh": {
+  "file": "gizeh.jpg",
+  "artist": "KennyOMG",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Pyramids_of_the_Giza_Necropolis.jpg"
+ },
+ "big-ben": {
+  "file": "big-ben.jpg",
+  "artist": "Christian David",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster,_London.jpg"
+ },
+ "pise": {
+  "file": "pise.jpg",
+  "artist": "Arne Müseler",
+  "license": "CC BY-SA 3.0 de",
+  "source": "https://commons.wikimedia.org/wiki/File:Italy_-_Pisa_-_Leaning_Tower.jpg"
+ },
+ "sagrada": {
+  "file": "sagrada.jpg",
+  "artist": "Canaan",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:SF_maig_2_cropped.jpg"
+ },
+ "sydney": {
+  "file": "sydney.jpg",
+  "artist": "Bernard Spragg. NZ from Christchurch, New Zealand",
+  "license": "CC0",
+  "source": "https://commons.wikimedia.org/wiki/File:Sydney_Australia._(21339175489).jpg"
+ },
+ "arc-triomphe": {
+  "file": "arc-triomphe.jpg",
+  "artist": "ZeusUpsistos",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Arc_de_Triomphe_-_Ao%C3%BBt_2026.jpg"
+ },
+ "mont-st-michel": {
+  "file": "mont-st-michel.jpg",
+  "artist": "Amaustan",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Mont-Saint-Michel_vu_du_ciel.jpg"
+ },
+ "christ": {
+  "file": "christ.jpg",
+  "artist": "Arne Müseler",
+  "license": "CC BY-SA 3.0 de",
+  "source": "https://commons.wikimedia.org/wiki/File:Christ_the_Redeemer_-_Cristo_Redentor.jpg"
+ },
+ "notre-dame": {
+  "file": "notre-dame.jpg",
+  "artist": "Ali Sabbagh",
+  "license": "CC0",
+  "source": "https://commons.wikimedia.org/wiki/File:Notre-Dame_de_Paris,_4_October_2017.jpg"
+ },
+ "machu-picchu": {
+  "file": "machu-picchu.jpg",
+  "artist": "Draceane",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Machu_Picchu,_2023_(012).jpg"
+ },
+ "parthenon": {
+  "file": "parthenon.jpg",
+  "artist": "Steve Swayne",
+  "license": "CC BY 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:The_Parthenon_in_Athens.jpg"
+ },
+ "saint-basile": {
+  "file": "saint-basile.jpg",
+  "artist": "Tsy1980",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Saint_Basil%27s_Cathedral_in_Moscow.jpg"
+ },
+ "golden-gate": {
+  "file": "golden-gate.jpg",
+  "artist": "Frank Schulenburg",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Golden_Gate_Bridge_as_seen_from_Battery_East.jpg"
+ },
+ "burj-khalifa": {
+  "file": "burj-khalifa.jpg",
+  "artist": "imran shahabuddin",
+  "license": "CC BY 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Burj_Khalifa_(worlds_tallest_building)_and_the_Dubai_skyline_(25781049892).jpg"
+ },
+ "stonehenge": {
+  "file": "stonehenge.jpg",
+  "artist": "garethwiscombe",
+  "license": "CC BY 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Stonehenge2007_07_30.jpg"
+ },
+ "versailles": {
+  "file": "versailles.jpg",
+  "artist": "ToucanWings",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Vue_a%C3%A9rienne_du_domaine_de_Versailles_par_ToucanWings_-_Creative_Commons_By_Sa_3.0_-_081_(cropped).jpg"
+ },
+ "rushmore": {
+  "file": "rushmore.jpg",
+  "artist": "Thomas Wolf, www.foto-tw.de",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Mount_Rushmore_detail_view_(100MP).jpg"
+ },
+ "tower-bridge": {
+  "file": "tower-bridge.jpg",
+  "artist": "Fuzzypiggy",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Tower_Bridge_at_Dawn.jpg"
+ },
+ "moai": {
+  "file": "moai.jpg",
+  "artist": "Ian Sewell",
+  "license": "CC BY 2.5",
+  "source": "https://commons.wikimedia.org/wiki/File:AhuTongariki.JPG"
+ },
+ "neuschwanstein": {
+  "file": "neuschwanstein.jpg",
+  "artist": "Thomas Wolf, www.foto-tw.de",
+  "license": "CC BY-SA 3.0 de",
+  "source": "https://commons.wikimedia.org/wiki/File:Schloss_Neuschwanstein_2013.jpg"
+ },
+ "petra": {
+  "file": "petra.jpg",
+  "artist": "Azurfrog",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Al_Deir_Petra.JPG"
+ },
+ "angkor": {
+  "file": "angkor.jpg",
+  "artist": "Bjørn Christian Tørrissen",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Angkor_Wat.jpg"
+ },
+ "chichen-itza": {
+  "file": "chichen-itza.jpg",
+  "artist": "Daniel Schwen",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Chichen_Itza_3.jpg"
+ },
+ "sainte-sophie": {
+  "file": "sainte-sophie.jpg",
+  "artist": "Adli Wahid",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Hagia_Sophia_(228968325).jpeg"
+ },
+ "cite-interdite": {
+  "file": "cite-interdite.jpg",
+  "artist": "Pixelflake",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:The_Forbidden_City_-_View_from_Coal_Hill.jpg"
+ },
+ "atomium": {
+  "file": "atomium.jpg",
+  "artist": "Trougnouf (Benoit Brummer)",
+  "license": "CC BY 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:The_Atomium_during_civil_twilight_(DSCF1135).jpg"
+ },
+ "pont-du-gard": {
+  "file": "pont-du-gard.jpg",
+  "artist": "Benh LIEU SONG (Flickr)",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Pont_du_Gard_BLS.jpg"
+ },
+ "alhambra": {
+  "file": "alhambra.jpg",
+  "artist": "Jebulon",
+  "license": "CC0",
+  "source": "https://commons.wikimedia.org/wiki/File:Dawn_Charles_V_Palace_Alhambra_Granada_Andalusia_Spain.jpg"
+ },
+ "chambord": {
+  "file": "chambord.jpg",
+  "artist": "Carsten Steger",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Aerial_image_of_Ch%C3%A2teau_de_Chambord_(view_from_the_southeast).jpg"
+ },
+ "borobudur": {
+  "file": "borobudur.jpg",
+  "artist": "Heri nugroho",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Pradaksina.jpg"
+ },
+ "potala": {
+  "file": "potala.jpg",
+  "artist": "Lhasa Government",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Potala_Palace_HQ.jpg"
+ }
+}

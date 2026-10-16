@@ -491,6 +491,12 @@ main { overflow-x: clip; }
     text-wrap: balance;
 }
 
+/* Monuments : la photo, avec l'auteur et la licence en tout petit dessous */
+.question-photo { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 0; }
+.question-photo img { width: 100%; max-width: 440px; height: 220px; object-fit: cover; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+.question-photo figcaption { color: var(--muted); font-size: 0.65rem; text-align: center; }
+@media (max-width: 600px) { .question-photo img { height: 170px; } }
+
 /* Rébus : les emojis en grand, alignés comme une phrase */
 .question-rebus { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
 .question-rebus .emoji-img { width: 72px; height: 72px; }

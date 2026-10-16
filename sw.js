@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v4';
+const CACHE = 'kultivo-v5';
 const FILES = [
     './',
     './index.html',
@@ -26,6 +26,43 @@ const FILES = [
     './icons/apple-touch-icon.png',
     './icons/favicon.png',
     './icons/logo.svg',
+    // photos des monuments (Wikimedia Commons)
+    './monuments/alhambra.jpg',
+    './monuments/angkor.jpg',
+    './monuments/arc-triomphe.jpg',
+    './monuments/atomium.jpg',
+    './monuments/big-ben.jpg',
+    './monuments/borobudur.jpg',
+    './monuments/burj-khalifa.jpg',
+    './monuments/chambord.jpg',
+    './monuments/chichen-itza.jpg',
+    './monuments/christ.jpg',
+    './monuments/cite-interdite.jpg',
+    './monuments/colisee.jpg',
+    './monuments/eiffel.jpg',
+    './monuments/gizeh.jpg',
+    './monuments/golden-gate.jpg',
+    './monuments/liberte.jpg',
+    './monuments/machu-picchu.jpg',
+    './monuments/moai.jpg',
+    './monuments/mont-st-michel.jpg',
+    './monuments/muraille.jpg',
+    './monuments/neuschwanstein.jpg',
+    './monuments/notre-dame.jpg',
+    './monuments/parthenon.jpg',
+    './monuments/petra.jpg',
+    './monuments/pise.jpg',
+    './monuments/pont-du-gard.jpg',
+    './monuments/potala.jpg',
+    './monuments/rushmore.jpg',
+    './monuments/sagrada.jpg',
+    './monuments/saint-basile.jpg',
+    './monuments/sainte-sophie.jpg',
+    './monuments/stonehenge.jpg',
+    './monuments/sydney.jpg',
+    './monuments/taj-mahal.jpg',
+    './monuments/tower-bridge.jpg',
+    './monuments/versailles.jpg',
     // emojis des rébus (Twemoji)
     './emoji/1f198.svg',
     './emoji/1f30a.svg',
