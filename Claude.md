@@ -13,6 +13,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - `order.js` : `ORDER_FAMILIES` (16 familles, ~225 cartes, dont « Vitesses » `[texte, valeur de tri, valeur affichée, d]`)
   pour les niveaux Ordre. Jamais deux valeurs identiques dans une famille.
 - `pairs.js` : `PAIR_FAMILIES` (14 familles, ~285 paires `[gauche, droite, d]`) pour les niveaux Paires.
+- ATTENTION GitHub Pages : Cache-Control max-age=600 (copie de 10 min sur le CDN). Pour vérifier une mise en
+  ligne, tester l'URL SANS paramètre (le « ?n= » contourne le CDN et ment). Depuis kultivo-v6, le service worker
+  ajoute ?v=<horodatage> aux fichiers html/js/css/json → le téléphone a toujours la dernière version.
 - `manifest.json`, `sw.js`, `icons/` : application installable (PWA). Service worker « réseau d'abord »
   (cache `kultivo-v1`) : avec internet, toujours la dernière version. Tout nouveau fichier du jeu → l'ajouter à `FILES` dans `sw.js`.
   Logo (choisi le 2026-10-16, version « A2 ») : cerveau Twemoji rose + K vert cerclé de blanc sur fond vert.

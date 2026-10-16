@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v5';
+const CACHE = 'kultivo-v6';
 const FILES = [
     './',
     './index.html',
@@ -213,8 +213,14 @@ self.addEventListener('fetch', event => {
     const request = event.request;
     if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
 
+    // Fichiers du jeu (page, code, styles) : on contourne la copie de 10 minutes des serveurs de GitHub
+    // en ajoutant un paramètre unique → toujours la toute dernière version. Images : requête normale.
+    const url = new URL(request.url);
+    const isCode = request.mode === 'navigate' || url.pathname.endsWith('/') || /\.(html|js|css|json)$/.test(url.pathname);
+    const target = isCode ? `${url.origin}${url.pathname}?v=${Date.now()}` : request;
+
     event.respondWith(
-        fetch(request, { cache: 'no-cache' })
+        fetch(target, { cache: 'no-store' })
             .then(response => {
                 if (response.ok) {
                     const copy = response.clone();
