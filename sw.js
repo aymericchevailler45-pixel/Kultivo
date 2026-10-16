@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v3';
+const CACHE = 'kultivo-v4';
 const FILES = [
     './',
     './index.html',
@@ -25,6 +25,7 @@ const FILES = [
     './icons/icon-512.png',
     './icons/apple-touch-icon.png',
     './icons/favicon.png',
+    './icons/logo.svg',
     // emojis des rébus (Twemoji)
     './emoji/1f198.svg',
     './emoji/1f30a.svg',

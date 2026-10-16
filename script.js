@@ -2606,7 +2606,7 @@ function renderOnboard() {
 
     if (step === 0) {
         const logo = el('img', 'onboard-logo');
-        logo.src = 'icons/icon-192.png';
+        logo.src = 'icons/logo.svg';
         logo.alt = '';
         title.textContent = 'Bienvenue sur Kultivo !';
         text.textContent = 'Ta culture générale, un niveau après l’autre : questions, défis, grilles à associer… Commençons par faire connaissance.';

@@ -15,7 +15,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - `pairs.js` : `PAIR_FAMILIES` (14 familles, ~285 paires `[gauche, droite, d]`) pour les niveaux Paires.
 - `manifest.json`, `sw.js`, `icons/` : application installable (PWA). Service worker « réseau d'abord »
   (cache `kultivo-v1`) : avec internet, toujours la dernière version. Tout nouveau fichier du jeu → l'ajouter à `FILES` dans `sw.js`.
-  Icônes générées en Python pur (K blanc sur vert), pas de Pillow installé.
+  Logo (choisi le 2026-10-16, version « A2 ») : cerveau Twemoji rose + K vert cerclé de blanc sur fond vert.
+  `icons/logo.svg` (arrondi, utilisé dans le jeu) ; PNG carrés pour le téléphone : rendu 512 px avec Edge en mode
+  headless (fenêtre ≥ 500 px, sans fond transparent), puis réduction en Python pur (pas de Pillow).
 
 ## Ce qui est en place
 - Nom du jeu : **Kultivo** (choisi le 2026-10-16, remplace « Culture G », nom déjà pris sur l'App Store).
