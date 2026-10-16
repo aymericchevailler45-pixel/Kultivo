@@ -58,6 +58,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Cœur de secours : plus utilisé automatiquement, et PAS de popup (l'utilisateur trouvait ça pénible).
   Sur l'écran « Niveau raté », bouton `endRescue` au-dessus de « Réessayer » : continuer avec un cœur du stock,
   ou en acheter un sur le moment. Sans assez de pièces : simple ligne « 💡 il te manque X 🪙 » dans le texte.
+- Signalement : lien « 🚩 Signaler cette question » dans le bandeau de correction → raison + commentaire,
+  stocké dans `reports` (id, question, réponse attendue, réponse tapée…). Profil → « 🚩 Mes signalements (N) » :
+  liste + Copier + Tout effacer. L'utilisateur colle la liste dans la conversation pour les corrections.
 - Perte de cœur visible : ligne « 💔 −1 cœur » dans le bandeau rouge + cœur qui clignote (`renderHearts({ risk })`),
   puis cœur qui éclate et rangée qui tremble au clic sur Continuer (`renderHearts({ lost })`). Aussi dans les Paires.
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.

@@ -270,7 +270,8 @@ function defaultData() {
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
         frozenDays: {},                  // jours manqués sauvés par un gel de série
         selfLevel: null,                 // niveau annoncé à l'accueil : 'beginner', 'average' ou 'expert'
-        welcomeGift: false               // cadeau de bienvenue déjà donné
+        welcomeGift: false,              // cadeau de bienvenue déjà donné
+        reports: []                      // questions signalées : [{ id, theme, q, expected, typed, reason, comment, day }]
     };
 }
 
@@ -282,6 +283,7 @@ function normalizeData(data) {
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
+    if (!Array.isArray(data.reports)) data.reports = [];
 
     if (Object.keys(data.badges).length > 0 && Object.keys(data.claimedBadges).length === 0) {
         for (const b in data.badges) data.claimedBadges[b] = true;
@@ -1039,6 +1041,8 @@ function renderProfile() {
 
     $('profileTitle').textContent = `🎖️ ${current.name}`;
     renderSoundBtn();
+    $('reportsBtn').hidden = data.reports.length === 0;
+    $('reportsBtn').textContent = `🚩 Mes signalements (${data.reports.length})`;
     $('profileXp').textContent = `${data.xp} XP`;
     if (next) {
         const span = next.xp - current.xp;
@@ -1939,10 +1943,12 @@ function verify(skipped = false) {
     if (!skipped) {
         if (!input.value.trim()) { shake(input); return; }
         verdict = judge(input.value, state.current.q.a, state.current.q.q);
+        state.lastTyped = input.value.trim();
     }
 
     state.phase = 'feedback';
     state.verdict = verdict;
+    if (skipped) state.lastTyped = '';
 
     const ok = verdict !== 'wrong';
     input.readOnly = true;
@@ -2440,6 +2446,79 @@ function nextOrderRound() {
     else showOrderRound();
 }
 
+/* ---------- Signaler une question ---------- */
+
+const REPORT_REASONS = [
+    'Ma réponse aurait dû être acceptée',
+    'La question est ambiguë',
+    'La réponse attendue est fausse',
+    'Trop facile ou trop dure pour ce niveau',
+    'Faute ou autre problème'
+];
+let reportReason = null;
+
+function openReportModal() {
+    const q = state.current?.q;
+    if (!q) return;
+    reportReason = null;
+    $('reportComment').value = '';
+    renderReportReasons();
+    $('reportModal').hidden = false;
+}
+
+function renderReportReasons() {
+    const box = $('reportReasons');
+    box.replaceChildren();
+    REPORT_REASONS.forEach(reason => {
+        const btn = el('button', `report-reason${reportReason === reason ? ' is-selected' : ''}`);
+        btn.type = 'button';
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', String(reportReason === reason));
+        btn.textContent = reason;
+        btn.addEventListener('click', () => { reportReason = reason; renderReportReasons(); });
+        box.append(btn);
+    });
+    $('reportSendBtn').disabled = !reportReason;
+}
+
+function sendReport() {
+    const q = state.current?.q;
+    if (!q || !reportReason) return;
+    state.data.reports.push({
+        id: q.id,
+        theme: q.theme,
+        q: q.q,
+        expected: q.a[0],
+        typed: state.lastTyped || '',
+        reason: reportReason,
+        comment: $('reportComment').value.trim(),
+        day: todayKey()
+    });
+    saveData();
+    $('reportModal').hidden = true;
+    showToast('🚩 Merci ! Question signalée (liste dans ton profil).');
+}
+
+/** Le texte à copier : une fiche par question signalée. */
+function reportsText() {
+    const list = state.data.reports;
+    const lines = [`Kultivo — ${plural(list.length, 'signalement', 'signalements')}`];
+    list.forEach((r, i) => {
+        lines.push('');
+        lines.push(`${i + 1}) Question n° ${r.id} (${r.theme}) — ${r.reason}`);
+        lines.push(`Q : ${r.q}`);
+        lines.push(`Réponse attendue : ${r.expected}`);
+        if (r.typed) lines.push(`Ma réponse : ${r.typed}`);
+        if (r.comment) lines.push(`Commentaire : ${r.comment}`);
+    });
+    return lines.join('\n');
+}
+
+function openReportsModal() {
+    $('reportsText').textContent = reportsText();
+    $('reportsModal').hidden = false;
+}
+
 /* ---------- Accueil du premier lancement ---------- */
 
 const ONBOARD_STEPS = 4;
@@ -2862,6 +2941,23 @@ function bindEvents() {
 
     $('orderBtn').addEventListener('click', orderButton);
 
+    $('reportBtn').addEventListener('click', openReportModal);
+    $('closeReportBtn').addEventListener('click', () => { $('reportModal').hidden = true; });
+    $('reportSendBtn').addEventListener('click', sendReport);
+    $('reportsBtn').addEventListener('click', openReportsModal);
+    $('closeReportsBtn').addEventListener('click', () => { $('reportsModal').hidden = true; });
+    $('copyReportsBtn').addEventListener('click', () => copyText(reportsText(), $('copyReportsBtn')));
+    $('clearReportsBtn').addEventListener('click', () => {
+        if (!confirm('Effacer tous tes signalements ?')) return;
+        state.data.reports = [];
+        saveData();
+        $('reportsModal').hidden = true;
+        renderProfile();
+    });
+    ['reportModal', 'reportsModal'].forEach(id => {
+        $(id).addEventListener('click', e => { if (e.target === $(id)) $(id).hidden = true; });
+    });
+
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
         closeQuitModal();
@@ -2902,6 +2998,12 @@ function bindEvents() {
         if (e.key === 'Escape' && !$('streakModal').hidden) {
             $('streakModal').hidden = true;
             return;
+        }
+        for (const id of ['reportModal', 'reportsModal']) {
+            if (!$(id).hidden) {
+                if (e.key === 'Escape') $(id).hidden = true;
+                return;   // fenêtre ouverte : Entrée ne doit pas valider la question derrière
+            }
         }
         if (!$('quitModal').hidden) {
             if (e.key === 'Escape') closeQuitModal();
