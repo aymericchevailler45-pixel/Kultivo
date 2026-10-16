@@ -253,7 +253,9 @@ function defaultData() {
         claimedBadges: {},
         claimedGoals: {},
         placement: null,                 // test de placement fait : { day, start }
-        placementOffered: false          // popup de bienvenue déjà montrée
+        placementOffered: false,         // popup de bienvenue déjà montrée
+        pairStats: {},                   // niveaux Paires : « famille:élément » -> { miss, streak, last }
+        sound: true                      // sons et vibrations
     };
 }
 
@@ -261,7 +263,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats']) data[key] = data[key] || {};
 
     if (Object.keys(data.badges).length > 0 && Object.keys(data.claimedBadges).length === 0) {
         for (const b in data.badges) data.claimedBadges[b] = true;
@@ -916,6 +918,7 @@ function renderProfile() {
     const { current, next } = titleFor(data.xp);
 
     $('profileTitle').textContent = `🎖️ ${current.name}`;
+    renderSoundBtn();
     $('profileXp').textContent = `${data.xp} XP`;
     if (next) {
         const span = next.xp - current.xp;
@@ -1446,7 +1449,10 @@ const pairTarget = level => 1 + 3.5 * level / MAX_LEVEL;
 function buildPairGrids(level) {
     const t = pairTarget(level);
     const nearCount = f => f.pairs.filter(p => Math.abs(p[2] - t) <= 1.2).length;
-    const eligible = shuffle(PAIR_FAMILIES.filter(f => nearCount(f) >= PAIRS_PER_GRID));
+    // Tirage pondéré : une famille avec des paires ratées a plus de chances de sortir
+    const missedIn = f => f.pairs.filter(pr => pairMiss(pairKey(f, pr[0])) > 0).length;
+    const adapted = PAIR_FAMILIES.filter(f => nearCount(f) >= PAIRS_PER_GRID);
+    const eligible = weightedPick(adapted, f => 1 + missedIn(f), adapted.length);
     const families = [];
     for (const f of eligible) {
         if (families.length < PAIRS_GRIDS && !families.some(g => g.theme === f.theme)) families.push(f);
@@ -1456,13 +1462,40 @@ function buildPairGrids(level) {
     for (const f of [...eligible, ...fallback]) {
         if (families.length < PAIRS_GRIDS && !families.includes(f)) families.push(f);
     }
-    return families.map(family => ({ family, pairs: pickPairs(family, t), matched: new Set(), order: null }));
+    return families.map(family => ({ family, pairs: pickPairs(family, t), matched: new Set(), failed: new Set(), order: null }));
 }
 
-/** 5 paires proches de la difficulté visée (avec un peu de hasard), jamais deux fois le même élément. */
+/* Statistiques des paires (même principe que les questions : révisions et répétition espacée) */
+const pairKey = (family, left) => `${family.id}:${left}`;
+const pairMiss = key => state.data.pairStats[key]?.miss || 0;
+
+function pairIsDue(key) {
+    const s = state.data.pairStats[key];
+    if (!s || !s.streak || !s.last) return true;
+    const days = REVIEW_DAYS[Math.min(s.streak, REVIEW_DAYS.length - 1)];
+    return Date.now() - s.last >= days * 86400000;
+}
+
+function recordPair(key, ok) {
+    const entry = state.data.pairStats[key] || { miss: 0 };
+    entry.miss = ok ? Math.max(0, entry.miss - 1) : entry.miss + 1;
+    entry.streak = ok ? (entry.streak || 0) + 1 : 0;
+    entry.last = Date.now();
+    state.data.pairStats[key] = entry;
+    saveData();
+}
+
+/** 5 paires proches de la difficulté visée (avec un peu de hasard), jamais deux fois le même élément.
+    Une paire ratée passe devant (si elle n'est pas beaucoup plus dure), une paire bien sue passe derrière. */
 function pickPairs(family, t) {
     const sorted = family.pairs
-        .map(p => ({ p, key: Math.abs(p[2] - t) + Math.random() * 0.6 }))
+        .map(p => {
+            const key = pairKey(family, p[0]);
+            let score = Math.abs(p[2] - t) + Math.random() * 0.6;
+            if (pairMiss(key) > 0 && p[2] <= t + 1.2) score -= 1.5;
+            else if (!pairIsDue(key)) score += 0.8;
+            return { p, key: score };
+        })
         .sort((a, b) => a.key - b.key)
         .map(x => x.p);
     const picked = [];
@@ -1470,7 +1503,7 @@ function pickPairs(family, t) {
     const rights = new Set();
     for (const [left, right] of sorted) {
         if (lefts.has(left) || rights.has(right)) continue;
-        picked.push({ left, right });
+        picked.push({ left, right, key: pairKey(family, left) });
         lefts.add(left);
         rights.add(right);
         if (picked.length === PAIRS_PER_GRID) break;
@@ -1529,9 +1562,12 @@ function pickPair(btn) {
     const stillHere = () => state.startedAt === session && !$('studyScreen').hidden;
 
     if (sel.dataset.idx === btn.dataset.idx) {
-        grid.matched.add(Number(btn.dataset.idx));
+        const i = Number(btn.dataset.idx);
+        grid.matched.add(i);
+        if (!grid.failed.has(i)) recordPair(grid.pairs[i].key, true);   // réussie sans erreur avant
         state.done++;
         addXp(XP_PAIR);
+        playSound(grid.matched.size === grid.pairs.length ? 'good' : 'pair');
         [sel, btn].forEach(b => { b.classList.add('is-ok'); b.disabled = true; });
         setTimeout(() => [sel, btn].forEach(b => { b.classList.remove('is-ok'); b.classList.add('is-matched'); }), 450);
         updateProgress();
@@ -1541,10 +1577,16 @@ function pickPair(btn) {
         }
     } else {
         state.errors++;
+        playSound('bad');
+        // Les deux paires concernées comptent comme ratées (une seule fois par grille)
+        for (const b of [sel, btn]) {
+            const i = Number(b.dataset.idx);
+            if (!grid.failed.has(i)) { grid.failed.add(i); recordPair(grid.pairs[i].key, false); }
+        }
         [sel, btn].forEach(b => { b.classList.remove('is-wrong'); void b.offsetWidth; b.classList.add('is-wrong'); });
         setTimeout(() => [sel, btn].forEach(b => b.classList.remove('is-wrong')), 500);
         state.hearts--;
-        renderHearts();
+        renderHearts({ lost: true });
         if (state.hearts <= 0) {
             state.phase = 'idle';
             setTimeout(() => { if (stillHere()) endSession(false); }, 600);
@@ -1642,10 +1684,26 @@ function tickTimer() {
 
 /* ---------- Déroulé d'une leçon ---------- */
 
-function renderHearts() {
+/** Les cœurs en haut de la leçon.
+    risk : le prochain cœur à perdre clignote (réponse fausse, avant « Continuer »).
+    lost : le cœur qu'on vient de perdre se brise et la rangée tremble. */
+function renderHearts({ risk = false, lost = false } = {}) {
+    const box = $('hearts');
     const left = Math.max(0, state.hearts);
-    $('hearts').textContent = '❤️'.repeat(left) + '🤍'.repeat(state.heartsMax - left);
-    $('hearts').setAttribute('aria-label', `${left} cœur(s) restant(s)`);
+    box.replaceChildren();
+    for (let i = 0; i < state.heartsMax; i++) {
+        const heart = el('span', 'heart');
+        heart.textContent = i < left ? '❤️' : '🤍';
+        if (risk && i === left - 1) heart.classList.add('is-risk');
+        if (lost && i === left) heart.classList.add('is-lost');
+        box.append(heart);
+    }
+    if (lost) {
+        box.classList.remove('shake');
+        void box.offsetWidth;   // relance l'animation
+        box.classList.add('shake');
+    }
+    box.setAttribute('aria-label', `${left} cœur(s) restant(s)`);
 }
 
 function updateProgress() {
@@ -1725,6 +1783,7 @@ function verify(skipped = false) {
     $('answerActions').hidden = true;
     $('hintPanel').hidden = true;
     showFeedback(verdict, skipped);
+    playSound(ok ? 'good' : 'bad');
 }
 
 function showFeedback(verdict, skipped) {
@@ -1742,6 +1801,17 @@ function showFeedback(verdict, skipped) {
                               'Pas tout à fait';
     $('feedbackAnswer').textContent = `Réponse : ${q.a[0]}`;
     $('explanationText').textContent = q.exp;
+
+    // Niveau ou défi : on annonce le cœur perdu dès le bandeau rouge (il part au clic sur « Continuer »)
+    const losesHeart = !ok && (state.mode === 'level' || state.mode === 'challenge');
+    const heartLine = $('feedbackHeart');
+    heartLine.hidden = !losesHeart;
+    if (losesHeart) {
+        heartLine.textContent = state.hearts > 1
+            ? `💔 −1 cœur : il t’en restera ${state.hearts - 1}`
+            : '💔 C’était ton dernier cœur !';
+        renderHearts({ risk: true });
+    }
 
     const cont = $('continueBtn');
     cont.classList.toggle('btn-green', ok);
@@ -1799,13 +1869,14 @@ function commit(ok) {
         if (firstTry && !assisted) recordResult(id, true);
         addXp(firstTry && !forced && !assisted ? XP_FIRST_TRY : XP_RETRY);
         state.done++;
+        if (forced) renderHearts();   // « J'avais juste » : le cœur n'est plus menacé, il arrête de clignoter
     } else {
         state.failedIds.add(id);
         recordResult(id, false);
         state.errors++;
         if (mode === 'level' || mode === 'challenge') {
             state.hearts--;
-            renderHearts();
+            renderHearts({ lost: true });
             if (state.hearts <= 0) {
                 hideFeedback();
                 state.queue.push(item);   // si on continue avec un cœur de secours, la carte reviendra
@@ -1892,6 +1963,7 @@ function endSession(win) {
     const challenge = mode === 'challenge';
 
     if (!win) {
+        playSound('lose');
         setEnd({
             emoji: '💔',
             title: challenge ? 'Défi raté' : 'Niveau raté',
@@ -1910,6 +1982,7 @@ function endSession(win) {
 
     $('progressBar').style.width = '100%';
     bumpStreak();
+    let celebrate = mode !== 'review';   // confettis (pas pour une simple révision)
 
     if (mode === 'review') {
         state.data.totals.reviews++;
@@ -1941,6 +2014,7 @@ function endSession(win) {
     } else if (mode === 'placement') {
         const start = state.placeStep * CHALLENGE_EVERY + 1;
         applyPlacement(start);
+        celebrate = start > 1;
         setEnd({
             emoji: start > 1 ? '🧭' : '🌱',
             title: 'Test terminé',
@@ -1953,6 +2027,7 @@ function endSession(win) {
     } else if (mode === 'sprint') {
         const record = state.correct > state.data.best.sprint;
         if (record) state.data.best.sprint = state.correct;
+        celebrate = record;
         state.data.best.lastSprint = state.correct;
         state.data.best.lastSprintRecord = record;
         setEnd({
@@ -1990,9 +2065,104 @@ function endSession(win) {
         });
     }
 
+    playSound('win');
+    if (celebrate) launchConfetti();
     saveData();
     renderHeader();
     checkBadges();
+}
+
+/* ---------- Sons, vibrations et confettis ---------- */
+
+/* Sons fabriqués par le navigateur (pas de fichier audio à charger).
+   Chaque note : [fréquence, début (s), durée (s), forme d'onde, fréquence de fin]. */
+const SOUNDS = {
+    good: [[660, 0, 0.09], [880, 0.09, 0.18]],
+    pair: [[740, 0, 0.1]],
+    bad:  [[220, 0, 0.2, 'square', 150]],
+    win:  [[523, 0, 0.12], [659, 0.12, 0.12], [784, 0.24, 0.12], [1047, 0.36, 0.35]],
+    lose: [[392, 0, 0.18, 'triangle'], [330, 0.18, 0.18, 'triangle'], [262, 0.36, 0.4, 'triangle']]
+};
+let audioCtx = null;
+
+function playSound(name) {
+    if (!state.data.sound) return;
+    if (name === 'bad' && navigator.vibrate) navigator.vibrate(70);   // petite vibration sur Android
+    try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        for (const [freq, start, dur, type = 'sine', endFreq] of SOUNDS[name]) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now + start);
+            if (endFreq) osc.frequency.exponentialRampToValueAtTime(endFreq, now + start + dur);
+            const volume = type === 'square' ? 0.05 : 0.16;   // le son « carré » est plus agressif
+            gain.gain.setValueAtTime(0.0001, now + start);
+            gain.gain.exponentialRampToValueAtTime(volume, now + start + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(now + start);
+            osc.stop(now + start + dur + 0.02);
+        }
+    } catch (err) {
+        /* pas de son disponible : on continue sans */
+    }
+}
+
+function renderSoundBtn() {
+    $('soundBtn').textContent = state.data.sound ? '🔊 Sons et vibrations : activés' : '🔇 Sons et vibrations : coupés';
+    $('soundBtn').setAttribute('aria-pressed', String(state.data.sound));
+}
+
+/** Pluie de confettis (pas de confettis si l'appareil demande moins d'animations). */
+function launchConfetti() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const canvas = el('canvas', 'confetti');
+    document.body.append(canvas);
+    const ctx = canvas.getContext('2d');
+    const ratio = window.devicePixelRatio || 1;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    canvas.width = W * ratio;
+    canvas.height = H * ratio;
+    ctx.scale(ratio, ratio);
+
+    const colors = ['#58cc02', '#ffc800', '#8b5cf6', '#1899d6', '#ff9600', '#e5484d'];
+    const bits = Array.from({ length: 140 }, () => ({
+        x: W / 2 + (Math.random() - 0.5) * W * 0.3,
+        y: H * 0.35,
+        vx: (Math.random() - 0.5) * 13,
+        vy: -Math.random() * 13 - 4,
+        size: 6 + Math.random() * 6,
+        rot: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.3,
+        color: colors[Math.floor(Math.random() * colors.length)]
+    }));
+    const DURATION = 2600;
+    const startedAt = performance.now();
+    function frame(now) {
+        const elapsed = now - startedAt;
+        ctx.clearRect(0, 0, W, H);
+        ctx.globalAlpha = Math.max(0, 1 - elapsed / DURATION);
+        for (const b of bits) {
+            b.vy += 0.35;
+            b.vx *= 0.99;
+            b.x += b.vx;
+            b.y += b.vy;
+            b.rot += b.spin;
+            ctx.save();
+            ctx.translate(b.x, b.y);
+            ctx.rotate(b.rot);
+            ctx.fillStyle = b.color;
+            ctx.fillRect(-b.size / 2, -b.size / 4, b.size, b.size / 2);
+            ctx.restore();
+        }
+        if (elapsed < DURATION) requestAnimationFrame(frame);
+        else canvas.remove();
+    }
+    requestAnimationFrame(frame);
 }
 
 /* ---------- Événements ---------- */
@@ -2028,6 +2198,13 @@ function bindEvents() {
         tab.addEventListener('click', () => setProfileTab(tab.dataset.tab));
     });
     setProfileTab('badges');
+
+    $('soundBtn').addEventListener('click', () => {
+        state.data.sound = !state.data.sound;
+        saveData();
+        renderSoundBtn();
+        playSound('pair');   // petit son pour confirmer que c'est réactivé
+    });
 
     // Téléphone : quand le clavier s'ouvre, on garde la question ET les boutons à l'écran
     if (window.visualViewport) window.visualViewport.addEventListener('resize', keepAnswerVisible);

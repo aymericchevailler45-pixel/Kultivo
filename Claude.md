@@ -29,13 +29,19 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Niveaux Paires (mode `pairs`) : 5, 15, 25… 95 (`PAIRS_AT`), icône 🔗, bleu sur la carte. 3 grilles de 5 paires
   de familles différentes (thèmes différents si possible), paires choisies près de la difficulté du niveau
   (`pairTarget` ≈ 1,2 → 4,3). 3 cœurs, une mauvaise association = 1 cœur, cœur de secours possible.
-  2 XP par paire. Pas encore de statistiques ni de révisions pour les paires (idée pour plus tard).
+  2 XP par paire. Statistiques par paire dans `pairStats` (clé « famille:élément de gauche ») :
+  paire ratée prioritaire, paire bien sue plus rare (`REVIEW_DAYS`), familles avec erreurs tirées plus souvent.
+  Une erreur compte pour les DEUX paires concernées (une fois par grille).
+- Sons (Web Audio, pas de fichiers : `SOUNDS`, `playSound`) + vibration sur erreur (Android) + confettis
+  (`launchConfetti`, sauf révision et si mouvement réduit). Réglage `sound` dans le profil (bouton `soundBtn`).
 - Cœurs, série de jours (avec gel de série), XP, pièces, objectif du jour (récompense à réclamer),
   défi du jour identique pour tous (tirage avec graine), sprint 60 s, badges à réclamer.
 - Boutique : indices, cœur de secours, gel de série. Popup de confirmation avant chaque niveau/défi.
 - Cœur de secours : plus utilisé automatiquement, et PAS de popup (l'utilisateur trouvait ça pénible).
   Sur l'écran « Niveau raté », bouton `endRescue` au-dessus de « Réessayer » : continuer avec un cœur du stock,
   ou en acheter un sur le moment. Sans assez de pièces : simple ligne « 💡 il te manque X 🪙 » dans le texte.
+- Perte de cœur visible : ligne « 💔 −1 cœur » dans le bandeau rouge + cœur qui clignote (`renderHearts({ risk })`),
+  puis cœur qui éclate et rangée qui tremble au clic sur Continuer (`renderHearts({ lost })`). Aussi dans les Paires.
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.
 - Téléphone (≤ 600-700 px) : barre du haut sur une ligne (logo `icons/icon-192.png` + compteurs compacts,
