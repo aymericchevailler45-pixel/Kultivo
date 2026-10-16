@@ -78,8 +78,8 @@ const isOrder = n => n % CHALLENGE_EVERY === ORDER_AT;
 const orderSize = level => level < 40 ? 4 : level < 85 ? 5 : 6;
 
 // Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
-// Limité à 4 étapes (départ au niveau 41 au mieux) pour garder du jeu à faire.
-const PLACEMENT_MAX_STEPS = 4;
+// Limité à 6 étapes (départ au niveau 61 au mieux, sur 150) pour garder du jeu à faire.
+const PLACEMENT_MAX_STEPS = 6;
 const PLACEMENT_STEPS = Math.min(PLACEMENT_MAX_STEPS, Math.floor((MAX_LEVEL - 1) / CHALLENGE_EVERY));
 const PLACEMENT_PER_STEP = 3;   // questions au plus par étape
 const PLACEMENT_PASS = 2;       // bonnes réponses pour valider une étape
