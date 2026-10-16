@@ -33,7 +33,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   paire ratée prioritaire, paire bien sue plus rare (`REVIEW_DAYS`), familles avec erreurs tirées plus souvent.
   Une erreur compte pour les DEUX paires concernées (une fois par grille).
 - Sons (Web Audio, pas de fichiers : `SOUNDS`, `playSound`) + vibration sur erreur (Android) + confettis
-  (`launchConfetti`, sauf révision et si mouvement réduit). Réglage `sound` dans le profil (bouton `soundBtn`).
+  (`launchConfetti`, sauf révision et si mouvement réduit). Réglage `sound` dans le profil (`soundBtn`)
+  et petite icône 🔊/🔇 dans la barre des leçons (`lessonSoundBtn`), pas de menu Paramètres (pas la place).
+- Grilles de paires : une seule grille CSS (`#pairsGrid`), cases placées ligne par ligne → même hauteur à gauche et à droite.
+- Balayage gauche/droite sur téléphone pour passer d'un onglet à l'autre (pas depuis les bords : geste retour).
 - Cœurs, série de jours (avec gel de série), XP, pièces, objectif du jour (récompense à réclamer),
   défi du jour identique pour tous (tirage avec graine), sprint 60 s, badges à réclamer.
 - Boutique : indices, cœur de secours, gel de série. Popup de confirmation avant chaque niveau/défi.

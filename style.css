@@ -399,6 +399,15 @@ body.has-feedback .lesson { padding-bottom: 17rem; }
 
 .hearts { flex: none; min-width: 3.6rem; font-size: 1.15rem; letter-spacing: 2px; text-align: right; }
 .hearts.shake { animation: shake 0.35s; }
+/* Changement d'onglet par balayage : la page glisse depuis le côté */
+main { overflow-x: clip; }
+.slide-from-right { animation: slideFromRight 0.25s ease-out; }
+.slide-from-left  { animation: slideFromLeft 0.25s ease-out; }
+@keyframes slideFromRight { from { transform: translateX(48px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+@keyframes slideFromLeft  { from { transform: translateX(-48px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+
+/* Petit bouton son dans la barre de la leçon */
+.sound-mini { width: 36px; height: 36px; font-size: 1.1rem; }
 .heart { display: inline-block; }
 /* Le cœur qui va être perdu clignote */
 .heart.is-risk { animation: heartRisk 0.5s ease-in-out infinite alternate; }
@@ -469,10 +478,9 @@ body.has-feedback .lesson { padding-bottom: 17rem; }
 }
 .tag-pairs { background: rgba(24, 153, 214, 0.14); border-color: transparent; color: var(--blue-ink); }
 .pairs-help { margin: -12px 0 0; color: var(--muted); font-weight: 700; }
-/* Deux colonnes bien séparées : titre au-dessus, trait pointillé et ↔ au milieu */
+/* Deux colonnes bien séparées : titre au-dessus, trait pointillé et ↔ au milieu.
+   Une seule grille : les cases d'une même ligne ont la même hauteur. */
 .pairs-grid { display: grid; grid-template-columns: 1fr 44px 1fr; gap: 10px; align-items: stretch; }
-.pairs-col  { display: flex; flex-direction: column; gap: 10px; }
-.pairs-list { display: flex; flex-direction: column; gap: 10px; }
 .pairs-head {
     margin: 0;
     color: var(--muted);
@@ -482,12 +490,11 @@ body.has-feedback .lesson { padding-bottom: 17rem; }
     text-align: center;
     text-transform: uppercase;
 }
-/* La pastille ↔ est centrée à mi-hauteur des cases (le padding compense les titres de colonnes) */
+/* La pastille ↔ est centrée à mi-hauteur des cases */
 .pairs-sep {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-top: 30px;
     background: repeating-linear-gradient(to bottom, var(--line) 0 6px, transparent 6px 12px) center / 2px 100% no-repeat;
 }
 .pairs-sep span {

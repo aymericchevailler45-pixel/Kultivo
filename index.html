@@ -179,6 +179,7 @@
                     <div class="progress-fill" id="progressBar"></div>
                 </div>
                 <div class="hearts" id="hearts"></div>
+                <button type="button" id="lessonSoundBtn" class="icon-btn sound-mini" aria-label="Couper le son">🔊</button>
                 <div class="timer" id="timer" hidden></div>
             </div>
 
@@ -218,16 +219,12 @@
                 </div>
                 <h2 class="question" id="pairsTitle"></h2>
                 <p class="pairs-help">Touche une case à gauche, puis la case qui va avec à droite.</p>
-                <div class="pairs-grid">
-                    <div class="pairs-col">
-                        <p class="pairs-head" id="pairsLeftHead"></p>
-                        <div class="pairs-list" id="pairsLeft"></div>
-                    </div>
-                    <div class="pairs-sep" aria-hidden="true"><span>↔</span></div>
-                    <div class="pairs-col">
-                        <p class="pairs-head" id="pairsRightHead"></p>
-                        <div class="pairs-list" id="pairsRight"></div>
-                    </div>
+                <!-- Une seule grille : chaque ligne a la même hauteur à gauche et à droite -->
+                <div class="pairs-grid" id="pairsGrid">
+                    <p class="pairs-head" id="pairsLeftHead"></p>
+                    <span aria-hidden="true"></span>
+                    <p class="pairs-head" id="pairsRightHead"></p>
+                    <div class="pairs-sep" id="pairsSep" aria-hidden="true"><span>↔</span></div>
                 </div>
             </div>
 

@@ -1541,8 +1541,20 @@ function showPairsGrid() {
         b.addEventListener('click', () => pickPair(b));
         return b;
     };
-    $('pairsLeft').replaceChildren(...grid.order.left.map(i => make('left', i, grid.pairs[i].left)));
-    $('pairsRight').replaceChildren(...grid.order.right.map(i => make('right', i, grid.pairs[i].right)));
+    // Chaque case est placée à sa ligne : les deux cases d'une même ligne ont toujours la même hauteur
+    const box = $('pairsGrid');
+    box.querySelectorAll('.pair-btn').forEach(b => b.remove());
+    grid.order.left.forEach((i, row) => {
+        const b = make('left', i, grid.pairs[i].left);
+        b.style.gridArea = `${row + 2} / 1`;
+        box.append(b);
+    });
+    grid.order.right.forEach((i, row) => {
+        const b = make('right', i, grid.pairs[i].right);
+        b.style.gridArea = `${row + 2} / 3`;
+        box.append(b);
+    });
+    $('pairsSep').style.gridArea = `2 / 2 / span ${grid.pairs.length} / 3`;
     updateProgress();
 }
 
@@ -2112,8 +2124,18 @@ function playSound(name) {
 }
 
 function renderSoundBtn() {
-    $('soundBtn').textContent = state.data.sound ? '🔊 Sons et vibrations : activés' : '🔇 Sons et vibrations : coupés';
-    $('soundBtn').setAttribute('aria-pressed', String(state.data.sound));
+    const on = state.data.sound;
+    $('soundBtn').textContent = on ? '🔊 Sons et vibrations : activés' : '🔇 Sons et vibrations : coupés';
+    $('soundBtn').setAttribute('aria-pressed', String(on));
+    $('lessonSoundBtn').textContent = on ? '🔊' : '🔇';
+    $('lessonSoundBtn').setAttribute('aria-label', on ? 'Couper le son' : 'Remettre le son');
+}
+
+function toggleSound() {
+    state.data.sound = !state.data.sound;
+    saveData();
+    renderSoundBtn();
+    playSound('pair');   // petit son pour confirmer que c'est réactivé
 }
 
 /** Pluie de confettis (pas de confettis si l'appareil demande moins d'animations). */
@@ -2199,12 +2221,39 @@ function bindEvents() {
     });
     setProfileTab('badges');
 
-    $('soundBtn').addEventListener('click', () => {
-        state.data.sound = !state.data.sound;
-        saveData();
-        renderSoundBtn();
-        playSound('pair');   // petit son pour confirmer que c'est réactivé
-    });
+    $('soundBtn').addEventListener('click', toggleSound);
+    $('lessonSoundBtn').addEventListener('click', toggleSound);
+    renderSoundBtn();
+
+    // Téléphone : balayer l'écran vers la gauche ou la droite pour changer d'onglet
+    let swipe = null;
+    document.addEventListener('touchstart', e => {
+        swipe = null;
+        const screen = MAIN_SCREENS.find(name => !$(`${name}Screen`).hidden);
+        if (!screen || e.touches.length !== 1) return;
+        if (!$('startModal').hidden || !$('quitModal').hidden) return;
+        if (e.target.closest('input, textarea')) return;
+        const t = e.touches[0];
+        if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone
+        swipe = { x: t.clientX, y: t.clientY, time: Date.now(), screen };
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+        if (!swipe) return;
+        const { x, y, time, screen } = swipe;
+        swipe = null;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - x;
+        const dy = t.clientY - y;
+        // Un vrai balayage : rapide, assez long, et plus horizontal que vertical
+        if (Date.now() - time > 600 || Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+        const next = MAIN_SCREENS[MAIN_SCREENS.indexOf(screen) + (dx < 0 ? 1 : -1)];
+        if (!next) return;
+        showScreen(next);
+        const page = $(`${next}Screen`);
+        page.classList.remove('slide-from-left', 'slide-from-right');
+        void page.offsetWidth;   // relance l'animation
+        page.classList.add(dx < 0 ? 'slide-from-right' : 'slide-from-left');
+    }, { passive: true });
 
     // Téléphone : quand le clavier s'ouvre, on garde la question ET les boutons à l'écran
     if (window.visualViewport) window.visualViewport.addEventListener('resize', keepAnswerVisible);
