@@ -16,6 +16,12 @@ const REVIEW_MAX = 8;            // maximum : +1 place par tranche de 3 question
 const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs »
 const STORAGE_KEY = 'cultureG_v2';
 
+// Supabase (base de données en ligne). La clé « anon » est PUBLIQUE par conception : la sécurité vient
+// des règles de la base (les joueurs peuvent seulement AJOUTER un signalement, jamais lire les autres).
+// Ne jamais mettre ici la clé « service_role » / « secret ».
+const SUPABASE_URL = 'https://wqfqdhsvpkczaifgosel.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxZnFkaHN2cGtjemFpZmdvc2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNjE2NTUsImV4cCI6MjEwNzczNzY1NX0.EGJvwXjBlSQKP2N-xTNdebuSD33IevVYe6cE7NpOZMk';
+
 // XP gagnés
 const XP_FIRST_TRY = 4;          // avant: 10 | bonne réponse du premier coup
 const XP_RETRY = 1;              // avant: 5  | bonne réponse après une erreur
@@ -2534,6 +2540,46 @@ function sendReport() {
     saveData();
     $('reportModal').hidden = true;
     showToast('🚩 Merci ! Ton signalement nous aide à améliorer les questions.');
+    flushReports();
+}
+
+/* Envoi des signalements en attente vers Supabase (table « reports »).
+   Ils restent sur l'appareil tant que l'envoi n'a pas réussi (pas de connexion…), puis sont effacés. */
+let flushingReports = false;
+
+async function flushReports() {
+    const pending = state.data.reports;
+    if (flushingReports || !pending.length || !navigator.onLine) return;
+    flushingReports = true;
+    const batch = pending.slice(0, 50);
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/reports`, {
+            method: 'POST',
+            headers: {
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/json',
+                Prefer: 'return=minimal'
+            },
+            body: JSON.stringify(batch.map(r => ({
+                question_id: r.id,
+                theme: r.theme,
+                question: r.q,
+                expected: r.expected,
+                typed: (r.typed || '').slice(0, 290),
+                reason: r.reason,
+                comment: (r.comment || '').slice(0, 990)
+            })))
+        });
+        if (res.ok) {
+            state.data.reports = state.data.reports.filter(r => !batch.includes(r));
+            saveData();
+        }
+    } catch (err) {
+        /* pas de connexion : on réessaiera plus tard */
+    } finally {
+        flushingReports = false;
+    }
 }
 
 /* ---------- Accueil du premier lancement ---------- */
@@ -3028,6 +3074,8 @@ function bindEvents() {
 
 function init() {
     bindEvents();
+    flushReports();                                         // signalements restés en attente
+    window.addEventListener('online', flushReports);        // dès que la connexion revient
     buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
     buildDecor($('lessonDecor'), 8);
     checkBadges(true);   // badges déjà mérités : on les attribue sans notification

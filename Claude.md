@@ -61,9 +61,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Sur l'écran « Niveau raté », bouton `endRescue` au-dessus de « Réessayer » : continuer avec un cœur du stock,
   ou en acheter un sur le moment. Sans assez de pièces : simple ligne « 💡 il te manque X 🪙 » dans le texte.
 - Signalement : lien « 🚩 Signaler cette question » dans le bandeau de correction → raison + commentaire,
-  stocké dans `reports` (file d'attente sur l'appareil, invisible pour le joueur). BUT de l'utilisateur : recevoir
-  les signalements de TOUS les joueurs → envoi vers Supabase à faire plus tard (puis vider `reports` une fois envoyés).
-  Pas de liste dans le profil (retirée à sa demande).
+  stocké dans `reports` (file d'attente sur l'appareil, invisible pour le joueur), puis envoyé à Supabase par
+  `flushReports` (au lancement, après chaque signalement, au retour de la connexion) et retiré une fois envoyé.
+  Pas de liste dans le profil (retirée à sa demande). L'utilisateur lit les signalements dans Supabase :
+  Table Editor → reports.
+- Supabase (créé le 2026-10-16) : projet `kultivo`, URL https://wqfqdhsvpkczaifgosel.supabase.co, clé « anon »
+  publique dans `script.js` (SUPABASE_URL / SUPABASE_KEY). Table `reports` avec RLS : INSERT seulement pour anon
+  (pas de SELECT). JAMAIS de clé service_role dans le code. Prochaines étapes : sauvegarde en ligne, classement.
 - Perte de cœur visible : ligne « 💔 −1 cœur » dans le bandeau rouge + cœur qui clignote (`renderHearts({ risk })`),
   puis cœur qui éclate et rangée qui tremble au clic sur Continuer (`renderHearts({ lost })`). Aussi dans les Paires.
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
