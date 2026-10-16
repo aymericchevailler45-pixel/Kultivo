@@ -25,28 +25,29 @@
         <h1 class="brand"><img class="brand-logo" src="icons/icon-192.png" alt="" width="34" height="34"><span class="brand-name">Kultivo</span></h1>
 
         <nav class="nav" aria-label="Navigation principale">
-            <button type="button" class="nav-btn" data-screen="map">Parcours</button>
-            <button type="button" class="nav-btn" data-screen="challenges">Défis</button>
-            <button type="button" class="nav-btn" data-screen="shop">Boutique</button>
-            <button type="button" class="nav-btn" data-screen="profile">Profil</button>
+            <button type="button" class="nav-btn" data-screen="map"><span class="nav-icon" aria-hidden="true">🗺️</span>Parcours</button>
+            <button type="button" class="nav-btn" data-screen="challenges"><span class="nav-icon" aria-hidden="true">🏆</span>Défis</button>
+            <button type="button" class="nav-btn" data-screen="shop"><span class="nav-icon" aria-hidden="true">🛒</span>Boutique</button>
+            <button type="button" class="nav-btn" data-screen="profile"><span class="nav-icon" aria-hidden="true">👤</span>Profil</button>
         </nav>
 
         <div class="chips">
             <button type="button" id="reviewBtn" class="chip chip-review" hidden title="Réviser les questions ratées"></button>
-            <span class="chip chip-coins" title="Pièces à dépenser à la boutique">
+            <!-- Compteurs cliquables : pièces → Boutique, XP → Profil, série → calendrier -->
+            <button type="button" id="coinChip" class="chip chip-coins" title="Pièces : ouvrir la boutique">
                 <span aria-hidden="true">🪙</span>
                 <b id="coinDisplay">0</b>
                 <span class="sr-only">pièces</span>
-            </span>
-            <span class="chip chip-xp" title="Points d'expérience">
+            </button>
+            <button type="button" id="xpChip" class="chip chip-xp" title="XP : voir mon profil">
                 <span aria-hidden="true">⭐</span>
                 <b id="xpDisplay">0</b><span class="chip-unit"> XP</span>
-            </span>
-            <span class="chip chip-streak" title="Jours consécutifs d'entraînement">
+            </button>
+            <button type="button" id="streakChip" class="chip chip-streak" title="Série : voir mon calendrier">
                 <span aria-hidden="true">🔥</span>
                 <b id="streakDisplay">0</b>
                 <span class="sr-only">jour(s) de série</span>
-            </span>
+            </button>
         </div>
     </header>
 
@@ -168,6 +169,20 @@
             </div>
         </section>
 
+        <!-- PREMIER LANCEMENT : accueil en quelques écrans (niveau, objectif, test de placement) -->
+        <section id="onboardScreen" class="onboard" aria-label="Bienvenue" hidden>
+            <div class="onboard-head">
+                <button type="button" id="onboardBack" class="icon-btn" aria-label="Revenir en arrière">←</button>
+                <div class="onboard-dots" id="onboardDots" aria-hidden="true"></div>
+                <span class="onboard-spacer" aria-hidden="true"></span>
+            </div>
+            <div class="onboard-body" id="onboardBody"></div>
+            <div class="onboard-actions">
+                <button type="button" id="onboardNext" class="btn btn-green btn-full">Continuer</button>
+                <button type="button" id="onboardSkip" class="btn btn-ghost btn-full" hidden></button>
+            </div>
+        </section>
+
         <!-- ÉCRAN 5 : LEÇON -->
         <section id="studyScreen" class="lesson" hidden>
             <div class="lesson-decor" id="lessonDecor" aria-hidden="true"></div>
@@ -233,6 +248,7 @@
                 <div class="end-emoji" id="endEmoji" aria-hidden="true"></div>
                 <h2 id="endTitle"></h2>
                 <p id="endText"></p>
+                <div class="end-stats" id="endStats" hidden></div>
                 <p class="end-extra" id="endExtra"></p>
                 <div class="actions">
                     <button type="button" id="endRescue" class="btn btn-green" hidden></button>
@@ -252,6 +268,29 @@
             <div class="modal-stats" id="modalStatsText">X questions</div>
             <button type="button" id="startLevelBtn" class="btn btn-green btn-full">Commencer</button>
             <button type="button" id="modalSecondaryBtn" class="btn btn-ghost btn-full" hidden></button>
+        </div>
+    </div>
+
+    <!-- SÉRIE DE JOURS : calendrier façon Duolingo -->
+    <div id="streakModal" class="modal-overlay" hidden>
+        <div class="modal-content streak-sheet" role="dialog" aria-modal="true" aria-labelledby="streakTitle">
+            <button type="button" id="closeStreakBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="streakTitle" class="streak-title"><span aria-hidden="true">🔥</span><span id="streakBig">0</span></h2>
+            <p class="streak-unit" id="streakUnit"></p>
+            <p class="streak-info" id="streakInfo"></p>
+            <div class="streak-cal">
+                <div class="cal-head">
+                    <button type="button" id="calPrev" class="icon-btn" aria-label="Mois précédent">‹</button>
+                    <b id="calTitle"></b>
+                    <button type="button" id="calNext" class="icon-btn" aria-label="Mois suivant">›</button>
+                </div>
+                <div class="cal-grid" id="calGrid"></div>
+                <div class="cal-legend">
+                    <span><i class="cal-dot is-active"></i>Joué</span>
+                    <span><i class="cal-dot is-frozen"></i>Gel de série</span>
+                </div>
+            </div>
+            <p class="streak-stats" id="streakStats"></p>
         </div>
     </div>
 

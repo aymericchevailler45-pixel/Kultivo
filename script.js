@@ -32,11 +32,13 @@ const COIN_BADGE = 5;           // bonus : nouveau badge
 
 const DAILY_SIZE = 10;           // questions du défi du jour
 const SPRINT_SECONDS = 60;       // durée du sprint
+// Un niveau rapporte environ 50 à 70 XP : 60 ≈ 1 niveau, 150 ≈ 2-3 niveaux, 250 ≈ 4-5 niveaux
 const GOAL_CHOICES = [
-    { xp: 30,  label: 'Tranquille', reward: 5 },
-    { xp: 50,  label: 'Régulier',   reward: 10 },
-    { xp: 100, label: 'Intense',    reward: 25 }
+    { xp: 60,  label: 'Tranquille', reward: 10 },
+    { xp: 150, label: 'Régulier',   reward: 25 },
+    { xp: 250, label: 'Intense',    reward: 50 }
 ];
+const OLD_GOALS = { 30: 60, 50: 150, 100: 250 };   // anciens objectifs → nouveaux (même rythme choisi)
 
 // Titres selon l'XP total
 const TITLES = [
@@ -242,7 +244,7 @@ function defaultData() {
         unlocked: 1, done: {}, streak: 0, lastDay: null, stats: {},
         xp: 0,
         dayXp: { day: null, xp: 0 },     // XP gagnés aujourd'hui
-        goal: 50,                        // objectif quotidien en XP
+        goal: 150,                       // objectif quotidien en XP
         goalDays: {},                    // jours où l'objectif a été atteint
         totals: { right: 0, tries: 0, flawless: 0, reviews: 0, purchases: 0 },
         coins: null,                     // pièces (null = à calculer au premier chargement)
@@ -255,7 +257,12 @@ function defaultData() {
         placement: null,                 // test de placement fait : { day, start }
         placementOffered: false,         // popup de bienvenue déjà montrée
         pairStats: {},                   // niveaux Paires : « famille:élément » -> { miss, streak, last }
-        sound: true                      // sons et vibrations
+        sound: true,                     // sons et vibrations
+        onboarded: false,                // parcours d'accueil terminé
+        activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
+        frozenDays: {},                  // jours manqués sauvés par un gel de série
+        selfLevel: null,                 // niveau annoncé à l'accueil : 'beginner', 'average' ou 'expert'
+        welcomeGift: false               // cadeau de bienvenue déjà donné
     };
 }
 
@@ -263,7 +270,10 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
+    if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
+    backfillActiveDays(data);
 
     if (Object.keys(data.badges).length > 0 && Object.keys(data.claimedBadges).length === 0) {
         for (const b in data.badges) data.claimedBadges[b] = true;
@@ -412,6 +422,7 @@ function addXp(amount) {
     if (data.dayXp.day !== today) data.dayXp = { day: today, xp: 0 };
 
     const before = data.dayXp.xp;
+    data.activeDays[today] = (data.activeDays[today] || 0) + amount;
     data.xp += amount;
     data.dayXp.xp += amount;
     state.sessionXp += amount;
@@ -432,6 +443,14 @@ function titleFor(xp) {
     let idx = 0;
     TITLES.forEach((t, i) => { if (xp >= t.xp) idx = i; });
     return { current: TITLES[idx], next: TITLES[idx + 1] || null };
+}
+
+/** Pièces gagnées et objectif atteint, sous les tuiles du récap (l'XP a sa propre tuile). */
+function rewardSummary() {
+    const lines = [];
+    if (state.sessionCoins > 0) lines.push(`+${state.sessionCoins} 🪙`);
+    if (state.goalReached) lines.push('🎯 Objectif atteint ! Va dans Défis pour ta récompense.');
+    return lines.join('\n');
 }
 
 /** Texte « +45 XP » (et objectif atteint) affiché à la fin d'une leçon. */
@@ -472,12 +491,94 @@ function bumpStreak() {
     const alive = missed <= 0 || (missed !== Infinity && data.inv.freeze >= missed);
     if (alive && missed > 0) {
         data.inv.freeze -= missed;
+        for (let i = 1; i <= missed; i++) data.frozenDays[daysAgoKey(i)] = true;   // pour le calendrier
         showToast(`🧊 ${plural(missed, 'gel de série utilisé', 'gels de série utilisés')} : ta série est sauvée !`);
     }
     data.streak = alive ? data.streak + 1 : 1;
     data.lastDay = todayKey();
+    data.activeDays[data.lastDay] = data.activeDays[data.lastDay] || 0;
     data.best.streak = Math.max(data.best.streak, data.streak);
     saveData();
+}
+
+/* ---------- Calendrier de la série ---------- */
+
+function daysAgoKey(n, from = new Date()) {
+    const d = new Date(from.getFullYear(), from.getMonth(), from.getDate() - n, 12);
+    return dayKey(d);
+}
+
+/** Avant le calendrier, on ne gardait pas l'historique des jours joués : on le reconstitue
+    une fois (série en cours, jours d'objectif atteint, défis du jour). */
+function backfillActiveDays(data) {
+    if (Object.keys(data.activeDays).length > 0) return;
+    const mark = day => { if (day) data.activeDays[day] = data.activeDays[day] || 0; };
+    Object.keys(data.goalDays).forEach(mark);
+    Object.keys(data.daily).forEach(mark);
+    if (data.lastDay && data.streak > 0) {
+        const [y, m, d] = data.lastDay.split('-').map(Number);
+        const last = new Date(y, m - 1, d, 12);
+        for (let i = 0; i < data.streak; i++) mark(daysAgoKey(i, last));
+    }
+}
+
+let calMonth = null;   // premier jour du mois affiché
+
+function openStreakModal() {
+    const now = new Date();
+    calMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    renderStreakModal();
+    $('streakModal').hidden = false;
+    $('closeStreakBtn').focus();
+}
+
+function renderStreakModal() {
+    const d = state.data;
+    const streak = currentStreak();
+    const playedToday = d.lastDay === todayKey();
+    $('streakBig').textContent = streak;
+    $('streakUnit').textContent = streak > 1 ? 'jours de série' : 'jour de série';
+    $('streakInfo').textContent = playedToday
+        ? '✅ Tu as joué aujourd’hui : ta série est à l’abri !'
+        : streak > 0
+        ? '⏳ Termine une leçon aujourd’hui pour garder ta série !'
+        : '🌱 Termine une leçon pour lancer ta série !';
+    $('streakStats').textContent =
+        `🌋 Meilleure série : ${plural(Math.max(d.best.streak, streak), 'jour', 'jours')} · 🧊 Gels en stock : ${d.inv.freeze}`;
+
+    const title = calMonth.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    $('calTitle').textContent = title.charAt(0).toUpperCase() + title.slice(1);
+    const now = new Date();
+    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    $('calNext').disabled = calMonth >= thisMonth;
+    $('calPrev').disabled = (thisMonth.getFullYear() - calMonth.getFullYear()) * 12 + thisMonth.getMonth() - calMonth.getMonth() >= 12;
+
+    const grid = $('calGrid');
+    grid.replaceChildren();
+    ['L', 'M', 'M', 'J', 'V', 'S', 'D'].forEach(letter => {
+        const h = el('span', 'cal-dow');
+        h.textContent = letter;
+        grid.append(h);
+    });
+    const offset = (calMonth.getDay() + 6) % 7;   // lundi en premier
+    for (let i = 0; i < offset; i++) grid.append(el('span'));
+    const daysInMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 0).getDate();
+    const today = todayKey();
+    for (let n = 1; n <= daysInMonth; n++) {
+        const key = dayKey(new Date(calMonth.getFullYear(), calMonth.getMonth(), n));
+        const cell = el('span', 'cal-day');
+        cell.textContent = n;
+        if (key in d.activeDays) cell.classList.add('is-active');
+        else if (d.frozenDays[key]) cell.classList.add('is-frozen');
+        if (key === today) cell.classList.add('is-today');
+        if (key > today) cell.classList.add('is-future');
+        grid.append(cell);
+    }
+}
+
+function moveCalendar(delta) {
+    calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + delta, 1);
+    renderStreakModal();
 }
 
 /* ---------- Infos sur un niveau ---------- */
@@ -699,6 +800,7 @@ function showScreen(name) {
     $('shopScreen').hidden = name !== 'shop';
     $('profileScreen').hidden = name !== 'profile';
     $('studyScreen').hidden = name !== 'study';
+    $('onboardScreen').hidden = name !== 'onboard';
     $('topbar').hidden = !MAIN_SCREENS.includes(name);
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -1950,7 +2052,8 @@ function showRescueOption() {
 
 /* ---------- Fin de leçon ---------- */
 
-function setEnd({ emoji, title, text, extra = '', primary, primaryClass, onPrimary, secondary, onSecondary }) {
+function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryClass, onPrimary, secondary, onSecondary }) {
+    renderEndStats(stats);
     $('endEmoji').textContent = emoji;
     $('endRescue').hidden = true;
     state.canRescue = false;
@@ -2003,7 +2106,8 @@ function endSession(win) {
             emoji: '💪',
             title: 'Révision terminée',
             text: `${plural(state.total, 'question revue', 'questions revues')}.`,
-            extra: xpSummary(),
+            stats: [statXp(), statAccuracy(), statTime()],
+            extra: rewardSummary(),
             primary: 'Continuer',
             onPrimary: returnToMap
         });
@@ -2015,8 +2119,13 @@ function endSession(win) {
         setEnd({
             emoji: state.correct >= DAILY_SIZE ? '🎯' : '📅',
             title: 'Défi du jour terminé',
-            text: `${state.correct}/${DAILY_SIZE} en ${fmtTime(seconds)}\n${state.grid.join('')}`,
-            extra: xpSummary(),
+            text: state.grid.join(''),
+            stats: [
+                { icon: '✅', label: 'Score', value: state.correct, format: v => `${v}/${DAILY_SIZE}`, tone: 'violet' },
+                statXp(),
+                statTime()
+            ],
+            extra: rewardSummary(),
             primary: 'Copier mon résultat',
             onPrimary: () => copyText(dailyShareText(day), $('endPrimary')),
             secondary: 'Retour aux défis',
@@ -2045,9 +2154,13 @@ function endSession(win) {
         setEnd({
             emoji: record ? '🏅' : '⚡',
             title: 'Sprint terminé',
-            text: `${plural(state.correct, 'bonne réponse', 'bonnes réponses')} en ${SPRINT_SECONDS} secondes.`
-                + (record ? '\nNouveau record !' : ''),
-            extra: xpSummary(),
+            text: record ? '🎉 Nouveau record !' : `Ton record : ${plural(state.data.best.sprint, 'bonne réponse', 'bonnes réponses')}.`,
+            stats: [
+                { icon: '⚡', label: 'Bonnes', value: state.correct, format: v => String(v), tone: 'green' },
+                statXp(),
+                { icon: '🏅', label: 'Record', value: state.data.best.sprint, format: v => String(v), tone: 'violet' }
+            ],
+            extra: rewardSummary(),
             primary: 'Rejouer',
             onPrimary: () => startSession('sprint'),
             secondary: 'Retour aux défis',
@@ -2070,8 +2183,9 @@ function endSession(win) {
         setEnd({
             emoji: challenge ? '🏆' : '🎉',
             title: challenge ? 'Défi relevé !' : `Niveau ${state.level} terminé !`,
-            text: `${mode === 'pairs' ? plural(state.total, 'paire trouvée', 'paires trouvées') : plural(state.total, 'question', 'questions')}, ${plural(state.errors, 'erreur', 'erreurs')}. ${next}`,
-            extra: xpSummary(),
+            text: (state.errors === 0 ? '✨ Sans faute ! ' : '') + next,
+            stats: [statXp(), statAccuracy(), statTime()],
+            extra: rewardSummary(),
             primary: 'Continuer',
             onPrimary: returnToMap
         });
@@ -2082,6 +2196,208 @@ function endSession(win) {
     saveData();
     renderHeader();
     checkBadges();
+}
+
+/* ---------- Accueil du premier lancement ---------- */
+
+const ONBOARD_STEPS = 4;
+const ONBOARD_LEVELS = [
+    { id: 'beginner', icon: '🌱', title: 'Je débute',        sub: 'Je préfère commencer par les bases' },
+    { id: 'average',  icon: '📚', title: 'Je me débrouille', sub: 'Je connais les grands classiques' },
+    { id: 'expert',   icon: '🎓', title: 'Je suis calé',     sub: 'Je veux vite du challenge' }
+];
+// Repères pour choisir son objectif (un niveau rapporte environ 40 à 60 XP)
+const GOAL_ICONS = ['🐢', '🚶', '🔥'];
+const GOAL_HINTS = { 60: 'Environ 1 niveau par jour', 150: '2 à 3 niveaux par jour', 250: '4 à 5 niveaux par jour' };
+
+const onboard = { step: 0, level: null };
+const WELCOME_COINS = 100;    // cadeau de bienvenue, donné une seule fois à la fin de l'accueil
+const WELCOME_FREEZES = 1;
+
+/** Encadré « Cadeau de bienvenue » du dernier écran de l'accueil. */
+function welcomeGiftBox() {
+    const box = el('div', 'onboard-gift');
+    const title = el('b');
+    title.textContent = '🎁 Cadeau de bienvenue';
+    const text = el('span');
+    text.textContent = `${WELCOME_COINS} 🪙 et ${plural(WELCOME_FREEZES, 'gel de série 🧊', 'gels de série 🧊')} pour bien démarrer !`;
+    box.append(title, text);
+    return box;
+}
+
+function startOnboarding() {
+    onboard.step = 0;
+    onboard.level = null;
+    showScreen('onboard');
+    renderOnboard();
+}
+
+/** Une grande case à choisir (niveau, objectif). */
+function onboardOption({ icon, title, sub, selected, onPick }) {
+    const btn = el('button', `onboard-option${selected ? ' is-selected' : ''}`);
+    btn.type = 'button';
+    btn.setAttribute('role', 'radio');
+    btn.setAttribute('aria-checked', String(selected));
+    const ico = el('span', 'opt-icon');
+    ico.textContent = icon;
+    const text = el('span');
+    const t = el('span', 'opt-title');
+    t.textContent = title;
+    const s = el('span', 'opt-sub');
+    s.textContent = sub;
+    text.append(t, s);
+    btn.append(ico, text);
+    btn.addEventListener('click', () => { onPick(); renderOnboard(); });
+    return btn;
+}
+
+function renderOnboard() {
+    const step = onboard.step;
+    const body = $('onboardBody');
+    body.replaceChildren();
+    body.classList.remove('is-entering');
+    void body.offsetWidth;   // relance l'animation d'entrée
+    body.classList.add('is-entering');
+
+    $('onboardDots').replaceChildren(...Array.from({ length: ONBOARD_STEPS }, (_, i) =>
+        el('span', `onboard-dot${i <= step ? ' is-done' : ''}`)));
+    $('onboardBack').style.visibility = step > 0 ? 'visible' : 'hidden';
+    const next = $('onboardNext');
+    const skip = $('onboardSkip');
+    next.disabled = false;
+    skip.hidden = true;
+
+    const title = el('h2', 'onboard-title');
+    const text = el('p', 'onboard-text');
+    const big = (emoji) => { const e = el('div', 'onboard-emoji'); e.textContent = emoji; return e; };
+
+    if (step === 0) {
+        const logo = el('img', 'onboard-logo');
+        logo.src = 'icons/icon-192.png';
+        logo.alt = '';
+        title.textContent = 'Bienvenue sur Kultivo !';
+        text.textContent = 'Ta culture générale, un niveau après l’autre : questions, défis, grilles à associer… Commençons par faire connaissance.';
+        body.append(logo, title, text);
+        next.textContent = 'C’est parti';
+    } else if (step === 1) {
+        title.textContent = 'Comment juges-tu ta culture générale ?';
+        const list = el('div', 'onboard-options');
+        list.setAttribute('role', 'radiogroup');
+        ONBOARD_LEVELS.forEach(lvl => list.append(onboardOption({
+            ...lvl, selected: onboard.level === lvl.id, onPick: () => { onboard.level = lvl.id; }
+        })));
+        body.append(title, list);
+        next.textContent = 'Continuer';
+        next.disabled = !onboard.level;
+    } else if (step === 2) {
+        title.textContent = 'Quel est ton objectif quotidien ?';
+        text.textContent = 'Tu pourras le changer plus tard dans l’onglet Défis.';
+        const list = el('div', 'onboard-options');
+        list.setAttribute('role', 'radiogroup');
+        GOAL_CHOICES.forEach((choice, i) => list.append(onboardOption({
+            icon: GOAL_ICONS[i],
+            title: `${choice.label} · ${choice.xp} XP / jour`,
+            sub: `${GOAL_HINTS[choice.xp] || ''} · 🎁 ${choice.reward} 🪙`,
+            selected: state.data.goal === choice.xp,
+            onPick: () => { state.data.goal = choice.xp; saveData(); }
+        })));
+        body.append(title, text, list);
+        next.textContent = 'Continuer';
+    } else if (onboard.level === 'beginner') {
+        title.textContent = 'Parfait, on commence par les bases !';
+        text.textContent = 'Ton premier niveau t’attend. Bonne partie !';
+        body.append(big('🌱'), title, text, welcomeGiftBox());
+        next.textContent = 'Commencer le niveau 1';
+    } else {
+        title.textContent = 'Un petit test pour te placer ?';
+        text.textContent = `Des questions de plus en plus dures : chaque étape réussie te fait sauter 10 niveaux, jusqu’au niveau ${PLACEMENT_STEPS * CHALLENGE_EVERY + 1}.`;
+        body.append(big('🧭'), title, text, welcomeGiftBox());
+        next.textContent = 'Faire le test de placement';
+        skip.textContent = 'Non merci, je commence au niveau 1';
+        skip.hidden = false;
+    }
+}
+
+function onboardNext() {
+    if (onboard.step < ONBOARD_STEPS - 1) {
+        onboard.step++;
+        renderOnboard();
+        return;
+    }
+    finishOnboarding(onboard.level === 'beginner' ? 'level' : 'placement');
+}
+
+/** Fin de l'accueil : on lance directement le test de placement ou le niveau 1. */
+function finishOnboarding(start) {
+    const d = state.data;
+    d.onboarded = true;
+    d.placementOffered = true;
+    d.selfLevel = onboard.level;
+    if (!d.welcomeGift) {
+        d.welcomeGift = true;
+        d.coins += WELCOME_COINS;
+        d.inv.freeze = Math.min(5, d.inv.freeze + WELCOME_FREEZES);
+        showToast(`🎁 Cadeau de bienvenue : +${WELCOME_COINS} 🪙 et +${WELCOME_FREEZES} 🧊 !`);
+    }
+    saveData();
+    renderHeader();
+    if (start === 'placement') startSession('placement');
+    else startSession('level', 1);
+}
+
+/* ---------- Récap animé de fin de leçon ---------- */
+
+const elapsedSeconds = () => Math.round((Date.now() - state.startedAt) / 1000);
+/** « 45 s » ou « 2:05 » : assez court pour tenir dans une tuile. */
+const fmtShort = s => s < 60 ? `${s} s` : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+const statXp = () => ({ icon: '⭐', label: 'XP', value: state.sessionXp, format: v => `+${v}`, tone: 'gold' });
+const statTime = () => ({ icon: '⏱', label: 'Temps', value: elapsedSeconds(), format: fmtShort, tone: 'blue' });
+/** Précision : bonnes réponses sur le nombre total d'essais (chaque erreur ajoute un essai). */
+function statAccuracy() {
+    const attempts = state.total + state.errors;
+    const pct = attempts ? Math.round((100 * state.total) / attempts) : 100;
+    return { icon: '🎯', label: 'Précision', value: pct, format: v => `${v} %`, tone: 'green' };
+}
+
+let endStatTimers = [];
+
+/** Les tuiles apparaissent l'une après l'autre, et leur chiffre défile de 0 jusqu'au résultat. */
+function renderEndStats(stats) {
+    endStatTimers.forEach(clearTimeout);
+    endStatTimers = [];
+    const box = $('endStats');
+    box.replaceChildren();
+    box.hidden = stats.length === 0;
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    stats.forEach((stat, i) => {
+        const tile = el('div', `end-stat tone-${stat.tone}`);
+        const label = el('span', 'end-stat-label');
+        label.textContent = `${stat.icon} ${stat.label}`;
+        const value = el('b', 'end-stat-value');
+        value.textContent = stat.format(calm ? stat.value : 0);
+        tile.append(label, value);
+        box.append(tile);
+        if (calm) { tile.classList.add('is-shown'); return; }
+        endStatTimers.push(setTimeout(() => {
+            tile.classList.add('is-shown');
+            playSound('pair');
+            countUp(value, stat);
+        }, 500 + i * 550));
+    });
+}
+
+function countUp(node, stat) {
+    const start = performance.now();
+    const DURATION = 700;
+    function step(now) {
+        const k = Math.min(1, (now - start) / DURATION);
+        const eased = 1 - Math.pow(1 - k, 3);   // rapide au début, ralentit à la fin
+        node.textContent = stat.format(Math.round(stat.value * eased));
+        if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
 }
 
 /* ---------- Sons, vibrations et confettis ---------- */
@@ -2231,7 +2547,7 @@ function bindEvents() {
         swipe = null;
         const screen = MAIN_SCREENS.find(name => !$(`${name}Screen`).hidden);
         if (!screen || e.touches.length !== 1) return;
-        if (!$('startModal').hidden || !$('quitModal').hidden) return;
+        if (!$('startModal').hidden || !$('quitModal').hidden || !$('streakModal').hidden) return;
         if (e.target.closest('input, textarea')) return;
         const t = e.touches[0];
         if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone
@@ -2258,6 +2574,22 @@ function bindEvents() {
     // Téléphone : quand le clavier s'ouvre, on garde la question ET les boutons à l'écran
     if (window.visualViewport) window.visualViewport.addEventListener('resize', keepAnswerVisible);
     $('userInput').addEventListener('focus', () => setTimeout(keepAnswerVisible, 350));
+
+    $('onboardNext').addEventListener('click', onboardNext);
+    $('onboardSkip').addEventListener('click', () => finishOnboarding('level'));
+    $('onboardBack').addEventListener('click', () => {
+        if (onboard.step > 0) { onboard.step--; renderOnboard(); }
+    });
+
+    $('coinChip').addEventListener('click', () => showScreen('shop'));
+    $('xpChip').addEventListener('click', () => showScreen('profile'));
+    $('streakChip').addEventListener('click', openStreakModal);
+    $('closeStreakBtn').addEventListener('click', () => { $('streakModal').hidden = true; });
+    $('streakModal').addEventListener('click', e => {
+        if (e.target === $('streakModal')) $('streakModal').hidden = true;
+    });
+    $('calPrev').addEventListener('click', () => moveCalendar(-1));
+    $('calNext').addEventListener('click', () => moveCalendar(1));
 
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
@@ -2296,6 +2628,10 @@ function bindEvents() {
             closeStartModal();
             return;
         }
+        if (e.key === 'Escape' && !$('streakModal').hidden) {
+            $('streakModal').hidden = true;
+            return;
+        }
         if (!$('quitModal').hidden) {
             if (e.key === 'Escape') closeQuitModal();
             return;   // popup ouverte : Entrée ne doit pas valider la question derrière
@@ -2320,13 +2656,9 @@ function init() {
     renderHeader();
     showScreen('map');
 
-    // Tout premier lancement : on propose le test de placement une seule fois
+    // Tout premier lancement : parcours d'accueil (niveau, objectif, puis test de placement ou niveau 1)
     const d = state.data;
-    if (canTakePlacement() && !d.placementOffered && Object.keys(d.stats).length === 0) {
-        d.placementOffered = true;
-        saveData();
-        openPlacementModal(true);
-    }
+    if (!d.onboarded && canTakePlacement() && Object.keys(d.stats).length === 0) startOnboarding();
 }
 
 document.addEventListener('DOMContentLoaded', init);

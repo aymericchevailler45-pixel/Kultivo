@@ -152,6 +152,47 @@ body {
 }
 
 .chip-streak { color: var(--orange); }
+.chip-coins, .chip-xp, .chip-streak { cursor: pointer; }
+.chip-coins:hover, .chip-xp:hover, .chip-streak:hover { border-color: var(--muted); }
+
+/* Calendrier de la série */
+.streak-sheet { max-width: 400px; text-align: center; }
+.modal-content h2.streak-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--orange);
+    font-size: 3rem;
+    line-height: 1.1;
+}
+.modal-content p.streak-unit  { margin: 0 0 6px; color: var(--ink); font-weight: 900; }
+.modal-content p.streak-info  { margin: 0 0 14px; font-size: 0.95rem; }
+.modal-content p.streak-stats { margin: 0; font-size: 0.9rem; }
+.streak-cal { margin-bottom: 12px; padding: 12px; border: 2px solid var(--line); border-radius: 18px; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cal-head .icon-btn:disabled { opacity: 0.3; cursor: default; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-dow { padding-bottom: 4px; color: var(--muted); font-size: 0.75rem; font-weight: 900; }
+.cal-day {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+.cal-day.is-active { background: var(--orange); color: #ffffff; }
+.cal-day.is-frozen { background: #8fd3f5; color: #0b5f88; }
+.cal-day.is-today  { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--orange); color: var(--ink); }
+.cal-day.is-active.is-today { color: #ffffff; }
+.cal-day.is-future { opacity: 0.35; }
+.cal-legend { display: flex; justify-content: center; gap: 16px; margin-top: 10px; color: var(--muted); font-size: 0.8rem; font-weight: 700; }
+.cal-dot { display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 50%; vertical-align: -1px; }
+.cal-dot.is-active { background: var(--orange); }
+.cal-dot.is-frozen { background: #8fd3f5; }
 
 .chip-review {
     cursor: pointer;
@@ -795,10 +836,40 @@ main { overflow-x: clip; }
 
 .chip-xp { color: var(--gold-deep); }
 
+/* Icônes des onglets : seulement dans la barre du bas (téléphone, tablette) */
+.nav-icon { display: none; }
+
+/* Téléphone et tablette : navigation en bas de l'écran, à portée de pouce */
 @media (max-width: 900px) {
-    .topbar { grid-template-columns: 1fr auto; row-gap: 10px; }
-    .nav { grid-column: 1 / -1; order: 3; }
-    .nav-btn { flex: 1; padding-inline: 8px; }
+    /* Sans flou d'arrière-plan : il empêcherait la barre du bas de se coller à l'écran */
+    .topbar { grid-template-columns: 1fr auto; backdrop-filter: none; background: var(--bg); }
+    .nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+        gap: 4px;
+        padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+        border-top: 2px solid var(--line);
+        border-radius: 0;
+        background: var(--surface);
+    }
+    .nav-btn {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 6px 4px;
+        border-radius: 14px;
+        font-size: 0.75rem;
+    }
+    .nav-icon { display: block; font-size: 1.4rem; line-height: 1; }
+    .nav-btn.is-active { background: var(--green-tint); border-color: transparent; color: var(--green-ink); }
+    .nav-btn[data-notif]::after { top: 2px; right: calc(50% - 24px); }
+    /* De la place en bas des pages pour ne rien cacher derrière la barre */
+    main .page, main .map-screen { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* Téléphone : tout tient sur une ligne (logo + Kultivo à gauche, compteurs compacts à droite) */
@@ -1007,7 +1078,9 @@ main { overflow-x: clip; }
 /* Confettis de fin de niveau */
 .confetti { position: fixed; inset: 0; z-index: 70; width: 100%; height: 100%; pointer-events: none; }
 @media (max-width: 600px) {
-    .badge-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    /* minmax(0, 1fr) : un mot long ne peut plus élargir sa colonne */
+    .badge-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .badge-name, .badge-desc { overflow-wrap: anywhere; hyphens: auto; }
     .badge { padding: 10px 6px; gap: 2px; border-radius: 14px; }
     .badge-icon { font-size: 1.6rem; }
     .badge-name { font-size: 0.8rem; line-height: 1.2; }
@@ -1033,6 +1106,98 @@ main { overflow-x: clip; }
     font-size: 1.2rem !important;
 }
 .end-extra:empty { display: none; }
+
+/* Récap de fin de leçon : tuiles qui apparaissent l'une après l'autre */
+.end-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 440px; }
+.end-stat {
+    --tone: var(--line);
+    --tone-ink: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 0 6px 12px;
+    overflow: hidden;
+    border: 2px solid var(--tone);
+    border-radius: 18px;
+    background: var(--surface);
+    opacity: 0;
+    transform: translateY(14px) scale(0.9);
+}
+.end-stat.is-shown { animation: statIn 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) forwards; }
+.end-stat-label {
+    align-self: stretch;
+    padding: 4px 4px;
+    background: var(--tone);
+    color: var(--tone-ink);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-transform: uppercase;
+}
+.end-stat-value { font-size: 1.6rem; font-weight: 900; line-height: 1.1; }
+.tone-gold   { --tone: var(--gold);   --tone-ink: var(--on-gold); }
+.tone-green  { --tone: var(--green);  --tone-ink: var(--on-green); }
+.tone-blue   { --tone: var(--blue);   --tone-ink: #ffffff; }
+.tone-violet { --tone: var(--violet); --tone-ink: #ffffff; }
+@keyframes statIn { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .end-stat { opacity: 1; transform: none; } }
+
+/* Accueil du premier lancement */
+.onboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 560px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) var(--gutter) calc(24px + env(safe-area-inset-bottom, 0px));
+}
+.onboard-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.onboard-spacer { width: 42px; }
+.onboard-dots { display: flex; gap: 6px; }
+.onboard-dot { width: 32px; height: 8px; border-radius: 999px; background: var(--line); transition: background 0.3s; }
+.onboard-dot.is-done { background: var(--green); }
+.onboard-body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+.onboard-body.is-entering { animation: slideFromRight 0.3s ease-out; }
+.onboard-logo { align-self: center; width: 104px; height: 104px; border-radius: 28px; box-shadow: 0 6px 0 var(--green-deep); }
+.onboard-emoji { font-size: 4.5rem; line-height: 1; text-align: center; }
+.onboard-title { margin: 0; font-size: 1.7rem; font-weight: 900; line-height: 1.25; text-align: center; }
+.onboard-text { margin: 0; color: var(--muted); font-size: 1.05rem; font-weight: 700; text-align: center; }
+.onboard-options { display: flex; flex-direction: column; gap: 10px; }
+.onboard-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 2px solid var(--line);
+    border-radius: 18px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    box-shadow: 0 4px 0 var(--line);
+    cursor: pointer;
+}
+.onboard-option.is-selected { border-color: var(--blue); background: rgba(24, 153, 214, 0.1); box-shadow: 0 4px 0 var(--blue); }
+.opt-icon  { flex: none; font-size: 1.9rem; }
+.opt-title { display: block; font-weight: 900; }
+.opt-sub   { display: block; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+.onboard-actions { display: flex; flex-direction: column; gap: 8px; }
+.onboard-gift {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 16px;
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    background: rgba(255, 200, 0, 0.14);
+    text-align: center;
+}
+.onboard-gift span { color: var(--muted); font-weight: 700; }
 
 /* Notifications */
 .toasts {

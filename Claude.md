@@ -36,6 +36,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (`launchConfetti`, sauf révision et si mouvement réduit). Réglage `sound` dans le profil (`soundBtn`)
   et petite icône 🔊/🔇 dans la barre des leçons (`lessonSoundBtn`), pas de menu Paramètres (pas la place).
 - Grilles de paires : une seule grille CSS (`#pairsGrid`), cases placées ligne par ligne → même hauteur à gauche et à droite.
+- Objectifs du jour (2026-10-16, demandé par l'utilisateur) : 60 / 150 / 250 XP (≈ 1, 2-3, 4-5 niveaux),
+  récompenses 10 / 25 / 50 🪙. Anciens objectifs convertis dans `normalizeData` (`OLD_GOALS`).
+- Compteurs du haut cliquables : 🪙 → Boutique, ⭐ → Profil, 🔥 → calendrier de série (`streakModal`).
+  Jours joués dans `activeDays` (rempli par `addXp` / `bumpStreak`), gels utilisés dans `frozenDays`.
+  Historique d'avant le calendrier reconstitué une fois (`backfillActiveDays` : série, objectifs, défis du jour).
+- XP : sert aux titres, aux pièces (1 🪙 / 10 XP), à l'objectif du jour et aux badges ; servira au classement (Supabase).
+- Navigation : en haut sur ordinateur, barre fixe EN BAS avec icônes sur téléphone/tablette (≤ 900 px).
+  Le flou de la barre du haut est retiré sur mobile (sinon la barre du bas ne se colle pas à l'écran).
 - Balayage gauche/droite sur téléphone pour passer d'un onglet à l'autre (pas depuis les bords : geste retour).
 - Cœurs, série de jours (avec gel de série), XP, pièces, objectif du jour (récompense à réclamer),
   défi du jour identique pour tous (tirage avec graine), sprint 60 s, badges à réclamer.
@@ -53,8 +61,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   profil en onglets (Badges par défaut / Records / Thèmes, `setProfileTab`). Sur grand écran, rien ne change.
 - Onglet Défis : résultats dans des encadrés `.score-box` (défi du jour : score, temps, grille ;
   sprint : record + dernière partie, `best.lastSprint` / `best.lastSprintRecord`).
-- Test de placement (mode `placement`) : proposé au tout premier lancement (popup de bienvenue, une seule fois,
-  `placementOffered`) et via un bouton SOUS le niveau 1 (la carte se lit de bas en haut) tant qu'aucun niveau n'est terminé.
+- Accueil du premier lancement (écran `onboard`, façon Duolingo, `onboarded`) : bienvenue → « comment juges-tu ta
+  culture G ? » (`selfLevel`) → objectif quotidien → test de placement (ou niveau 1 direct si « Je débute »).
+  Cadeau de bienvenue à la fin : 100 🪙 + 1 🧊 (`WELCOME_COINS`, `WELCOME_FREEZES`, une seule fois : `welcomeGift`).
+- Récap de fin de leçon animé : tuiles XP / Précision / Temps (défi du jour : Score ; sprint : Bonnes / Record)
+  qui apparaissent l'une après l'autre avec chiffres qui défilent (`renderEndStats`, `countUp`).
+- Test de placement (mode `placement`) : lancé depuis l'accueil (remplace l'ancienne popup de bienvenue) et via un bouton SOUS le niveau 1 (la carte se lit de bas en haut) tant qu'aucun niveau n'est terminé.
   4 étapes au plus (`PLACEMENT_MAX_STEPS`, départ au niveau 41 max), 2 bonnes sur 3 pour passer, arrêt à la 1re étape ratée.
   Valide les niveaux sautés (`done`), enregistre `placement: { day, start }`. Pas d'XP, pas de stats,
   et les niveaux sautés ne comptent pas pour les badges.
