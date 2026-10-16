@@ -200,7 +200,7 @@ const GENERIC_WORDS = new Set([
     'traite', 'traites', 'accord', 'accords', 'bataille', 'guerre', 'festival', 'empire', 'dynastie',
     'ordonnance', 'edit', 'loi', 'echelle', 'constante', 'principe', 'paradoxe', 'theoreme',
     'couche', 'systeme', 'puce', 'attaque', 'freres', 'famille', 'palais', 'chateau', 'cathedrale',
-    'congres', 'mur', 'sauce', 'fromage', 'plat', 'jeu', 'groupe', 'film', 'album', 'opera', 'ballet'
+    'congres', 'mur', 'sauce', 'fromage', 'plat', 'jeu', 'groupe', 'film', 'album', 'opera', 'ballet', 'point', 'points'
 ]);
 
 /** La réponse sans ses mots génériques de tête, ou null s'il n'y en a pas. */
