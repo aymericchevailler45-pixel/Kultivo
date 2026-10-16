@@ -508,6 +508,18 @@ body.keyboard-open .question-rebus .emoji-img { width: 36px; height: 36px; }
 body.keyboard-open .question-photo img { max-height: 84px; border-radius: 10px; }
 body.keyboard-open .question-photo figcaption { display: none; }
 body.keyboard-open .lesson-head { margin-bottom: 6px; }
+
+/* Barre du haut des leçons plus fine sur téléphone, et encore plus avec le clavier ouvert */
+@media (max-width: 600px) {
+    .lesson-head { gap: 8px; padding-top: calc(4px + env(safe-area-inset-top, 0px)); padding-bottom: 4px; }
+    .lesson-head .icon-btn { width: 34px; height: 34px; font-size: 1.1rem; }
+    .lesson-head .progress { height: 12px; }
+    .hearts { font-size: 1rem; min-width: 3rem; }
+}
+body.keyboard-open .lesson-head { gap: 6px; padding-top: calc(2px + env(safe-area-inset-top, 0px)); padding-bottom: 2px; }
+body.keyboard-open .lesson-head .icon-btn { width: 28px; height: 28px; font-size: 0.95rem; }
+body.keyboard-open .lesson-head .progress { height: 9px; }
+body.keyboard-open .hearts { font-size: 0.85rem; letter-spacing: 1px; min-width: 2.6rem; }
 body.keyboard-open .answer-input { padding: 10px 12px; }
 
 /* Rébus : les emojis en grand, alignés comme une phrase */
