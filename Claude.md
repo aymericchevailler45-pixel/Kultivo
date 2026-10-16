@@ -77,7 +77,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   réduites pour garder « Vérifier » visible. Photos de monuments jamais recadrées (max-height, pas object-fit: cover).
 - Chez l'utilisateur, le clavier s'ouvre automatiquement à chaque question → le mode compact est son affichage
   habituel : tailles « à mi-chemin » (ni trop grand, ni trop petit). Photo de monument : tap = plein écran
-  (`photoZoom`, avec crédit), retap = retour.
+  (`photoZoom`, avec crédit), retap = retour. Pas de boutons collés au clavier (refusé) : à la place,
+  `fitToKeyboard` mesure la place libre sous « Vérifier » et agrandit image + question (variable CSS --fit).
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.
 - Téléphone (≤ 600-700 px) : barre du haut sur une ligne (logo `icons/icon-192.png` + compteurs compacts,

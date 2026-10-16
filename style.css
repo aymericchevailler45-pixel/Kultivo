@@ -518,17 +518,15 @@ main { overflow-x: clip; }
 @media (max-width: 600px) { .question-photo img { max-height: 150px; } }
 
 /* Clavier ouvert : tout se resserre pour garder question, réponse et boutons à l'écran */
-body.keyboard-open .card-view { gap: 10px; }
-/* Clavier ouvert : la leçon occupe exactement l'écran visible, les boutons se collent au-dessus du clavier */
-body.keyboard-open .lesson { min-height: var(--vvh, 100dvh); padding-bottom: 8px; }
-body.keyboard-open .card-view { flex: 1; }
-body.keyboard-open #answerActions { margin-top: auto; }
+body.keyboard-open .card-view { gap: min(calc(10px + var(--fit, 0px) * 0.08), 20px); }
+/* Clavier ouvert : --fit = place libre entre « Vérifier » et le clavier (calculée par fitToKeyboard).
+   On s'en sert pour agrandir image et question au lieu de laisser du blanc. */
 body.keyboard-open .card-view .tag { padding: 1px 10px; font-size: 0.8rem; }   /* le thème reste visible, en petit */
-body.keyboard-open .question { font-size: 1.12rem; line-height: 1.28; }
-body.keyboard-open .question-flag .flag-img { height: 70px; }
+body.keyboard-open .question { font-size: min(calc(1.12rem + var(--fit, 0px) * 0.06), 1.45rem); line-height: 1.28; }
+body.keyboard-open .question-flag .flag-img { height: min(calc(70px + var(--fit, 0px)), 130px); }
 body.keyboard-open .question-rebus { gap: 10px; }
-body.keyboard-open .question-rebus .emoji-img { width: 46px; height: 46px; }
-body.keyboard-open .question-photo img { max-height: 100px; border-radius: 10px; }
+body.keyboard-open .question-rebus .emoji-img { width: min(calc(46px + var(--fit, 0px) * 0.4), 72px); height: min(calc(46px + var(--fit, 0px) * 0.4), 72px); }
+body.keyboard-open .question-photo img { max-height: min(calc(100px + var(--fit, 0px)), 240px); border-radius: 10px; }
 body.keyboard-open .question-photo figcaption { display: none; }
 body.keyboard-open .lesson-head { margin-bottom: 8px; }
 

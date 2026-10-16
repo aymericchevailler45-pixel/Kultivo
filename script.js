@@ -1801,6 +1801,24 @@ function updateKeyboardMode() {
     document.documentElement.style.setProperty('--vvh', `${Math.round(height)}px`);
 }
 
+/** Clavier ouvert : mesure la place libre sous « Vérifier » et la donne à l'image et à la question
+    (variable CSS --fit). On vérifie après coup que rien ne passe sous le clavier, sinon on réduit. */
+function fitToKeyboard() {
+    const root = document.documentElement.style;
+    root.setProperty('--fit', '0px');
+    const vv = window.visualViewport;
+    if (!vv || !document.body.classList.contains('keyboard-open') || $('studyScreen').hidden || state.phase !== 'answering') return;
+    const free = () => vv.height - ($('answerActions').getBoundingClientRect().bottom + window.scrollY) - 12;
+    let extra = Math.min(Math.max(0, free()), 160);
+    for (let i = 0; i < 3 && extra > 0; i++) {
+        root.setProperty('--fit', `${Math.round(extra)}px`);
+        const left = free();
+        if (left >= 0) break;
+        extra = Math.max(0, extra + left);   // ça déborde : on reprend la place en trop
+    }
+    root.setProperty('--fit', `${Math.round(extra)}px`);
+}
+
 /** Clavier ouvert sur téléphone : si toute la question tient au-dessus du clavier, on remonte en haut
     de l'écran ; sinon on fait défiler juste assez pour voir les boutons (la barre du haut reste collée). */
 function keepAnswerVisible() {
@@ -1991,6 +2009,8 @@ function showCard() {
     hideFeedback();
     updateProgress();
     input.focus();
+    // Le clavier reste souvent ouvert d'une question à l'autre : on réajuste aussi à chaque nouvelle question
+    setTimeout(() => { fitToKeyboard(); keepAnswerVisible(); }, 0);
 }
 
 function shake(node) {
@@ -2982,7 +3002,9 @@ function bindEvents() {
 
     // Téléphone : quand le clavier s'ouvre, on garde la question ET les boutons à l'écran
     // + mode compact pendant que le clavier est ouvert (images et question plus petites)
-    const onViewport = () => { updateKeyboardMode(); keepAnswerVisible(); };
+    const onViewport = () => { updateKeyboardMode(); fitToKeyboard(); keepAnswerVisible(); };
+    // Une nouvelle photo change la hauteur une fois chargée : on réajuste
+    $('questionPhotoImg').addEventListener('load', () => { fitToKeyboard(); keepAnswerVisible(); });
     if (window.visualViewport) window.visualViewport.addEventListener('resize', onViewport);
     updateKeyboardMode();   // mesure la hauteur d'écran sans clavier dès le lancement
     // Le clavier s'ouvre en animation : on réajuste plusieurs fois pendant qu'il apparaît
