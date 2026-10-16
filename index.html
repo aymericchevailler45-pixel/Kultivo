@@ -22,7 +22,7 @@
 
     <!-- BARRE DU HAUT (visible hors leçon) -->
     <header class="topbar" id="topbar">
-        <h1 class="brand">🧠 Kultivo</h1>
+        <h1 class="brand"><img class="brand-logo" src="icons/icon-192.png" alt="" width="34" height="34"> Kultivo</h1>
 
         <nav class="nav" aria-label="Navigation principale">
             <button type="button" class="nav-btn" data-screen="map">Parcours</button>
@@ -40,7 +40,7 @@
             </span>
             <span class="chip chip-xp" title="Points d'expérience">
                 <span aria-hidden="true">⭐</span>
-                <b id="xpDisplay">0</b> XP
+                <b id="xpDisplay">0</b><span class="chip-unit"> XP</span>
             </span>
             <span class="chip chip-streak" title="Jours consécutifs d'entraînement">
                 <span aria-hidden="true">🔥</span>
@@ -125,7 +125,7 @@
 
         <!-- ÉCRAN 4 : PROFIL -->
         <section id="profileScreen" class="page" aria-label="Profil" hidden>
-            <div class="page-grid profile-grid">
+            <div class="page-grid profile-grid" id="profileGrid">
                 <article class="card card-hero">
                     <div class="hero-main">
                         <h2 id="profileTitle"></h2>
@@ -143,17 +143,24 @@
                     </div>
                 </article>
 
-                <article class="card card-records">
+                <!-- Sur téléphone : un onglet à la fois, pour éviter de faire défiler toute la page -->
+                <div class="profile-tabs" role="tablist" aria-label="Sections du profil">
+                    <button type="button" class="profile-tab" data-tab="badges" role="tab">🎖️ Badges</button>
+                    <button type="button" class="profile-tab" data-tab="records" role="tab">🏅 Records</button>
+                    <button type="button" class="profile-tab" data-tab="themes" role="tab">📊 Thèmes</button>
+                </div>
+
+                <article class="card card-records" data-section="records">
                     <h2>🏅 Records</h2>
                     <ul class="records" id="recordsList"></ul>
                 </article>
 
-                <article class="card card-themes">
+                <article class="card card-themes" data-section="themes">
                     <h2>📊 Réussite par thème</h2>
                     <div id="themeBars"></div>
                 </article>
 
-                <article class="card wide">
+                <article class="card wide card-badges" data-section="badges">
                     <h2>Badges <span class="muted" id="badgeCount"></span></h2>
                     <div class="badge-grid" id="badgeGrid"></div>
                 </article>

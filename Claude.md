@@ -38,6 +38,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   ou en acheter un sur le moment. Sans assez de pièces : simple ligne « 💡 il te manque X 🪙 » dans le texte.
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.
+- Téléphone (≤ 600-700 px) : barre du haut sur une ligne (logo `icons/icon-192.png` + compteurs compacts,
+  textes « XP » / « à revoir » masqués via `.chip-unit`), décors de carte petits et discrets dans les marges,
+  leçon compacte avec barre (vies, progression) collée en haut + `keepAnswerVisible` quand le clavier s'ouvre,
+  profil en onglets (Badges par défaut / Records / Thèmes, `setProfileTab`). Sur grand écran, rien ne change.
 - Onglet Défis : résultats dans des encadrés `.score-box` (défi du jour : score, temps, grille ;
   sprint : record + dernière partie, `best.lastSprint` / `best.lastSprintRecord`).
 - Test de placement (mode `placement`) : proposé au tout premier lancement (popup de bienvenue, une seule fois,
@@ -66,7 +70,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 1. Notes `d` des anciennes questions relues le 2026-10-16 (82 corrigées, 5 reformulées : 144, 156, 713, 1215, 1304).
    À refaire seulement si l'utilisateur trouve un niveau mal dosé en jouant.
 2. Export / import (pas urgent selon l'utilisateur) de la sauvegarde (fichier JSON) pour ne pas perdre la progression.
-3. PWA : FAIT le 2026-10-16. Reste : mise en ligne sur GitHub Pages (pas encore de dépôt distant, `gh` non installé).
+3. PWA + mise en ligne : FAIT le 2026-10-16, testé et installé sur le téléphone de l'utilisateur.
+   Site : https://aymericchevailler45-pixel.github.io/Kultivo/ (dépôt github.com/aymericchevailler45-pixel/Kultivo,
+   branche `master`). Pas de domaine payant (refusé). Mise à jour = commit + `git push` (`gh` non installé).
 4. Supabase (l'utilisateur voulait "voir demain") : classement entre amis, synchronisation et sauvegarde en ligne,
    défi du jour partagé. Clé publique (anon) uniquement côté navigateur, règles RLS à configurer.
 5. Entraînement par thème.

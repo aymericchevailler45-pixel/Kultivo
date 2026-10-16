@@ -724,8 +724,11 @@ function updateNavNotifications() {
     }
     
     const profileBtn = document.querySelector('.nav-btn[data-screen="profile"]');
-    if (unclaimedBadges > 0) profileBtn.setAttribute('data-notif', unclaimedBadges);
-    else profileBtn.removeAttribute('data-notif');
+    const badgesTab = document.querySelector('.profile-tab[data-tab="badges"]');
+    for (const target of [profileBtn, badgesTab]) {
+        if (unclaimedBadges > 0) target.setAttribute('data-notif', unclaimedBadges);
+        else target.removeAttribute('data-notif');
+    }
     
     // 2. Vérifier si l'objectif du jour est en attente de récupération (pour l'onglet Défis)
     let unclaimedGoals = 0;
@@ -747,7 +750,10 @@ function renderHeader() {
     const n = missedCards().length;
     const btn = $('reviewBtn');
     btn.hidden = n === 0;
-    btn.textContent = `↻ ${n} à revoir`;
+    // « à revoir » est masqué sur petit écran pour que les compteurs tiennent sur une ligne
+    const label = el('span', 'chip-unit');
+    label.textContent = ' à revoir';
+    btn.replaceChildren(`↻ ${n}`, label);
 
     // NOUVEAU : Met à jour les pastilles rouges à chaque changement d'écran ou gain d'XP
     updateNavNotifications();
@@ -1547,6 +1553,26 @@ function nextPairGrid() {
     else showPairsGrid();
 }
 
+/** Clavier ouvert sur téléphone : si toute la question tient au-dessus du clavier, on remonte en haut
+    de l'écran ; sinon on fait défiler juste assez pour voir les boutons (la barre du haut reste collée). */
+function keepAnswerVisible() {
+    const vv = window.visualViewport;
+    if (!vv || $('studyScreen').hidden || state.phase !== 'answering') return;
+    const actionsBottom = $('answerActions').getBoundingClientRect().bottom + window.scrollY;
+    const visible = vv.height;
+    window.scrollTo(0, actionsBottom <= visible ? 0 : actionsBottom - visible + 12);
+}
+
+/** Profil sur téléphone : n'affiche qu'une section à la fois (sur grand écran, tout reste visible). */
+function setProfileTab(name) {
+    $('profileGrid').dataset.tab = name;
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+        const active = tab.dataset.tab === name;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', String(active));
+    });
+}
+
 /** Popup « Quitter ? » : le message dit ce qui sera perdu selon le mode. */
 function openQuitModal() {
     const messages = {
@@ -1993,6 +2019,15 @@ function bindEvents() {
         if (state.phase === 'over') returnToMap();   // écran de fin : rien à perdre
         else openQuitModal();
     });
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.addEventListener('click', () => setProfileTab(tab.dataset.tab));
+    });
+    setProfileTab('badges');
+
+    // Téléphone : quand le clavier s'ouvre, on garde la question ET les boutons à l'écran
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', keepAnswerVisible);
+    $('userInput').addEventListener('focus', () => setTimeout(keepAnswerVisible, 350));
+
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
         closeQuitModal();
