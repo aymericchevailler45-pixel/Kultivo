@@ -243,6 +243,23 @@
                 </div>
             </div>
 
+            <!-- Niveau Ordre : une frise à remettre dans l'ordre -->
+            <div id="orderView" class="order-view" hidden>
+                <div class="tags">
+                    <span class="tag" id="orderTag"></span>
+                    <span class="tag tag-order" id="orderStep"></span>
+                </div>
+                <h2 class="question" id="orderTitle"></h2>
+                <p class="pairs-help" id="orderHelp"></p>
+                <div class="order-board">
+                    <span class="order-end" id="orderTopLabel"></span>
+                    <ol class="order-slots" id="orderSlots"></ol>
+                    <span class="order-end" id="orderBottomLabel"></span>
+                </div>
+                <div class="order-pool" id="orderPool"></div>
+                <button type="button" id="orderBtn" class="btn btn-green">Vérifier</button>
+            </div>
+
             <!-- Fin de leçon -->
             <div id="endView" class="end" hidden>
                 <div class="end-emoji" id="endEmoji" aria-hidden="true"></div>
@@ -326,6 +343,7 @@
     <!-- L'ordre compte : les questions d'abord, puis la logique -->
     <script src="questions.js"></script>
     <script src="pairs.js"></script>
+    <script src="order.js"></script>
     <script src="levels.js"></script>
     <script src="script.js"></script>
 </body>

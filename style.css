@@ -31,6 +31,7 @@
     --violet-tint: #ece4ff;
     --violet-ink: #5230a8;
     --blue-ink: #0b5f88;                   /* bleu lisible pour du texte (niveaux Paires) */
+    --orange-ink: #a85a00;                 /* orange lisible pour du texte (niveaux Ordre) */
 
     --orange: #ff9600;
     --blue: #1899d6;
@@ -61,6 +62,7 @@
         --violet-tint: #2d2350;
         --violet-ink: #c9b6ff;
         --blue-ink: #8fd3f5;
+        --orange-ink: #ffc27a;
 
         --locked: #2a3452;
         --locked-deep: #1f2842;
@@ -574,6 +576,71 @@ main { overflow-x: clip; }
 .pair-btn.is-ok       { border-color: var(--green); background: var(--green-tint); color: var(--green-ink); box-shadow: 0 4px 0 var(--green); }
 .pair-btn.is-wrong    { border-color: var(--red); background: var(--red-tint); color: var(--red-ink); box-shadow: 0 4px 0 var(--red); animation: shake 0.3s; }
 .pair-btn.is-matched  { opacity: 0.3; box-shadow: none; cursor: default; }
+
+/* Niveau Ordre : frise verticale numérotée, cartes à toucher */
+.order-view {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
+}
+.tag-order { background: rgba(255, 150, 0, 0.16); border-color: transparent; color: var(--orange-ink); }
+.order-board { display: flex; flex-direction: column; gap: 6px; }
+.order-end { color: var(--orange-ink); font-size: 0.8rem; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
+.order-slots { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0 0 0 14px; list-style: none; border-left: 3px dashed var(--orange); }
+.order-slot { display: flex; align-items: center; gap: 10px; min-height: 52px; }
+.order-num {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    margin-left: -31px;   /* la pastille se pose sur le trait de la frise */
+    border-radius: 50%;
+    background: var(--orange);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 900;
+}
+.order-empty { flex: 1; align-self: stretch; border: 2px dashed var(--line); border-radius: 14px; }
+.order-card {
+    flex: 1;
+    min-height: 48px;
+    padding: 10px 14px;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 800;
+    line-height: 1.25;
+    text-align: left;
+    box-shadow: 0 4px 0 var(--line);
+    cursor: pointer;
+}
+.order-card:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
+.order-card.is-placed { border-color: var(--orange); box-shadow: 0 4px 0 var(--orange); }
+.order-pool { display: flex; flex-direction: column; gap: 8px; padding-top: 6px; border-top: 2px solid var(--line); }
+.order-answer { flex: 1; display: flex; flex-direction: column; padding: 8px 12px; border: 2px solid var(--tone, var(--line)); border-radius: 14px; background: var(--surface); }
+.order-value { color: var(--muted); font-size: 0.9rem; font-weight: 800; }
+.order-yours { color: var(--red-ink); font-size: 0.85rem; font-weight: 700; }
+.order-slot.is-ok    { --tone: var(--green); }
+.order-slot.is-wrong { --tone: var(--red); }
+.order-slot.is-ok .order-num    { background: var(--green); }
+.order-slot.is-wrong .order-num { background: var(--red); }
+
+/* Niveau Ordre sur la carte : losange orange */
+.node.is-order { width: 74px; height: 74px; margin: 6px; border-radius: 18px; transform: rotate(45deg); box-shadow: 4px 4px 0 var(--deep); }
+.node.is-order .node-icon { display: inline-block; transform: rotate(-45deg); }
+.node.is-order:active:not(:disabled) { transform: rotate(45deg) translate(4px, 4px); box-shadow: none; }
+.node.is-order.is-current { background: var(--orange); color: #ffffff; --deep: #c26f00; }
+.node.is-order.is-current::after { border-color: var(--orange); border-radius: 24px; }
+.node.is-order.is-locked { box-shadow: 4px 4px 0 var(--deep), inset 0 0 0 4px var(--orange); font-size: 1.8rem; }
+.stop.is-order-stop .stop-name { color: var(--orange-ink); }
 
 /* Niveau Paires sur la carte : carré arrondi, bleu (les défis sont de grands ronds violets) */
 .node.is-pairs { border-radius: 26px; }

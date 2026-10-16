@@ -17,6 +17,7 @@ const FILES = [
     './style.css',
     './questions.js',
     './pairs.js',
+    './order.js',
     './levels.js',
     './script.js',
     './manifest.json',

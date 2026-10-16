@@ -69,6 +69,14 @@ const PAIRS_PER_GRID = 5;        // paires par grille
 const XP_PAIR = 2;               // par paire trouvée
 const isPairs = n => n % CHALLENGE_EVERY === PAIRS_AT;
 
+// Niveaux Ordre (8, 18, 28…) : des frises à remettre dans l'ordre, voir order.js
+const ORDER_AT = 8;              // doit être égal à ORDER_AT de levels.js
+const ORDER_ROUNDS = 3;          // frises par niveau Ordre
+const XP_ORDER_CARD = 2;         // par carte bien placée
+const isOrder = n => n % CHALLENGE_EVERY === ORDER_AT;
+/** 4 cartes au début du parcours, 5 au milieu, 6 à la fin. */
+const orderSize = level => level < 40 ? 4 : level < 85 ? 5 : 6;
+
 // Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
 // Limité à 4 étapes (départ au niveau 41 au mieux) pour garder du jeu à faire.
 const PLACEMENT_MAX_STEPS = 4;
@@ -359,6 +367,10 @@ const state = {
     pairGrids: [],          // niveau Paires : les grilles [{ family, pairs, matched, order }]
     pairIndex: 0,           // grille en cours
     pairSel: null,          // case sélectionnée, en attente de sa paire
+    orderRounds: [],        // niveau Ordre : les frises [{ family, items, placed }]
+    orderIndex: 0,          // frise en cours
+    orderRight: 0,          // cartes bien placées (pour la précision)
+    orderTotal: 0,          // cartes placées en tout
     phase: 'idle',          // 'answering' | 'feedback' | 'over' | 'idle'
     onEndPrimary: null,
     onEndSecondary: null
@@ -607,6 +619,9 @@ function levelInfo(n) {
     if (isPairs(n)) {
         return { challenge: false, pairs: true, name: LEVEL_NAMES[n] || 'Paires à associer', count: PAIRS_GRIDS, reviews: 0, missed: 0 };
     }
+    if (isOrder(n)) {
+        return { challenge: false, order: true, name: LEVEL_NAMES[n] || 'Remets dans l’ordre', count: ORDER_ROUNDS, reviews: 0, missed: 0 };
+    }
     const cards = cardsOfLevel(n);
     return {
         challenge: false,
@@ -620,6 +635,7 @@ function levelInfo(n) {
 /** « 5 questions + 3 révisions » : la taille réelle de la leçon. */
 function questionsLabel(info) {
     if (info.pairs) return `${plural(PAIRS_GRIDS, 'grille', 'grilles')} de ${PAIRS_PER_GRID} paires`;
+    if (info.order) return `${plural(ORDER_ROUNDS, 'frise', 'frises')} à remettre dans l’ordre`;
     const base = plural(info.count, 'question', 'questions');
     return info.reviews > 0 ? `${base} + ${plural(info.reviews, 'révision', 'révisions')}` : base;
 }
@@ -876,15 +892,15 @@ function renderMap() {
         const locked = n > state.data.unlocked;
         const done = !!state.data.done[n];
 
-        const li = el('li', `stop${info.challenge ? ' is-challenge-stop' : ''}${info.pairs ? ' is-pairs-stop' : ''}`);
+        const li = el('li', `stop${info.challenge ? ' is-challenge-stop' : ''}${info.pairs ? ' is-pairs-stop' : ''}${info.order ? ' is-order-stop' : ''}`);
         li.style.setProperty('--x', info.challenge ? '0px' : `${Math.round(Math.sin(n * 1.3) * 52)}px`);
 
         const status = locked ? 'is-locked' : done ? 'is-done' : 'is-current';
-        const btn = el('button', `node ${status}${info.challenge ? ' is-challenge' : ''}${info.pairs ? ' is-pairs' : ''}`);
+        const btn = el('button', `node ${status}${info.challenge ? ' is-challenge' : ''}${info.pairs ? ' is-pairs' : ''}${info.order ? ' is-order' : ''}`);
         btn.type = 'button';
         btn.disabled = locked;
         // Défis et Paires gardent leur icône dans tous les états (même verrouillés), pour les repérer de loin
-        const icon = info.challenge ? '🏆' : info.pairs ? '🔗' : null;
+        const icon = info.challenge ? '🏆' : info.pairs ? '🔗' : info.order ? '⏳' : null;
         if (icon) {
             const span = el('span', 'node-icon');
             span.textContent = icon;
@@ -1320,12 +1336,14 @@ function openStartModal(n) {
     state.pendingMode = 'level';
     state.pendingLevel = n;
 
-    $('modalTitle').textContent = info.challenge ? `🏆 ${info.name}` : info.pairs ? `🔗 Niveau ${n}` : `Niveau ${n}`;
+    $('modalTitle').textContent = info.challenge ? `🏆 ${info.name}` : info.pairs ? `🔗 Niveau ${n}` : info.order ? `⏳ Niveau ${n}` : `Niveau ${n}`;
     const bonusCount = cardsOfLevel(n).length;
     $('modalDesc').textContent = info.challenge
         ? `Un mélange des niveaux ${n - CHALLENGE_EVERY + 1} à ${n - 1}${bonusCount ? `, plus ${plural(bonusCount, 'question bonus propre à ce défi', 'questions bonus propres à ce défi')}` : ''}. Attention, seulement ${plural(CHALLENGE_HEARTS, 'cœur', 'cœurs')} !`
         : info.pairs
         ? `Associe chaque élément de gauche à son partenaire de droite, sur ${plural(PAIRS_GRIDS, 'grille', 'grilles')} à la suite. Chaque erreur coûte un cœur.`
+        : info.order
+        ? `Range les cartes dans le bon ordre (dates, tailles, distances…), sur ${plural(ORDER_ROUNDS, 'frise', 'frises')} à la suite. Une frise fausse coûte un cœur.`
         : info.name;
     $('modalStatsText').textContent = questionsLabel(info);
 
@@ -1478,12 +1496,16 @@ function startSession(requestedMode, level = 0) {
     const mode = requestedMode !== 'level' ? requestedMode
                : isChallenge(level) ? 'challenge'
                : isPairs(level) ? 'pairs'
+               : isOrder(level) ? 'order'
                : 'level';
     const pairsMode = mode === 'pairs';
+    const orderMode = mode === 'order';
 
     let items;
     if (pairsMode) {
         items = buildPairGrids(level);   // ici, items = les grilles
+    } else if (orderMode) {
+        items = buildOrderRounds(level); // ici, items = les frises
     } else if (mode === 'daily') {
         if (state.data.daily[todayKey()]) return;   // déjà fait aujourd'hui
         items = dailyQuestions(todayKey()).map(q => ({ q, review: false }));
@@ -1505,13 +1527,17 @@ function startSession(requestedMode, level = 0) {
     }
     if (!items.length) return;
 
-    const hasHearts = mode === 'level' || mode === 'challenge' || pairsMode;
+    const hasHearts = mode === 'level' || mode === 'challenge' || pairsMode || orderMode;
     const heartsMax = mode === 'challenge' ? CHALLENGE_HEARTS : HEARTS_MAX;
     Object.assign(state, {
         mode, level,
         returnTo: mode === 'daily' || mode === 'sprint' ? 'challenges' : 'map',
-        queue: pairsMode ? [] : items,
+        queue: pairsMode || orderMode ? [] : items,
         total: pairsMode ? items.reduce((sum, g) => sum + g.pairs.length, 0) : items.length,
+        orderRounds: orderMode ? items : [],
+        orderIndex: 0,
+        orderRight: 0,
+        orderTotal: 0,
         pairGrids: pairsMode ? items : [],
         pairIndex: 0,
         pairSel: null,
@@ -1541,6 +1567,7 @@ function startSession(requestedMode, level = 0) {
     showScreen('study');
     window.scrollTo(0, 0);
     if (pairsMode) showPairsGrid();
+    else if (orderMode) showOrderRound();
     else showCard();
     if (mode === 'sprint') startTimer();
 }
@@ -1628,6 +1655,7 @@ function showPairsGrid() {
 
     $('cardView').hidden = true;
     $('endView').hidden = true;
+    $('orderView').hidden = true;
     $('pairsView').hidden = false;
     hideFeedback();
     $('pairsTag').textContent = f.theme;
@@ -1743,6 +1771,7 @@ function openQuitModal() {
         level:     'Ta progression dans ce niveau sera perdue.',
         challenge: 'Ta progression dans ce défi sera perdue.',
         pairs:     'Ta progression dans ce niveau sera perdue.',
+        order:     'Ta progression dans ce niveau sera perdue.',
         review:    'Ta session de révision sera perdue.',
         daily:     'Ton défi du jour ne sera pas enregistré. Tu pourras le recommencer.',
         sprint:    'Ce sprint ne sera pas enregistré (le chrono continue pendant ce message).',
@@ -1888,6 +1917,7 @@ function showCard() {
 
     $('answerActions').hidden = false;
     $('pairsView').hidden = true;
+    $('orderView').hidden = true;
     $('cardView').hidden = false;
     $('endView').hidden = true;
     hideFeedback();
@@ -2053,6 +2083,7 @@ function useRescueHeart() {
     renderHeader();
     renderHearts();
     if (state.mode === 'pairs') showPairsGrid();   // on reprend la grille là où on en était
+    else if (state.mode === 'order') nextOrderRound();   // la frise ratée est corrigée : on passe à la suivante
     else showCard();
     checkBadges();
 }
@@ -2096,6 +2127,7 @@ function endSession(win) {
     state.phase = 'over';
     $('cardView').hidden = true;
     $('pairsView').hidden = true;
+    $('orderView').hidden = true;
     $('endView').hidden = false;
     const mode = state.mode;
     const challenge = mode === 'challenge';
@@ -2112,7 +2144,7 @@ function endSession(win) {
             secondary: 'Retour à la carte',
             onSecondary: returnToMap
         });
-        if (mode === 'level' || mode === 'challenge' || mode === 'pairs') showRescueOption();
+        if (mode === 'level' || mode === 'challenge' || mode === 'pairs' || mode === 'order') showRescueOption();
         renderHeader();
         checkBadges();
         return;
@@ -2221,6 +2253,191 @@ function endSession(win) {
     saveData();
     renderHeader();
     checkBadges();
+}
+
+/* ---------- Niveaux Ordre ---------- */
+
+/** 3 frises de familles (et si possible de thèmes) différentes, adaptées au niveau. */
+function buildOrderRounds(level) {
+    const t = pairTarget(level);   // même difficulté visée que les niveaux Paires
+    const n = orderSize(level);
+    const nearCount = f => f.items.filter(it => Math.abs(it[3] - t) <= 1.2).length;
+    const eligible = shuffle(ORDER_FAMILIES.filter(f => nearCount(f) >= n));
+    const families = [];
+    for (const f of eligible) {
+        if (families.length < ORDER_ROUNDS && !families.some(g => g.theme === f.theme)) families.push(f);
+    }
+    const fallback = [...ORDER_FAMILIES].sort((a, b) => nearCount(b) - nearCount(a));
+    for (const f of [...eligible, ...fallback]) {
+        if (families.length < ORDER_ROUNDS && !families.includes(f)) families.push(f);
+    }
+    const progress = (level - 1) / Math.max(1, MAX_LEVEL - 1);   // 0 au début, 1 à la fin
+    return families.map(family => ({ family, items: pickOrderItems(family, t, n, progress), placed: [], checked: false }));
+}
+
+/** Cartes proches de la difficulté visée. Au début, on exige qu'elles soient bien espacées
+    dans le classement (faciles à départager) ; plus loin, elles peuvent être voisines. */
+function pickOrderItems(family, t, n, progress) {
+    const sorted = [...family.items].sort((a, b) => a[1] - b[1]);
+    const rank = new Map(sorted.map((it, i) => [it, i]));
+    const pool = family.items
+        .map(it => ({ it, key: Math.abs(it[3] - t) + Math.random() * 0.8 }))
+        .sort((a, b) => a.key - b.key)
+        .map(x => x.it)
+        .slice(0, Math.max(n + 4, Math.ceil(family.items.length * 0.7)));
+    const minGap = Math.max(1, Math.round((1 - progress) * 3));   // 3 rangs d'écart au début, 1 à la fin
+    let best = null;
+    for (let attempt = 0; attempt < 60; attempt++) {
+        const pick = shuffle(pool).slice(0, n);
+        const ranks = pick.map(it => rank.get(it)).sort((a, b) => a - b);
+        const gap = Math.min(...ranks.slice(1).map((r, i) => r - ranks[i]));
+        if (!best || gap > best.gap) best = { pick, gap };
+        if (gap >= minGap) break;
+    }
+    return best.pick.map(([label, value, shown]) => ({ label, value, shown }));
+}
+
+function showOrderRound() {
+    const round = state.orderRounds[state.orderIndex];
+    const f = round.family;
+    state.phase = 'order';
+    $('cardView').hidden = true;
+    $('pairsView').hidden = true;
+    $('endView').hidden = true;
+    $('orderView').hidden = false;
+    hideFeedback();
+    $('orderTag').textContent = f.theme;
+    $('orderStep').textContent = `Frise ${state.orderIndex + 1}/${state.orderRounds.length}`;
+    $('orderTitle').textContent = `${f.title} : ${f.prompt.charAt(0).toLowerCase()}${f.prompt.slice(1)}`;
+    $('orderHelp').textContent = 'Touche les cartes dans l’ordre pour les placer. Touche une carte placée pour la retirer.';
+    $('orderTopLabel').textContent = `⬆ ${f.ends[0]}`;
+    $('orderBottomLabel').textContent = `⬇ ${f.ends[1]}`;
+    renderOrder();
+    updateProgress();
+}
+
+/** Dessine la frise (emplacements numérotés) et les cartes restantes. */
+function renderOrder() {
+    const round = state.orderRounds[state.orderIndex];
+    const n = round.items.length;
+    const slots = $('orderSlots');
+    slots.replaceChildren();
+
+    if (!round.checked) {
+        for (let i = 0; i < n; i++) {
+            const li = el('li', 'order-slot');
+            const num = el('span', 'order-num');
+            num.textContent = i + 1;
+            li.append(num);
+            const idx = round.placed[i];
+            if (idx !== undefined) {
+                const card = el('button', 'order-card is-placed');
+                card.type = 'button';
+                card.textContent = round.items[idx].label;
+                card.addEventListener('click', () => unplaceOrderCard(i));
+                li.append(card);
+            } else {
+                li.append(el('span', 'order-empty'));
+            }
+            slots.append(li);
+        }
+    } else {
+        // Après « Vérifier » : le bon ordre, avec les valeurs ; vert = bien placé, rouge = erreur
+        const correct = [...round.items.keys()].sort((a, b) => round.items[a].value - round.items[b].value);
+        correct.forEach((idx, i) => {
+            const ok = round.placed[i] === idx;
+            const li = el('li', `order-slot is-checked ${ok ? 'is-ok' : 'is-wrong'}`);
+            const num = el('span', 'order-num');
+            num.textContent = ok ? '✓' : '✗';
+            const box = el('div', 'order-answer');
+            const label = el('b');
+            label.textContent = round.items[idx].label;
+            const shown = el('span', 'order-value');
+            shown.textContent = round.items[idx].shown;
+            box.append(label, shown);
+            if (!ok) {
+                const yours = el('span', 'order-yours');
+                yours.textContent = `Tu avais mis : ${round.items[round.placed[i]].label}`;
+                box.append(yours);
+            }
+            li.append(num, box);
+            slots.append(li);
+        });
+    }
+
+    const pool = $('orderPool');
+    pool.replaceChildren();
+    if (!round.checked) {
+        round.items.forEach((item, idx) => {
+            if (round.placed.includes(idx)) return;
+            const card = el('button', 'order-card');
+            card.type = 'button';
+            card.textContent = item.label;
+            card.addEventListener('click', () => placeOrderCard(idx));
+            pool.append(card);
+        });
+    }
+    pool.hidden = round.checked || pool.childElementCount === 0;
+
+    const btn = $('orderBtn');
+    btn.textContent = round.checked ? 'Continuer' : 'Vérifier';
+    btn.disabled = !round.checked && round.placed.filter(x => x !== undefined).length < n;
+}
+
+/** La carte touchée va dans le premier emplacement libre. */
+function placeOrderCard(idx) {
+    if (state.phase !== 'order') return;
+    const round = state.orderRounds[state.orderIndex];
+    let free = 0;
+    while (round.placed[free] !== undefined) free++;
+    round.placed[free] = idx;
+    renderOrder();
+}
+
+function unplaceOrderCard(slot) {
+    if (state.phase !== 'order') return;
+    state.orderRounds[state.orderIndex].placed[slot] = undefined;
+    renderOrder();
+}
+
+/** Bouton sous la frise : « Vérifier », puis « Continuer ». */
+function orderButton() {
+    const round = state.orderRounds[state.orderIndex];
+    if (state.phase === 'order' && !round.checked) {
+        checkOrder(round);
+    } else if (state.phase === 'order-feedback') {
+        if (state.hearts <= 0) endSession(false);
+        else nextOrderRound();
+    }
+}
+
+function checkOrder(round) {
+    const correct = [...round.items.keys()].sort((a, b) => round.items[a].value - round.items[b].value);
+    const right = correct.filter((idx, i) => round.placed[i] === idx).length;
+    round.checked = true;
+    state.phase = 'order-feedback';
+    state.done++;
+    state.orderRight += right;
+    state.orderTotal += round.items.length;
+    if (right > 0) addXp(XP_ORDER_CARD * right);
+    if (right === round.items.length) {
+        playSound('good');
+    } else {
+        // Une frise fausse coûte un cœur (un seul, quel que soit le nombre d'erreurs)
+        playSound('bad');
+        state.errors++;
+        state.hearts--;
+        renderHearts({ lost: true });
+    }
+    renderOrder();
+    updateProgress();
+    if (state.hearts <= 0) $('orderBtn').textContent = 'Voir le résultat';
+}
+
+function nextOrderRound() {
+    state.orderIndex++;
+    if (state.orderIndex >= state.orderRounds.length) endSession(true);
+    else showOrderRound();
 }
 
 /* ---------- Accueil du premier lancement ---------- */
@@ -2380,6 +2597,10 @@ const statXp = () => ({ icon: '⭐', label: 'XP', value: state.sessionXp, format
 const statTime = () => ({ icon: '⏱', label: 'Temps', value: elapsedSeconds(), format: fmtShort, tone: 'blue' });
 /** Précision : bonnes réponses sur le nombre total d'essais (chaque erreur ajoute un essai). */
 function statAccuracy() {
+    if (state.mode === 'order') {   // niveau Ordre : cartes bien placées sur cartes placées
+        const pct = state.orderTotal ? Math.round((100 * state.orderRight) / state.orderTotal) : 100;
+        return { icon: '🎯', label: 'Précision', value: pct, format: v => `${v} %`, tone: 'green' };
+    }
     const attempts = state.total + state.errors;
     const pct = attempts ? Math.round((100 * state.total) / attempts) : 100;
     return { icon: '🎯', label: 'Précision', value: pct, format: v => `${v} %`, tone: 'green' };
@@ -2638,6 +2859,8 @@ function bindEvents() {
         void grid.offsetWidth;   // relance l'animation
         grid.classList.add(dx < 0 ? 'slide-from-right' : 'slide-from-left');
     }, { passive: true });
+
+    $('orderBtn').addEventListener('click', orderButton);
 
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
