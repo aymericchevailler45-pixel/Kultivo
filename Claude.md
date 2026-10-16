@@ -43,7 +43,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Niveaux Ordre (mode `order`) : 6, 16… 116 (`ORDER_AT`), losange orange ⏳. 3 frises (`ORDER_ROUNDS`)
   de 4 cartes (< niv. 40), 5 (< 85), 6 ensuite. On touche une carte → 1er emplacement libre ; on touche une carte
   placée → elle revient. Après « Vérifier » : bon ordre + valeurs affichées (vert/rouge, « Tu avais mis… »).
-  Frise fausse = 1 cœur max. 2 XP par carte bien placée. Début du parcours : cartes espacées dans le classement.
+  Frise fausse = 1 cœur. Niveaux Ordre à 2 cœurs (comme les défis) : au plus 1 frise ratée (avant : 3 cœurs, trop facile).
+  2 XP par carte bien placée. Début du parcours : cartes espacées dans le classement.
 - Objectifs du jour (2026-10-16, demandé par l'utilisateur) : 60 / 150 / 250 XP (≈ 1, 2-3, 4-5 niveaux),
   récompenses 10 / 25 / 50 🪙. Anciens objectifs convertis dans `normalizeData` (`OLD_GOALS`).
 - Compteurs du haut cliquables : 🪙 → Boutique, ⭐ → Profil, 🔥 → calendrier de série (`streakModal`).
@@ -70,7 +71,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (pas de SELECT). JAMAIS de clé service_role dans le code. Prochaines étapes : sauvegarde en ligne, classement.
 - Perte de cœur visible : ligne « 💔 −1 cœur » dans le bandeau rouge + cœur qui clignote (`renderHearts({ risk })`),
   puis cœur qui éclate et rangée qui tremble au clic sur Continuer (`renderHearts({ lost })`). Aussi dans les Paires.
-- Clavier ouvert (téléphone) : classe `keyboard-open` si le champ a le focus ET que l'écran visible a rétréci de
+- Clavier : une fois vu (`keyboardHeightSeen`), la classe `keyboard-open` RESTE (le clavier se ferme une fraction de
+  seconde entre deux questions → sinon saut de taille). `fitToKeyboard` calcule avec la hauteur mémorisée.
+  Détection : le champ a le focus ET l'écran visible a rétréci de
   plus de 150 px par rapport à la hauteur max mémorisée (`updateKeyboardMode`). PAS juste le focus : le jeu met le
   focus automatiquement à chaque question sans ouvrir le clavier,
   réajusté à 50/300/700 ms → images, question et étiquettes

@@ -667,7 +667,7 @@ function levelInfo(n) {
 /** « 5 questions + 3 révisions » : la taille réelle de la leçon. */
 function questionsLabel(info) {
     if (info.pairs) return `${plural(PAIRS_GRIDS, 'grille', 'grilles')} de ${PAIRS_PER_GRID} paires`;
-    if (info.order) return `${plural(ORDER_ROUNDS, 'frise', 'frises')} à remettre dans l’ordre`;
+    if (info.order) return `${plural(ORDER_ROUNDS, 'frise', 'frises')} à remettre dans l’ordre, ${plural(CHALLENGE_HEARTS, 'cœur', 'cœurs')}`;
     const base = plural(info.count, 'question', 'questions');
     return info.reviews > 0 ? `${base} + ${plural(info.reviews, 'révision', 'révisions')}` : base;
 }
@@ -1375,7 +1375,7 @@ function openStartModal(n) {
         : info.pairs
         ? `Associe chaque élément de gauche à son partenaire de droite, sur ${plural(PAIRS_GRIDS, 'grille', 'grilles')} à la suite. Chaque erreur coûte un cœur.`
         : info.order
-        ? `Range les cartes dans le bon ordre (dates, tailles, distances…), sur ${plural(ORDER_ROUNDS, 'frise', 'frises')} à la suite. Une frise fausse coûte un cœur.`
+        ? `Range les cartes dans le bon ordre (dates, tailles, distances…), sur ${plural(ORDER_ROUNDS, 'frise', 'frises')} à la suite. Une frise fausse coûte un cœur, et tu n’en as que ${CHALLENGE_HEARTS} !`
         : info.name;
     $('modalStatsText').textContent = questionsLabel(info);
 
@@ -1560,7 +1560,8 @@ function startSession(requestedMode, level = 0) {
     if (!items.length) return;
 
     const hasHearts = mode === 'level' || mode === 'challenge' || pairsMode || orderMode;
-    const heartsMax = mode === 'challenge' ? CHALLENGE_HEARTS : HEARTS_MAX;
+    // Défis et niveaux Ordre : 2 cœurs (une frise fausse coûte un cœur : on peut en rater une seule)
+    const heartsMax = mode === 'challenge' || orderMode ? CHALLENGE_HEARTS : HEARTS_MAX;
     Object.assign(state, {
         mode, level,
         returnTo: mode === 'daily' || mode === 'sprint' ? 'challenges' : 'map',
@@ -1786,7 +1787,8 @@ function nextPairGrid() {
     Le style « keyboard-open » réduit alors images et question pour que tout tienne au-dessus du clavier. */
 // Hauteur de l'écran visible SANS clavier (la plus grande vue depuis le lancement ou le dernier changement d'orientation)
 let fullViewportHeight = 0;
-window.addEventListener('orientationchange', () => { fullViewportHeight = 0; });
+let keyboardHeightSeen = 0;   // hauteur visible quand le clavier est ouvert (0 = jamais vu)
+window.addEventListener('orientationchange', () => { fullViewportHeight = 0; keyboardHeightSeen = 0; });
 
 function updateKeyboardMode() {
     const vv = window.visualViewport;
@@ -1796,9 +1798,10 @@ function updateKeyboardMode() {
     // Le curseur peut être dans le champ sans que le clavier soit ouvert (focus automatique) :
     // on ne passe en compact que si l'écran visible a vraiment rétréci.
     const keyboardShown = height < fullViewportHeight - 150;
-    document.body.classList.toggle('keyboard-open', focused && keyboardShown);
-    // Hauteur visible au-dessus du clavier : sert à coller les boutons juste au-dessus de lui
-    document.documentElement.style.setProperty('--vvh', `${Math.round(height)}px`);
+    if (focused && keyboardShown) keyboardHeightSeen = height;   // hauteur d'écran AVEC clavier, mémorisée
+    // Une fois le clavier vu, on garde la mise en page compacte : entre deux questions, le clavier se ferme
+    // une fraction de seconde puis se rouvre ; sans ça, tout changerait de taille à chaque question.
+    document.body.classList.toggle('keyboard-open', keyboardHeightSeen > 0);
 }
 
 /** Clavier ouvert : mesure la place libre sous « Vérifier » et la donne à l'image et à la question
@@ -1808,7 +1811,9 @@ function fitToKeyboard() {
     root.setProperty('--fit', '0px');
     const vv = window.visualViewport;
     if (!vv || !document.body.classList.contains('keyboard-open') || $('studyScreen').hidden || state.phase !== 'answering') return;
-    const free = () => vv.height - ($('answerActions').getBoundingClientRect().bottom + window.scrollY) - 12;
+    // On calcule avec la hauteur « clavier ouvert » mémorisée, même si le clavier n'est pas encore revenu
+    const visible = keyboardHeightSeen || vv.height;
+    const free = () => visible - ($('answerActions').getBoundingClientRect().bottom + window.scrollY) - 12;
     let extra = Math.min(Math.max(0, free()), 160);
     for (let i = 0; i < 3 && extra > 0; i++) {
         root.setProperty('--fit', `${Math.round(extra)}px`);
