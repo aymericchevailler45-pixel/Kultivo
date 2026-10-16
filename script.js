@@ -1673,6 +1673,7 @@ function showPairsGrid() {
         b.dataset.side = side;
         b.dataset.idx = String(i);
         if (grid.matched.has(i)) { b.classList.add('is-matched'); b.disabled = true; }
+        if (side === 'left' && f.bigLeft) b.classList.add('is-big');   // drapeaux en grand
         b.addEventListener('click', () => pickPair(b));
         return b;
     };
@@ -1904,6 +1905,8 @@ function showCard() {
                     : state.mode === 'placement' ? `Placement · étape ${state.placeStep + 1}/${PLACEMENT_STEPS}`
                     : 'Défi';
     $('questionText').textContent = item.q.q;
+    $('questionFlag').hidden = !item.q.flag;           // questions « Drapeaux » : grand drapeau
+    $('questionFlag').textContent = item.q.flag || '';
 
     // Indices : on repart de zéro à chaque carte (et pas d'indice en défi du jour ni en sprint)
     state.hintUsed = new Set();

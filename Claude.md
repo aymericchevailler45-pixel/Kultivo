@@ -27,7 +27,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Inutile donc d'ajouter ces formes courtes dans `a` ; ajouter plutôt les noms de famille seuls, surnoms, etc.
 - Révisions : questions ratées reviennent en priorité (tirage pondéré, 3 à 8 par leçon),
   répétition espacée (`REVIEW_DAYS`) : une question bien connue revient de plus en plus rarement.
-- 120 niveaux (depuis le 2026-10-16), un Défi tous les 10 niveaux (pioche dans les 9 niveaux précédents, 10 questions, 2 cœurs).
+- 130 niveaux (depuis le 2026-10-16), un Défi tous les 10 niveaux (pioche dans les 9 niveaux précédents, 10 questions, 2 cœurs).
 - Niveaux Paires (mode `pairs`) : 3, 13, 23… 113 (`PAIRS_AT`), icône 🔗, bleu sur la carte. 3 grilles de 5 paires
   de familles différentes (thèmes différents si possible), paires choisies près de la difficulté du niveau
   (`pairTarget` ≈ 1,2 → 4,3). 3 cœurs, une mauvaise association = 1 cœur, cœur de secours possible.
@@ -84,7 +84,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 
 ## levels.js (important)
 - Lit `QUESTIONS`, écrase `q.niveau` et `LEVEL_NAMES`. Le champ `niveau` du fichier questions n'est qu'un secours.
-- 120 niveaux = 84 de questions (6 ou 7 chacun) + 12 Paires (x3) + 12 Ordre (x6) + 12 défis (x0).
+- 130 niveaux = 91 de questions (6 ou 7 chacun) + 13 Paires (x3) + 13 Ordre (x6) + 13 défis (x0).
+  Quand on ajoute beaucoup de questions, on ajoute un bloc de 10 niveaux (demande de l'utilisateur).
   Bloc type : Q Q 🔗 Q Q ⏳ Q Q Q 🏆 (choisi par l'utilisateur). L'utilisateur ne veut pas perdre de niveaux de questions. Déterministe (même résultat pour tous).
 - La difficulté monte doucement (≈1,3 → 4,3 sur 100 niveaux), questions très dures (d ≥ 4,5) à partir du niveau ~55 (1 à 2 par niveau),
   thèmes équilibrés sur tout le parcours, au plus 2 questions du même thème par niveau.
@@ -93,7 +94,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Pour désactiver : `AUTO_LEVELS = false`.
 
 ## État actuel
-- 567 questions, 13 thèmes. Le 2026-10-16 : +100 questions difficiles (ids 2000-2099, d 4 à 5),
+- 617 questions, 14 thèmes (dont « Drapeaux » : ids 2100-2149, champ `flag` = emoji affiché en grand,
+  question identique « À quel pays appartient ce drapeau ? »). Famille de paires « Drapeaux » (connus, `bigLeft`).
+  Les drapeaux emoji ne s'affichent pas sur Windows : l'utilisateur s'en fiche (jeu pensé pour téléphone).
+- Avant les drapeaux : 567 questions, 13 thèmes. Le 2026-10-16 : +100 questions difficiles (ids 2000-2099, d 4 à 5),
   réparties au prorata des thèmes (mythologie comprise). Total : 142 avec d ≥ 4, dont 78 avec d ≥ 4,5.
 - Exemple de l'utilisateur pour une vraie question dure : demander le NOM du marteau de Thor, pas qui le porte.
   Une question « dure » doit demander un détail précis, pas le personnage célèbre.

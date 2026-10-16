@@ -491,6 +491,10 @@ main { overflow-x: clip; }
     text-wrap: balance;
 }
 
+.question-flag { font-size: 6rem; line-height: 1; text-align: center; }
+@media (max-width: 600px) { .question-flag { font-size: 4.5rem; } }
+.pair-btn.is-big { font-size: 2.2rem; line-height: 1; }
+
 .answer-input {
     width: 100%;
     padding: 18px 20px;

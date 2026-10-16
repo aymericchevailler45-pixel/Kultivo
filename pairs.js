@@ -20,6 +20,41 @@
 
 const PAIR_FAMILIES = [
     {
+        id: 'drapeaux', theme: 'Drapeaux', title: 'Drapeaux', left: 'Drapeau', right: 'Pays', bigLeft: true,
+        pairs: [
+            ['🇫🇷', 'France', 1],
+            ['🇯🇵', 'Japon', 1],
+            ['🇺🇸', 'États-Unis', 1],
+            ['🇨🇦', 'Canada', 1.2],
+            ['🇮🇹', 'Italie', 1.3],
+            ['🇩🇪', 'Allemagne', 1.3],
+            ['🇬🇧', 'Royaume-Uni', 1.3],
+            ['🇧🇷', 'Brésil', 1.5],
+            ['🇪🇸', 'Espagne', 1.5],
+            ['🇨🇭', 'Suisse', 1.5],
+            ['🇨🇳', 'Chine', 1.8],
+            ['🇧🇪', 'Belgique', 2.2],
+            ['🇵🇹', 'Portugal', 2.3],
+            ['🇬🇷', 'Grèce', 2.3],
+            ['🇲🇽', 'Mexique', 2.3],
+            ['🇮🇳', 'Inde', 2.3],
+            ['🇸🇪', 'Suède', 2.3],
+            ['🇹🇷', 'Turquie', 2.3],
+            ['🇰🇷', 'Corée du Sud', 2.5],
+            ['🇦🇷', 'Argentine', 2.5],
+            ['🇮🇱', 'Israël', 2.5],
+            ['🇷🇺', 'Russie', 2.5],
+            ['🇺🇦', 'Ukraine', 2.5],
+            ['🇮🇪', 'Irlande', 3],
+            ['🇳🇱', 'Pays-Bas', 3],
+            ['🇳🇴', 'Norvège', 3],
+            ['🇦🇺', 'Australie', 3],
+            ['🇯🇲', 'Jamaïque', 3],
+            ['🇻🇳', 'Vietnam', 3],
+            ['🇲🇦', 'Maroc', 3]
+        ]
+    },
+    {
         id: 'capitales', theme: 'Géographie', title: 'Capitales', left: 'Pays', right: 'Capitale',
         pairs: [
             ['France', 'Paris', 1], ['Italie', 'Rome', 1], ['Royaume-Uni', 'Londres', 1],
