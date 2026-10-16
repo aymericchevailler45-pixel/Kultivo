@@ -861,6 +861,8 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 
 .feedback-actions { display: flex; flex-direction: column; gap: 6px; }
 .feedback .btn-ghost { color: inherit; opacity: 0.85; }
+/* « J'avais juste » : contour fin de la couleur du bandeau, pour qu'on voie que c'est un bouton */
+.feedback #forceBtn { border: 2px solid currentColor; padding-block: 11px; }
 
 @media (min-width: 560px) {
     .feedback-inner   { flex-direction: row; align-items: flex-end; justify-content: space-between; }
@@ -1283,6 +1285,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 }
 /* « Je ne sais pas » : un vrai bouton avec contour, pas juste du texte */
 #skipBtn {
+    --btn-deep: var(--line);   /* ombre grise, même quand une règle utilise --btn-deep (mode clavier) */
     border: 2px solid var(--line);
     background: var(--surface);
     color: var(--ink);
