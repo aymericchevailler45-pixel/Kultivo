@@ -2,44 +2,286 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Culture G - Répétition Espacée</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Kultivo</title>
+    <!-- Application installable (PWA) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#58cc02">
+    <link rel="icon" type="image/png" href="icons/favicon.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Kultivo">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">
-        <h1>🧠 Culture G</h1>
-        <p>Répétition espacée - Entraînement quotidien</p>
-        <select id="themeFilter" class="theme-selector" onchange="loadNextCard()">
-            <option value="Tous">Tous les thèmes</option>
-            <option value="Sciences">Sciences</option>
-            <option value="Histoire">Histoire</option>
-            <option value="Géographie">Géographie</option>
-        </select>
-    </div>
 
-    <div id="emptyState" class="empty-state">
-        🎉 Félicitations ! Vous avez révisé toutes les cartes prévues pour aujourd'hui.
-    </div>
+    <!-- BARRE DU HAUT (visible hors leçon) -->
+    <header class="topbar" id="topbar">
+        <h1 class="brand">🧠 Kultivo</h1>
 
-    <div id="cardContainer" class="card-container">
-        <div id="flashcard" class="card" onclick="showAnswer()">
-            <span id="cardTag" class="tag">Thème</span>
-            <div id="questionText" class="question">La question apparaîtra ici.</div>
-            
-            <div id="answerSection" class="answer-section">
-                <div id="answerText" class="answer">La réponse</div>
-                <div id="explanationText" class="explanation">L'explication détaillée.</div>
-                <div class="buttons">
-                    <button class="btn-wrong" onclick="handleAnswer(false, event)">Oublié (0j)</button>
-                    <button class="btn-correct" onclick="handleAnswer(true, event)">Je savais !</button>
+        <nav class="nav" aria-label="Navigation principale">
+            <button type="button" class="nav-btn" data-screen="map">Parcours</button>
+            <button type="button" class="nav-btn" data-screen="challenges">Défis</button>
+            <button type="button" class="nav-btn" data-screen="shop">Boutique</button>
+            <button type="button" class="nav-btn" data-screen="profile">Profil</button>
+        </nav>
+
+        <div class="chips">
+            <button type="button" id="reviewBtn" class="chip chip-review" hidden title="Réviser les questions ratées"></button>
+            <span class="chip chip-coins" title="Pièces à dépenser à la boutique">
+                <span aria-hidden="true">🪙</span>
+                <b id="coinDisplay">0</b>
+                <span class="sr-only">pièces</span>
+            </span>
+            <span class="chip chip-xp" title="Points d'expérience">
+                <span aria-hidden="true">⭐</span>
+                <b id="xpDisplay">0</b> XP
+            </span>
+            <span class="chip chip-streak" title="Jours consécutifs d'entraînement">
+                <span aria-hidden="true">🔥</span>
+                <b id="streakDisplay">0</b>
+                <span class="sr-only">jour(s) de série</span>
+            </span>
+        </div>
+    </header>
+
+    <main>
+        <!-- ÉCRAN 1 : PARCOURS (carte des niveaux) -->
+        <section id="mapScreen" class="map-screen" aria-label="Carte des niveaux">
+            <div class="map-decorations" id="mapDecor" aria-hidden="true"></div>
+            <ol id="mapPath" class="map-path"></ol>
+            <!-- Sous le niveau 1 (la carte se lit de bas en haut) -->
+            <button type="button" id="placementBtn" class="btn btn-violet placement-btn" hidden>🧭 Test de placement : commencer plus loin</button>
+            <button type="button" id="resetBtn" class="link-btn">Réinitialiser ma progression</button>
+        </section>
+
+        <!-- ÉCRAN 2 : DÉFIS -->
+        <section id="challengesScreen" class="page" aria-label="Défis" hidden>
+            <div class="page-grid challenges-grid">
+                <article class="card goal-card">
+                    <div class="goal-main">
+                        <h2>🎯 Objectif du jour</h2>
+                        <p class="muted">Gagne des XP en jouant (niveaux, défis, sprint) pour remplir la jauge, puis récupère ta récompense en pièces.</p>
+                        <p class="card-big" id="goalText"></p>
+                        <div class="meter" role="progressbar" aria-label="Progression de l'objectif du jour"
+                             id="goalMeter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <div class="meter-fill" id="goalBar"></div>
+                        </div>
+                        <p class="muted" id="goalHint"></p>
+                    </div>
+                    <div class="goal-section">
+                        <p class="goal-title">Ton rythme : combien d’XP par jour ?</p>
+                        <div class="goal-choices" id="goalChoices" role="group" aria-label="Choisir mon objectif quotidien"></div>
+                        <p class="goal-note" id="goalNote"></p>
+                    </div>
+                </article>
+
+                <article class="card card-violet" id="dailyCard">
+                    <h2>📅 Défi du jour</h2>
+                    <p id="dailyDesc"></p>
+                    <div class="score-box score-violet" id="dailyResult" hidden>
+                        <span class="score-label">Ton résultat du jour</span>
+                        <b class="score-big" id="dailyScore"></b>
+                        <span class="score-sub" id="dailyTime"></span>
+                        <div class="emoji-grid" id="dailyGrid"></div>
+                    </div>
+                    <div class="card-actions">
+                        <button type="button" id="dailyBtn" class="btn btn-violet">Jouer</button>
+                        <button type="button" id="dailyCopyBtn" class="btn btn-ghost" hidden>Copier mon résultat</button>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h2>⚡ Sprint 60 secondes</h2>
+                    <p id="sprintDesc"></p>
+                    <div class="score-row" id="sprintScores" hidden>
+                        <div class="score-box score-gold">
+                            <span class="score-label">🏅 Record</span>
+                            <b class="score-big" id="sprintBest"></b>
+                            <span class="score-sub">bonnes réponses</span>
+                        </div>
+                        <div class="score-box">
+                            <span class="score-label">Dernière partie</span>
+                            <b class="score-big" id="sprintLast"></b>
+                            <span class="score-sub" id="sprintLastSub">bonnes réponses</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button type="button" id="sprintBtn" class="btn btn-green">Lancer le sprint</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ÉCRAN 3 : BOUTIQUE -->
+        <section id="shopScreen" class="page" aria-label="Boutique" hidden>
+            <div class="page-grid shop-grid" id="shopGrid"></div>
+        </section>
+
+        <!-- ÉCRAN 4 : PROFIL -->
+        <section id="profileScreen" class="page" aria-label="Profil" hidden>
+            <div class="page-grid profile-grid">
+                <article class="card card-hero">
+                    <div class="hero-main">
+                        <h2 id="profileTitle"></h2>
+                        <p class="card-big" id="profileXp"></p>
+                        <div class="meter" id="titleMeter" role="progressbar" aria-label="Progression vers le prochain titre"
+                             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <div class="meter-fill" id="titleBar"></div>
+                        </div>
+                        <p class="muted" id="profileNext"></p>
+                    </div>
+                    <div class="hero-tiles">
+                        <div class="tile"><span class="tile-label">🔥 Série</span><b id="tileStreak">—</b></div>
+                        <div class="tile"><span class="tile-label">✅ Réussite</span><b id="tileRate">—</b></div>
+                        <div class="tile"><span class="tile-label">🗺️ Niveaux</span><b id="tileLevels">—</b></div>
+                    </div>
+                </article>
+
+                <article class="card card-records">
+                    <h2>🏅 Records</h2>
+                    <ul class="records" id="recordsList"></ul>
+                </article>
+
+                <article class="card card-themes">
+                    <h2>📊 Réussite par thème</h2>
+                    <div id="themeBars"></div>
+                </article>
+
+                <article class="card wide">
+                    <h2>Badges <span class="muted" id="badgeCount"></span></h2>
+                    <div class="badge-grid" id="badgeGrid"></div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ÉCRAN 5 : LEÇON -->
+        <section id="studyScreen" class="lesson" hidden>
+            <div class="lesson-decor" id="lessonDecor" aria-hidden="true"></div>
+
+            <div class="lesson-head">
+                <button type="button" id="quitBtn" class="icon-btn" aria-label="Quitter la leçon">✕</button>
+                <div class="progress" id="progress" role="progressbar" aria-label="Progression de la leçon"
+                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div class="progress-fill" id="progressBar"></div>
                 </div>
+                <div class="hearts" id="hearts"></div>
+                <div class="timer" id="timer" hidden></div>
+            </div>
+
+            <!-- Question en cours -->
+            <div id="cardView" class="card-view">
+                <div class="tags">
+                    <span class="tag" id="cardTag"></span>
+                    <span class="tag tag-review" id="reviewTag" hidden>Révision</span>
+                    <span class="tag tag-challenge" id="challengeTag" hidden>Défi</span>
+                </div>
+                <h2 class="question" id="questionText"></h2>
+
+                <input type="text" id="userInput" class="answer-input"
+                       placeholder="Ta réponse"
+                       autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+                       enterkeyhint="done" aria-label="Ta réponse">
+
+                <ul class="hint-list" id="hintList" hidden></ul>
+
+                <div class="hint-panel" id="hintPanel" hidden>
+                    <p class="hint-title">Quel indice veux-tu ? <span id="hintCoins"></span></p>
+                    <div class="hint-options" id="hintOptions"></div>
+                </div>
+
+                <div class="actions" id="answerActions">
+                    <button type="button" id="checkBtn" class="btn btn-green">Vérifier</button>
+                    <button type="button" id="hintBtn" class="btn btn-hint">💡 Indice</button>
+                    <button type="button" id="skipBtn" class="btn btn-ghost">Je ne sais pas</button>
+                </div>
+            </div>
+
+            <!-- Niveau Paires : une grille à associer -->
+            <div id="pairsView" class="pairs-view" hidden>
+                <div class="tags">
+                    <span class="tag" id="pairsTag"></span>
+                    <span class="tag tag-pairs" id="pairsStep"></span>
+                </div>
+                <h2 class="question" id="pairsTitle"></h2>
+                <p class="pairs-help">Touche une case à gauche, puis la case qui va avec à droite.</p>
+                <div class="pairs-grid">
+                    <div class="pairs-col">
+                        <p class="pairs-head" id="pairsLeftHead"></p>
+                        <div class="pairs-list" id="pairsLeft"></div>
+                    </div>
+                    <div class="pairs-sep" aria-hidden="true"><span>↔</span></div>
+                    <div class="pairs-col">
+                        <p class="pairs-head" id="pairsRightHead"></p>
+                        <div class="pairs-list" id="pairsRight"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fin de leçon -->
+            <div id="endView" class="end" hidden>
+                <div class="end-emoji" id="endEmoji" aria-hidden="true"></div>
+                <h2 id="endTitle"></h2>
+                <p id="endText"></p>
+                <p class="end-extra" id="endExtra"></p>
+                <div class="actions">
+                    <button type="button" id="endRescue" class="btn btn-green" hidden></button>
+                    <button type="button" id="endPrimary" class="btn btn-green"></button>
+                    <button type="button" id="endSecondary" class="btn btn-ghost" hidden></button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- POPUP DE DÉMARRAGE DE NIVEAU -->
+    <div id="startModal" class="modal-overlay" hidden>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <button type="button" id="closeModalBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="modalTitle">Niveau X</h2>
+            <p id="modalDesc">Nom du niveau</p>
+            <div class="modal-stats" id="modalStatsText">X questions</div>
+            <button type="button" id="startLevelBtn" class="btn btn-green btn-full">Commencer</button>
+            <button type="button" id="modalSecondaryBtn" class="btn btn-ghost btn-full" hidden></button>
+        </div>
+    </div>
+
+    <!-- POPUP DE CONFIRMATION POUR QUITTER UNE LEÇON -->
+    <div id="quitModal" class="modal-overlay" hidden>
+        <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="quitTitle" aria-describedby="quitDesc">
+            <h2 id="quitTitle">Quitter ?</h2>
+            <p id="quitDesc"></p>
+            <button type="button" id="quitStayBtn" class="btn btn-green btn-full">Continuer</button>
+            <button type="button" id="quitConfirmBtn" class="btn btn-ghost btn-full">Quitter quand même</button>
+        </div>
+    </div>
+
+    <!-- BANDEAU DE CORRECTION -->
+    <div id="feedback" class="feedback" aria-live="polite">
+        <div class="feedback-inner">
+            <div class="feedback-text">
+                <p class="feedback-title" id="feedbackTitle"></p>
+                <p class="feedback-answer" id="feedbackAnswer"></p>
+                <p class="feedback-exp" id="explanationText"></p>
+            </div>
+            <div class="feedback-actions">
+                <button type="button" id="continueBtn" class="btn btn-green">Continuer</button>
+                <button type="button" id="forceBtn" class="btn btn-ghost" hidden>J'avais juste</button>
             </div>
         </div>
     </div>
 
-    <div class="stats" id="statsDisplay">Cartes à réviser aujourd'hui : 0</div>
+    <!-- NOTIFICATIONS (nouveaux badges…) -->
+    <div class="toasts" id="toasts" aria-live="polite"></div>
 
+    <!-- L'ordre compte : les questions d'abord, puis la logique -->
+    <script src="questions.js"></script>
+    <script src="pairs.js"></script>
+    <script src="levels.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

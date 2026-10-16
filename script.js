@@ -1,113 +1,2072 @@
-// Base de données par défaut (chargée si rien dans le localStorage)
-const defaultQuestions = [
-    { id: 1, theme: "Sciences", q: "Quelle est la planète la plus chaude du système solaire ?", a: "Vénus", exp: "Malgré sa position (2ème après Mercure), son épaisse atmosphère crée un effet de serre extrême (environ 460°C).", interval: 0, next_review: 0 },
-    { id: 2, theme: "Histoire", q: "En quelle année a eu lieu la chute de l'Empire romain d'Occident ?", a: "476", exp: "Le dernier empereur, Romulus Augustule, est déposé par le chef barbare Odoacre.", interval: 0, next_review: 0 },
-    { id: 3, theme: "Géographie", q: "Quel est le plus long fleuve du monde ?", a: "Le Nil (ou l'Amazone)", exp: "Le débat persiste, mais le Nil est traditionnellement considéré comme le plus long (environ 6 650 km).", interval: 0, next_review: 0 },
-    { id: 4, theme: "Histoire", q: "Qui a été le premier président de la Ve République en France ?", a: "Charles de Gaulle", exp: "Il a pris ses fonctions en janvier 1959 après avoir impulsé la nouvelle Constitution.", interval: 0, next_review: 0 },
-    { id: 5, theme: "Sciences", q: "Que mesure l'échelle de Scoville ?", a: "La force des piments", exp: "Elle mesure la teneur en capsaïcine, le composé chimique responsable de la sensation de chaleur.", interval: 0, next_review: 0 }
+'use strict';
+
+/* ============================================================
+   KULTIVO — logique de l'application
+   (les questions et les noms de niveaux sont dans questions.js)
+   ============================================================ */
+
+/* ---------- Réglages ---------- */
+
+const HEARTS_MAX = 3;            // erreurs permises par niveau avant échec
+const CHALLENGE_EVERY = 10;      // un niveau défi tous les 10 niveaux
+const CHALLENGE_SIZE = 10;       // nombre de questions d'un niveau défi
+const CHALLENGE_HEARTS = 2;      // cœurs pendant un niveau défi
+const REVIEW_MIN = 3;            // cartes de révision ajoutées à chaque niveau (minimum)
+const REVIEW_MAX = 8;            // maximum : +1 place par tranche de 3 questions ratées
+const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs »
+const STORAGE_KEY = 'cultureG_v2';
+
+// XP gagnés
+const XP_FIRST_TRY = 4;          // avant: 10 | bonne réponse du premier coup
+const XP_RETRY = 1;              // avant: 5  | bonne réponse après une erreur
+const XP_FLAWLESS = 10;          // avant: 20 | bonus : leçon sans aucune erreur
+const XP_CHALLENGE_WIN = 20;     // avant: 50 | bonus : niveau défi réussi
+const XP_REVIEW_WIN = 10;        // avant: 10 | bonus : session de révision terminée
+const XP_DAILY_CORRECT = 4;      // avant: 10 | par bonne réponse au défi du jour
+const XP_DAILY_DONE = 10;        // avant: 20 | bonus : défi du jour terminé
+const XP_SPRINT_CORRECT = 2;     // avant: 5  | par bonne réponse en sprint
+
+// Pièces 🪙 : on en gagne en gagnant de l'XP (l'XP, lui, ne baisse jamais)
+const COIN_RATE = 10;             // 1 pièce pour 10 XP gagnés
+const COIN_BADGE = 5;           // bonus : nouveau badge
+
+const DAILY_SIZE = 10;           // questions du défi du jour
+const SPRINT_SECONDS = 60;       // durée du sprint
+const GOAL_CHOICES = [
+    { xp: 30,  label: 'Tranquille', reward: 5 },
+    { xp: 50,  label: 'Régulier',   reward: 10 },
+    { xp: 100, label: 'Intense',    reward: 25 }
 ];
 
-let questions = [];
-let currentCardIndex = -1;
-let pendingCards = [];
+// Titres selon l'XP total
+const TITLES = [
+    { xp: 0,    name: 'Curieux' },
+    { xp: 100,  name: 'Apprenti' },
+    { xp: 300,  name: 'Lecteur assidu' },
+    { xp: 700,  name: 'Lettré' },
+    { xp: 1200, name: 'Érudit' },
+    { xp: 2000, name: 'Savant' },
+    { xp: 3500, name: 'Sage' },
+    { xp: 6000, name: 'Encyclopédie vivante' }
+];
 
-// Initialisation
-function initApp() {
-    // Récupérer les données sauvegardées ou charger celles par défaut
-    const savedData = localStorage.getItem('cultureG_data');
-    if (savedData) {
-        questions = JSON.parse(savedData);
-        // Vérifier si de nouvelles questions ont été ajoutées dans le code
-        if (questions.length < defaultQuestions.length) {
-            const savedIds = questions.map(q => q.id);
-            defaultQuestions.forEach(dq => {
-                if (!savedIds.includes(dq.id)) questions.push(dq);
-            });
-            saveData();
-        }
-    } else {
-        questions = JSON.parse(JSON.stringify(defaultQuestions));
-        saveData();
+/* ---------- Structure des niveaux ---------- */
+
+const maxQuestionLevel = Math.max(...QUESTIONS.map(q => q.niveau));
+// Si le dernier niveau avec questions précède un défi, la carte se termine par ce défi.
+const MAX_LEVEL = (maxQuestionLevel + 1) % CHALLENGE_EVERY === 0
+    ? maxQuestionLevel + 1
+    : maxQuestionLevel;
+
+const isChallenge = n => n % CHALLENGE_EVERY === 0;
+
+// Niveaux Paires (5, 15, 25…) : des grilles à associer, voir pairs.js
+const PAIRS_AT = 5;              // doit être égal à PAIRS_AT de levels.js
+const PAIRS_GRIDS = 3;           // grilles par niveau Paires
+const PAIRS_PER_GRID = 5;        // paires par grille
+const XP_PAIR = 2;               // par paire trouvée
+const isPairs = n => n % CHALLENGE_EVERY === PAIRS_AT;
+
+// Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
+// Limité à 4 étapes (départ au niveau 41 au mieux) pour garder du jeu à faire.
+const PLACEMENT_MAX_STEPS = 4;
+const PLACEMENT_STEPS = Math.min(PLACEMENT_MAX_STEPS, Math.floor((MAX_LEVEL - 1) / CHALLENGE_EVERY));
+const PLACEMENT_PER_STEP = 3;   // questions au plus par étape
+const PLACEMENT_PASS = 2;       // bonnes réponses pour valider une étape
+
+/* ---------- Petits utilitaires ---------- */
+
+const $ = id => document.getElementById(id);
+
+function el(tag, className) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    return node;
+}
+
+function shuffle(array) {
+    const a = [...array];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
     }
-    loadNextCard();
+    return a;
+}
+
+function plural(n, one, many) {
+    return `${n} ${n > 1 ? many : one}`;
+}
+
+function fmtTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m > 0 ? `${m} min ${String(s).padStart(2, '0')} s` : `${s} s`;
+}
+
+function dayKey(date) {
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${m}-${d}`;
+}
+const todayKey = () => dayKey(new Date());
+function yesterdayKey() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return dayKey(d);
+}
+
+/* Mélange reproductible : la même graine donne toujours le même ordre.
+   Sert au défi du jour, identique pour tous tes amis le même jour. */
+function hashString(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+}
+function mulberry32(seed) {
+    let a = seed;
+    return function () {
+        a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+function seededShuffle(array, seedText) {
+    const rnd = mulberry32(hashString(seedText));
+    const a = [...array];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(rnd() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+/* ---------- Vérification des réponses ---------- */
+
+const ARTICLES = new Set(['le', 'la', 'les', 'l', 'un', 'une', 'des', 'du', 'de', 'd']);
+
+function normalize(str) {
+    return str
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/œ/g, 'oe').replace(/æ/g, 'ae')
+        .replace(/[’'\-–—]/g, ' ')
+        .replace(/[^\p{L}\p{N}\s]/gu, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function stripArticles(str) {
+    return str.split(' ').filter(w => w && !ARTICLES.has(w)).join(' ');
+}
+
+function levenshtein(a, b) {
+    if (a === b) return 0;
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+    let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+        const cur = [i];
+        for (let j = 1; j <= b.length; j++) {
+            cur[j] = Math.min(
+                prev[j] + 1,
+                cur[j - 1] + 1,
+                prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+            );
+        }
+        prev = cur;
+    }
+    return prev[b.length];
+}
+
+/* Mots génériques qu'on peut omettre en tête de réponse :
+   « le musée d'Orsay » → « Orsay », « le traité de Versailles » → « Versailles ». */
+const GENERIC_WORDS = new Set([
+    'musee', 'lac', 'fleuve', 'riviere', 'mont', 'mer', 'ocean', 'detroit', 'ile', 'iles', 'desert',
+    'golfe', 'baie', 'canal', 'chaine', 'massif', 'fosse', 'volcan',
+    'traite', 'traites', 'accord', 'accords', 'bataille', 'guerre', 'festival', 'empire', 'dynastie',
+    'ordonnance', 'edit', 'loi', 'echelle', 'constante', 'principe', 'paradoxe', 'theoreme',
+    'couche', 'systeme', 'puce', 'attaque', 'freres', 'famille', 'palais', 'chateau', 'cathedrale',
+    'congres', 'mur', 'sauce', 'fromage', 'plat', 'jeu', 'groupe', 'film', 'album', 'opera', 'ballet'
+]);
+
+/** La réponse sans ses mots génériques de tête, ou null s'il n'y en a pas. */
+function answerWithoutGeneric(ans) {
+    const words = ans.split(' ');
+    let i = 0;
+    while (i < words.length - 1 && GENERIC_WORDS.has(words[i])) i++;
+    return i > 0 ? words.slice(i).join(' ') : null;
+}
+
+/** Retourne 'exact', 'typo' (faute de frappe tolérée) ou 'wrong'.
+    `question` sert à refuser une réponse courte déjà écrite dans la question. */
+function judge(input, rawAnswers, question = '') {
+    const typed = stripArticles(normalize(input));
+    if (!typed) return 'wrong';
+    const numbersTyped = normalize(input).match(/\d+/g) || [];
+    const questionWords = new Set(stripArticles(normalize(question)).split(' '));
+    let typo = false;
+
+    // Chaque réponse accepte aussi sa forme courte (« musée d'Orsay » → « Orsay »),
+    // sauf si cette forme courte apparaît déjà dans la question.
+    const answers = [];
+    for (const raw of rawAnswers) {
+        const ans = stripArticles(normalize(raw));
+        answers.push(ans);
+        const short = answerWithoutGeneric(ans);
+        if (short && short.length >= 3 && !short.split(' ').every(w => questionWords.has(w))) answers.push(short);
+    }
+
+    for (const ans of answers) {
+        // Réponse numérique (une date) : exacte uniquement, jamais approximative
+        if (/^\d+$/.test(ans)) {
+            if (numbersTyped.includes(ans)) return 'exact';
+            continue;
+        }
+
+        const distance = levenshtein(typed, ans);
+        if (distance === 0) return 'exact';
+        const tolerance = ans.length >= 9 ? 2 : ans.length >= 5 ? 1 : 0;
+        if (distance <= tolerance) typo = true;
+    }
+    return typo ? 'typo' : 'wrong';
+}
+
+/* ---------- État et sauvegarde ---------- */
+
+function defaultData() {
+    return {
+        unlocked: 1, done: {}, streak: 0, lastDay: null, stats: {},
+        xp: 0,
+        dayXp: { day: null, xp: 0 },     // XP gagnés aujourd'hui
+        goal: 50,                        // objectif quotidien en XP
+        goalDays: {},                    // jours où l'objectif a été atteint
+        totals: { right: 0, tries: 0, flawless: 0, reviews: 0, purchases: 0 },
+        coins: null,                     // pièces (null = à calculer au premier chargement)
+        inv: { hintLength: 0, hintLetter: 0, hintStart: 0, heart: 0, freeze: 0 },
+        best: { sprint: 0, streak: 0, lastSprint: null, lastSprintRecord: false },   // lastSprint : score de la dernière partie
+        daily: {},                       // résultats des défis du jour
+        badges: {},                       // badge -> jour d'obtention
+        claimedBadges: {},
+        claimedGoals: {},
+        placement: null,                 // test de placement fait : { day, start }
+        placementOffered: false          // popup de bienvenue déjà montrée
+    };
+}
+
+/** Remet d'équerre une sauvegarde (ex. : de nouveaux niveaux ou de nouvelles fonctions). */
+function normalizeData(data) {
+    const base = defaultData();
+    for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done']) data[key] = data[key] || {};
+
+    if (Object.keys(data.badges).length > 0 && Object.keys(data.claimedBadges).length === 0) {
+        for (const b in data.badges) data.claimedBadges[b] = true;
+    }
+
+    // Première fois qu'on voit les pièces : on offre ce qui aurait déjà été gagné
+    if (typeof data.coins !== 'number') {
+        data.coins = 0;
+    }
+
+    const doneLevels = Object.keys(data.done).map(Number).filter(n => data.done[n]);
+    const lastDone = doneLevels.length ? Math.max(...doneLevels) : 0;
+    data.unlocked = Math.max(1, data.unlocked || 1, Math.min(lastDone + 1, MAX_LEVEL));
+    data.unlocked = Math.min(data.unlocked, MAX_LEVEL);
+    return data;
+}
+
+/** Récupère la progression de l'ancienne version (clés cultureG_*). */
+function migrateV1() {
+    const data = defaultData();
+    const oldUnlocked = parseInt(localStorage.getItem('cultureG_unlockedLevel'), 10);
+    if (oldUnlocked > 1) {
+        data.unlocked = Math.min(oldUnlocked, MAX_LEVEL);
+        for (let n = 1; n < oldUnlocked && n <= MAX_LEVEL; n++) data.done[n] = true;
+    }
+    const oldStreak = parseInt(localStorage.getItem('cultureG_streak'), 10);
+    const oldLast = parseInt(localStorage.getItem('cultureG_lastReview'), 10);
+    if (oldStreak > 0 && oldLast) {
+        data.streak = oldStreak;
+        data.lastDay = dayKey(new Date(oldLast));
+    }
+    // L'ancienne version figeait une copie des questions : on l'abandonne.
+    localStorage.removeItem('cultureG_data');
+    return data;
+}
+
+function loadData() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const data = raw ? { ...defaultData(), ...JSON.parse(raw) } : migrateV1();
+        return normalizeData(data);
+    } catch (err) {
+        return defaultData();
+    }
 }
 
 function saveData() {
-    localStorage.setItem('cultureG_data', JSON.stringify(questions));
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+    } catch (err) {
+        /* stockage indisponible (navigation privée…) : on continue sans sauvegarder */
+    }
 }
 
-function getTodayTimestamp() {
+const state = {
+    data: loadData(),
+    mode: 'level',          // 'level', 'challenge', 'review', 'daily' ou 'sprint'
+    level: 1,
+    returnTo: 'map',        // écran où revenir à la fin de la leçon
+    pendingMode: 'level',   // ce que la popup va lancer : 'level', 'daily' ou 'sprint'
+    pendingLevel: null,     // niveau choisi dans la popup, en attente de validation
+    queue: [],              // [{ q, review }]
+    current: null,
+    total: 0,
+    done: 0,
+    errors: 0,
+    correct: 0,             // bonnes réponses (défi du jour, sprint)
+    grid: [],               // 🟩🟥 du défi du jour
+    hearts: HEARTS_MAX,
+    heartsMax: HEARTS_MAX,
+    failedIds: new Set(),   // cartes déjà ratées pendant cette leçon
+    sessionXp: 0,           // XP gagnés pendant cette leçon
+    sessionCoins: 0,        // pièces gagnées pendant cette leçon
+    hintUsed: new Set(),    // indices utilisés sur la carte en cours
+    goalReached: false,     // l'objectif du jour a été atteint pendant cette leçon
+    startedAt: 0,
+    endsAt: 0,
+    verdict: null,
+    placeStep: 0,           // test de placement : étape en cours (0 = niveaux 1 à 9)
+    placeRight: 0,          // bonnes réponses dans l'étape en cours
+    placeWrong: 0,          // erreurs dans l'étape en cours
+    canRescue: false,       // niveau raté : on peut encore continuer avec un cœur de secours
+    pairGrids: [],          // niveau Paires : les grilles [{ family, pairs, matched, order }]
+    pairIndex: 0,           // grille en cours
+    pairSel: null,          // case sélectionnée, en attente de sa paire
+    phase: 'idle',          // 'answering' | 'feedback' | 'over' | 'idle'
+    onEndPrimary: null,
+    onEndSecondary: null
+};
+
+/* ---------- Statistiques par question ---------- */
+
+const cardsOfLevel = n => QUESTIONS.filter(q => q.niveau === n);
+const missCount = id => state.data.stats[id]?.miss || 0;
+const missedCards = () => QUESTIONS.filter(q => missCount(q.id) > 0);
+
+// Répétition espacée : après n réussites d'affilée, la question « dort » ce nombre de jours
+const REVIEW_DAYS = [0, 1, 3, 7, 14, 30];
+const REPLAY_MIN = 3;   // un niveau déjà terminé reprend au moins 3 questions
+
+function recordResult(id, ok) {
+    const entry = state.data.stats[id] || { miss: 0 };
+    entry.miss = ok ? Math.max(0, entry.miss - 1) : entry.miss + 1;
+    entry.streak = ok ? (entry.streak || 0) + 1 : 0;   // réussites d'affilée
+    entry.tries = (entry.tries || 0) + 1;
+    if (ok) entry.right = (entry.right || 0) + 1;
+    entry.last = Date.now();
+    state.data.stats[id] = entry;
+
+    state.data.totals.tries++;
+    if (ok) state.data.totals.right++;
+    saveData();
+}
+
+const streakOf = id => state.data.stats[id]?.streak || 0;
+
+/** Une question est « à revoir » si jamais vue, ratée récemment, ou si son délai est écoulé. */
+function isDue(q) {
+    const s = state.data.stats[q.id];
+    if (!s || !s.streak || !s.last) return true;
+    const days = REVIEW_DAYS[Math.min(s.streak, REVIEW_DAYS.length - 1)];
+    return Date.now() - s.last >= days * 86400000;
+}
+
+/** Questions d'un niveau : toutes à la première fois, puis seulement celles qui ne sont pas maîtrisées. */
+function levelCards(level) {
+    const all = cardsOfLevel(level);
+    if (!state.data.done[level]) return all;
+    const due = all.filter(isDue);
+    if (due.length >= REPLAY_MIN) return due;
+    const resting = all.filter(q => !isDue(q)).sort((a, b) => streakOf(a.id) - streakOf(b.id));
+    return [...due, ...resting.slice(0, REPLAY_MIN - due.length)];
+}
+
+/* ---------- XP, titres et objectif du jour ---------- */
+
+function dayXpNow() {
+    const d = state.data.dayXp;
+    return d.day === todayKey() ? d.xp : 0;
+}
+
+function addXp(amount) {
+    if (amount <= 0) return;
+    const data = state.data;
+    const today = todayKey();
+    if (data.dayXp.day !== today) data.dayXp = { day: today, xp: 0 };
+
+    const before = data.dayXp.xp;
+    data.xp += amount;
+    data.dayXp.xp += amount;
+    state.sessionXp += amount;
+
+    const coinGain = Math.round(amount / COIN_RATE);
+    data.coins += coinGain;
+    state.sessionCoins += coinGain;
+
+    if (before < data.goal && data.dayXp.xp >= data.goal) {
+        data.goalDays[today] = true;
+        state.goalReached = true;
+            }
+    saveData();
+    renderHeader();
+}
+
+function titleFor(xp) {
+    let idx = 0;
+    TITLES.forEach((t, i) => { if (xp >= t.xp) idx = i; });
+    return { current: TITLES[idx], next: TITLES[idx + 1] || null };
+}
+
+/** Texte « +45 XP » (et objectif atteint) affiché à la fin d'une leçon. */
+function xpSummary() {
+    const lines = [];
+    if (state.sessionXp > 0) lines.push(`+${state.sessionXp} XP   +${state.sessionCoins} 🪙`);
+    if (state.goalReached) lines.push('🎯 Objectif atteint ! Va dans Défis pour ta récompense.');
+    return lines.join('\n');
+}
+
+/* ---------- Série de jours ---------- */
+
+/** Nombre de jours entre un jour « AAAA-MM-JJ » et aujourd'hui. */
+function daysSince(day) {
+    const [y, m, d] = day.split('-').map(Number);
+    const then = new Date(y, m - 1, d, 12);
     const now = new Date();
-    now.setHours(0,0,0,0);
-    return now.getTime();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+    return Math.round((today - then) / 86400000);
 }
 
-function loadNextCard() {
-    const today = getTodayTimestamp();
-    const selectedTheme = document.getElementById('themeFilter').value;
+/** Jours entièrement manqués depuis la dernière activité. */
+function missedDays() {
+    const { lastDay } = state.data;
+    return lastDay ? Math.max(0, daysSince(lastDay) - 1) : Infinity;
+}
 
-    // Filtrer les cartes: celles dont la date de révision est <= aujourd'hui ET qui correspondent au thème
-    pendingCards = questions.filter(q => {
-        const isDue = q.next_review <= today;
-        const matchesTheme = (selectedTheme === "Tous" || q.theme === selectedTheme);
-        return isDue && matchesTheme;
+/** La série est vivante si aucun jour n'est manqué, ou si assez de gels les couvrent. */
+function currentStreak() {
+    const missed = missedDays();
+    return missed <= 0 || state.data.inv.freeze >= missed ? state.data.streak : 0;
+}
+
+function bumpStreak() {
+    const data = state.data;
+    if (data.lastDay === todayKey()) return;
+    const missed = missedDays();
+    const alive = missed <= 0 || (missed !== Infinity && data.inv.freeze >= missed);
+    if (alive && missed > 0) {
+        data.inv.freeze -= missed;
+        showToast(`🧊 ${plural(missed, 'gel de série utilisé', 'gels de série utilisés')} : ta série est sauvée !`);
+    }
+    data.streak = alive ? data.streak + 1 : 1;
+    data.lastDay = todayKey();
+    data.best.streak = Math.max(data.best.streak, data.streak);
+    saveData();
+}
+
+/* ---------- Infos sur un niveau ---------- */
+
+/** Questions des 9 niveaux précédents + éventuelles questions bonus du défi. */
+function challengePool(level) {
+    const from = level - CHALLENGE_EVERY + 1;
+    const previous = QUESTIONS.filter(q => q.niveau >= from && q.niveau < level);
+    const bonus = QUESTIONS.filter(q => q.niveau === level);
+    return [...previous, ...bonus];
+}
+
+function levelInfo(n) {
+    if (isChallenge(n)) {
+        const pool = challengePool(n);
+        return {
+            challenge: true,
+            name: `Défi ${n / CHALLENGE_EVERY}`,
+            count: Math.min(CHALLENGE_SIZE, pool.length),
+            reviews: 0,
+            missed: pool.filter(q => missCount(q.id) > 0).length
+        };
+    }
+    if (isPairs(n)) {
+        return { challenge: false, pairs: true, name: LEVEL_NAMES[n] || 'Paires à associer', count: PAIRS_GRIDS, reviews: 0, missed: 0 };
+    }
+    const cards = cardsOfLevel(n);
+    return {
+        challenge: false,
+        name: LEVEL_NAMES[n] || `Niveau ${n}`,
+        count: levelCards(n).length,
+        reviews: pickReviewCards(n).length,   // le nombre est fixe, seul le choix des cartes est aléatoire
+        missed: cards.filter(q => missCount(q.id) > 0).length
+    };
+}
+
+/** « 5 questions + 3 révisions » : la taille réelle de la leçon. */
+function questionsLabel(info) {
+    if (info.pairs) return `${plural(PAIRS_GRIDS, 'grille', 'grilles')} de ${PAIRS_PER_GRID} paires`;
+    const base = plural(info.count, 'question', 'questions');
+    return info.reviews > 0 ? `${base} + ${plural(info.reviews, 'révision', 'révisions')}` : base;
+}
+
+/* ---------- Badges ---------- */
+
+/** Statistiques sur lesquelles reposent les badges. */
+function themeStats() {
+    const map = {};
+    QUESTIONS.forEach(q => {
+        const t = map[q.theme] || (map[q.theme] = { theme: q.theme, total: 0, unlocked: 0, tries: 0, right: 0, mastered: 0 });
+        t.total++;
+        if (q.niveau <= state.data.unlocked) t.unlocked++;   // accessibles dans le parcours
+        const s = state.data.stats[q.id];
+        if (s) {
+            t.tries += s.tries || 0;
+            t.right += s.right || 0;
+            if ((s.streak || 0) >= 3) t.mastered++;
+        }
+    });
+    return Object.values(map).sort((a, b) => b.total - a.total || a.theme.localeCompare(b.theme, 'fr'));
+}
+
+function badgeStats() {
+    const d = state.data;
+    // Les niveaux validés par le test de placement ne comptent pas pour les badges
+    const placedBefore = d.placement ? d.placement.start : 1;
+    const doneLevels = Object.keys(d.done).map(Number).filter(n => d.done[n] && n >= placedBefore);
+    const daily = Object.values(d.daily);
+    return {
+        levelsDone: doneLevels.filter(n => !isChallenge(n)).length,
+        challengesDone: doneLevels.filter(isChallenge).length,
+        bestStreak: Math.max(d.best.streak, currentStreak()),
+        right: d.totals.right,
+        flawless: d.totals.flawless,
+        reviews: d.totals.reviews,
+        dailyDone: daily.length,
+        dailyPerfect: daily.some(r => r.score >= DAILY_SIZE),
+        bestSprint: d.best.sprint,
+        goalDays: Object.keys(d.goalDays).length,
+        xp: d.xp,
+        purchases: d.totals.purchases,
+        mapComplete: !!d.done[MAX_LEVEL],
+        themeMastered: themeStats().some(t => t.total >= 5 && t.mastered === t.total)
+    };
+}
+
+const BADGES = [
+    { id: 'first',     icon: '🌱', name: 'Premiers pas',        desc: 'Terminer un niveau',                    test: s => s.levelsDone >= 1 },
+    { id: 'right25',   icon: '👍', name: 'Bien parti',          desc: '25 bonnes réponses du premier coup',    test: s => s.right >= 25 },
+    { id: 'right100',  icon: '💯', name: 'Centenaire',          desc: '100 bonnes réponses du premier coup',   test: s => s.right >= 100 },
+    { id: 'right500',  icon: '🧠', name: 'Mémoire d’éléphant',  desc: '500 bonnes réponses du premier coup',   test: s => s.right >= 500 },
+    { id: 'flawless',  icon: '✨', name: 'Sans faute',          desc: 'Terminer une leçon sans erreur',        test: s => s.flawless >= 1 },
+    { id: 'flawless5', icon: '💎', name: 'Perfectionniste',     desc: 'Terminer 5 leçons sans erreur',         test: s => s.flawless >= 5 },
+    
+    // Séries consécutives
+    { id: 'streak7',   icon: '📆', name: 'Semaine parfaite',    desc: '7 jours de série consécutifs',          test: s => s.bestStreak >= 7 },
+    { id: 'streak30',  icon: '🌙', name: 'Un mois d’or',        desc: '30 jours de série consécutifs',         test: s => s.bestStreak >= 30 },
+    { id: 'streak90',  icon: '🌋', name: 'Trimestre d’acier',   desc: '90 jours de série consécutifs',         test: s => s.bestStreak >= 90 },
+    { id: 'streak365', icon: '👑', name: 'Un an de savoir',     desc: '365 jours de série consécutifs',        test: s => s.bestStreak >= 365 },
+
+    // Défis et modes de jeu
+    { id: 'challenge', icon: '🏆', name: 'Défi relevé',         desc: 'Réussir un niveau défi',                test: s => s.challengesDone >= 1 },
+    { id: 'daily',     icon: '📅', name: 'Rendez-vous du jour', desc: 'Terminer un défi du jour',              test: s => s.dailyDone >= 1 },
+    { id: 'daily7',    icon: '🗓️', name: 'Fidèle du jour',      desc: 'Terminer 7 défis du jour',              test: s => s.dailyDone >= 7 },
+    { id: 'daily10',   icon: '🎯', name: 'Dix sur dix',         desc: '10/10 au défi du jour',                 test: s => s.dailyPerfect },
+    { id: 'sprint10',  icon: '⚡', name: 'Éclair',              desc: '10 bonnes réponses en un sprint',       test: s => s.bestSprint >= 10 },
+    { id: 'sprint20',  icon: '🌩️', name: 'Foudre',              desc: '20 bonnes réponses en un sprint',       test: s => s.bestSprint >= 20 },
+    
+    // Engagement sur l'objectif quotidien
+    { id: 'goal',      icon: '⭐', name: 'Objectif atteint',    desc: 'Atteindre l’objectif du jour',          test: s => s.goalDays >= 1 },
+    { id: 'goal7',     icon: '🏅', name: 'Assidu',              desc: 'Atteindre l’objectif 7 jours',          test: s => s.goalDays >= 7 },
+    { id: 'goal30',    icon: '🎖️', name: 'Discipline de fer',  desc: 'Atteindre l’objectif 30 jours',         test: s => s.goalDays >= 30 },
+
+    // Boutique & Révisions
+    { id: 'shop',      icon: '🛒', name: 'Premier achat',       desc: 'Acheter un objet à la boutique',        test: s => s.purchases >= 1 },
+    { id: 'revisions', icon: '🔁', name: 'Révision en règle',   desc: 'Terminer une session de révision',      test: s => s.reviews >= 1 },
+    { id: 'revisions5',icon: '📚', name: 'Réviseur assidu',     desc: 'Terminer 5 sessions de révision',       test: s => s.reviews >= 5 },
+    
+    // Paliers d'XP
+    { id: 'xp100',     icon: '🌱', name: '100 XP',              desc: 'Cumuler 100 XP',                        test: s => s.xp >= 100 },
+    { id: 'xp500',     icon: '💫', name: '500 XP',              desc: 'Cumuler 500 XP',                        test: s => s.xp >= 500 },
+    { id: 'xp2000',    icon: '🌟', name: '2 000 XP',            desc: 'Cumuler 2 000 XP',                      test: s => s.xp >= 2000 },
+    { id: 'xp5000',    icon: '🔥', name: '5 000 XP',            desc: 'Cumuler 5 000 XP',                      test: s => s.xp >= 5000 },
+
+    // Maîtrise Globale
+    { id: 'specialist',icon: '🎓', name: 'Spécialiste',         desc: 'Maîtriser toutes les questions d’un thème', test: s => s.themeMastered },
+    { id: 'complete',  icon: '🗺️', name: 'Parcours complet',    desc: 'Terminer tous les niveaux',             test: s => s.mapComplete }
+];
+
+/** Débloque les badges mérités. `silent` évite les notifications (au chargement). */
+function checkBadges(silent = false) {
+    const stats = badgeStats();
+    state.data.best.streak = Math.max(state.data.best.streak, stats.bestStreak);
+    let earned = false;
+    for (const badge of BADGES) {
+        if (state.data.badges[badge.id] || !badge.test(stats)) continue;
+        state.data.badges[badge.id] = todayKey();
+        
+        earned = true;
+        if (!silent) showToast(`${badge.icon} Nouveau badge : ${badge.name} ! Va dans ton profil pour ta récompense.`);
+        
+    }
+    if (earned) saveData();
+}
+
+function showToast(text) {
+    const box = $('toasts');
+    const toast = el('div', 'toast');
+    toast.textContent = text;
+    box.append(toast);
+    setTimeout(() => toast.remove(), 4500);
+}
+
+/* ---------- Défi du jour ---------- */
+
+/** Les mêmes 10 questions pour tout le monde un jour donné (graine = la date). */
+function dailyQuestions(day) {
+    const sorted = [...QUESTIONS].sort((a, b) => a.id - b.id);
+    return seededShuffle(sorted, `culture-g-${day}`).slice(0, DAILY_SIZE);
+}
+
+function dailyShareText(day) {
+    const r = state.data.daily[day];
+    if (!r) return '';
+    const [y, m, d] = day.split('-');
+    return `🧠 Kultivo — Défi du jour ${d}/${m}/${y}\n${r.grid}\n${r.score}/${DAILY_SIZE} en ${fmtTime(r.seconds)}`;
+}
+
+async function copyText(text, button) {
+    let ok = false;
+    try {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+    } catch (err) { /* repli ci-dessous */ }
+    if (!ok) {
+        const area = el('textarea');
+        area.value = text;
+        area.style.cssText = 'position:fixed;opacity:0;';
+        document.body.append(area);
+        area.select();
+        try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+        area.remove();
+    }
+    if (!ok) { window.prompt('Copie ton résultat :', text); return; }
+    if (button) {
+        const old = button.textContent;
+        button.textContent = 'Copié ✓';
+        setTimeout(() => { button.textContent = old; }, 2000);
+    }
+}
+
+/* ---------- Décors latéraux ---------- */
+
+const DECOR_ICONS = ['🌍', '📚', '🔬', '🎨', '🏛️', '🎭', '🔭', '🎻', '🧭', '📜',
+                     '💡', '🚀', '⚗️', '🏺', '🎼', '🖋️', '🗺️', '🧬', '⚔️', '🏰'];
+
+function buildDecor(container, count) {
+    container.replaceChildren();
+    for (let i = 0; i < count; i++) {
+        const badge = el('span', `decor-badge ${i % 2 === 0 ? 'left' : 'right'} float-${(i % 3) + 1}`);
+        badge.textContent = DECOR_ICONS[(i * 7 + 3) % DECOR_ICONS.length];
+        // position dans la zone latérale (0,15 à 0,85), pseudo-aléatoire mais stable
+        const k = 0.15 + 0.7 * (0.5 + 0.5 * Math.sin(i * 2.399));
+        badge.style.setProperty('--k', k.toFixed(2));
+        badge.style.setProperty('--y', `${(((i + 0.5) / count) * 100).toFixed(1)}%`);
+        badge.style.setProperty('--size', `${52 + (i % 3) * 10}px`);
+        badge.style.animationDelay = `${-(i % 5) * 0.9}s`;
+        container.append(badge);
+    }
+}
+
+/* ---------- Navigation entre écrans ---------- */
+
+const MAIN_SCREENS = ['map', 'challenges', 'shop', 'profile'];
+
+function showScreen(name) {
+    $('mapScreen').hidden = name !== 'map';
+    $('challengesScreen').hidden = name !== 'challenges';
+    $('shopScreen').hidden = name !== 'shop';
+    $('profileScreen').hidden = name !== 'profile';
+    $('studyScreen').hidden = name !== 'study';
+    $('topbar').hidden = !MAIN_SCREENS.includes(name);
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        const active = btn.dataset.screen === name;
+        btn.classList.toggle('is-active', active);
+        if (active) btn.setAttribute('aria-current', 'page');
+        else btn.removeAttribute('aria-current');
     });
 
-    document.getElementById('statsDisplay').innerText = `Cartes à réviser aujourd'hui : ${pendingCards.length}`;
+    if (name === 'map') renderMap();
+    if (name === 'challenges') { window.scrollTo(0, 0); renderChallenges(); }
+    if (name === 'shop') { window.scrollTo(0, 0); renderShop(); }
+    if (name === 'profile') { window.scrollTo(0, 0); renderProfile(); }
+}
 
-    if (pendingCards.length === 0) {
-        document.getElementById('cardContainer').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'block';
-    } else {
-        document.getElementById('cardContainer').style.display = 'block';
-        document.getElementById('emptyState').style.display = 'none';
+/* ---------- Affichage : en-tête, carte, défis, profil ---------- */
+/* ---------- Notifications du Menu ---------- */
+function updateNavNotifications() {
+    const data = state.data;
+    
+    // 1. Compter les badges non réclamés (pour l'onglet Profil)
+    let unclaimedBadges = 0;
+    for (const b in data.badges) {
+        if (!data.claimedBadges[b]) unclaimedBadges++;
+    }
+    
+    const profileBtn = document.querySelector('.nav-btn[data-screen="profile"]');
+    if (unclaimedBadges > 0) profileBtn.setAttribute('data-notif', unclaimedBadges);
+    else profileBtn.removeAttribute('data-notif');
+    
+    // 2. Vérifier si l'objectif du jour est en attente de récupération (pour l'onglet Défis)
+    let unclaimedGoals = 0;
+    const xp = dayXpNow();
+    if (xp >= data.goal && !data.claimedGoals[todayKey()]) {
+        unclaimedGoals = 1;
+    }
+    
+    const challengesBtn = document.querySelector('.nav-btn[data-screen="challenges"]');
+    if (unclaimedGoals > 0) challengesBtn.setAttribute('data-notif', unclaimedGoals);
+    else challengesBtn.removeAttribute('data-notif');
+}
+
+
+function renderHeader() {
+    $('streakDisplay').textContent = currentStreak();$('xpDisplay').textContent = state.data.xp;
+    $('coinDisplay').textContent = state.data.coins;
+    
+    const n = missedCards().length;
+    const btn = $('reviewBtn');
+    btn.hidden = n === 0;
+    btn.textContent = `↻ ${n} à revoir`;
+
+    // NOUVEAU : Met à jour les pastilles rouges à chaque changement d'écran ou gain d'XP
+    updateNavNotifications();
+}
+
+function renderMap() {
+    $('placementBtn').hidden = !canTakePlacement();
+    const list = $('mapPath');
+    list.replaceChildren();
+    let focusNode = null;
+
+    for (let n = 1; n <= MAX_LEVEL; n++) {
+        const info = levelInfo(n);
+        const locked = n > state.data.unlocked;
+        const done = !!state.data.done[n];
+
+        const li = el('li', `stop${info.challenge ? ' is-challenge-stop' : ''}${info.pairs ? ' is-pairs-stop' : ''}`);
+        li.style.setProperty('--x', info.challenge ? '0px' : `${Math.round(Math.sin(n * 1.3) * 52)}px`);
+
+        const status = locked ? 'is-locked' : done ? 'is-done' : 'is-current';
+        const btn = el('button', `node ${status}${info.challenge ? ' is-challenge' : ''}${info.pairs ? ' is-pairs' : ''}`);
+        btn.type = 'button';
+        btn.disabled = locked;
+        // Défis et Paires gardent leur icône dans tous les états (même verrouillés), pour les repérer de loin
+        const icon = info.challenge ? '🏆' : info.pairs ? '🔗' : null;
+        if (icon) {
+            const span = el('span', 'node-icon');
+            span.textContent = icon;
+            btn.append(span);
+        } else {
+            btn.textContent = locked ? '🔒' : done ? '✓' : String(n);
+        }
+        btn.setAttribute('aria-label',
+            `${info.challenge ? '' : `Niveau ${n}, `}${info.name}${locked ? ', verrouillé' : done ? ', terminé' : ''}`);
+        if (!locked) btn.addEventListener('click', () => openStartModal(n));
+
+        const label = el('div', 'stop-label');
+        const title = el('span', 'stop-name');
+        title.textContent = info.name;
+        const meta = el('span', 'stop-meta');
+        meta.textContent = info.challenge
+            ? `${plural(info.count, 'question', 'questions')}, ${plural(CHALLENGE_HEARTS, 'cœur', 'cœurs')}`
+            : questionsLabel(info);
+        label.append(title, meta);
+        if (!locked && info.missed > 0) {
+            const pill = el('span', 'pill');
+            pill.textContent = `${info.missed} à revoir`;
+            label.append(pill);
+        }
+
+        li.append(btn, label);
+        list.append(li);
+
+        if (!locked && (!done || n === state.data.unlocked)) focusNode = btn;
+    }
+
+    if (focusNode) focusNode.scrollIntoView({ block: 'center' });
+}
+
+function renderChallenges() {
+    const data = state.data;
+
+    // Objectif du jour
+    const xp = dayXpNow();
+    const pct = Math.min(100, Math.round((xp / data.goal) * 100));
+    $('goalText').textContent = `${xp} / ${data.goal} XP`;
+    $('goalBar').style.width = `${pct}%`;
+    $('goalMeter').setAttribute('aria-valuenow', String(pct));
+    
+    // NOUVEAU : Gestion de l'affichage du bouton de récompense de l'objectif
+    const today = todayKey();
+    const currentChoice = GOAL_CHOICES.find(c => c.xp === data.goal) || GOAL_CHOICES[1];
+    const reward = currentChoice.reward;
+    const isReached = xp >= data.goal;
+    const isClaimed = !!data.claimedGoals[today];
+
+    const hintBox = $('goalHint');
+    hintBox.replaceChildren(); // On vide la zone
+
+    if (!isReached) {
+        hintBox.textContent = `Encore ${data.goal - xp} XP pour atteindre ton objectif et gagner ${reward} 🪙.`;
+    } else if (isReached && !isClaimed) {
+        const claimBtn = el('button', 'btn btn-green');
+        claimBtn.textContent = `🎁 Récupérer ${reward} 🪙`;
+        claimBtn.style.marginTop = '10px';
         
-        // Prendre une carte au hasard parmi celles à réviser
-        const randomIndex = Math.floor(Math.random() * pendingCards.length);
-        const card = pendingCards[randomIndex];
-        currentCardIndex = questions.findIndex(q => q.id === card.id);
-
-        displayCard(card);
-    }
-}
-
-function displayCard(card) {
-    document.getElementById('cardTag').innerText = card.theme;
-    document.getElementById('questionText').style.display = 'block';
-    document.getElementById('questionText').innerText = card.q;
-    document.getElementById('answerText').innerText = card.a;
-    document.getElementById('explanationText').innerText = card.exp;
-    
-    // Cacher la réponse par défaut
-    document.getElementById('answerSection').style.display = 'none';
-}
-
-function showAnswer() {
-    document.getElementById('answerSection').style.display = 'flex';
-}
-
-function handleAnswer(isCorrect, event) {
-    event.stopPropagation(); // Empêche le clic de se propager à la carte entière
-    
-    let card = questions[currentCardIndex];
-    const today = getTodayTimestamp();
-
-    if (isCorrect) {
-        // Algorithme basique de répétition espacée : on double l'intervalle
-        card.interval = card.interval === 0 ? 1 : card.interval * 2;
+        claimBtn.addEventListener('click', () => {
+            data.claimedGoals[today] = true;
+            data.coins += reward;
+            saveData();
+            renderHeader();
+            renderChallenges(); // Met à jour l'écran pour cacher le bouton
+            showToast(`🎁 +${reward} 🪙 pour ton objectif du jour !`);
+        });
+        
+        hintBox.append(claimBtn);
     } else {
-        // Si erreur, on remet à zéro (révision demain)
-        card.interval = 0;
+        hintBox.textContent = 'Objectif atteint et récompense récupérée, bravo ! Reviens demain.';
     }
 
-    // Calcul de la prochaine date
-    const nextDate = new Date(today);
-    nextDate.setDate(nextDate.getDate() + (card.interval === 0 ? 1 : card.interval));
-    card.next_review = nextDate.getTime();
+    const choices = $('goalChoices');
+    choices.replaceChildren();
+    // Une fois qu'on a gagné de l'XP aujourd'hui, l'objectif est verrouillé jusqu'à demain
+    const locked = xp > 0;
+    GOAL_CHOICES.forEach(choice => {
+        const active = choice.xp === data.goal;
+        const btn = el('button', `goal-choice${active ? ' is-active' : ''}`);
+        btn.type = 'button';
+        btn.setAttribute('aria-pressed', String(active));
+        btn.disabled = locked && !active;
+
+        const name = el('b');
+        name.textContent = choice.label;
+        const amount = el('span');
+        amount.textContent = `${choice.xp} XP / jour`;
+        const prize = el('span', 'goal-reward');
+        prize.textContent = `🎁 ${choice.reward} 🪙`;
+        btn.append(name, amount, prize);
+
+        btn.addEventListener('click', () => {
+            if (locked) return;
+            data.goal = choice.xp;
+            saveData();
+            renderChallenges();
+        });
+        choices.append(btn);
+    });
+    $('goalNote').textContent = locked
+        ? '🔒 Tu as déjà gagné des XP aujourd’hui : tu pourras changer de rythme demain.'
+        : 'Ton choix est gardé pour les jours suivants. Tu peux le changer tant que tu n’as pas encore joué aujourd’hui.';
+
+    // Défi du jour
+    const result = data.daily[today];
+    if (result) {
+        $('dailyDesc').textContent = 'Défi terminé, bravo ! Un nouveau défi t’attend demain.';
+        $('dailyScore').textContent = `${result.score}/${DAILY_SIZE}`;
+        $('dailyTime').textContent = `en ${fmtTime(result.seconds)}`;
+        $('dailyGrid').textContent = result.grid;
+    } else {
+        $('dailyDesc').textContent = `${DAILY_SIZE} questions, les mêmes pour tous tes amis aujourd’hui. Un seul essai, pas de cœurs, chaque erreur compte.`;
+    }
+    $('dailyResult').hidden = !result;
+    $('dailyCard').classList.toggle('card-violet', !result);   // cadre violet = « à faire aujourd'hui »
+    $('dailyBtn').hidden = !!result;
+    $('dailyCopyBtn').hidden = !result;
+
+    // Sprint : record et dernière partie dans deux encadrés
+    const { sprint: best, lastSprint, lastSprintRecord } = data.best;
+    $('sprintDesc').textContent = best > 0
+        ? `Réponds à un maximum de questions en ${SPRINT_SECONDS} secondes.`
+        : `Réponds à un maximum de questions en ${SPRINT_SECONDS} secondes. Pas encore de record, à toi de jouer !`;
+    $('sprintScores').hidden = best === 0;
+    $('sprintBest').textContent = best;
+    $('sprintLast').textContent = lastSprint ?? '—';
+    $('sprintLastSub').textContent = lastSprintRecord ? '🎉 Nouveau record !' : 'bonnes réponses';
+}
+
+function renderProfile() {
+    const data = state.data;
+    const { current, next } = titleFor(data.xp);
+
+    $('profileTitle').textContent = `🎖️ ${current.name}`;
+    $('profileXp').textContent = `${data.xp} XP`;
+    if (next) {
+        const span = next.xp - current.xp;
+        const pct = Math.round(((data.xp - current.xp) / span) * 100);
+        $('titleBar').style.width = `${pct}%`;
+        $('titleMeter').setAttribute('aria-valuenow', String(pct));
+        $('profileNext').textContent = `Encore ${next.xp - data.xp} XP pour devenir « ${next.name} ».`;
+    } else {
+        $('titleBar').style.width = '100%';
+        $('titleMeter').setAttribute('aria-valuenow', '100');
+        $('profileNext').textContent = 'Tu as atteint le plus haut titre. Respect !';
+    }
+
+    // Tuiles de résumé
+    const finished = Object.keys(data.done).filter(n => data.done[n]).length;
+    $('tileStreak').textContent = plural(currentStreak(), 'jour', 'jours');
+    $('tileRate').textContent = data.totals.tries > 0
+        ? `${Math.round((data.totals.right / data.totals.tries) * 100)} %`
+        : '—';
+    $('tileLevels').textContent = `${finished} / ${MAX_LEVEL}`;
+
+    // Records
+    const dailies = Object.values(data.daily);
+    let bestDaily = '—';
+    if (dailies.length) {
+        const top = dailies.reduce((a, b) =>
+            b.score > a.score || (b.score === a.score && b.seconds < a.seconds) ? b : a);
+        bestDaily = `${top.score}/${DAILY_SIZE} en ${fmtTime(top.seconds)}`;
+    }
+    const doneCount = Object.keys(data.done).filter(n => data.done[n]).length;
+    const records = [
+        ['🔥 Série actuelle', plural(currentStreak(), 'jour', 'jours')],
+        ['🌋 Meilleure série', plural(Math.max(data.best.streak, currentStreak()), 'jour', 'jours')],
+        ['⚡ Meilleur sprint', data.best.sprint > 0 ? plural(data.best.sprint, 'bonne réponse', 'bonnes réponses') : '—'],
+        ['📅 Meilleur défi du jour', bestDaily],
+        ['✅ Réussies du premier coup', `${data.totals.right} sur ${data.totals.tries}`],
+        ['🗺️ Niveaux terminés', `${doneCount} / ${MAX_LEVEL}`],
+        ['🎯 Jours d’objectif atteint', String(Object.keys(data.goalDays).length)]
+    ];
+    const list = $('recordsList');
+    list.replaceChildren();
+    records.forEach(([label, value]) => {
+        const li = el('li');
+        const left = el('span');
+        left.textContent = label;
+        const right = el('b');
+        right.textContent = value;
+        li.append(left, right);
+        list.append(li);
+    });
+
+    // Réussite par thème
+    const bars = $('themeBars');
+    bars.replaceChildren();
+    themeStats().forEach(t => {
+        const row = el('div', 'theme-row');
+        const head = el('div', 'theme-head');
+        const name = el('span');
+        name.textContent = t.theme;
+        const info = el('span');
+        const pct = t.tries > 0 ? Math.round((t.right / t.tries) * 100) : null;
+        info.textContent = pct === null ? 'pas encore joué' : `${pct} % de réussite`;
+        head.append(name, info);
+        const meter = el('div', 'meter');
+        const fill = el('div', 'meter-fill');
+        fill.style.width = `${pct ?? 0}%`;
+        meter.append(fill);
+        const sub = el('p', 'theme-sub');
+        sub.textContent = `${t.mastered} ancrées en mémoire, ${t.unlocked} débloquées sur ${t.total} dans le jeu`;
+        row.append(head, meter, sub);
+        bars.append(row);
+    });
+
+    // Badges
+    const grid = $('badgeGrid');
+    grid.replaceChildren();
+    let earned = 0;
+    BADGES.forEach(b => {
+        const has = !!data.badges[b.id];
+        const claimed = !!data.claimedBadges[b.id]; // NOUVEAU
+        if (has) earned++;
+        
+        const card = el('div', `badge${has ? '' : ' is-locked'}`);
+        const icon = el('div', 'badge-icon');
+        icon.textContent = has ? b.icon : '🔒';
+        const name = el('div', 'badge-name');
+        name.textContent = b.name;
+        const desc = el('div', 'badge-desc');
+        desc.textContent = b.desc;
+        card.append(icon, name, desc);
+
+        // NOUVEAU : Si le badge est obtenu mais pas encore réclamé
+        if (has && !claimed) {
+            // On fait ressortir toute la carte visuellement
+            card.style.borderColor = 'var(--green)';
+            card.style.backgroundColor = 'var(--green-tint)';
+
+            // On crée un vrai bouton vert, bien large et visible
+            const claimBtn = el('button', 'btn btn-green btn-full');
+            claimBtn.type = 'button';
+            claimBtn.textContent = `🎁 Récupérer ${COIN_BADGE} 🪙`;
+            claimBtn.style.marginTop = 'auto';
+            claimBtn.style.padding = '8px'; // Légèrement plus fin pour bien s'intégrer à la carte
+            claimBtn.style.fontSize = '0.95rem';
+            
+            card.append(claimBtn);
+
+            // On déclenche la récompense au clic sur ce bouton précis
+            claimBtn.addEventListener('click', () => {
+                data.claimedBadges[b.id] = true;
+                data.coins += COIN_BADGE;
+                saveData();
+                renderHeader();
+                renderProfile();
+                showToast(`🎁 +${COIN_BADGE} 🪙 pour le badge ${b.name} !`);
+            });
+        }
+
+        grid.append(card);
+    });
+    $('badgeCount').textContent = `(${earned}/${BADGES.length})`;
+}
+
+/* ---------- Boutique et indices ---------- */
+
+const PACK_SIZE = 5;   // un pack de 5 coûte le prix de 4
+
+const SHOP = [
+    { id: 'hintLength', icon: '🔤', short: 'Longueur',        name: 'Indice : longueur',
+      desc: 'Le nombre de lettres et de mots de la réponse.', price: 15,  size: 'third' }, // avant: 5
+    { id: 'hintLetter', icon: '🅰️', short: 'Première lettre', name: 'Indice : première lettre',
+      desc: 'La première lettre de la réponse.',              price: 30, size: 'third' }, // avant: 10
+    { id: 'hintStart',  icon: '🔎', short: 'Début du mot',    name: 'Indice : début du mot',
+      desc: 'Les premières lettres de la réponse.',           price: 50, size: 'third' }, // avant: 20
+    { id: 'heart',      icon: '💖', short: 'Cœur de secours', name: 'Cœur de secours',
+      desc: 'Quand tu perds ton dernier cœur, le jeu te propose de l’utiliser pour continuer ta leçon.', price: 100, size: 'half' }, // avant: 30
+    { id: 'freeze',     icon: '🧊', short: 'Gel de série',    name: 'Gel de série',
+      desc: 'Protège ta série quand tu rates un jour (un gel par jour manqué). Maximum 5.', price: 200, size: 'half', max: 5 } // avant: 60
+];
+const HINT_IDS = ['hintLength', 'hintLetter', 'hintStart'];
+
+/** La réponse sans son article (« Le Nil » devient « Nil »). */
+function answerCore(q) {
+    return q.a[0].replace(/^(?:l['’]|le\s+|la\s+|les\s+|un\s+|une\s+|du\s+|des\s+)/i, '').trim();
+}
+
+function hintText(id, q) {
+    const core = answerCore(q);
+    const lettersIn = word => [...word].filter(c => /[\p{L}\p{N}]/u.test(c)).length;
+    if (id === 'hintLength') {
+        if (/^\d+$/.test(core)) return `${core.length} chiffres`;
+        const words = core.split(/\s+/);
+        return words.length === 1
+            ? `${lettersIn(core)} lettres`
+            : `${words.length} mots (${words.map(lettersIn).join(' + ')} lettres)`;
+    }
+    const chars = [...core];
+    if (id === 'hintLetter') return `Commence par « ${chars[0].toUpperCase()} »`;
+    const n = Math.max(1, Math.min(3, Math.ceil(chars.length / 3)));
+    return `Commence par « ${chars.slice(0, n).join('')}… »`;
+}
+
+function renderHintOptions() {
+    const box = $('hintOptions');
+    box.replaceChildren();
+    $('hintCoins').textContent = `${state.data.coins} 🪙`;
+    HINT_IDS.forEach(id => {
+        const item = SHOP.find(i => i.id === id);
+        const owned = state.data.inv[id] || 0;
+        const used = state.hintUsed.has(id);
+        const btn = el('button', 'btn btn-hint');
+        btn.type = 'button';
+        btn.textContent = used ? `${item.icon} ${item.short} (déjà utilisé)`
+            : owned > 0 ? `${item.icon} ${item.short} (en stock : ${owned})`
+            : `${item.icon} ${item.short} · ${item.price} 🪙`;
+        btn.disabled = used || (owned === 0 && state.data.coins < item.price);
+        btn.addEventListener('click', () => useHint(id));
+        box.append(btn);
+    });
+}
+
+function toggleHintPanel() {
+    if (state.phase !== 'answering') return;
+    const panel = $('hintPanel');
+    panel.hidden = !panel.hidden;
+    if (!panel.hidden) renderHintOptions();
+}
+
+/** Utilise un indice du stock, ou l'achète au prix de la boutique s'il n'y en a plus. */
+function useHint(id) {
+    if (state.phase !== 'answering' || state.hintUsed.has(id)) return;
+    const item = SHOP.find(i => i.id === id);
+    const data = state.data;
+    if ((data.inv[id] || 0) > 0) data.inv[id]--;
+    else if (data.coins >= item.price) data.coins -= item.price;
+    else return;
+
+    state.hintUsed.add(id);
+    saveData();
+    renderHeader();
+
+    const list = $('hintList');
+    const li = el('li');
+    li.textContent = `${item.icon} ${hintText(id, state.current.q)}`;
+    list.append(li);
+    list.hidden = false;
+    $('hintPanel').hidden = true;
+    $('userInput').focus();
+}
+
+function renderShop() {
+    const grid = $('shopGrid');
+    grid.replaceChildren();
+    const data = state.data;
+
+    const wallet = el('article', 'card card-wallet');
+    const title = el('h2');
+    title.textContent = '🪙 Tes pièces';
+    const big = el('p', 'card-big');
+    big.textContent = plural(data.coins, 'pièce', 'pièces');
+    const how = el('p', 'muted');
+    how.textContent = `Tu gagnes 1 pièce tous les ${COIN_RATE} XP, des pièces bonus en atteignant ton objectif du jour, et ${COIN_BADGE} pièces par nouveau badge. Dépenser des pièces ne baisse jamais ton XP.`;
+    wallet.append(title, big, how);
+    grid.append(wallet);
+
+    SHOP.forEach(item => {
+        const owned = data.inv[item.id] || 0;
+        const card = el('article', `card shop-card shop-${item.size}`);
+
+        const icon = el('div', 'shop-icon');
+        icon.textContent = item.icon;
+        const name = el('h2');
+        name.textContent = item.name;
+        const desc = el('p');
+        desc.textContent = item.desc;
+        const stock = el('p', 'muted');
+        stock.textContent = `En stock : ${owned}`;
+
+        const actions = el('div', 'card-actions');
+        [[1, item.price], [PACK_SIZE, item.price * (PACK_SIZE - 1)]].forEach(([qty, cost]) => {
+            const full = item.max && owned + qty > item.max;
+            if (qty > 1 && item.max && item.max < qty) return;   // pas de pack pour les objets limités
+            const btn = el('button', `btn ${qty === 1 ? 'btn-green' : 'btn-violet'}`);
+            btn.type = 'button';
+            btn.textContent = qty === 1 ? `Acheter · ${cost} 🪙` : `Pack ×${qty} · ${cost} 🪙`;
+            btn.disabled = data.coins < cost || !!full;
+            btn.addEventListener('click', () => buyItem(item.id, qty));
+            actions.append(btn);
+        });
+
+        card.append(icon, name, desc, stock, actions);
+        grid.append(card);
+    });
+}
+
+function buyItem(id, qty) {
+    const item = SHOP.find(i => i.id === id);
+    const data = state.data;
+    const cost = qty >= PACK_SIZE ? item.price * (PACK_SIZE - 1) : item.price * qty;
+    if (data.coins < cost) return;
+    if (item.max && (data.inv[id] || 0) + qty > item.max) {
+        showToast(`Tu ne peux pas en garder plus de ${item.max}.`);
+        return;
+    }
+    data.coins -= cost;
+    data.inv[id] = (data.inv[id] || 0) + qty;
+    data.totals.purchases++;
+    saveData();
+    renderHeader();
+    renderShop();
+    showToast(`${item.icon} ${item.name} : acheté !`);
+    checkBadges();
+}
+
+function openReviewModal() {
+    const count = Math.min(REVIEW_SESSION_SIZE, missedCards().length);
+    state.pendingMode = 'review';
+    state.pendingLevel = null;
+
+    $('modalTitle').textContent = '🔁 Révisions';
+    $('modalDesc').textContent = 'Prêt à rattraper tes erreurs ?';
+    $('modalStatsText').textContent = plural(count, 'question', 'questions');
+    showModal(false); // Le bouton de confirmation sera vert
+}
+
+/* ---------- Popup de démarrage ---------- */
+
+function openStartModal(n) {
+    const info = levelInfo(n);
+    state.pendingMode = 'level';
+    state.pendingLevel = n;
+
+    $('modalTitle').textContent = info.challenge ? `🏆 ${info.name}` : info.pairs ? `🔗 Niveau ${n}` : `Niveau ${n}`;
+    const bonusCount = cardsOfLevel(n).length;
+    $('modalDesc').textContent = info.challenge
+        ? `Un mélange des niveaux ${n - CHALLENGE_EVERY + 1} à ${n - 1}${bonusCount ? `, plus ${plural(bonusCount, 'question bonus propre à ce défi', 'questions bonus propres à ce défi')}` : ''}. Attention, seulement ${plural(CHALLENGE_HEARTS, 'cœur', 'cœurs')} !`
+        : info.pairs
+        ? `Associe chaque élément de gauche à son partenaire de droite, sur ${plural(PAIRS_GRIDS, 'grille', 'grilles')} à la suite. Chaque erreur coûte un cœur.`
+        : info.name;
+    $('modalStatsText').textContent = questionsLabel(info);
+
+    showModal(info.challenge);
+}
+
+/** Popup de validation du défi du jour et du sprint (comme pour les niveaux). */
+function openChallengeModal(mode) {
+    const daily = mode === 'daily';
+    state.pendingMode = mode;
+    state.pendingLevel = null;
+
+    $('modalTitle').textContent = daily ? '📅 Défi du jour' : '⚡ Sprint';
+    $('modalDesc').textContent = daily
+        ? `${DAILY_SIZE} questions, les mêmes pour tous tes amis aujourd’hui. Un seul essai !`
+        : `Réponds à un maximum de questions en ${SPRINT_SECONDS} secondes.`;
+    $('modalStatsText').textContent = daily
+        ? 'Pas de cœurs, pas de seconde chance'
+        : (state.data.best.sprint > 0
+            ? `Ton record : ${plural(state.data.best.sprint, 'bonne réponse', 'bonnes réponses')}`
+            : 'Pas encore de record');
+    showModal(daily);
+}
+
+/* ---------- Test de placement ---------- */
+
+/** Proposé seulement tant qu'aucun niveau n'est terminé et que le test n'a pas été fait. */
+function canTakePlacement() {
+    const d = state.data;
+    return !d.placement && !Object.values(d.done).some(Boolean);
+}
+
+/** 3 questions tirées dans les niveaux de l'étape (ex. étape 0 : niveaux 1 à 9). */
+function placementCards(step) {
+    const from = step * CHALLENGE_EVERY + 1;
+    const to = from + CHALLENGE_EVERY - 2;
+    const pool = QUESTIONS.filter(q => q.niveau >= from && q.niveau <= to);
+    return shuffle(pool).slice(0, PLACEMENT_PER_STEP).map(q => ({ q, review: false }));
+}
+
+function openPlacementModal(welcome = false) {
+    state.pendingMode = 'placement';
+    state.pendingLevel = null;
+
+    $('modalTitle').textContent = welcome ? '👋 Bienvenue ! Un test de placement ?' : '🧭 Test de placement';
+    const maxStart = PLACEMENT_STEPS * CHALLENGE_EVERY + 1;
+    $('modalDesc').textContent = `Ce test sert à te placer sur le parcours selon ta culture G. Les questions sont de plus en plus dures : chaque étape réussie te fait sauter 10 niveaux, jusqu’au niveau ${maxStart}. Le test s’arrête dès que tu rates une étape, et tu démarres là.`;
+    $('modalStatsText').textContent = `${PLACEMENT_STEPS} étapes · 2 bonnes réponses sur 3 pour en passer une · sans XP ni cœurs`;
+    $('startLevelBtn').textContent = 'Faire le test de placement';
+    $('modalSecondaryBtn').textContent = 'Non merci, je commence au niveau 1';
+    $('modalSecondaryBtn').hidden = false;
+    showModal(true);
+}
+
+/** Après chaque réponse : étape validée, test terminé, ou question suivante. */
+function placementAnswer(ok) {
+    if (ok) state.placeRight++;
+    else state.placeWrong++;
+    state.done++;
+
+    if (state.placeRight >= PLACEMENT_PASS) {
+        state.placeStep++;
+        state.placeRight = 0;
+        state.placeWrong = 0;
+        if (state.placeStep >= PLACEMENT_STEPS) { endSession(true); return; }
+        state.queue = placementCards(state.placeStep);
+        if (!state.queue.length) { endSession(true); return; }
+    } else if (state.placeWrong > PLACEMENT_PER_STEP - PLACEMENT_PASS || !state.queue.length) {
+        endSession(true);
+        return;
+    }
+    showCard();
+}
+
+/** Valide les niveaux passés et débloque le niveau de départ. */
+function applyPlacement(start) {
+    const d = state.data;
+    for (let n = 1; n < start; n++) d.done[n] = true;
+    d.unlocked = Math.max(d.unlocked, Math.min(start, MAX_LEVEL));
+    d.placement = { day: todayKey(), start };
+}
+
+function showModal(violet) {
+    const start = $('startLevelBtn');
+    start.classList.toggle('btn-green', !violet);
+    start.classList.toggle('btn-violet', violet);
+    $('startModal').querySelector('.modal-content').classList.toggle('is-challenge', violet);
+    $('startModal').hidden = false;
+    start.focus();
+}
+
+function closeStartModal() {
+    $('startModal').hidden = true;
+    $('startLevelBtn').textContent = 'Commencer';
+    $('modalSecondaryBtn').hidden = true;
+    state.pendingLevel = null;
+    state.pendingMode = 'level';
+}
+
+/* ---------- Lancer une leçon ---------- */
+
+/** Tirage au sort pondéré, sans remise : un poids plus fort = plus de chances. */
+function weightedPick(items, weightOf, k) {
+    const pool = [...items];
+    const picked = [];
+    while (picked.length < k && pool.length) {
+        const total = pool.reduce((sum, it) => sum + weightOf(it), 0);
+        let r = Math.random() * total;
+        let idx = pool.findIndex(it => (r -= weightOf(it)) < 0);
+        if (idx === -1) idx = pool.length - 1;
+        picked.push(pool.splice(idx, 1)[0]);
+    }
+    return picked;
+}
+
+/**
+ * Révisions d'un niveau normal.
+ * - Le nombre de places grandit avec le nombre de questions ratées (3 à 8).
+ * - On pioche dans TOUTES les erreurs, de n'importe quel niveau (hors celui qu'on joue).
+ * - Tirage pondéré : plus une question est ratée, plus elle a de chances de sortir,
+ *   mais ce n'est jamais toujours les mêmes.
+ * - S'il reste des places, on complète avec des questions dues des niveaux précédents.
+ */
+function pickReviewCards(level) {
+    const others = QUESTIONS.filter(q => q.niveau !== level);
+    const missed = others.filter(q => missCount(q.id) > 0);
+    const slots = Math.min(REVIEW_MAX, REVIEW_MIN + Math.floor(missed.length / 3));
+
+    const picked = weightedPick(missed, q => missCount(q.id) * 2 + 1, slots);
+    if (picked.length < slots) {
+        const fill = QUESTIONS.filter(q => q.niveau < level && missCount(q.id) === 0 && isDue(q));
+        picked.push(...weightedPick(fill, q => 1 / (1 + streakOf(q.id)), slots - picked.length));
+    }
+    return picked;
+}
+
+/** Cartes d'un défi : la moitié (au plus) de questions ratées, le reste selon la maîtrise. */
+function pickChallengeCards(level) {
+    const pool = challengePool(level);
+    const half = Math.floor(CHALLENGE_SIZE / 2);
+    const missed = shuffle(pool.filter(q => missCount(q.id) > 0))
+        .sort((a, b) => missCount(b.id) - missCount(a.id));
+    const unmissed = pool.filter(q => missCount(q.id) === 0);
+    const rest = weightedPick(unmissed, q => 1 / (1 + streakOf(q.id)), unmissed.length);
+    const picked = [...missed.slice(0, half), ...rest, ...missed.slice(half)];
+    return shuffle(picked.slice(0, CHALLENGE_SIZE));
+}
+
+function startSession(requestedMode, level = 0) {
+    const mode = requestedMode !== 'level' ? requestedMode
+               : isChallenge(level) ? 'challenge'
+               : isPairs(level) ? 'pairs'
+               : 'level';
+    const pairsMode = mode === 'pairs';
+
+    let items;
+    if (pairsMode) {
+        items = buildPairGrids(level);   // ici, items = les grilles
+    } else if (mode === 'daily') {
+        if (state.data.daily[todayKey()]) return;   // déjà fait aujourd'hui
+        items = dailyQuestions(todayKey()).map(q => ({ q, review: false }));
+    } else if (mode === 'sprint') {
+        items = shuffle(QUESTIONS).map(q => ({ q, review: false }));
+    } else if (mode === 'placement') {
+        items = placementCards(0);
+    } else if (mode === 'challenge') {
+        items = pickChallengeCards(level).map(q => ({ q, review: false }));
+    } else if (mode === 'level') {
+        const fresh = levelCards(level).map(q => ({ q, review: false }));
+        const old = pickReviewCards(level).map(q => ({ q, review: true }));
+        items = shuffle([...fresh, ...old]);
+    } else {
+        items = shuffle(missedCards())
+            .sort((a, b) => missCount(b.id) - missCount(a.id))
+            .slice(0, REVIEW_SESSION_SIZE)
+            .map(q => ({ q, review: true }));
+    }
+    if (!items.length) return;
+
+    const hasHearts = mode === 'level' || mode === 'challenge' || pairsMode;
+    const heartsMax = mode === 'challenge' ? CHALLENGE_HEARTS : HEARTS_MAX;
+    Object.assign(state, {
+        mode, level,
+        returnTo: mode === 'daily' || mode === 'sprint' ? 'challenges' : 'map',
+        queue: pairsMode ? [] : items,
+        total: pairsMode ? items.reduce((sum, g) => sum + g.pairs.length, 0) : items.length,
+        pairGrids: pairsMode ? items : [],
+        pairIndex: 0,
+        pairSel: null,
+        done: 0,
+        errors: 0,
+        correct: 0,
+        grid: [],
+        hearts: heartsMax,
+        heartsMax,
+        failedIds: new Set(),
+        sessionXp: 0,
+        sessionCoins: 0,
+        goalReached: false,
+        placeStep: 0,
+        placeRight: 0,
+        placeWrong: 0,
+        startedAt: Date.now(),
+        verdict: null,
+        phase: 'idle'
+    });
+
+    $('hearts').hidden = !hasHearts;
+    $('timer').hidden = mode !== 'sprint';
+    renderHearts();
+    $('endView').hidden = true;
+    showScreen('study');
+    window.scrollTo(0, 0);
+    if (pairsMode) showPairsGrid();
+    else showCard();
+    if (mode === 'sprint') startTimer();
+}
+
+/* ---------- Niveaux Paires ---------- */
+
+/** Difficulté visée par un niveau Paires : environ 1,2 au niveau 5, 4,3 au niveau 95. */
+const pairTarget = level => 1 + 3.5 * level / MAX_LEVEL;
+
+/** Choisit 3 familles (de thèmes différents si possible) ayant assez de paires du bon niveau. */
+function buildPairGrids(level) {
+    const t = pairTarget(level);
+    const nearCount = f => f.pairs.filter(p => Math.abs(p[2] - t) <= 1.2).length;
+    const eligible = shuffle(PAIR_FAMILIES.filter(f => nearCount(f) >= PAIRS_PER_GRID));
+    const families = [];
+    for (const f of eligible) {
+        if (families.length < PAIRS_GRIDS && !families.some(g => g.theme === f.theme)) families.push(f);
+    }
+    // Pas assez de familles adaptées : on complète avec les plus proches du niveau
+    const fallback = [...PAIR_FAMILIES].sort((a, b) => nearCount(b) - nearCount(a));
+    for (const f of [...eligible, ...fallback]) {
+        if (families.length < PAIRS_GRIDS && !families.includes(f)) families.push(f);
+    }
+    return families.map(family => ({ family, pairs: pickPairs(family, t), matched: new Set(), order: null }));
+}
+
+/** 5 paires proches de la difficulté visée (avec un peu de hasard), jamais deux fois le même élément. */
+function pickPairs(family, t) {
+    const sorted = family.pairs
+        .map(p => ({ p, key: Math.abs(p[2] - t) + Math.random() * 0.6 }))
+        .sort((a, b) => a.key - b.key)
+        .map(x => x.p);
+    const picked = [];
+    const lefts = new Set();
+    const rights = new Set();
+    for (const [left, right] of sorted) {
+        if (lefts.has(left) || rights.has(right)) continue;
+        picked.push({ left, right });
+        lefts.add(left);
+        rights.add(right);
+        if (picked.length === PAIRS_PER_GRID) break;
+    }
+    return picked;
+}
+
+function showPairsGrid() {
+    const grid = state.pairGrids[state.pairIndex];
+    const f = grid.family;
+    state.phase = 'pairs';
+    state.pairSel = null;
+    if (!grid.order) {
+        const indexes = grid.pairs.map((_, i) => i);
+        grid.order = { left: shuffle(indexes), right: shuffle(indexes) };
+    }
+
+    $('cardView').hidden = true;
+    $('endView').hidden = true;
+    $('pairsView').hidden = false;
+    hideFeedback();
+    $('pairsTag').textContent = f.theme;
+    $('pairsLeftHead').textContent = f.left;
+    $('pairsRightHead').textContent = f.right;
+    $('pairsStep').textContent = `Grille ${state.pairIndex + 1}/${state.pairGrids.length}`;
+    $('pairsTitle').textContent = f.title;
+
+    const make = (side, i, text) => {
+        const b = el('button', 'pair-btn');
+        b.type = 'button';
+        b.textContent = text;
+        b.dataset.side = side;
+        b.dataset.idx = String(i);
+        if (grid.matched.has(i)) { b.classList.add('is-matched'); b.disabled = true; }
+        b.addEventListener('click', () => pickPair(b));
+        return b;
+    };
+    $('pairsLeft').replaceChildren(...grid.order.left.map(i => make('left', i, grid.pairs[i].left)));
+    $('pairsRight').replaceChildren(...grid.order.right.map(i => make('right', i, grid.pairs[i].right)));
+    updateProgress();
+}
+
+/** Un clic sur une case : on la sélectionne, ou on vérifie la paire avec la case de l'autre colonne. */
+function pickPair(btn) {
+    if (state.phase !== 'pairs' || btn.disabled) return;
+    const sel = state.pairSel;
+    if (sel) sel.classList.remove('is-selected');
+    if (!sel || sel.dataset.side === btn.dataset.side) {
+        state.pairSel = sel === btn ? null : btn;   // recliquer sur une case la désélectionne
+        if (state.pairSel) btn.classList.add('is-selected');
+        return;
+    }
+    state.pairSel = null;
+    const grid = state.pairGrids[state.pairIndex];
+    const session = state.startedAt;
+    const stillHere = () => state.startedAt === session && !$('studyScreen').hidden;
+
+    if (sel.dataset.idx === btn.dataset.idx) {
+        grid.matched.add(Number(btn.dataset.idx));
+        state.done++;
+        addXp(XP_PAIR);
+        [sel, btn].forEach(b => { b.classList.add('is-ok'); b.disabled = true; });
+        setTimeout(() => [sel, btn].forEach(b => { b.classList.remove('is-ok'); b.classList.add('is-matched'); }), 450);
+        updateProgress();
+        if (grid.matched.size === grid.pairs.length) {
+            state.phase = 'idle';
+            setTimeout(() => { if (stillHere()) nextPairGrid(); }, 800);
+        }
+    } else {
+        state.errors++;
+        [sel, btn].forEach(b => { b.classList.remove('is-wrong'); void b.offsetWidth; b.classList.add('is-wrong'); });
+        setTimeout(() => [sel, btn].forEach(b => b.classList.remove('is-wrong')), 500);
+        state.hearts--;
+        renderHearts();
+        if (state.hearts <= 0) {
+            state.phase = 'idle';
+            setTimeout(() => { if (stillHere()) endSession(false); }, 600);
+        }
+    }
+}
+
+function nextPairGrid() {
+    state.pairIndex++;
+    if (state.pairIndex >= state.pairGrids.length) endSession(true);
+    else showPairsGrid();
+}
+
+/** Popup « Quitter ? » : le message dit ce qui sera perdu selon le mode. */
+function openQuitModal() {
+    const messages = {
+        level:     'Ta progression dans ce niveau sera perdue.',
+        challenge: 'Ta progression dans ce défi sera perdue.',
+        pairs:     'Ta progression dans ce niveau sera perdue.',
+        review:    'Ta session de révision sera perdue.',
+        daily:     'Ton défi du jour ne sera pas enregistré. Tu pourras le recommencer.',
+        sprint:    'Ce sprint ne sera pas enregistré (le chrono continue pendant ce message).',
+        placement: 'Le test de placement sera annulé. Tu pourras le refaire plus tard.'
+    };
+    $('quitTitle').textContent = state.mode === 'placement' ? 'Quitter le test ?' : 'Quitter ?';
+    $('quitDesc').textContent = messages[state.mode] || messages.level;
+    $('quitModal').hidden = false;
+    $('quitStayBtn').focus();
+}
+
+function closeQuitModal() {
+    $('quitModal').hidden = true;
+    if (state.phase === 'answering') $('userInput').focus();
+}
+
+function returnToMap() {
+    stopTimer();
+    state.phase = 'idle';
+    hideFeedback();
+    renderHeader();
+    showScreen(state.returnTo);
+}
+
+/* ---------- Minuteur du sprint ---------- */
+
+let timerId = null;
+
+function startTimer() {
+    stopTimer();
+    state.endsAt = Date.now() + SPRINT_SECONDS * 1000;
+    tickTimer();
+    timerId = setInterval(tickTimer, 200);
+}
+
+function stopTimer() {
+    if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+    }
+}
+
+function tickTimer() {
+    const left = Math.max(0, state.endsAt - Date.now());
+    const seconds = Math.ceil(left / 1000);
+    $('timer').textContent = `⏱ ${seconds}`;
+    $('timer').classList.toggle('is-low', seconds <= 10);
+    updateProgress();
+    if (left <= 0 && state.phase !== 'over') {
+        stopTimer();
+        $('quitModal').hidden = true;   // le sprint se termine même si la popup « Quitter ? » est ouverte
+        hideFeedback();
+        endSession(true);
+    }
+}
+
+/* ---------- Déroulé d'une leçon ---------- */
+
+function renderHearts() {
+    const left = Math.max(0, state.hearts);
+    $('hearts').textContent = '❤️'.repeat(left) + '🤍'.repeat(state.heartsMax - left);
+    $('hearts').setAttribute('aria-label', `${left} cœur(s) restant(s)`);
+}
+
+function updateProgress() {
+    let pct;
+    if (state.mode === 'sprint') {
+        const left = Math.max(0, state.endsAt - Date.now());
+        pct = Math.round((1 - left / (SPRINT_SECONDS * 1000)) * 100);
+    } else if (state.mode === 'placement') {
+        pct = Math.round((state.placeStep / PLACEMENT_STEPS) * 100);
+    } else {
+        pct = state.total ? Math.round((state.done / state.total) * 100) : 0;
+    }
+    $('progressBar').style.width = `${pct}%`;
+    $('progress').setAttribute('aria-valuenow', String(pct));
+}
+
+function showCard() {
+    const item = state.queue[0];
+    state.current = item;
+    state.verdict = null;
+    state.phase = 'answering';
+
+    $('cardTag').textContent = item.q.theme;
+    $('reviewTag').hidden = !item.review;
+
+    const tag = $('challengeTag');
+    tag.hidden = !['challenge', 'daily', 'sprint', 'placement'].includes(state.mode);
+    tag.textContent = state.mode === 'daily' ? `Défi du jour · ${state.done + 1}/${state.total}`
+                    : state.mode === 'sprint' ? 'Sprint'
+                    : state.mode === 'placement' ? `Placement · étape ${state.placeStep + 1}/${PLACEMENT_STEPS}`
+                    : 'Défi';
+    $('questionText').textContent = item.q.q;
+
+    // Indices : on repart de zéro à chaque carte (et pas d'indice en défi du jour ni en sprint)
+    state.hintUsed = new Set();
+    $('hintList').replaceChildren();
+    $('hintList').hidden = true;
+    $('hintPanel').hidden = true;
+    $('hintBtn').hidden = ['daily', 'sprint', 'placement'].includes(state.mode);
+
+    const input = $('userInput');
+    input.value = '';
+    input.readOnly = false;
+    input.classList.remove('is-ok', 'is-wrong');
+
+    $('answerActions').hidden = false;
+    $('pairsView').hidden = true;
+    $('cardView').hidden = false;
+    $('endView').hidden = true;
+    hideFeedback();
+    updateProgress();
+    input.focus();
+}
+
+function shake(node) {
+    node.classList.remove('shake');
+    void node.offsetWidth; // relance l'animation
+    node.classList.add('shake');
+}
+
+function verify(skipped = false) {
+    if (state.phase !== 'answering') return;
+    const input = $('userInput');
+
+    let verdict = 'wrong';
+    if (!skipped) {
+        if (!input.value.trim()) { shake(input); return; }
+        verdict = judge(input.value, state.current.q.a, state.current.q.q);
+    }
+
+    state.phase = 'feedback';
+    state.verdict = verdict;
+
+    const ok = verdict !== 'wrong';
+    input.readOnly = true;
+    input.classList.add(ok ? 'is-ok' : 'is-wrong');
+    $('answerActions').hidden = true;
+    $('hintPanel').hidden = true;
+    showFeedback(verdict, skipped);
+}
+
+function showFeedback(verdict, skipped) {
+    const q = state.current.q;
+    const ok = verdict !== 'wrong';
+    const box = $('feedback');
+
+    box.classList.toggle('is-ok', ok);
+    box.classList.toggle('is-wrong', !ok);
+
+    $('feedbackTitle').textContent =
+        verdict === 'exact' ? 'Bonne réponse !' :
+        verdict === 'typo'  ? "Accepté, mais attention à l'orthographe" :
+        skipped             ? 'Voici la réponse' :
+                              'Pas tout à fait';
+    $('feedbackAnswer').textContent = `Réponse : ${q.a[0]}`;
+    $('explanationText').textContent = q.exp;
+
+    const cont = $('continueBtn');
+    cont.classList.toggle('btn-green', ok);
+    cont.classList.toggle('btn-red', !ok);
+
+    // Défi du jour et sprint : pas de « J'avais juste », pour que les scores restent comparables
+    const strict = state.mode === 'daily' || state.mode === 'sprint';
+    $('forceBtn').hidden = ok || skipped || strict;
+
+    box.classList.add('show');
+    document.body.classList.add('has-feedback');
+}
+
+function hideFeedback() {
+    $('feedback').classList.remove('show');
+    document.body.classList.remove('has-feedback');
+}
+
+/** Valide la carte en cours : réussie (true) ou ratée (false). */
+function commit(ok) {
+    if (state.phase !== 'feedback') return;
+    state.phase = 'idle';
+
+    const item = state.queue.shift();
+    const id = item.q.id;
+    const mode = state.mode;
+
+    // Test de placement : ne touche ni aux statistiques, ni à l'XP
+    if (mode === 'placement') {
+        hideFeedback();
+        placementAnswer(ok);
+        return;
+    }
+
+    // Défi du jour et sprint : chaque question n'est posée qu'une fois, sans seconde chance
+    if (mode === 'daily' || mode === 'sprint') {
+        recordResult(id, ok);
+        if (ok) {
+            state.correct++;
+            addXp(mode === 'daily' ? XP_DAILY_CORRECT : XP_SPRINT_CORRECT);
+        }
+        if (mode === 'daily') state.grid.push(ok ? '🟩' : '🟥');
+        state.done++;
+        hideFeedback();
+        if (state.queue.length === 0) endSession(true);
+        else showCard();
+        return;
+    }
+
+    if (ok) {
+        const firstTry = !state.failedIds.has(id);
+        const forced = state.verdict === 'wrong';
+        const assisted = state.hintUsed.size > 0;   // avec un indice, la question n'est pas « maîtrisée »
+        // Seule une réussite du premier coup, sans indice, réduit le compteur d'erreurs
+        if (firstTry && !assisted) recordResult(id, true);
+        addXp(firstTry && !forced && !assisted ? XP_FIRST_TRY : XP_RETRY);
+        state.done++;
+    } else {
+        state.failedIds.add(id);
+        recordResult(id, false);
+        state.errors++;
+        if (mode === 'level' || mode === 'challenge') {
+            state.hearts--;
+            renderHearts();
+            if (state.hearts <= 0) {
+                hideFeedback();
+                state.queue.push(item);   // si on continue avec un cœur de secours, la carte reviendra
+                endSession(false);
+                return;
+            }
+        }
+        state.queue.push(item); // la carte reviendra en fin de leçon
+    }
+
+    hideFeedback();
+    if (state.queue.length === 0) endSession(true);
+    else showCard();
+}
+
+/* ---------- Cœur de secours ---------- */
+
+const heartPrice = () => SHOP.find(i => i.id === 'heart').price;
+
+/** Bouton « continuer » de l'écran Niveau raté : utilise un cœur du stock, ou l'achète. */
+function useRescueHeart() {
+    if (state.phase !== 'over' || !state.canRescue) return;
+    const data = state.data;
+    if (data.inv.heart > 0) {
+        data.inv.heart--;
+        showToast('💖 Cœur de secours utilisé : tu continues !');
+    } else if (data.coins >= heartPrice()) {
+        data.coins -= heartPrice();
+        data.totals.purchases++;
+        showToast('💖 Cœur de secours acheté : tu continues !');
+    } else {
+        return;
+    }
+    state.canRescue = false;
+    state.hearts = 1;
+    saveData();
+    renderHeader();
+    renderHearts();
+    if (state.mode === 'pairs') showPairsGrid();   // on reprend la grille là où on en était
+    else showCard();
+    checkBadges();
+}
+
+/** Sur l'écran Niveau raté : bouton pour continuer, ou petit rappel s'il manque des pièces. */
+function showRescueOption() {
+    const { inv, coins } = state.data;
+    const price = heartPrice();
+    const btn = $('endRescue');
+    state.canRescue = inv.heart > 0 || coins >= price;
+    if (inv.heart > 0) {
+        btn.textContent = `💖 Continuer avec un cœur de secours (${inv.heart} en stock)`;
+    } else if (coins >= price) {
+        btn.textContent = `💖 Acheter un cœur et continuer · ${price} 🪙`;
+    } else {
+        $('endText').textContent += `\n💡 Un cœur de secours (${price} 🪙) t’aurait permis de continuer. Il te manque ${price - coins} 🪙.`;
+    }
+    btn.hidden = !state.canRescue;
+}
+
+/* ---------- Fin de leçon ---------- */
+
+function setEnd({ emoji, title, text, extra = '', primary, primaryClass, onPrimary, secondary, onSecondary }) {
+    $('endEmoji').textContent = emoji;
+    $('endRescue').hidden = true;
+    state.canRescue = false;
+    $('endTitle').textContent = title;
+    $('endText').textContent = text;
+    $('endExtra').textContent = extra;
+    $('endPrimary').textContent = primary;
+    $('endPrimary').className = `btn ${primaryClass || (secondary ? 'btn-red' : 'btn-green')}`;
+    $('endSecondary').hidden = !secondary;
+    $('endSecondary').textContent = secondary || '';
+    state.onEndPrimary = onPrimary;
+    state.onEndSecondary = onSecondary || null;
+}
+
+function endSession(win) {
+    stopTimer();
+    state.phase = 'over';
+    $('cardView').hidden = true;
+    $('pairsView').hidden = true;
+    $('endView').hidden = false;
+    const mode = state.mode;
+    const challenge = mode === 'challenge';
+
+    if (!win) {
+        setEnd({
+            emoji: '💔',
+            title: challenge ? 'Défi raté' : 'Niveau raté',
+            text: 'Plus de cœurs. Les questions ratées reviendront en révision.',
+            extra: xpSummary(),
+            primary: 'Réessayer',
+            onPrimary: () => startSession('level', state.level),
+            secondary: 'Retour à la carte',
+            onSecondary: returnToMap
+        });
+        if (mode === 'level' || mode === 'challenge' || mode === 'pairs') showRescueOption();
+        renderHeader();
+        checkBadges();
+        return;
+    }
+
+    $('progressBar').style.width = '100%';
+    bumpStreak();
+
+    if (mode === 'review') {
+        state.data.totals.reviews++;
+        addXp(XP_REVIEW_WIN);
+        setEnd({
+            emoji: '💪',
+            title: 'Révision terminée',
+            text: `${plural(state.total, 'question revue', 'questions revues')}.`,
+            extra: xpSummary(),
+            primary: 'Continuer',
+            onPrimary: returnToMap
+        });
+    } else if (mode === 'daily') {
+        const day = todayKey();
+        const seconds = Math.round((Date.now() - state.startedAt) / 1000);
+        state.data.daily[day] = { score: state.correct, seconds, grid: state.grid.join('') };
+        addXp(XP_DAILY_DONE);
+        setEnd({
+            emoji: state.correct >= DAILY_SIZE ? '🎯' : '📅',
+            title: 'Défi du jour terminé',
+            text: `${state.correct}/${DAILY_SIZE} en ${fmtTime(seconds)}\n${state.grid.join('')}`,
+            extra: xpSummary(),
+            primary: 'Copier mon résultat',
+            onPrimary: () => copyText(dailyShareText(day), $('endPrimary')),
+            secondary: 'Retour aux défis',
+            onSecondary: returnToMap
+        });
+        $('endPrimary').className = 'btn btn-violet';
+    } else if (mode === 'placement') {
+        const start = state.placeStep * CHALLENGE_EVERY + 1;
+        applyPlacement(start);
+        setEnd({
+            emoji: start > 1 ? '🧭' : '🌱',
+            title: 'Test terminé',
+            text: start > 1
+                ? `Tu commences au niveau ${start} ! Les niveaux 1 à ${start - 1} sont validés, leurs questions reviendront de temps en temps en révision.`
+                : 'Tu commences au niveau 1 : tout le parcours t’attend !',
+            primary: 'C’est parti',
+            onPrimary: returnToMap
+        });
+    } else if (mode === 'sprint') {
+        const record = state.correct > state.data.best.sprint;
+        if (record) state.data.best.sprint = state.correct;
+        state.data.best.lastSprint = state.correct;
+        state.data.best.lastSprintRecord = record;
+        setEnd({
+            emoji: record ? '🏅' : '⚡',
+            title: 'Sprint terminé',
+            text: `${plural(state.correct, 'bonne réponse', 'bonnes réponses')} en ${SPRINT_SECONDS} secondes.`
+                + (record ? '\nNouveau record !' : ''),
+            extra: xpSummary(),
+            primary: 'Rejouer',
+            onPrimary: () => startSession('sprint'),
+            secondary: 'Retour aux défis',
+            onSecondary: returnToMap
+        });
+        $('endPrimary').className = 'btn btn-green';
+    } else {
+        if (state.errors === 0) {
+            addXp(XP_FLAWLESS);
+            state.data.totals.flawless++;
+        }
+        if (challenge) addXp(XP_CHALLENGE_WIN);
+
+        state.data.done[state.level] = true;
+        state.data.unlocked = Math.max(state.data.unlocked, Math.min(state.level + 1, MAX_LEVEL));
+
+        const next = state.level < MAX_LEVEL
+            ? `Le niveau ${state.level + 1} est débloqué.`
+            : "Tu as terminé tous les niveaux. Ajoute des questions dans questions.js pour continuer !";
+        setEnd({
+            emoji: challenge ? '🏆' : '🎉',
+            title: challenge ? 'Défi relevé !' : `Niveau ${state.level} terminé !`,
+            text: `${mode === 'pairs' ? plural(state.total, 'paire trouvée', 'paires trouvées') : plural(state.total, 'question', 'questions')}, ${plural(state.errors, 'erreur', 'erreurs')}. ${next}`,
+            extra: xpSummary(),
+            primary: 'Continuer',
+            onPrimary: returnToMap
+        });
+    }
 
     saveData();
-    loadNextCard();
+    renderHeader();
+    checkBadges();
 }
 
-// Lancer l'application au chargement
-window.onload = initApp;
+/* ---------- Événements ---------- */
+
+function bindEvents() {
+    $('checkBtn').addEventListener('click', () => verify(false));
+    $('skipBtn').addEventListener('click', () => verify(true));
+    $('hintBtn').addEventListener('click', toggleHintPanel);
+    $('continueBtn').addEventListener('click', () => commit(state.verdict !== 'wrong'));
+    $('forceBtn').addEventListener('click', () => commit(true));
+    $('reviewBtn').addEventListener('click', () => openReviewModal());
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => showScreen(btn.dataset.screen));
+    });
+
+    $('dailyBtn').addEventListener('click', () => openChallengeModal('daily'));
+    $('dailyCopyBtn').addEventListener('click', () =>
+        copyText(dailyShareText(todayKey()), $('dailyCopyBtn')));
+    $('sprintBtn').addEventListener('click', () => openChallengeModal('sprint'));
+    $('placementBtn').addEventListener('click', () => openPlacementModal());
+    $('modalSecondaryBtn').addEventListener('click', closeStartModal);
+    $('endRescue').addEventListener('click', useRescueHeart);
+
+    $('endPrimary').addEventListener('click', () => state.onEndPrimary && state.onEndPrimary());
+    $('endSecondary').addEventListener('click', () => state.onEndSecondary && state.onEndSecondary());
+
+    $('quitBtn').addEventListener('click', () => {
+        if (state.phase === 'over') returnToMap();   // écran de fin : rien à perdre
+        else openQuitModal();
+    });
+    $('quitStayBtn').addEventListener('click', closeQuitModal);
+    $('quitConfirmBtn').addEventListener('click', () => {
+        closeQuitModal();
+        returnToMap();
+    });
+    $('quitModal').addEventListener('click', e => {
+        if (e.target === $('quitModal')) closeQuitModal();
+    });
+
+    $('resetBtn').addEventListener('click', () => {
+        if (!confirm('Effacer tous tes niveaux, ton XP, ta série et tes statistiques ?')) return;
+        state.data = normalizeData(defaultData());
+        saveData();
+        renderHeader();
+        renderMap();
+    });
+
+    // Popup de démarrage : fermer, cliquer à côté, ou valider avec « Commencer »
+    $('closeModalBtn').addEventListener('click', closeStartModal);
+    $('startModal').addEventListener('click', e => {
+        if (e.target === $('startModal')) closeStartModal();
+    });
+    $('startLevelBtn').addEventListener('click', () => {
+        const { pendingMode: mode, pendingLevel: level } = state;
+        closeStartModal();
+        if (mode === 'level') {
+            if (level) startSession('level', level);
+        } else {
+            startSession(mode);
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !$('startModal').hidden) {
+            closeStartModal();
+            return;
+        }
+        if (!$('quitModal').hidden) {
+            if (e.key === 'Escape') closeQuitModal();
+            return;   // popup ouverte : Entrée ne doit pas valider la question derrière
+        }
+        // Entrée : vérifier, puis continuer (sauf si un bouton a le focus)
+        if (e.key !== 'Enter' || e.repeat) return;
+        if (e.target.closest && e.target.closest('button')) return;
+        if ($('studyScreen').hidden) return;
+        // On « consomme » la touche : sinon, si une popup s'ouvre et prend le focus,
+        // le même appui sur Entrée cliquerait aussitôt sur son bouton.
+        if (state.phase === 'answering' || state.phase === 'feedback') e.preventDefault();
+        if (state.phase === 'answering') verify(false);
+        else if (state.phase === 'feedback') commit(state.verdict !== 'wrong');
+    });
+}
+
+function init() {
+    bindEvents();
+    buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
+    buildDecor($('lessonDecor'), 8);
+    checkBadges(true);   // badges déjà mérités : on les attribue sans notification
+    renderHeader();
+    showScreen('map');
+
+    // Tout premier lancement : on propose le test de placement une seule fois
+    const d = state.data;
+    if (canTakePlacement() && !d.placementOffered && Object.keys(d.stats).length === 0) {
+        d.placementOffered = true;
+        saveData();
+        openPlacementModal(true);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+// Application installable : le service worker garde une copie du jeu pour jouer hors connexion
+// (ne marche qu'en https ou sur localhost, pas en ouvrant le fichier directement)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
