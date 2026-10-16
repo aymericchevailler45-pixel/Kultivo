@@ -27,7 +27,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Inutile donc d'ajouter ces formes courtes dans `a` ; ajouter plutôt les noms de famille seuls, surnoms, etc.
 - Révisions : questions ratées reviennent en priorité (tirage pondéré, 3 à 8 par leçon),
   répétition espacée (`REVIEW_DAYS`) : une question bien connue revient de plus en plus rarement.
-- 130 niveaux (depuis le 2026-10-16), un Défi tous les 10 niveaux (pioche dans les 9 niveaux précédents, 10 questions, 2 cœurs).
+- 140 niveaux (depuis le 2026-10-16), un Défi tous les 10 niveaux (pioche dans les 9 niveaux précédents, 10 questions, 2 cœurs).
 - Niveaux Paires (mode `pairs`) : 3, 13, 23… 113 (`PAIRS_AT`), icône 🔗, bleu sur la carte. 3 grilles de 5 paires
   de familles différentes (thèmes différents si possible), paires choisies près de la difficulté du niveau
   (`pairTarget` ≈ 1,2 → 4,3). 3 cœurs, une mauvaise association = 1 cœur, cœur de secours possible.
@@ -84,7 +84,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 
 ## levels.js (important)
 - Lit `QUESTIONS`, écrase `q.niveau` et `LEVEL_NAMES`. Le champ `niveau` du fichier questions n'est qu'un secours.
-- 130 niveaux = 91 de questions (6 ou 7 chacun) + 13 Paires (x3) + 13 Ordre (x6) + 13 défis (x0).
+- 140 niveaux = 98 de questions (6 ou 7 chacun) + 14 Paires (x3) + 14 Ordre (x6) + 14 défis (x0).
   Quand on ajoute beaucoup de questions, on ajoute un bloc de 10 niveaux (demande de l'utilisateur).
   Bloc type : Q Q 🔗 Q Q ⏳ Q Q Q 🏆 (choisi par l'utilisateur). L'utilisateur ne veut pas perdre de niveaux de questions. Déterministe (même résultat pour tous).
 - La difficulté monte doucement (≈1,3 → 4,3 sur 100 niveaux), questions très dures (d ≥ 4,5) à partir du niveau ~55 (1 à 2 par niveau),
@@ -94,7 +94,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Pour désactiver : `AUTO_LEVELS = false`.
 
 ## État actuel
-- 617 questions, 14 thèmes (dont « Drapeaux » : ids 2100-2149, champ `flag` = emoji affiché en grand,
+- 659 questions. Rébus (ids 2200-2241, champ `rebus` = liste d'emojis DANS L'ORDRE DES MOTS, ex. « Donner sa
+  langue au chat » = 🎁 👅 🐱) rangés dans le thème de la réponse (Cinéma, Langue française, Littérature) + étiquette
+  « 🧩 Rébus ». Emojis affichés en images Twemoji (dossier `emoji/`, CC BY 4.0, crédit en bas du profil, `emojiImg`).
+- Textes : courts et clairs (demande de l'utilisateur), pages rapprochées de la barre du haut.
+- 617 questions avant les rébus, 14 thèmes (dont « Drapeaux » : ids 2100-2149, champ `flag` = emoji affiché en grand,
   question identique « À quel pays appartient ce drapeau ? »). Famille de paires « Drapeaux » (connus, `bigLeft`).
   Affichage en VRAIES IMAGES (dossier `flags/`, SVG de flagcdn.com, libres de droits) via `flagImg(emoji)` :
   l'utilisateur trouve les emojis « moins propres ». Les données gardent l'emoji ; nouveau drapeau → télécharger

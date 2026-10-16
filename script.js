@@ -86,6 +86,18 @@ const PLACEMENT_PASS = 2;       // bonnes réponses pour valider une étape
 
 /* ---------- Petits utilitaires ---------- */
 
+/** Emoji affiché en image Twemoji (dossier emoji/) : net et identique sur tous les téléphones. */
+function emojiImg(emoji) {
+    let cps = [...emoji].map(c => c.codePointAt(0));
+    if (!cps.includes(0x200D)) cps = cps.filter(cp => cp !== 0xFE0F);   // règle de nommage de Twemoji
+    const img = document.createElement('img');
+    img.className = 'emoji-img';
+    img.src = `emoji/${cps.map(cp => cp.toString(16)).join('-')}.svg`;
+    img.alt = emoji;
+    img.draggable = false;
+    return img;
+}
+
 /** Les données gardent l'emoji (« 🇵🇹 »), mais on affiche la vraie image du dossier flags/ :
     plus nette, et identique sur tous les téléphones. « 🇵🇹 » → flags/pt.svg */
 function flagImg(emoji) {
@@ -970,7 +982,7 @@ function renderChallenges() {
     hintBox.replaceChildren(); // On vide la zone
 
     if (!isReached) {
-        hintBox.textContent = `Encore ${data.goal - xp} XP pour atteindre ton objectif et gagner ${reward} 🪙.`;
+        hintBox.textContent = `Encore ${data.goal - xp} XP pour gagner 🎁 ${reward} 🪙`;
     } else if (isReached && !isClaimed) {
         const claimBtn = el('button', 'btn btn-green');
         claimBtn.textContent = `🎁 Récupérer ${reward} 🪙`;
@@ -987,7 +999,7 @@ function renderChallenges() {
         
         hintBox.append(claimBtn);
     } else {
-        hintBox.textContent = 'Objectif atteint et récompense récupérée, bravo ! Reviens demain.';
+        hintBox.textContent = '✅ Récompense récupérée. À demain !';
     }
 
     const choices = $('goalChoices');
@@ -1018,8 +1030,8 @@ function renderChallenges() {
         choices.append(btn);
     });
     $('goalNote').textContent = locked
-        ? '🔒 Tu as déjà gagné des XP aujourd’hui : tu pourras changer de rythme demain.'
-        : 'Ton choix est gardé pour les jours suivants. Tu peux le changer tant que tu n’as pas encore joué aujourd’hui.';
+        ? '🔒 Modifiable demain (tu as déjà joué aujourd’hui).'
+        : 'Modifiable tant que tu n’as pas joué aujourd’hui.';
 
     // Défi du jour
     const result = data.daily[today];
@@ -1029,7 +1041,7 @@ function renderChallenges() {
         $('dailyTime').textContent = `en ${fmtTime(result.seconds)}`;
         $('dailyGrid').textContent = result.grid;
     } else {
-        $('dailyDesc').textContent = `${DAILY_SIZE} questions, les mêmes pour tous tes amis aujourd’hui. Un seul essai, pas de cœurs, chaque erreur compte.`;
+        $('dailyDesc').textContent = `${DAILY_SIZE} questions, les mêmes pour tout le monde. Un seul essai !`;
     }
     $('dailyResult').hidden = !result;
     $('dailyCard').classList.toggle('card-violet', !result);   // cadre violet = « à faire aujourd'hui »
@@ -1040,7 +1052,7 @@ function renderChallenges() {
     const { sprint: best, lastSprint, lastSprintRecord } = data.best;
     $('sprintDesc').textContent = best > 0
         ? `Réponds à un maximum de questions en ${SPRINT_SECONDS} secondes.`
-        : `Réponds à un maximum de questions en ${SPRINT_SECONDS} secondes. Pas encore de record, à toi de jouer !`;
+        : `Réponds à un maximum de questions en ${SPRINT_SECONDS} secondes.`;
     $('sprintScores').hidden = best === 0;
     $('sprintBest').textContent = best;
     $('sprintLast').textContent = lastSprint ?? '—';
@@ -1279,7 +1291,7 @@ function renderShop() {
     const big = el('p', 'card-big');
     big.textContent = plural(data.coins, 'pièce', 'pièces');
     const how = el('p', 'muted');
-    how.textContent = `Tu gagnes 1 pièce tous les ${COIN_RATE} XP, des pièces bonus en atteignant ton objectif du jour, et ${COIN_BADGE} pièces par nouveau badge. Dépenser des pièces ne baisse jamais ton XP.`;
+    how.textContent = `1 🪙 tous les ${COIN_RATE} XP gagnés. À dépenser ici !`;
     wallet.append(title, big, how);
     grid.append(wallet);
 
@@ -1923,6 +1935,9 @@ function showCard() {
     $('questionText').textContent = item.q.q;
     $('questionFlag').hidden = !item.q.flag;           // questions « Drapeaux » : grand drapeau en image
     $('questionFlag').replaceChildren(...(item.q.flag ? [flagImg(item.q.flag)] : []));
+    $('questionRebus').hidden = !item.q.rebus;         // rébus : emojis en images, dans l'ordre des mots
+    $('questionRebus').replaceChildren(...(item.q.rebus || []).map(emojiImg));
+    $('rebusTag').hidden = !item.q.rebus;
 
     // Indices : on repart de zéro à chaque carte (et pas d'indice en défi du jour ni en sprint)
     state.hintUsed = new Set();

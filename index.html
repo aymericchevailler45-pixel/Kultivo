@@ -67,7 +67,7 @@
                 <article class="card goal-card">
                     <div class="goal-main">
                         <h2>🎯 Objectif du jour</h2>
-                        <p class="muted">Gagne des XP en jouant (niveaux, défis, sprint) pour remplir la jauge, puis récupère ta récompense en pièces.</p>
+                        <p class="muted">Gagne des XP en jouant pour remplir la jauge.</p>
                         <p class="card-big" id="goalText"></p>
                         <div class="meter" role="progressbar" aria-label="Progression de l'objectif du jour"
                              id="goalMeter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -76,7 +76,7 @@
                         <p class="muted" id="goalHint"></p>
                     </div>
                     <div class="goal-section">
-                        <p class="goal-title">Ton rythme : combien d’XP par jour ?</p>
+                        <p class="goal-title">Ton rythme</p>
                         <div class="goal-choices" id="goalChoices" role="group" aria-label="Choisir mon objectif quotidien"></div>
                         <p class="goal-note" id="goalNote"></p>
                     </div>
@@ -167,6 +167,7 @@
                     <div class="badge-grid" id="badgeGrid"></div>
                 </article>
             </div>
+            <p class="credits">Emojis des rébus : Twemoji (CC BY 4.0) · Drapeaux : flagcdn.com</p>
         </section>
 
         <!-- PREMIER LANCEMENT : accueil en quelques écrans (niveau, objectif, test de placement) -->
@@ -203,10 +204,12 @@
                 <div class="tags">
                     <span class="tag" id="cardTag"></span>
                     <span class="tag tag-review" id="reviewTag" hidden>Révision</span>
+                    <span class="tag tag-rebus" id="rebusTag" hidden>🧩 Rébus</span>
                     <span class="tag tag-challenge" id="challengeTag" hidden>Défi</span>
                 </div>
                 <h2 class="question" id="questionText"></h2>
                 <div class="question-flag" id="questionFlag" aria-hidden="true" hidden></div>
+                <div class="question-rebus" id="questionRebus" aria-hidden="true" hidden></div>
 
                 <input type="text" id="userInput" class="answer-input"
                        placeholder="Ta réponse"

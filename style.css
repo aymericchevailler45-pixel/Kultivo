@@ -491,6 +491,13 @@ main { overflow-x: clip; }
     text-wrap: balance;
 }
 
+/* Rébus : les emojis en grand, alignés comme une phrase */
+.question-rebus { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.question-rebus .emoji-img { width: 72px; height: 72px; }
+@media (max-width: 600px) { .question-rebus .emoji-img { width: 56px; height: 56px; } }
+.tag-rebus { background: rgba(139, 92, 246, 0.14); border-color: transparent; color: var(--violet-ink); }
+.credits { margin: 24px 0 0; color: var(--muted); font-size: 0.75rem; text-align: center; }
+
 /* Drapeaux en image : léger contour pour les drapeaux à fond blanc (Japon, Suisse…) */
 .flag-img { display: block; width: auto; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12); }
 .question-flag { display: flex; justify-content: center; }
@@ -1005,7 +1012,7 @@ main { overflow-x: clip; }
 /* Pages pleine largeur */
 .page {
     width: 100%;
-    padding: 32px var(--gutter) calc(64px + env(safe-area-inset-bottom, 0px));
+    padding: 16px var(--gutter) calc(64px + env(safe-area-inset-bottom, 0px));
 }
 .page-grid {
     display: grid;
