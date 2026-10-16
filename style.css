@@ -819,6 +819,8 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     background: transparent;
     color: var(--muted);
     box-shadow: none;
+    border: 2px solid var(--line);   /* contour fin : on voit que c'est un bouton (tous les boutons secondaires) */
+    padding-block: 13px;             /* même hauteur totale que les autres boutons malgré le contour */
 }
 .btn-ghost:hover  { color: var(--ink); }
 .btn-ghost:active { transform: none; }
