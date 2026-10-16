@@ -2309,7 +2309,7 @@ function showOrderRound() {
     $('orderTag').textContent = f.theme;
     $('orderStep').textContent = `Frise ${state.orderIndex + 1}/${state.orderRounds.length}`;
     $('orderTitle').textContent = `${f.title} : ${f.prompt.charAt(0).toLowerCase()}${f.prompt.slice(1)}`;
-    $('orderHelp').textContent = 'Touche les cartes dans l’ordre pour les placer. Touche une carte placée pour la retirer.';
+    $('orderHelp').textContent = 'Touche les cartes dans l’ordre. Touche une carte placée pour la retirer.';
     $('orderTopLabel').textContent = `⬆ ${f.ends[0]}`;
     $('orderBottomLabel').textContent = `⬇ ${f.ends[1]}`;
     renderOrder();

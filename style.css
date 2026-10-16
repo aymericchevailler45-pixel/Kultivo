@@ -591,8 +591,8 @@ main { overflow-x: clip; }
 .tag-order { background: rgba(255, 150, 0, 0.16); border-color: transparent; color: var(--orange-ink); }
 .order-board { display: flex; flex-direction: column; gap: 6px; }
 .order-end { color: var(--orange-ink); font-size: 0.8rem; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
-.order-slots { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0 0 0 14px; list-style: none; border-left: 3px dashed var(--orange); }
-.order-slot { display: flex; align-items: center; gap: 10px; min-height: 52px; }
+.order-slots { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0 0 0 14px; list-style: none; border-left: 3px dashed var(--orange); }
+.order-slot { display: flex; align-items: center; gap: 10px; min-height: 44px; }
 .order-num {
     flex: none;
     display: grid;
@@ -624,7 +624,16 @@ main { overflow-x: clip; }
 }
 .order-card:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
 .order-card.is-placed { border-color: var(--orange); box-shadow: 0 4px 0 var(--orange); }
-.order-pool { display: flex; flex-direction: column; gap: 8px; padding-top: 6px; border-top: 2px solid var(--line); }
+/* Réserve : petites étiquettes côte à côte, au-dessus de la frise */
+.order-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-bottom: 12px; border-bottom: 2px solid var(--line); }
+.order-pool .order-card { flex: 0 1 auto; min-height: 40px; padding: 8px 12px; text-align: center; font-size: 0.95rem; }
+.order-slot .order-card { min-height: 40px; padding: 8px 12px; }
+@media (max-width: 600px) {
+    .order-view { gap: 10px; }
+    .order-view .question { font-size: 1.15rem; }
+    .order-view .pairs-help { margin-top: -4px; font-size: 0.85rem; }
+    .order-answer { padding: 6px 10px; }
+}
 .order-answer { flex: 1; display: flex; flex-direction: column; padding: 8px 12px; border: 2px solid var(--tone, var(--line)); border-radius: 14px; background: var(--surface); }
 .order-value { color: var(--muted); font-size: 0.9rem; font-weight: 800; }
 .order-yours { color: var(--red-ink); font-size: 0.85rem; font-weight: 700; }
