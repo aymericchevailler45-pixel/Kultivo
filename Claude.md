@@ -106,7 +106,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Objectifs affichés en « 1 niveau par jour » (XP en petit). Placement expliqué simplement (pas de « sauter 10 niveaux »).
   « Je débute » / « Non merci » → parcours + tutoriel (pas de lancement direct du niveau 1).
   Tutoriel guidé (`TOUR_STEPS`, 9 étapes, montre vraiment 🔗 ⏳ 🏆) à la 1re arrivée sur le parcours : écran assombri,
-  élément mis en lumière, bulle Suivant / Passer. Messages (toasts) : 2,5 s, fermables d'un tap.
+  élément mis en lumière, bulle Suivant / Passer ; à la fin, retour automatique au niveau en cours.
+  Écrans d'accueil en position fixe plein écran (bouton toujours visible). Messages (toasts) : 2,5 s, fermables d'un tap.
   Cadeau de bienvenue à la fin : 100 🪙 + 1 🧊 (`WELCOME_COINS`, `WELCOME_FREEZES`, une seule fois : `welcomeGift`).
 - Récap de fin de leçon animé : tuiles XP / Précision / Temps (défi du jour : Score ; sprint : Bonnes / Record)
   qui apparaissent l'une après l'autre avec chiffres qui défilent (`renderEndStats`, `countUp`).

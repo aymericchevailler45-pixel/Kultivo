@@ -2968,6 +2968,9 @@ function endTour() {
     $('tour').hidden = true;
     state.data.tourDone = true;
     saveData();
+    // Retour au niveau qui attend le joueur (niveau 1 ou celui du placement) : le tutoriel a fait défiler la carte
+    const current = document.querySelector('.node.is-current');
+    if (current) current.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 
 /* ---------- Accueil du premier lancement ---------- */
