@@ -178,6 +178,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `scores.summary` (jsonb, `supabase/profil-ami.sql`), résumé envoyé avec le score (`profileSummary`) — la
   sauvegarde complète reste privée. « Retirer de mes amis » est dans ce profil (plus de ✕ dans la liste,
   sauf pour annuler une demande). Liste d'amis : lignes avec avatar, pseudo, titre et série, flèche ›.
+- Profil : pseudo à côté de l'avatar (`profileName`, « Mon profil » sans pseudo), titre en pastille à côté de
+  l'XP (`profileTitle`) → liste de tous les titres (`titlesModal`, `openTitlesModal` : atteints ✓, actuel, 🔒).
 - Profil (téléphone) : toucher Badges / Cartes / Records / Thèmes fait défiler pour mettre les onglets en haut.
 - Plus de confirm() du navigateur (moche, affiche l'adresse du site) : `askConfirm({ title, text, yes, danger })`
   (fenêtre `askModal`, promesse true/false). Supabase gratuit : pause après 7 jours sans activité (Restore).

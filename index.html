@@ -137,9 +137,12 @@
                     <div class="hero-main">
                         <div class="hero-title">
                             <button type="button" id="avatarBtn" class="avatar-btn" aria-label="Changer mon avatar"></button>
-                            <h2 id="profileTitle"></h2>
+                            <h2 id="profileName"></h2>
                         </div>
-                        <p class="card-big" id="profileXp"></p>
+                        <div class="xp-row">
+                            <p class="card-big" id="profileXp"></p>
+                            <button type="button" id="profileTitle" class="title-chip" aria-label="Voir tous les titres"></button>
+                        </div>
                         <div class="meter" id="titleMeter" role="progressbar" aria-label="Progression vers le prochain titre"
                              aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                             <div class="meter-fill" id="titleBar"></div>
@@ -420,6 +423,16 @@
         <div class="modal-content friend-sheet" role="dialog" aria-modal="true" aria-label="Profil de ton ami">
             <button type="button" id="closeFriendBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
             <div id="friendBody"></div>
+        </div>
+    </div>
+
+    <!-- TOUS LES TITRES (atteints, actuel, à venir) -->
+    <div id="titlesModal" class="modal-overlay" hidden>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="titlesHead">
+            <button type="button" id="closeTitlesBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="titlesHead">🎖️ Les titres</h2>
+            <p class="titles-intro">Ton titre monte avec ton XP total.</p>
+            <ol class="titles-list" id="titlesList"></ol>
         </div>
     </div>
 

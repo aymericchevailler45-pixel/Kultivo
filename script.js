@@ -1416,7 +1416,8 @@ function renderProfile() {
     const data = state.data;
     const { current, next } = titleFor(data.xp);
 
-    $('profileTitle').textContent = `🎖️ ${current.name}`;
+    $('profileName').textContent = cloudUser && league?.userId === cloudUser.id && league.pseudo ? league.pseudo : 'Mon profil';
+    $('profileTitle').textContent = `🎖️ ${current.name} ›`;
     $('avatarBtn').replaceChildren(avatarEl(myAvatarName(), data.avatar), el('span', 'avatar-edit'));
     renderSoundBtn();
     $('profileXp').textContent = `${data.xp} XP`;
@@ -3341,6 +3342,33 @@ function askConfirm({ title, text = '', yes = 'Oui', no = 'Annuler', danger = fa
     });
 }
 
+/** Tous les titres : ceux déjà atteints (✓), l'actuel (en vert, avec ce qu'il reste pour le suivant), ceux à venir (🔒). */
+function openTitlesModal() {
+    const xp = state.data.xp;
+    const { current, next } = titleFor(xp);
+    const list = $('titlesList');
+    list.replaceChildren();
+    TITLES.forEach(t => {
+        const reached = xp >= t.xp;
+        const isCurrent = t === current;
+        const li = el('li', `title-row${isCurrent ? ' is-current' : reached ? ' is-reached' : ' is-locked'}`);
+        const icon = el('span', 'title-icon');
+        icon.textContent = isCurrent ? '🎖️' : reached ? '✓' : '🔒';
+        const name = el('span', 'title-name');
+        const b = el('b');
+        b.textContent = t.name;
+        const sub = el('span');
+        sub.textContent = isCurrent ? (next ? 'Ton titre actuel' : 'Ton titre actuel : le plus haut !')
+            : reached ? 'Déjà atteint' : `Encore ${t.xp - xp} XP`;
+        name.append(b, sub);
+        const need = el('span', 'title-xp');
+        need.textContent = `${t.xp} XP`;
+        li.append(icon, name, need);
+        list.append(li);
+    });
+    $('titlesModal').hidden = false;
+}
+
 /* ---------- Avatar : rond de couleur avec l'initiale du pseudo, ou un petit dessin ---------- */
 
 const AVATAR_HUES = [0, 25, 45, 90, 140, 175, 200, 225, 260, 290, 320, 340];
@@ -4639,6 +4667,9 @@ function bindEvents() {
         });
     });
     $('avatarBtn').addEventListener('click', openAvatarModal);
+    $('profileTitle').addEventListener('click', openTitlesModal);
+    $('closeTitlesBtn').addEventListener('click', () => { $('titlesModal').hidden = true; });
+    $('titlesModal').addEventListener('click', e => { if (e.target === $('titlesModal')) $('titlesModal').hidden = true; });
     $('closeFriendBtn').addEventListener('click', () => { $('friendModal').hidden = true; });
     $('friendModal').addEventListener('click', e => { if (e.target === $('friendModal')) $('friendModal').hidden = true; });
     $('avatarDone').addEventListener('click', closeAvatarModal);
@@ -4664,6 +4695,7 @@ function bindEvents() {
         if (!$('startModal').hidden || !$('quitModal').hidden || !$('streakModal').hidden) return;
         if (!$('authModal').hidden || !$('cloudConflictModal').hidden || !$('accountModal').hidden) return;
         if (!$('chestModal').hidden || !$('askModal').hidden || !$('avatarModal').hidden || !$('friendModal').hidden) return;
+        if (!$('titlesModal').hidden) return;
         if (e.target.closest('input, textarea')) return;
         const t = e.touches[0];
         if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone
