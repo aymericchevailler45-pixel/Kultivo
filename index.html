@@ -57,6 +57,7 @@
             <div class="map-decorations" id="mapDecor" aria-hidden="true"></div>
             <ol id="mapPath" class="map-path"></ol>
             <!-- Sous le niveau 1 (la carte se lit de bas en haut) -->
+            <button type="button" id="toCurrentBtn" class="to-current" hidden>📍 Mon niveau</button>
             <button type="button" id="placementBtn" class="btn btn-violet placement-btn" hidden>🧭 Test de placement : commencer plus loin</button>
             <button type="button" id="resetBtn" class="link-btn">Réinitialiser ma progression</button>
         </section>
@@ -414,6 +415,12 @@
                 <button type="button" id="reportBtn" class="report-link">🚩 Signaler cette question</button>
             </div>
         </div>
+    </div>
+
+    <!-- ANECDOTE (tap sur un petit décor du parcours) -->
+    <div id="factBubble" class="fact-bubble" role="status" hidden>
+        <b id="factTitle"></b>
+        <p id="factText"></p>
     </div>
 
     <!-- TUTORIEL : l'écran s'assombrit, un élément est mis en lumière, une bulle explique -->

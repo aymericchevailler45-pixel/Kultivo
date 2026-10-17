@@ -193,6 +193,11 @@ function seededShuffle(array, seedText) {
 
 const ARTICLES = new Set(['le', 'la', 'les', 'l', 'un', 'une', 'des', 'du', 'de', 'd']);
 
+// Nombres écrits en lettres → chiffres, pour que « Les 3 Mousquetaires » = « Les Trois Mousquetaires »
+// (« un » et « une » sont exclus : ce sont surtout des articles)
+const NUMBER_WORDS = { deux: '2', trois: '3', quatre: '4', cinq: '5', six: '6', sept: '7', huit: '8',
+                       neuf: '9', dix: '10', onze: '11', douze: '12', vingt: '20', cent: '100', mille: '1000' };
+
 function normalize(str) {
     return str
         .toLowerCase()
@@ -201,7 +206,8 @@ function normalize(str) {
         .replace(/[’'\-–—]/g, ' ')
         .replace(/[^\p{L}\p{N}\s]/gu, '')
         .replace(/\s+/g, ' ')
-        .trim();
+        .trim()
+        .split(' ').map(w => NUMBER_WORDS[w] || w).join(' ');
 }
 
 function stripArticles(str) {
@@ -831,14 +837,93 @@ async function copyText(text, button) {
 
 /* ---------- Décors latéraux ---------- */
 
-const DECOR_ICONS = ['🌍', '📚', '🔬', '🎨', '🏛️', '🎭', '🔭', '🎻', '🧭', '📜',
-                     '💡', '🚀', '⚗️', '🏺', '🎼', '🖋️', '🗺️', '🧬', '⚔️', '🏰'];
+// Une icône par thème du jeu, et quelques anecdotes (un tap sur l'icône du parcours en affiche une)
+const THEME_DECOR = [
+    { theme: 'Histoire', icon: '📜', facts: [
+        'La guerre de Cent Ans a en réalité duré 116 ans, de 1337 à 1453.',
+        'Napoléon n’était pas petit : environ 1,69 m, la taille moyenne de son époque.',
+        'Cléopâtre a vécu plus près de nous que de la construction de la pyramide de Khéops.'] },
+    { theme: 'Sciences', icon: '🔬', facts: [
+        'La lumière du Soleil met environ 8 minutes à nous parvenir.',
+        'Les pieuvres ont trois cœurs et du sang bleu.',
+        'Une cuillère à café d’étoile à neutrons pèserait près d’un milliard de tonnes.'] },
+    { theme: 'Géographie', icon: '🌍', facts: [
+        'La Russie s’étend sur 11 fuseaux horaires.',
+        'Le lac Baïkal contient environ 20 % de l’eau douce liquide de surface de la planète.',
+        'C’est le Canada qui possède le plus long littoral du monde.'] },
+    { theme: 'Technologie', icon: '💡', facts: [
+        'Le premier message envoyé sur ARPANET, en 1969, devait être « LOGIN »… le système a planté après « LO ».',
+        'Le premier « bug » informatique était un vrai papillon de nuit coincé dans un ordinateur, en 1947.'] },
+    { theme: 'Musique', icon: '🎼', facts: [
+        'Beethoven a composé sa Neuvième Symphonie alors qu’il était presque totalement sourd.',
+        'La Marseillaise a été composée à Strasbourg, en 1792, par Rouget de Lisle.'] },
+    { theme: 'Littérature', icon: '📚', facts: [
+        'Pour connaître les ventes des Misérables, Victor Hugo aurait écrit à son éditeur un simple « ? ». Réponse : « ! ».',
+        'Le Petit Prince est traduit dans plus de 500 langues et dialectes.'] },
+    { theme: 'Jeux', icon: '🎲', facts: [
+        'Le Monopoly s’inspire d’un jeu créé par Elizabeth Magie pour dénoncer les excès des propriétaires.',
+        'Un Rubik’s Cube peut prendre plus de 43 milliards de milliards de positions différentes.'] },
+    { theme: 'Cinéma', icon: '🎬', facts: [
+        'Dans Psychose, le « sang » de la scène de la douche était du sirop de chocolat.',
+        'La première projection payante des frères Lumière a eu lieu en 1895, dans un café parisien.'] },
+    { theme: 'Gastronomie', icon: '🧀', facts: [
+        'Le miel ne se périme presque jamais : on en a retrouvé de comestible dans des tombes égyptiennes.',
+        'Le croissant viendrait de Vienne, en Autriche : d’où le nom de « viennoiserie ».'] },
+    { theme: 'Sport', icon: '⚽', facts: [
+        'Le marathon mesure 42,195 km depuis les JO de Londres en 1908.',
+        'Les premiers Jeux olympiques modernes ont eu lieu à Athènes, en 1896.'] },
+    { theme: 'Arts', icon: '🎨', facts: [
+        'La Joconde n’a ni sourcils ni cils visibles.',
+        'Van Gogh n’aurait vendu qu’un seul tableau de son vivant.'] },
+    { theme: 'Langue française', icon: '🗣️', facts: [
+        '« Anticonstitutionnellement » (25 lettres) est l’un des plus longs mots du dictionnaire.',
+        'Le mot « oiseau » contient les cinq voyelles a, e, i, o, u en seulement six lettres.'] },
+    { theme: 'Mythologie', icon: '⚡', facts: [
+        'Le mot « panique » vient du dieu Pan, qui semait la terreur chez les voyageurs.',
+        'Achille n’était vulnérable qu’au talon : d’où l’expression « talon d’Achille ».'] },
+    { theme: 'Drapeaux', icon: '🚩', facts: [
+        'Le drapeau du Népal est le seul drapeau national qui ne soit pas rectangulaire.',
+        'Le drapeau du Danemark serait le plus ancien drapeau national encore utilisé.'] },
+    { theme: 'Monuments', icon: '🏛️', facts: [
+        'La tour Eiffel grandit d’une quinzaine de centimètres en été, à cause de la dilatation du métal.',
+        'La Grande Muraille de Chine n’est pas visible à l’œil nu depuis l’espace, contrairement à la légende.'] }
+];
+const DECOR_ICONS = THEME_DECOR.map(t => t.icon);   // décors de l'écran de leçon (sur ordinateur)
+
+/** Bulle d'anecdote près de l'icône touchée. */
+function showFact(theme, badge) {
+    const entry = THEME_DECOR.find(t => t.theme === theme);
+    if (!entry) return;
+    $('factTitle').textContent = `${entry.icon} ${entry.theme}`;
+    // Espaces insécables autour de « », : ! ? : la ponctuation ne se retrouve jamais seule en début de ligne
+    const fact = entry.facts[Math.floor(Math.random() * entry.facts.length)];
+    $('factText').textContent = fact.replace(/« /g, '« ').replace(/ ([»:!?])/g, ' $1');
+    const bubble = $('factBubble');
+    bubble.hidden = false;
+    const r = badge.getBoundingClientRect();
+    const top = r.bottom + 10 + bubble.offsetHeight < window.innerHeight - 90 ? r.bottom + 10 : r.top - 10 - bubble.offsetHeight;
+    bubble.style.top = `${Math.max(70, top)}px`;
+}
+
+/** Bouton « 📍 Mon niveau » : visible seulement si le niveau en cours est hors de l'écran (flèche = direction). */
+function updateToCurrentBtn() {
+    const btn = $('toCurrentBtn');
+    const current = document.querySelector('.node.is-current');
+    if ($('mapScreen').hidden || !current) { btn.hidden = true; return; }
+    const r = current.getBoundingClientRect();
+    const above = r.bottom < 60;
+    const below = r.top > window.innerHeight - 90;
+    btn.hidden = !(above || below);
+    btn.textContent = above ? '⬆ Mon niveau' : '⬇ Mon niveau';
+}
 
 function buildDecor(container, count) {
     container.replaceChildren();
     for (let i = 0; i < count; i++) {
         const badge = el('span', `decor-badge ${i % 2 === 0 ? 'left' : 'right'} float-${(i % 3) + 1}`);
-        badge.textContent = DECOR_ICONS[(i * 7 + 3) % DECOR_ICONS.length];
+        const entry = THEME_DECOR[(i * 7 + 3) % THEME_DECOR.length];
+        badge.textContent = entry.icon;
+        badge.dataset.theme = entry.theme;
         // position dans la zone latérale (0,15 à 0,85), pseudo-aléatoire mais stable
         const k = 0.15 + 0.7 * (0.5 + 0.5 * Math.sin(i * 2.399));
         badge.style.setProperty('--k', k.toFixed(2));
@@ -979,6 +1064,7 @@ function renderMap() {
     }
 
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
+    setTimeout(updateToCurrentBtn, 50);
 }
 
 function renderChallenges() {
@@ -2030,7 +2116,15 @@ function showCard() {
                     : 'Défi';
     $('questionText').textContent = item.q.q;
     $('questionFlag').hidden = !item.q.flag;           // questions « Drapeaux » : grand drapeau en image
-    $('questionFlag').replaceChildren(...(item.q.flag ? [flagImg(item.q.flag)] : []));
+    if (item.q.flag) {   // drapeau + petite loupe : un tap l'affiche en grand
+        const wrap = el('span', 'photo-wrap');
+        const badge = el('span', 'photo-zoom-badge');
+        badge.textContent = '🔍';
+        wrap.append(flagImg(item.q.flag), badge);
+        $('questionFlag').replaceChildren(wrap);
+    } else {
+        $('questionFlag').replaceChildren();
+    }
     $('questionRebus').hidden = !item.q.rebus;         // rébus : emojis en images, dans l'ordre des mots
     $('questionRebus').replaceChildren(...(item.q.rebus || []).map(emojiImg));
     $('rebusTag').hidden = !item.q.rebus;
@@ -3480,20 +3574,29 @@ function bindEvents() {
     // Tap complet (clic) : on ouvre. Ouvrir dès le toucher refermait aussitôt la photo à la fin du même tap.
     // La photo « capture » le doigt dès qu'il la touche et s'ouvre quand il se relève, même si la page
     // a bougé entre-temps. La vue agrandie ignore les touches pendant 0,4 s (sinon le même tap la refermerait).
-    let photoPressed = false;
+    // (même chose pour les drapeaux)
     let zoomOpenedAt = 0;
-    const photo = $('questionPhotoImg');
-    photo.addEventListener('pointerdown', e => {
-        e.preventDefault();   // garde le clavier ouvert : la photo ne bouge pas sous le doigt
-        photoPressed = true;
-        try { photo.setPointerCapture(e.pointerId); } catch (err) { /* ancien navigateur */ }
-    });
-    photo.addEventListener('pointercancel', () => { photoPressed = false; });
-    photo.addEventListener('pointerup', () => {
-        if (!photoPressed) return;
-        photoPressed = false;
-        $('photoZoomImg').src = photo.src;
-        $('photoZoomCredit').textContent = $('questionPhotoCredit').textContent;
+    const zoomable = (area, getImg, getCredit) => {
+        let pressed = false;
+        area.addEventListener('pointerdown', e => {
+            if (!getImg()) return;
+            e.preventDefault();   // garde le clavier ouvert : l'image ne bouge pas sous le doigt
+            pressed = true;
+            try { area.setPointerCapture(e.pointerId); } catch (err) { /* ancien navigateur */ }
+        });
+        area.addEventListener('pointercancel', () => { pressed = false; });
+        area.addEventListener('pointerup', () => {
+            if (!pressed) return;
+            pressed = false;
+            openZoom(getImg().src, getCredit());
+        });
+    };
+    zoomable($('questionPhotoImg'), () => $('questionPhotoImg'), () => $('questionPhotoCredit').textContent);
+    zoomable($('questionFlag'), () => $('questionFlag').querySelector('img'), () => '');
+
+    function openZoom(src, credit) {
+        $('photoZoomImg').src = src;
+        $('photoZoomCredit').textContent = credit;
         $('photoZoom').hidden = false;
         zoomOpenedAt = Date.now();
         // Fermer le clavier : champ verrouillé + curseur retiré + focus donné à la vue agrandie
@@ -3502,7 +3605,7 @@ function bindEvents() {
         input.readOnly = true;
         input.blur();
         $('photoZoom').focus({ preventScroll: true });
-    });
+    }
     $('photoZoom').addEventListener('click', () => {
         if (Date.now() - zoomOpenedAt < 400) return;
         $('photoZoom').hidden = true;
@@ -3514,6 +3617,22 @@ function bindEvents() {
 
     $('reportModal').addEventListener('click', e => {
         if (e.target === $('reportModal')) $('reportModal').hidden = true;
+    });
+
+    // Parcours : bouton « Mon niveau » quand le niveau en cours n'est plus à l'écran
+    $('toCurrentBtn').addEventListener('click', () => {
+        const current = document.querySelector('.node.is-current');
+        if (current) current.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+    window.addEventListener('scroll', updateToCurrentBtn, { passive: true });
+
+    // Petits décors du parcours : un tap = une anecdote sur le thème ; un tap n'importe où la referme
+    $('mapDecor').addEventListener('click', e => {
+        const badge = e.target.closest('.decor-badge');
+        if (badge) showFact(badge.dataset.theme, badge);
+    });
+    document.addEventListener('pointerdown', e => {
+        if (!$('factBubble').hidden && !e.target.closest('.decor-badge')) $('factBubble').hidden = true;
     });
 
     // Sauvegarde en ligne
