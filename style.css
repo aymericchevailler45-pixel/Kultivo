@@ -1903,3 +1903,31 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     .kcard.is-missing { font-size: 1.1rem; }
     .kcard-count { top: -5px; right: -4px; padding: 0 4px; font-size: 0.62rem; }
 }
+
+/* Plusieurs coffres ouverts d'un coup : toutes les cartes en grille */
+.chest-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    width: 100%;
+    max-height: 52dvh;
+    overflow-y: auto;
+    padding: 8px 4px 4px;
+    animation: cardReveal 0.45s ease-out;
+}
+.chest-summary .kcard { padding: 2px; border-width: 2px; border-radius: 9px; box-shadow: 0 2px 0 var(--r); }
+.chest-summary .kcard-name { display: none; }
+.chest-summary .kcard-art .emoji-img { width: 1.8rem; height: 1.8rem; }
+.kcard-new {
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--green);
+    color: var(--on-green);
+    font-size: 0.58rem;
+    font-weight: 900;
+    white-space: nowrap;
+}

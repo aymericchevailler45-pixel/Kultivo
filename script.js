@@ -1074,7 +1074,7 @@ function chestStop(n) {
     btn.setAttribute('aria-label', ready ? `Coffre à ouvrir (${chestSize(n)} cartes)`
         : opened ? 'Coffre déjà ouvert' : `Coffre : termine le niveau ${n} pour l’ouvrir`);
     btn.addEventListener('click', () => {
-        if (chestReady(n)) openChest(n);
+        if (chestReady(n)) openChests(readyChests());   // tous les coffres en attente d'un coup
         else showToast(state.data.chests[n] ? '🎁 Coffre déjà ouvert. Tes cartes sont dans le Profil.'
             : `🎁 Termine le niveau ${n} pour ouvrir ce coffre.`);
     });
@@ -1093,28 +1093,34 @@ function drawCard(minRarity, exclude) {
     return from[Math.floor(Math.random() * from.length)];
 }
 
-/** Ouvre le coffre du niveau n : les cartes sont gagnées (et enregistrées) tout de suite, puis montrées une à une. */
-function openChest(n) {
+/** Ouvre les coffres des niveaux donnés : les cartes sont gagnées (et enregistrées) tout de suite.
+    Un seul coffre : cartes montrées une à une. Plusieurs : toutes les cartes d'un coup, en grille. */
+function openChests(levels) {
     const data = state.data;
-    const size = chestSize(n);
-    const picked = [];
-    for (let i = 0; i < size; i++) {
-        // Gros coffre (après un défi) : au moins une carte rare ou mieux
-        const needRare = size >= 3 && i === size - 1 && picked.every(c => c.rarity === 'common');
-        picked.push(drawCard(needRare ? 'rare' : null, picked));
+    const results = [];
+    for (const n of levels) {
+        const size = chestSize(n);
+        const picked = [];
+        for (let i = 0; i < size; i++) {
+            // Gros coffre (après un défi) : au moins une carte rare ou mieux
+            const needRare = size >= 3 && i === size - 1 && picked.every(c => c.rarity === 'common');
+            picked.push(drawCard(needRare ? 'rare' : null, picked));
+        }
+        for (const card of picked) {
+            const isNew = !data.cards[card.id];
+            data.cards[card.id] = (data.cards[card.id] || 0) + 1;
+            const coins = isNew ? 0 : CARD_RARITIES[card.rarity].dupCoins;
+            data.coins += coins;
+            results.push({ card, isNew, coins });
+        }
+        data.chests[n] = Date.now();
     }
-    const results = picked.map(card => {
-        const isNew = !data.cards[card.id];
-        data.cards[card.id] = (data.cards[card.id] || 0) + 1;
-        const coins = isNew ? 0 : CARD_RARITIES[card.rarity].dupCoins;
-        data.coins += coins;
-        return { card, isNew, coins };
-    });
-    data.chests[n] = Date.now();
     saveData();
 
-    state.chest = { results, step: -1, n };
-    $('chestTitle').textContent = n % CHALLENGE_EVERY === 0 ? '🎁 Gros coffre !' : '🎁 Coffre';
+    const many = levels.length > 1;
+    state.chest = { results, step: -1, many };
+    $('chestTitle').textContent = many ? `🎁 ${levels.length} coffres !`
+        : levels[0] % CHALLENGE_EVERY === 0 ? '🎁 Gros coffre !' : '🎁 Coffre';
     const stage = $('chestStage');
     stage.replaceChildren();
     const gift = el('button', 'chest-gift');
@@ -1123,18 +1129,40 @@ function openChest(n) {
     gift.setAttribute('aria-label', 'Ouvrir le coffre');
     gift.addEventListener('click', chestNext);
     stage.append(gift);
-    $('chestNote').textContent = `${plural(size, 'carte', 'cartes')} à l’intérieur. Touche le coffre !`;
+    $('chestNote').textContent = `${plural(results.length, 'carte', 'cartes')} à l’intérieur. Touche le coffre !`;
     $('chestBtn').textContent = 'Ouvrir';
     $('chestModal').hidden = false;
 }
 
-/** Bouton du coffre : ouvre, puis montre la carte suivante, puis ferme. */
+/** Plusieurs coffres : toutes les cartes gagnées en grille (« Nouvelle » en vert). */
+function showChestSummary(results) {
+    const grid = el('div', 'chest-summary');
+    for (const { card, isNew } of results) {
+        const btn = el('div', 'kcard-btn');
+        btn.append(cardFace(card));
+        if (isNew) {
+            const tag = el('span', 'kcard-new');
+            tag.textContent = 'Nouvelle';
+            btn.append(tag);
+        }
+        grid.append(btn);
+    }
+    const fresh = results.filter(r => r.isNew).length;
+    const coins = results.reduce((sum, r) => sum + r.coins, 0);
+    $('chestTitle').textContent = `🃏 ${plural(results.length, 'carte', 'cartes')}`;
+    $('chestStage').replaceChildren(grid);
+    $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
+    $('chestBtn').textContent = 'Super !';
+}
+
+/** Bouton du coffre : ouvre, puis montre la carte suivante (ou toutes d'un coup), puis ferme. */
 function chestNext() {
     const chest = state.chest;
     if (!chest) { closeChest(); return; }
     chest.step++;
-    if (chest.step >= chest.results.length) { closeChest(); return; }
+    if (chest.step >= chest.results.length || (chest.many && chest.step > 0)) { closeChest(); return; }
     if (chest.step === 0) { playSound('win'); launchConfetti(); }
+    if (chest.many) { showChestSummary(chest.results); return; }
     const { card, isNew, coins } = chest.results[chest.step];
     if (chest.step > 0) playSound(card.rarity === 'epic' || card.rarity === 'legendary' ? 'win' : 'pair');
     $('chestTitle').textContent = `Carte ${chest.step + 1} / ${chest.results.length}`;
@@ -1149,7 +1177,12 @@ function closeChest() {
     $('chestModal').hidden = true;
     if (wasChest) {
         renderHeader();
-        if (!$('mapScreen').hidden) renderMap();
+        if (!$('mapScreen').hidden) {
+            // On redessine le parcours sans revenir au niveau en cours : on reste où l'on était
+            const y = window.scrollY;
+            renderMap();
+            window.scrollTo(0, y);
+        }
     }
 }
 
