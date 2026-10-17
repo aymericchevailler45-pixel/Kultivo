@@ -1521,7 +1521,9 @@ function pickReviewCards(level) {
 
     const picked = weightedPick(missed, q => missCount(q.id) * 2 + 1, slots);
     if (picked.length < slots) {
-        const fill = QUESTIONS.filter(q => q.niveau < level && missCount(q.id) === 0 && isDue(q));
+        // Seulement des questions DÉJÀ VUES : après un test de placement, les questions des niveaux sautés
+        // ne sont pas des « révisions » (le joueur ne les a jamais rencontrées)
+        const fill = QUESTIONS.filter(q => q.niveau < level && missCount(q.id) === 0 && state.data.stats[q.id] && isDue(q));
         picked.push(...weightedPick(fill, q => 1 / (1 + streakOf(q.id)), slots - picked.length));
     }
     return picked;
