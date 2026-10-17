@@ -3261,6 +3261,10 @@ function openAuthModal(mode) {
     $('authPassword').autocomplete = signup ? 'new-password' : 'current-password';
     $('authForgot').hidden = signup;
     $('authError').textContent = '';
+    $('authEmail').value = '';                  // champs vides à chaque ouverture (et en passant de l'un à l'autre)
+    $('authPassword').value = '';
+    $('authPassword').placeholder = signup ? '6 caractères minimum' : 'Mot de passe';
+    $('authEmail').placeholder = 'Ton e-mail';
     $('authPassword').type = 'password';   // toujours masqué à l'ouverture
     $('authEye').textContent = '👁️';
     $('authModal').hidden = false;
