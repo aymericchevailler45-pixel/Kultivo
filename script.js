@@ -315,6 +315,7 @@ function defaultData() {
         orderStats: {},                  // niveaux Ordre : « famille:carte » -> { miss, streak, last }
         cards: {},                       // collection : id de carte (cards.js) -> nombre d'exemplaires
         chests: {},                      // coffres du parcours ouverts : n° du niveau -> date
+        podium: {},                      // classement : lundi de la semaine -> place obtenue (0 = rien)
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -332,7 +333,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -918,11 +919,12 @@ function buildDecor(container, count) {
 
 /* ---------- Navigation entre écrans ---------- */
 
-const MAIN_SCREENS = ['map', 'challenges', 'shop', 'profile'];
+const MAIN_SCREENS = ['map', 'challenges', 'league', 'shop', 'profile'];
 
 function showScreen(name) {
     $('mapScreen').hidden = name !== 'map';
     $('challengesScreen').hidden = name !== 'challenges';
+    $('leagueScreen').hidden = name !== 'league';
     $('shopScreen').hidden = name !== 'shop';
     $('profileScreen').hidden = name !== 'profile';
     $('studyScreen').hidden = name !== 'study';
@@ -942,6 +944,7 @@ function showScreen(name) {
         if (state.data.onboarded && !state.data.tourDone) setTimeout(startTour, 500);
     }
     if (name === 'challenges') { window.scrollTo(0, 0); renderChallenges(); }
+    if (name === 'league') { window.scrollTo(0, 0); renderLeague(); leagueLoad(); }
     if (name === 'shop') { window.scrollTo(0, 0); renderShop(); }
     if (name === 'profile') { window.scrollTo(0, 0); renderProfile(); }
 }
@@ -975,7 +978,13 @@ function updateNavNotifications() {
     if (unclaimedGoals > 0) challengesBtn.setAttribute('data-notif', unclaimedGoals);
     else challengesBtn.removeAttribute('data-notif');
 
-    // 3. Coffres à ouvrir sur le parcours
+    // 3. Demandes d'amis reçues (onglet Classement)
+    const requests = cloudUser && league?.userId === cloudUser.id ? league.incoming.length : 0;
+    const leagueBtn = document.querySelector('.nav-btn[data-screen="league"]');
+    if (requests > 0) leagueBtn.setAttribute('data-notif', requests);
+    else leagueBtn.removeAttribute('data-notif');
+
+    // 4. Coffres à ouvrir sur le parcours
     const chests = readyChests().length;
     const mapBtn = document.querySelector('.nav-btn[data-screen="map"]');
     if (chests > 0) mapBtn.setAttribute('data-notif', chests);
@@ -1290,8 +1299,7 @@ function openCardView(card) {
     state.chest = null;
     $('chestTitle').textContent = `🃏 ${card.theme}`;
     $('chestStage').replaceChildren(cardFace(card, true));
-    const count = state.data.cards[card.id] || 0;
-    $('chestNote').textContent = count > 1 ? `Tu l’as en ${count} exemplaires.` : '';
+    $('chestNote').textContent = '';
     $('chestBtn').textContent = 'Fermer';
     $('chestModal').hidden = false;
 }
@@ -1319,12 +1327,7 @@ function renderCollection() {
             if (count) {
                 const btn = el('button', 'kcard-btn');
                 btn.type = 'button';
-                btn.append(cardFace(card));
-                if (count > 1) {
-                    const badge = el('span', 'kcard-count');
-                    badge.textContent = `×${count}`;
-                    btn.append(badge);
-                }
+                btn.append(cardFace(card));   // les doublons donnent des pièces (le nombre reste enregistré dans `cards`)
                 btn.setAttribute('aria-label', `${card.name}, ${CARD_RARITIES[card.rarity].name}`);
                 btn.addEventListener('click', () => openCardView(card));
                 row.append(btn);
@@ -3150,6 +3153,7 @@ async function cloudPush() {
         if (!error) {
             setCloudMeta({ dirty: false, updatedAt });
             renderCloudCard();
+            leaguePushScore();   // XP de la semaine pour le classement entre amis
         }
     } catch (err) { /* hors ligne : on réessaiera */ }
 }
@@ -3209,6 +3213,8 @@ async function cloudInit() {
     c.auth.onAuthStateChange((event, session) => {
         cloudUser = session?.user || null;
         renderCloudCard();
+        if (event === 'SIGNED_IN') setTimeout(leagueLoad, 0);
+        if (!$('leagueScreen').hidden) renderLeague();
         if (event === 'PASSWORD_RECOVERY') setTimeout(askNewPassword, 300);
     });
     try {
@@ -3217,6 +3223,7 @@ async function cloudInit() {
     } catch (err) { cloudUser = null; }
     renderCloudCard();
     cloudSync(false);
+    if (cloudUser) leagueLoad();   // demandes d'amis (pastille) et coffre du podium
     window.addEventListener('online', () => cloudSync(false));
     // L'appli passe en arrière-plan : on envoie tout de suite ce qui n'est pas encore en ligne
     document.addEventListener('visibilitychange', () => {
@@ -3329,8 +3336,365 @@ async function cloudLogout() {
     try { await cloudClient().auth.signOut(); } catch (err) { /* tant pis */ }
     cloudUser = null;
     setCloudMeta({ updatedAt: null });
+    league = null;
+    saveLeagueCache();
     renderCloudCard();
+    if (!$('leagueScreen').hidden) renderLeague();
     showToast('Déconnecté. Ta progression reste sur cet appareil.');
+}
+
+/* ---------- Classement entre amis (Supabase : profiles, friendships, scores) ---------- */
+/* XP de la semaine (du lundi au dimanche, calculée depuis `activeDays`), amis ajoutés par pseudo
+   avec une demande à accepter, lien d'invitation, coffre pour le podium de la semaine passée. */
+
+const LEAGUE_KEY = 'kultivo_league';   // dernière version connue (affichée tout de suite, et hors ligne)
+const INVITE_KEY = 'kultivo_invite';   // pseudo reçu par un lien d'invitation, en attente
+const PSEUDO_RE = /^[A-Za-z0-9À-ÿ_.-]{3,16}$/;
+const PODIUM_CARDS = { 1: 5, 2: 4, 3: 3 };   // cartes du coffre de podium (dont au moins une rare)
+let league = loadLeagueCache();
+let leagueBusy = false;
+let leagueMsg = '';                    // petit message sous le champ « ajouter un ami »
+
+function loadLeagueCache() {
+    try { return JSON.parse(localStorage.getItem(LEAGUE_KEY) || 'null'); } catch (err) { return null; }
+}
+function saveLeagueCache() {
+    try { localStorage.setItem(LEAGUE_KEY, JSON.stringify(league)); } catch (err) { /* tant pis */ }
+}
+
+/** Lundi de la semaine de `date` (« AAAA-MM-JJ »). */
+function weekStart(date = new Date()) {
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    return dayKey(d);
+}
+function shiftDays(key, days) {
+    const [y, m, d] = key.split('-').map(Number);
+    return dayKey(new Date(y, m - 1, d + days));
+}
+/** XP gagnés pendant la semaine qui commence le lundi `monday`. */
+function weekXp(monday) {
+    let sum = 0;
+    for (let i = 0; i < 7; i++) sum += state.data.activeDays[shiftDays(monday, i)] || 0;
+    return sum;
+}
+/** XP d'un ami pour une semaine donnée (0 s'il n'a pas joué). */
+function friendWeekXp(f, monday) {
+    if (f.week === monday) return f.week_xp;
+    if (f.prev_week === monday) return f.prev_week_xp;
+    return 0;
+}
+
+/** Envoie l'XP de la semaine (appelé avec la sauvegarde en ligne, seulement si on a un pseudo). */
+async function leaguePushScore() {
+    const c = cloudClient();
+    if (!c || !cloudUser || !league?.pseudo || league.userId !== cloudUser.id) return;
+    const week = weekStart();
+    const prev = shiftDays(week, -7);
+    try {
+        await c.from('scores').upsert({
+            user_id: cloudUser.id, week, week_xp: Math.min(15000, weekXp(week)),
+            prev_week: prev, prev_week_xp: Math.min(15000, weekXp(prev)), streak: currentStreak()
+        });
+    } catch (err) { /* hors ligne : au prochain envoi */ }
+}
+
+/** Recharge pseudo, amis, demandes et scores. */
+async function leagueLoad() {
+    const c = cloudClient();
+    if (!c || !cloudUser || !navigator.onLine || leagueBusy) return;
+    leagueBusy = true;
+    try {
+        const me = cloudUser.id;
+        const { data: mine } = await c.from('profiles').select('pseudo').eq('user_id', me).maybeSingle();
+        const { data: links, error } = await c.from('friendships').select('id, requester, addressee, status');
+        if (error) return;
+        const others = [...new Set((links || []).map(l => l.requester === me ? l.addressee : l.requester))];
+        const pseudos = {};
+        const scores = {};
+        if (others.length) {
+            const { data: profs } = await c.from('profiles').select('user_id, pseudo').in('user_id', others);
+            (profs || []).forEach(p => { pseudos[p.user_id] = p.pseudo; });
+            const { data: sc } = await c.from('scores').select('user_id, week, week_xp, prev_week, prev_week_xp, streak').in('user_id', others);
+            (sc || []).forEach(s => { scores[s.user_id] = s; });
+        }
+        const row = l => {
+            const id = l.requester === me ? l.addressee : l.requester;
+            return { link: l.id, id, pseudo: pseudos[id] || '?', ...(scores[id] || { week: null, week_xp: 0, prev_week: null, prev_week_xp: 0, streak: 0 }) };
+        };
+        league = {
+            userId: me,
+            pseudo: mine?.pseudo || null,
+            friends: (links || []).filter(l => l.status === 'accepted').map(row),
+            incoming: (links || []).filter(l => l.status === 'pending' && l.addressee === me).map(row),
+            outgoing: (links || []).filter(l => l.status === 'pending' && l.requester === me).map(row),
+            at: Date.now()
+        };
+        saveLeagueCache();
+        if (league.pseudo) leaguePushScore();
+    } catch (err) {
+        return;   // hors ligne : on garde la dernière version connue
+    } finally {
+        leagueBusy = false;
+    }
+    updateNavNotifications();
+    if (!$('leagueScreen').hidden) renderLeague();
+    await handleInvite();
+    checkPodium();
+}
+
+/** Lundi : coffre pour le podium de la semaine passée (une fois par semaine, au moins 2 joueurs). */
+function checkPodium() {
+    const data = state.data;
+    if (!league?.pseudo || !league.friends.length) return;
+    const last = shiftDays(weekStart(), -7);
+    if (data.podium[last] !== undefined) return;
+    const mine = weekXp(last);
+    const players = [mine, ...league.friends.map(f => friendWeekXp(f, last))].filter(xp => xp > 0);
+    data.podium[last] = 0;
+    if (mine > 0 && players.length >= 2) {
+        const rank = 1 + players.filter(xp => xp > mine).length;
+        // Le dernier n'a rien (sinon, à deux, tout le monde gagnerait)
+        if (PODIUM_CARDS[rank] && rank < players.length) {
+            data.podium[last] = rank;
+            saveData();
+            const medal = ['🥇', '🥈', '🥉'][rank - 1];
+            openCardBoxes([{ size: PODIUM_CARDS[rank], rare: true }],
+                `${medal} ${rank === 1 ? '1er' : `${rank}e`} de la semaine !`);
+            return;
+        }
+    }
+    saveData();
+}
+
+async function setPseudo(raw) {
+    const c = cloudClient();
+    const pseudo = raw.trim();
+    if (!PSEUDO_RE.test(pseudo)) {
+        leagueMsg = 'De 3 à 16 caractères : lettres, chiffres, « _ », « . » ou « - ».';
+        renderLeague();
+        return;
+    }
+    const { error } = await c.from('profiles').upsert({ user_id: cloudUser.id, pseudo });
+    if (error) {
+        leagueMsg = error.code === '23505' ? 'Ce pseudo est déjà pris, choisis-en un autre.' : 'Impossible pour le moment. Réessaie.';
+        renderLeague();
+        return;
+    }
+    leagueMsg = '';
+    league = { ...(league || {}), userId: cloudUser.id, pseudo, friends: league?.friends || [], incoming: league?.incoming || [], outgoing: league?.outgoing || [] };
+    saveLeagueCache();
+    renderLeague();
+    leagueLoad();
+}
+
+/** Ajout par pseudo : envoie une demande (ou accepte celle que l'autre nous a déjà envoyée). */
+async function addFriend(raw) {
+    const c = cloudClient();
+    const pseudo = raw.trim();
+    if (!pseudo) return;
+    const say = text => { leagueMsg = text; renderLeague(); };
+    if (pseudo.toLowerCase() === league.pseudo.toLowerCase()) return say('C’est ton propre pseudo 😉');
+    const { data: found } = await c.from('profiles').select('user_id, pseudo')
+        .ilike('pseudo', pseudo.replace(/[\\%_]/g, '\\$&')).maybeSingle();
+    if (!found) return say(`Aucun joueur ne s’appelle « ${pseudo} ».`);
+    const known = [...league.friends, ...league.outgoing].find(f => f.id === found.user_id);
+    if (known) return say(league.friends.includes(known) ? `${found.pseudo} est déjà ton ami.` : `Demande déjà envoyée à ${found.pseudo}.`);
+    const theirs = league.incoming.find(f => f.id === found.user_id);
+    if (theirs) { await acceptFriend(theirs.link); return say(`✅ ${found.pseudo} et toi êtes maintenant amis !`); }
+    const { error } = await c.from('friendships').insert({ requester: cloudUser.id, addressee: found.user_id });
+    if (error) return say('Impossible pour le moment. Réessaie.');
+    say(`✅ Demande envoyée à ${found.pseudo}.`);
+    leagueLoad();
+}
+
+async function acceptFriend(link) {
+    await cloudClient().from('friendships').update({ status: 'accepted' }).eq('id', link);
+    await leagueLoad();
+}
+
+async function removeFriend(link, question) {
+    if (question && !confirm(question)) return;
+    await cloudClient().from('friendships').delete().eq('id', link);
+    await leagueLoad();
+}
+
+/** Lien d'invitation : partage du téléphone (WhatsApp, SMS…), sinon copie du lien. */
+async function shareInvite() {
+    const url = `${location.origin}${location.pathname}?ami=${encodeURIComponent(league.pseudo)}`;
+    const text = `Viens me défier sur Kultivo, le quiz de culture G ! Mon pseudo : ${league.pseudo}`;
+    try {
+        if (navigator.share) { await navigator.share({ title: 'Kultivo', text, url }); return; }
+    } catch (err) { if (err.name === 'AbortError') return; }
+    try {
+        await navigator.clipboard.writeText(`${text} ${url}`);
+        showToast('🔗 Lien copié : colle-le dans un message !');
+    } catch (err) {
+        window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`, '_blank');
+    }
+}
+
+/** Arrivée par un lien « ?ami=pseudo » : on le garde de côté jusqu'à ce qu'on ait un compte et un pseudo. */
+function readInviteFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const pseudo = params.get('ami');
+    if (!pseudo) return;
+    try { localStorage.setItem(INVITE_KEY, pseudo); } catch (err) { /* tant pis */ }
+    params.delete('ami');
+    const rest = params.toString();
+    history.replaceState(null, '', location.pathname + (rest ? `?${rest}` : '') + location.hash);
+}
+
+async function handleInvite() {
+    let pseudo = null;
+    try { pseudo = localStorage.getItem(INVITE_KEY); } catch (err) { return; }
+    if (!pseudo || !league?.pseudo) return;
+    try { localStorage.removeItem(INVITE_KEY); } catch (err) { /* tant pis */ }
+    if (pseudo.toLowerCase() === league.pseudo.toLowerCase()) return;
+    if ([...league.friends, ...league.outgoing].some(f => f.pseudo.toLowerCase() === pseudo.toLowerCase())) return;
+    if (!confirm(`${pseudo} t’a invité sur Kultivo. L’ajouter en ami ?`)) return;
+    await addFriend(pseudo);
+}
+
+/** Jours restants avant la fin de la semaine (lundi prochain). */
+function weekDaysLeft() {
+    const next = shiftDays(weekStart(), 7);
+    const [y, m, d] = next.split('-').map(Number);
+    return Math.max(1, Math.ceil((new Date(y, m - 1, d) - new Date()) / 86400000));
+}
+
+function renderLeague() {
+    const grid = $('leagueGrid');
+    grid.replaceChildren();
+    const card = (cls, title) => {
+        const box = el('article', `card ${cls}`);
+        if (title) {
+            const h = el('h2');
+            h.textContent = title;
+            box.append(h);
+        }
+        grid.append(box);
+        return box;
+    };
+    const para = (box, text, cls = 'muted') => {
+        const p = el('p', cls);
+        p.textContent = text;
+        box.append(p);
+        return p;
+    };
+    const button = (box, text, cls, onClick) => {
+        const b = el('button', `btn ${cls}`);
+        b.type = 'button';
+        b.textContent = text;
+        b.addEventListener('click', onClick);
+        box.append(b);
+        return b;
+    };
+    /** Champ + bouton (pseudo, ajout d'ami). */
+    const form = (box, placeholder, label, onSubmit) => {
+        const f = el('form', 'league-form');
+        const input = el('input', 'auth-input');
+        input.placeholder = placeholder;
+        input.maxLength = 16;
+        input.autocomplete = 'off';
+        input.autocapitalize = 'off';
+        input.spellcheck = false;
+        const b = el('button', 'btn btn-green');
+        b.type = 'submit';
+        b.textContent = label;
+        f.append(input, b);
+        f.addEventListener('submit', e => { e.preventDefault(); onSubmit(input.value); });
+        box.append(f);
+        if (leagueMsg) para(box, leagueMsg, 'league-msg');
+        return input;
+    };
+
+    // 1) Pas de compte : on l'explique
+    if (!cloudUser) {
+        const box = card('league-intro', '🥇 Classement entre amis');
+        para(box, 'Compare ton XP de la semaine avec tes amis. Il faut un compte (gratuit) pour jouer ensemble.');
+        button(box, '☁️ Créer un compte', 'btn-green btn-full', () => openAuthModal('signup'));
+        button(box, 'J’ai déjà un compte', 'btn-ghost btn-full', () => openAuthModal('login'));
+        return;
+    }
+    // 2) Pas encore de pseudo
+    if (!league || league.userId !== cloudUser.id || !league.pseudo) {
+        const box = card('league-intro', '🥇 Choisis ton pseudo');
+        para(box, league && league.userId === cloudUser.id
+            ? 'C’est sous ce nom que tes amis te verront et pourront t’ajouter.'
+            : 'Chargement…');
+        if (league && league.userId === cloudUser.id) form(box, 'Ton pseudo', 'Valider', setPseudo);
+        return;
+    }
+
+    // 3) Classement de la semaine
+    const week = weekStart();
+    const rows = [
+        { pseudo: league.pseudo, xp: weekXp(week), streak: currentStreak(), me: true },
+        ...league.friends.map(f => ({ pseudo: f.pseudo, xp: friendWeekXp(f, week), streak: f.week === week ? f.streak : 0 }))
+    ].sort((a, b) => b.xp - a.xp || (a.me ? -1 : b.me ? 1 : 0));
+    const rank = card('league-rank', '🥇 Cette semaine');
+    para(rank, `Fin dans ${plural(weekDaysLeft(), 'jour', 'jours')} · podium = coffre de cartes 🎁`, 'muted league-sub');
+    const list = el('ol', 'league-list');
+    rows.forEach((r, i) => {
+        const li = el('li', `league-row${r.me ? ' is-me' : ''}`);
+        const pos = el('span', 'league-pos');
+        pos.textContent = i < 3 && r.xp > 0 ? ['🥇', '🥈', '🥉'][i] : String(i + 1);
+        const name = el('span', 'league-name');
+        name.textContent = r.me ? `${r.pseudo} (toi)` : r.pseudo;
+        const streak = el('span', 'league-streak');
+        streak.textContent = r.streak > 0 ? `🔥 ${r.streak}` : '';
+        const xp = el('b', 'league-xp');
+        xp.textContent = `${r.xp} XP`;
+        li.append(pos, name, streak, xp);
+        list.append(li);
+    });
+    rank.append(list);
+    const myIndex = rows.findIndex(r => r.me);
+    if (rows.length === 1) para(rank, 'Ajoute des amis ci-dessous pour vous comparer chaque semaine !');
+    else if (myIndex === 0) para(rank, rows[0].xp > 0 ? '🏆 Tu es en tête, garde ta place !' : 'Personne n’a encore joué cette semaine : à toi de commencer !', 'league-tip');
+    else {
+        const ahead = rows[myIndex - 1];
+        para(rank, `Encore ${ahead.xp - rows[myIndex].xp + 1} XP pour dépasser ${ahead.pseudo} !`, 'league-tip');
+    }
+
+    // 4) Amis : demandes reçues, ajout par pseudo, invitation, liste
+    const friends = card('league-friends', '👥 Amis');
+    league.incoming.forEach(f => {
+        const row = el('div', 'league-request');
+        const text = el('span');
+        text.textContent = `${f.pseudo} veut être ton ami`;
+        const yes = el('button', 'btn btn-green btn-small');
+        yes.type = 'button';
+        yes.textContent = 'Accepter';
+        yes.addEventListener('click', () => acceptFriend(f.link));
+        const no = el('button', 'btn btn-ghost btn-small');
+        no.type = 'button';
+        no.textContent = 'Refuser';
+        no.addEventListener('click', () => removeFriend(f.link));
+        row.append(text, yes, no);
+        friends.append(row);
+    });
+    form(friends, 'Pseudo de ton ami', 'Ajouter', addFriend);
+    button(friends, '🔗 Inviter un ami (lien)', 'btn-ghost btn-full', shareInvite);
+    const people = [...league.friends.map(f => ({ ...f, pending: false })), ...league.outgoing.map(f => ({ ...f, pending: true }))];
+    if (people.length) {
+        const ul = el('ul', 'league-people');
+        people.forEach(f => {
+            const li = el('li');
+            const name = el('span');
+            name.textContent = f.pending ? `${f.pseudo} · en attente` : f.pseudo;
+            const x = el('button', 'icon-btn league-remove');
+            x.type = 'button';
+            x.textContent = '✕';
+            x.setAttribute('aria-label', f.pending ? `Annuler la demande à ${f.pseudo}` : `Retirer ${f.pseudo} de tes amis`);
+            x.addEventListener('click', () => removeFriend(f.link, f.pending ? null : `Retirer ${f.pseudo} de tes amis ?`));
+            li.append(name, x);
+            ul.append(li);
+        });
+        friends.append(ul);
+    }
+    para(friends, `Ton pseudo : ${league.pseudo}`, 'muted league-sub');
 }
 
 /* ---------- Tutoriel de découverte (après l'accueil) ---------- */
@@ -4107,6 +4471,7 @@ function bindEvents() {
 
 function init() {
     bindEvents();
+    readInviteFromUrl();                                    // lien d'invitation « ?ami=pseudo »
     flushReports();                                         // signalements restés en attente
     cloudInit();                                            // compte connecté ? synchronisation
     window.addEventListener('online', flushReports);        // dès que la connexion revient

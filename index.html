@@ -27,6 +27,7 @@
         <nav class="nav" aria-label="Navigation principale">
             <button type="button" class="nav-btn" data-screen="map"><span class="nav-icon" aria-hidden="true">🗺️</span>Parcours</button>
             <button type="button" class="nav-btn" data-screen="challenges"><span class="nav-icon" aria-hidden="true">🏆</span>Défis</button>
+            <button type="button" class="nav-btn" data-screen="league"><span class="nav-icon" aria-hidden="true">🥇</span>Classement</button>
             <button type="button" class="nav-btn" data-screen="shop"><span class="nav-icon" aria-hidden="true">🛒</span>Boutique</button>
             <button type="button" class="nav-btn" data-screen="profile"><span class="nav-icon" aria-hidden="true">👤</span>Profil</button>
         </nav>
@@ -118,6 +119,11 @@
                     </div>
                 </article>
             </div>
+        </section>
+
+        <!-- CLASSEMENT ENTRE AMIS (XP de la semaine) : contenu dessiné par renderLeague -->
+        <section id="leagueScreen" class="page" aria-label="Classement" hidden>
+            <div class="page-grid league-grid" id="leagueGrid"></div>
         </section>
 
         <!-- ÉCRAN 3 : BOUTIQUE -->

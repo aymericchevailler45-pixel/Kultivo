@@ -2036,3 +2036,60 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 }
 @media (min-width: 800px) { .shop-grid > .shop-chest { grid-column: span 12; } }
 .chest-stage { overflow: hidden; padding: 10px 0 14px; }
+
+/* ============================================================
+   Classement entre amis
+   ============================================================ */
+.league-grid > .card { gap: 12px; }
+.league-sub { font-size: 0.85rem; }
+.league-form { display: flex; gap: 8px; }
+.league-form .auth-input { flex: 1; min-width: 0; margin: 0; }
+.league-form .btn { padding: 10px 16px; font-size: 1rem; }
+.league-msg { color: var(--ink); font-size: 0.9rem; font-weight: 700; }
+.league-tip { color: var(--green-ink); font-weight: 800; }
+
+.league-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.league-row {
+    display: grid;
+    grid-template-columns: 34px 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    font-weight: 800;
+}
+.league-row.is-me { border-color: var(--green); background: var(--green-tint); }
+.league-pos { font-size: 1.2rem; text-align: center; color: var(--muted); }
+.league-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.league-streak { color: var(--orange-ink); font-size: 0.85rem; }
+.league-xp { white-space: nowrap; }
+
+.league-request {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: var(--violet-tint);
+    font-weight: 800;
+}
+.league-request span { flex: 1 1 100%; }
+.btn.btn-small { flex: 1; padding: 8px 12px; font-size: 0.95rem; }
+.league-people { list-style: none; margin: 0; padding: 0; }
+.league-people li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 2px;
+    border-bottom: 2px solid var(--line);
+    font-weight: 700;
+}
+.league-remove { width: 32px; height: 32px; font-size: 0.9rem; color: var(--muted); }
+@media (min-width: 800px) {
+    .league-grid > .league-rank, .league-grid > .league-friends { grid-column: span 6; }
+}
+/* 5 onglets sur téléphone : textes un peu plus petits */
+@media (max-width: 900px) { .nav-btn { font-size: 0.7rem; } }
+.league-friends .btn-full { padding: 12px; font-size: 1rem; }

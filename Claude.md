@@ -149,6 +149,23 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   « ton test t'a fait passer N coffres », bouton « Ouvrir les coffres » qui les ouvre. Tutoriel : étape coffre.
 - Boutique compacte sur téléphone (icône à gauche, boutons côte à côte) ; coffre de cartes juste sous les pièces.
 
+- Classement entre amis (2026-10-17) : 5e onglet « 🥇 Classement » (`leagueScreen`, `renderLeague`), entre Défis
+  et Boutique. Tables Supabase créées par `supabase/classement.sql` (à lancer une fois dans le SQL Editor) :
+  `profiles` (pseudo unique, 3-16 caractères), `friendships` (demande pending → accepted), `scores` (week = lundi,
+  week_xp, prev_week, prev_week_xp, streak ; visible seulement par soi et ses amis acceptés ; plafond 15 000 XP
+  par semaine, trigger : pas plus de 3000 XP d'un coup en moins d'une heure). XP de la semaine = somme de
+  `activeDays` du lundi au dimanche (`weekXp`). Envoi avec chaque sauvegarde en ligne (`leaguePushScore`).
+  Ajout d'ami par pseudo (demande à accepter ; si l'autre a déjà demandé, on accepte), lien d'invitation
+  `?ami=pseudo` (partage du téléphone, sinon copie). Cache local `kultivo_league`. Pastille = demandes reçues.
+  Podium (`checkPodium`, une fois par semaine, `podium` : lundi -> place) : 1er 5 cartes, 2e 4, 3e 3 (dont une
+  rare), seulement à 2 joueurs ou plus ayant joué, et jamais pour le dernier.
+- Doublons de cartes : donnent des pièces, plus de « ×2 » affiché (le nombre reste dans `cards`, pour une future
+  version dorée à X exemplaires, idée validée pour plus tard).
+- Mystère du 2026-10-17 : la progression de l'utilisateur s'est retrouvée sur le compte de TEST
+  (test-kultivo-14620@kultivo-test.fr, créé par Claude pour tester) au lieu du sien ; copiée sur son compte par SQL.
+  Cause non trouvée (le code envoie bien sous `cloudUser.id`). Vérifier que sa ligne `saves` (bef7f100…) se met
+  à jour quand il joue, puis supprimer le compte de test.
+
 ## levels.js (important)
 - Lit `QUESTIONS`, écrase `q.niveau` et `LEVEL_NAMES`. Le champ `niveau` du fichier questions n'est qu'un secours.
 - 150 niveaux = 105 de questions (6 ou 7 chacun) + 15 Paires (x3) + 15 Ordre (x6) + 15 défis (x0).
