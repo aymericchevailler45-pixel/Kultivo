@@ -3268,7 +3268,7 @@ function openAuthModal(mode) {
     $('authPassword').type = 'password';   // toujours masqué à l'ouverture
     $('authEye').textContent = '👁️';
     $('authModal').hidden = false;
-    $('authEmail').focus();
+    // Pas de focus automatique : le clavier ne s'ouvre que quand le joueur touche un champ (fenêtre entière visible)
 }
 
 function authErrorText(error) {
@@ -5006,6 +5006,10 @@ function bindEvents() {
     $('cloudLogoutBtn').addEventListener('click', () => { $('accountModal').hidden = true; cloudLogout(); });
     $('closeAuthBtn').addEventListener('click', () => { $('authModal').hidden = true; });
     $('authSwitch').addEventListener('click', () => openAuthModal(authMode === 'signup' ? 'login' : 'signup'));
+    // Clavier ouvert sur un champ de la fenêtre : on garde le champ (et le bouton) visibles au-dessus du clavier
+    ['authEmail', 'authPassword'].forEach(id => $(id).addEventListener('focus', () => {
+        [300, 600].forEach(ms => setTimeout(() => $(id).scrollIntoView({ block: 'center', behavior: 'smooth' }), ms));
+    }));
     $('authForgot').addEventListener('click', forgotPassword);
     $('authForm').addEventListener('submit', submitAuth);
     $('keepCloudBtn').addEventListener('click', () => { if (pendingRemote) applyRemote(pendingRemote); });
