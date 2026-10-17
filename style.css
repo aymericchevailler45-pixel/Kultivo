@@ -2440,3 +2440,6 @@ button.podium-col { padding: 0; border: 0; background: none; color: inherit; fon
     cursor: pointer;
     transform: translateY(-50%);
 }
+
+/* Photo de monument : invisible le temps que la nouvelle se charge (la place reste réservée) */
+#questionPhotoImg.is-loading { visibility: hidden; }

@@ -2415,8 +2415,16 @@ function showCard() {
             $('questionPhotoImg').width = item.q.photoSize[0];
             $('questionPhotoImg').height = item.q.photoSize[1];
         }
-        $('questionPhotoImg').src = item.q.photo;
+        // Nouvelle photo : l'ancienne est cachée pendant le chargement (sinon elle restait affichée un instant)
+        const img = $('questionPhotoImg');
+        if (img.getAttribute('src') !== item.q.photo) {
+            img.classList.add('is-loading');
+            img.src = item.q.photo;
+            if (img.complete) img.classList.remove('is-loading');   // déjà en mémoire : tout de suite
+        }
         $('questionPhotoCredit').textContent = item.q.credit || '';
+        // Photos suivantes de la leçon chargées à l'avance
+        state.queue.forEach(it => { if (it.q.photo) new Image().src = it.q.photo; });
     }
 
     // Indices : on repart de zéro à chaque carte (et pas d'indice en défi du jour ni en sprint)
@@ -4854,7 +4862,12 @@ function bindEvents() {
     // + mode compact pendant que le clavier est ouvert (images et question plus petites)
     const onViewport = () => { updateKeyboardMode(); fitToKeyboard(); keepAnswerVisible(); };
     // Une nouvelle photo change la hauteur une fois chargée : on réajuste
-    $('questionPhotoImg').addEventListener('load', () => { fitToKeyboard(); keepAnswerVisible(); });
+    $('questionPhotoImg').addEventListener('load', () => {
+        $('questionPhotoImg').classList.remove('is-loading');
+        fitToKeyboard();
+        keepAnswerVisible();
+    });
+    $('questionPhotoImg').addEventListener('error', () => $('questionPhotoImg').classList.remove('is-loading'));
     if (window.visualViewport) window.visualViewport.addEventListener('resize', onViewport);
     loadKeyboardMemory();   // hauteur clavier enregistrée lors d'une partie précédente
     updateKeyboardMode();   // mesure la hauteur d'écran sans clavier dès le lancement
