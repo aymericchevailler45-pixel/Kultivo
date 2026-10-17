@@ -184,6 +184,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (jamais sous 0). Sinon le déclencheur recopie coins / niveau (= `unlocked`) / pseudo depuis le jeu.
   La case `niveau` est aussi modifiable : `gifts.level` → `setPlayerLevel` (niveaux d'avant validés, ceux
   d'après à refaire, coffres déjà ouverts gardés).
+  Bug corrigé le 2026-10-17 : les cadeaux n'étaient récupérés que dans `leagueFetch`, qui pouvait rester bloqué
+  (invitation → acceptFriend → await leagueLoad() = attente de soi-même). Désormais : `claimGifts` toutes les
+  30 s + au retour dans l'appli + après `cloudSync` au lancement ; chargement du classement abandonné après 20 s ;
+  `handleInvite` non attendu. Tests réseau : chaque essai Edge raté consomme quand même les cadeaux (piège).
   NE PAS modifier `saves.data` à la main (le jeu ouvert réécrit par-dessus). Id du compte de l'utilisateur :
   bef7f100-48e2-4713-a11a-5bad72725390. D'autres joueurs existent déjà dans la table (6 lignes le 2026-10-17).
 - Profil : pseudo à côté de l'avatar (`profileName`, « Mon profil » sans pseudo), titre en pastille à côté de

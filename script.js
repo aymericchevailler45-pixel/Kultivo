@@ -3198,8 +3198,8 @@ async function cloudInit() {
         cloudUser = data.session?.user || null;
     } catch (err) { cloudUser = null; }
     renderCloudCard();
-    cloudSync(false);
-    if (cloudUser) { leagueLoad(); claimGifts(); }   // demandes d'amis, coffre du podium, cadeaux
+    cloudSync(false).finally(claimGifts);   // cadeaux après la synchronisation (sinon elle pourrait les écraser)
+    if (cloudUser) leagueLoad();   // demandes d'amis (pastille) et coffre du podium
     window.addEventListener('online', () => cloudSync(false));
     // L'appli passe en arrière-plan : on envoie tout de suite ce qui n'est pas encore en ligne
     document.addEventListener('visibilitychange', () => {
@@ -3516,11 +3516,13 @@ async function leaguePushScore() {
 
 /** Cadeaux déposés depuis Supabase (table « gifts », supabase/cadeaux.sql) : on supprime la ligne
     PUIS on ajoute les pièces, pour ne jamais les compter deux fois. */
-let claimingGifts = false;
+let claimingGifts = 0;   // heure du début de la récupération en cours (0 = aucune)
+setInterval(() => { if (!document.hidden) claimGifts(); }, 30000);
 async function claimGifts() {
     const c = cloudClient();
-    if (!c || !cloudUser || claimingGifts) return;
-    claimingGifts = true;
+    if (!c || !cloudUser || !navigator.onLine) return;
+    if (claimingGifts && Date.now() - claimingGifts < 20000) return;   // déjà en cours (verrou libéré après 20 s)
+    claimingGifts = Date.now();
     try {
         const { data, error } = await c.from('gifts').select('*');
         if (error || !data?.length) return;
@@ -3543,7 +3545,7 @@ async function claimGifts() {
     } catch (err) {
         /* hors ligne, ou table pas encore créée */
     } finally {
-        claimingGifts = false;
+        claimingGifts = 0;
     }
 }
 
@@ -3720,13 +3722,19 @@ function leagueTick() {
 }
 setInterval(leagueTick, 15000);
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && cloudUser) leagueLoad();
+    if (document.visibilityState === 'visible' && cloudUser) { leagueLoad(); claimGifts(); }
 });
 
 /** Recharge pseudo, amis, demandes et scores (un seul chargement à la fois : les autres appels l'attendent). */
 let leaguePromise = null;
+let leagueStartedAt = 0;
 function leagueLoad() {
-    if (!leaguePromise) leaguePromise = leagueFetch().finally(() => { leaguePromise = null; });
+    if (leaguePromise && Date.now() - leagueStartedAt > 20000) leaguePromise = null;   // bloqué : on relance
+    if (!leaguePromise) {
+        leagueStartedAt = Date.now();
+        const p = leagueFetch().finally(() => { if (leaguePromise === p) leaguePromise = null; });
+        leaguePromise = p;
+    }
     return leaguePromise;
 }
 
@@ -3734,7 +3742,6 @@ async function leagueFetch() {
     const c = cloudClient();
     if (!c || !cloudUser || !navigator.onLine || leagueBusy) return;
     lastLeagueLoad = Date.now();
-    claimGifts();   // pièces offertes depuis Supabase (table gifts)
     leagueBusy = true;
     try {
         const me = cloudUser.id;
@@ -3785,7 +3792,7 @@ async function leagueFetch() {
     updateNavNotifications();
     refreshLeagueView();
     if (!$('challengesScreen').hidden) renderDailyFriends(state.data.daily[todayKey()]);
-    await handleInvite();
+    handleInvite();   // sans attendre : la fenêtre « ajouter en ami ? » peut rester ouverte
     checkPodium();
 }
 
