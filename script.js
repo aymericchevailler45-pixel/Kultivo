@@ -3386,9 +3386,11 @@ function friendWeekXp(f, monday) {
 }
 
 /** Envoie l'XP de la semaine (appelé avec la sauvegarde en ligne, seulement si on a un pseudo). */
+let lastScorePush = 0;
 async function leaguePushScore() {
     const c = cloudClient();
     if (!c || !cloudUser || !league?.pseudo || league.userId !== cloudUser.id) return;
+    lastScorePush = Date.now();
     const week = weekStart();
     const prev = shiftDays(week, -7);
     try {
@@ -3398,6 +3400,29 @@ async function leaguePushScore() {
         });
     } catch (err) { /* hors ligne : au prochain envoi */ }
 }
+
+/** Redessine l'onglet Classement s'il a changé, sauf pendant qu'on tape dans un champ (sinon le texte serait effacé). */
+let leagueViewDirty = false;
+function refreshLeagueView() {
+    if ($('leagueScreen').hidden || !leagueViewDirty) return;
+    if ($('leagueGrid').contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
+    leagueViewDirty = false;
+    renderLeague();
+}
+
+/** Mise à jour automatique : toutes les 15 s sur l'onglet Classement, toutes les minutes ailleurs,
+    et tout de suite quand on revient dans l'appli. */
+let lastLeagueLoad = 0;
+function leagueTick() {
+    if (!cloudUser || document.hidden || !navigator.onLine) return;
+    const wait = $('leagueScreen').hidden ? 60000 : 15000;
+    if (Date.now() - lastLeagueLoad >= wait - 500) leagueLoad();
+    else refreshLeagueView();
+}
+setInterval(leagueTick, 15000);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && cloudUser) leagueLoad();
+});
 
 /** Recharge pseudo, amis, demandes et scores (un seul chargement à la fois : les autres appels l'attendent). */
 let leaguePromise = null;
@@ -3409,6 +3434,7 @@ function leagueLoad() {
 async function leagueFetch() {
     const c = cloudClient();
     if (!c || !cloudUser || !navigator.onLine || leagueBusy) return;
+    lastLeagueLoad = Date.now();
     leagueBusy = true;
     try {
         const me = cloudUser.id;
@@ -3428,23 +3454,34 @@ async function leagueFetch() {
             const id = l.requester === me ? l.addressee : l.requester;
             return { link: l.id, id, pseudo: pseudos[id] || '?', ...(scores[id] || { week: null, week_xp: 0, prev_week: null, prev_week_xp: 0, streak: 0 }) };
         };
-        league = {
+        const before = league?.userId === me ? league : null;
+        const fresh = {
             userId: me,
             pseudo: mine?.pseudo || null,
             friends: (links || []).filter(l => l.status === 'accepted').map(row),
             incoming: (links || []).filter(l => l.status === 'pending' && l.addressee === me).map(row),
-            outgoing: (links || []).filter(l => l.status === 'pending' && l.requester === me).map(row),
-            at: Date.now()
+            outgoing: (links || []).filter(l => l.status === 'pending' && l.requester === me).map(row)
         };
+        const { at, ...old } = before || {};
+        if (JSON.stringify(old) !== JSON.stringify(fresh)) leagueViewDirty = true;
+        // Nouveautés depuis la dernière fois : petit message
+        if (before) {
+            const had = list => new Set(list.map(f => f.id));
+            const known = had([...before.incoming, ...before.friends]);
+            fresh.incoming.filter(f => !known.has(f.id)).forEach(f => showToast(`👥 ${f.pseudo} veut être ton ami !`));
+            const waiting = had(before.outgoing);
+            fresh.friends.filter(f => waiting.has(f.id)).forEach(f => showToast(`✓ ${f.pseudo} a accepté ta demande !`));
+        }
+        league = { ...fresh, at: Date.now() };
         saveLeagueCache();
-        if (league.pseudo) leaguePushScore();
+        if (league.pseudo && Date.now() - lastScorePush > 120000) leaguePushScore();
     } catch (err) {
         return;   // hors ligne : on garde la dernière version connue
     } finally {
         leagueBusy = false;
     }
     updateNavNotifications();
-    if (!$('leagueScreen').hidden) renderLeague();
+    refreshLeagueView();
     await handleInvite();
     checkPodium();
 }
@@ -3512,7 +3549,7 @@ function pseudoField(onReady) {
         clearTimeout(timer);
         seq++;
         setReady(false);
-        if (!value) return show('Entre 3 et 16 caractères : lettres, chiffres, « _ », « . » ou « - ».');
+        if (!value) return show('Entre 3 et 16 caractères');
         if (value.length < 3) return show(`Trop court : encore ${plural(3 - value.length, 'caractère', 'caractères')}.`, 'bad');
         if (!PSEUDO_RE.test(value)) return show('Pas d’espace ni de signe spécial (seulement « _ », « . » ou « - »).', 'bad');
         show('Vérification…');

@@ -157,6 +157,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `activeDays` du lundi au dimanche (`weekXp`). Envoi avec chaque sauvegarde en ligne (`leaguePushScore`).
   Ajout d'ami par pseudo (demande à accepter ; si l'autre a déjà demandé, on accepte), lien d'invitation
   `?ami=pseudo` (partage du téléphone, sinon copie). Cache local `kultivo_league`. Pastille = demandes reçues.
+  Mise à jour automatique (`leagueTick`) : toutes les 15 s sur l'onglet Classement, 60 s ailleurs, et au retour
+  dans l'appli ; message quand une demande arrive ou est acceptée ; pas de redessin pendant qu'on tape.
   Podium (`checkPodium`, une fois par semaine, `podium` : lundi -> place) : 1er 5 cartes, 2e 4, 3e 3 (dont une
   rare), seulement à 2 joueurs ou plus ayant joué, et jamais pour le dernier.
 - Pseudo demandé dès l'accueil (étape 4/5, juste après la création du compte ou la connexion ; « Plus tard »
