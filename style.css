@@ -1558,7 +1558,20 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     text-align: center;
 }
 .tile-label { color: var(--muted); font-weight: 800; font-size: 0.9rem; }
-.tile b     { font-size: 1.5rem; font-weight: 900; line-height: 1.2; }
+.tile b     { font-size: 1.5rem; font-weight: 900; line-height: 1.2; white-space: nowrap; }
+
+/* Boutons Son / Compte : côte à côte, même taille */
+.hero-toggles { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 8px; }
+.hero-toggles .sound-toggle { align-self: stretch; text-align: center; }
+.hero-toggles .sound-toggle[hidden] { display: none; }
+
+/* Téléphone : tuiles plus serrées, valeurs à taille adaptée pour tenir sur une ligne */
+@media (max-width: 600px) {
+    .hero-tiles { gap: 8px; }
+    .tile { padding: 10px 6px; }
+    .tile-label { font-size: 0.78rem; }
+    .tile b { font-size: clamp(1rem, 5vw, 1.35rem); }
+}
 
 @media (min-width: 900px) {
     .card-hero    { grid-template-columns: 1.3fr 1fr; }

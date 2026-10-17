@@ -158,7 +158,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Sauvegarde en ligne (FAITE le 2026-10-17) : table `saves` (user_id, data jsonb, xp, updated_at), RLS « chacun
   la sienne ». Comptes e-mail + mot de passe, « Confirm email » désactivé (quota d'e-mails Supabase gratuit).
   Bibliothèque `vendor/supabase.min.js` (v2.45.4, locale pour marcher hors ligne). Carte « ☁️ Sauvegarde en
-  ligne » : petit bouton dans la carte du titre du profil (sous le son) + fenêtre « Mon compte ».
+  ligne » : bouton « ☁️ Mon compte » (ou « ☁️ Sauvegarder » sans compte) à côté de « 🔊 Son activé »,
+  même taille, dans la carte du titre du profil + fenêtre « Mon compte » (déconnexion).
   Proposé dès l'accueil (étape 4/5 : Créer un compte / me connecter / Plus tard). `saveData` → `cloudChanged` → envoi 5 s plus tard (+ quand l'appli passe en arrière-
   plan). `cloudSync` au lancement/connexion : compte plus récent → appliqué ; deux progressions différentes →
   fenêtre « Quelle progression garder ? ». Métadonnées locales : localStorage `kultivo_cloud`.

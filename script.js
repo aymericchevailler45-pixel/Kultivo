@@ -1092,11 +1092,12 @@ function renderProfile() {
 
     // Tuiles de résumé
     const finished = Object.keys(data.done).filter(n => data.done[n]).length;
-    $('tileStreak').textContent = plural(currentStreak(), 'jour', 'jours');
+    const nbsp = '\u00a0';   // espace insécable : « 69 % » ne se coupe jamais en deux lignes
+    $('tileStreak').textContent = plural(currentStreak(), 'jour', 'jours').replace(' ', nbsp);
     $('tileRate').textContent = data.totals.tries > 0
-        ? `${Math.round((data.totals.right / data.totals.tries) * 100)} %`
+        ? `${Math.round((data.totals.right / data.totals.tries) * 100)}${nbsp}%`
         : '—';
-    $('tileLevels').textContent = `${finished} / ${MAX_LEVEL}`;
+    $('tileLevels').textContent = `${finished}${nbsp}/${nbsp}${MAX_LEVEL}`;
 
     // Records
     const dailies = Object.values(data.daily);
@@ -2797,12 +2798,14 @@ function renderCloudCard() {
     const btn = $('cloudBtn');
     btn.hidden = !window.supabase && !cloudUser;
     if (!cloudUser) {
-        btn.textContent = '☁️ Sauvegarder ma progression';
+        btn.textContent = '☁️ Sauvegarder';
+        btn.title = 'Créer un compte pour sauvegarder ta progression en ligne';
         return;
     }
     const meta = cloudMeta();
     const status = meta.dirty ? 'Sauvegarde en cours…' : meta.updatedAt ? `Sauvegardé ${timeAgo(meta.updatedAt)}` : 'Connecté';
-    btn.textContent = `☁️ ${status}`;
+    btn.textContent = '☁️ Mon compte';   // libellé fixe et clair : on y trouve aussi « Se déconnecter »
+    btn.title = status;
     $('accountEmail').textContent = cloudUser.email || '';
     $('accountStatus').textContent = `☁️ ${status}`;
 }
@@ -3158,7 +3161,8 @@ function playSound(name) {
 
 function renderSoundBtn() {
     const on = state.data.sound;
-    $('soundBtn').textContent = on ? '🔊 Sons et vibrations : activés' : '🔇 Sons et vibrations : coupés';
+    $('soundBtn').textContent = on ? '🔊 Son activé' : '🔇 Son coupé';
+    $('soundBtn').title = on ? 'Sons et vibrations activés : toucher pour couper' : 'Sons et vibrations coupés : toucher pour activer';
     $('soundBtn').setAttribute('aria-pressed', String(on));
     $('lessonSoundBtn').textContent = on ? '🔊' : '🔇';
     $('lessonSoundBtn').setAttribute('aria-label', on ? 'Couper le son' : 'Remettre le son');
