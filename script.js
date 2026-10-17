@@ -3522,22 +3522,41 @@ async function claimGifts() {
     if (!c || !cloudUser || claimingGifts) return;
     claimingGifts = true;
     try {
-        const { data, error } = await c.from('gifts').select('id, coins, note');
+        const { data, error } = await c.from('gifts').select('*');
         if (error || !data?.length) return;
         for (const gift of data) {
             const { data: gone, error: delError } = await c.from('gifts').delete().eq('id', gift.id).select('id');
             if (delError || !gone?.length) continue;   // déjà récupéré (autre appareil)
-            state.data.coins = Math.max(0, state.data.coins + gift.coins);
+            if (gift.coins) {
+                state.data.coins = Math.max(0, state.data.coins + gift.coins);
+                showToast(gift.coins > 0 ? `🎁 +${gift.coins} 🪙 offertes !` : `🪙 ${gift.coins} pièces (ajustement)`);
+            }
+            if (gift.level) {
+                setPlayerLevel(gift.level);
+                showToast(`🗺️ Te voilà au niveau ${Math.min(gift.level, MAX_LEVEL)} !`);
+            }
             saveData();
             renderHeader();
             if (!$('shopScreen').hidden) renderShop();
-            showToast(gift.coins > 0 ? `🎁 +${gift.coins} 🪙 offertes !` : `🪙 ${gift.coins} pièces (ajustement)`);
+            if (!$('mapScreen').hidden) renderMap();
         }
     } catch (err) {
         /* hors ligne, ou table pas encore créée */
     } finally {
         claimingGifts = false;
     }
+}
+
+/** Niveau changé depuis la table : les niveaux d'avant sont validés (comme après un placement), ceux d'après
+    redeviennent à faire. Les coffres déjà ouverts restent ouverts. */
+function setPlayerLevel(level) {
+    const n = Math.max(1, Math.min(MAX_LEVEL, Math.round(level)));
+    const d = state.data;
+    for (let i = 1; i <= MAX_LEVEL; i++) {
+        if (i < n) d.done[i] = true;
+        else delete d.done[i];
+    }
+    d.unlocked = n;
 }
 
 /** Ce que les amis voient de mon profil (jamais la sauvegarde complète, qui reste privée). */
@@ -3580,7 +3599,7 @@ function openFriendProfile(f) {
             ['🔥 Série', plural(s.streak, 'jour', 'jours').replace(' ', nbsp)],
             ['✅ Réussite', s.rate === null ? '—' : `${s.rate}${nbsp}%`],
             ['🗺️ Niveaux', `${s.levels}${nbsp}/${nbsp}${MAX_LEVEL}`],
-            ['🌋 Record série', plural(s.bestStreak, 'jour', 'jours').replace(' ', nbsp)],
+            ['🌋 Record', plural(s.bestStreak, 'jour', 'jours').replace(' ', nbsp)],
             ['⚡ Sprint', String(s.sprint)],
             ['📅 Semaine', `${friendWeekXp(f, weekStart())}${nbsp}XP`]
         ].forEach(([label, value]) => {

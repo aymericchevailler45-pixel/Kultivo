@@ -182,6 +182,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   saves (`supabase/table-joueurs.sql`). Déclencheur `saves_fill` : si seule la case coins change, la différence
   part dans la table `gifts` ; `claimGifts` (lancement + ~1 min) efface la ligne puis ajoute/retire les pièces
   (jamais sous 0). Sinon le déclencheur recopie coins / niveau (= `unlocked`) / pseudo depuis le jeu.
+  La case `niveau` est aussi modifiable : `gifts.level` → `setPlayerLevel` (niveaux d'avant validés, ceux
+  d'après à refaire, coffres déjà ouverts gardés).
   NE PAS modifier `saves.data` à la main (le jeu ouvert réécrit par-dessus). Id du compte de l'utilisateur :
   bef7f100-48e2-4713-a11a-5bad72725390. D'autres joueurs existent déjà dans la table (6 lignes le 2026-10-17).
 - Profil : pseudo à côté de l'avatar (`profileName`, « Mon profil » sans pseudo), titre en pastille à côté de
