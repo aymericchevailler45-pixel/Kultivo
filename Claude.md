@@ -167,7 +167,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Défi du jour comparé avec les amis (remplace « Copier mon résultat », demandé le 2026-10-17) : colonnes
   `daily_day`, `daily_score`, `daily_seconds` dans `scores` (`supabase/defi-du-jour.sql`, à lancer une fois),
   envoyées par `leaguePushScore` (repli sans ces colonnes si le SQL n'est pas lancé) ; liste dans la carte
-  Défi du jour (`renderDailyFriends` : meilleur score puis plus rapide, « pas encore joué »). Écran de fin du
+  Défi du jour (`renderDailyFriends` : seulement les amis qui ONT joué, 5 meilleurs + moi si plus loin, « ⋯ »). Écran de fin du
   défi : bouton « Comparer avec mes amis ». Onglets Défis et Classement compacts sur téléphone.
 - Avatar personnalisable (2026-10-17) : bouton rond en haut du Profil (`avatarBtn`, crayon) → fenêtre « Mon
   avatar » (`avatarModal`) : 12 couleurs (`AVATAR_HUES`), initiale ou 24 dessins Twemoji déjà dans `emoji/`

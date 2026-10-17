@@ -2420,3 +2420,5 @@ button.podium-col { padding: 0; border: 0; background: none; color: inherit; fon
 }
 /* Titre : toujours entier (passe sur 2 lignes dans la pastille plutôt que d'être coupé) */
 .title-chip { overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.2; text-align: left; border-radius: 14px; }
+.daily-friends-list li.df-gap { display: block; height: auto; padding: 0; background: none; color: var(--muted); text-align: center; line-height: 0.8; }
+.daily-friends-list li.df-gap::before { content: '⋯'; font-weight: 900; }

@@ -3687,27 +3687,38 @@ function renderDailyFriends(result) {
         seconds: f.daily_seconds
     }));
     if (result) rows.push({ pseudo: league.pseudo, me: true, played: true, score: result.score, seconds: result.seconds });
-    rows.sort((a, b) => (b.played - a.played) || (b.score - a.score) || (a.seconds - b.seconds));
+    // Seulement ceux qui ont joué (sinon, avec beaucoup d'amis, la liste serait interminable) : les 5 meilleurs,
+    // plus moi si je suis plus loin
+    const played = rows.filter(r => r.played)
+        .sort((a, b) => (b.score - a.score) || (a.seconds - b.seconds));
+    const done = played.filter(r => !r.me).length;
     const title = el('p', 'daily-friends-title');
-    const done = rows.filter(r => r.played && !r.me).length;
-    title.textContent = `👥 Tes amis aujourd’hui · ${done}/${league.friends.length} ont joué`;
+    title.textContent = done > 0
+        ? `👥 Tes amis aujourd’hui · ${plural(done, 'a joué', 'ont joué')}`
+        : '👥 Aucun ami n’a encore fait le défi aujourd’hui.';
+    box.append(title);
+    if (!done) return;
+    const TOP = 5;
+    const shown = played.slice(0, TOP);
+    const myPlace = played.findIndex(r => r.me);
+    if (myPlace >= TOP) shown.push(played[myPlace]);
     const list = el('ol', 'daily-friends-list');
-    let place = 0;
-    rows.forEach(r => {
-        const li = el('li', `${r.me ? 'is-me' : ''}${r.played ? '' : ' is-waiting'}`);
+    shown.forEach(r => {
+        const place = played.indexOf(r) + 1;
+        if (place > TOP && r.me) list.append(el('li', 'df-gap'));   // « … » avant ma ligne
+        const li = el('li', r.me ? 'is-me' : '');
         const pos = el('span', 'df-pos');
-        if (r.played) place++;
-        pos.textContent = !r.played ? '·' : ['🥇', '🥈', '🥉'][place - 1] || String(place);
+        pos.textContent = ['🥇', '🥈', '🥉'][place - 1] || String(place);
         const name = el('span', 'df-name');
         name.textContent = r.me ? 'Toi' : r.pseudo;
         const score = el('b', 'df-score');
-        score.textContent = r.played ? `${r.score}/${DAILY_SIZE}` : 'pas encore joué';
+        score.textContent = `${r.score}/${DAILY_SIZE}`;
         const time = el('span', 'df-time');
-        time.textContent = r.played ? `${Math.floor(r.seconds / 60)}:${String(r.seconds % 60).padStart(2, '0')}` : '';
+        time.textContent = `${Math.floor(r.seconds / 60)}:${String(r.seconds % 60).padStart(2, '0')}`;
         li.append(pos, name, score, time);
         list.append(li);
     });
-    box.append(title, list);
+    box.append(list);
 }
 
 /** Mise à jour automatique : toutes les 15 s sur l'onglet Classement, toutes les minutes ailleurs,
