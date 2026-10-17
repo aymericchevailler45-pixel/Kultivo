@@ -1509,13 +1509,14 @@ function weightedPick(items, weightOf, k) {
 /**
  * Révisions d'un niveau normal.
  * - Le nombre de places grandit avec le nombre de questions ratées (3 à 8).
- * - On pioche dans TOUTES les erreurs, de n'importe quel niveau (hors celui qu'on joue).
+ * - On pioche dans les erreurs des niveaux PRÉCÉDENTS seulement (une révision porte sur ce qui vient avant ;
+ *   toutes les erreurs restent dans le bouton « ↻ à revoir »).
  * - Tirage pondéré : plus une question est ratée, plus elle a de chances de sortir,
  *   mais ce n'est jamais toujours les mêmes.
  * - S'il reste des places, on complète avec des questions dues des niveaux précédents.
  */
 function pickReviewCards(level) {
-    const others = QUESTIONS.filter(q => q.niveau !== level);
+    const others = QUESTIONS.filter(q => q.niveau < level);
     const missed = others.filter(q => missCount(q.id) > 0);
     const slots = Math.min(REVIEW_MAX, REVIEW_MIN + Math.floor(missed.length / 3));
 
@@ -2344,7 +2345,7 @@ function endSession(win) {
             emoji: start > 1 ? '🧭' : '🌱',
             title: 'Test terminé',
             text: start > 1
-                ? `Tu commences au niveau ${start} ! Les niveaux 1 à ${start - 1} sont validés, leurs questions reviendront de temps en temps en révision.`
+                ? `Tu commences au niveau ${start} ! Les niveaux 1 à ${start - 1} sont validés : tu peux les rejouer quand tu veux.`
                 : 'Tu commences au niveau 1 : tout le parcours t’attend !',
             primary: 'C’est parti',
             onPrimary: returnToMap
