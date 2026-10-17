@@ -3198,7 +3198,7 @@ async function cloudInit() {
     } catch (err) { cloudUser = null; }
     renderCloudCard();
     cloudSync(false);
-    if (cloudUser) leagueLoad();   // demandes d'amis (pastille) et coffre du podium
+    if (cloudUser) { leagueLoad(); claimGifts(); }   // demandes d'amis, coffre du podium, cadeaux
     window.addEventListener('online', () => cloudSync(false));
     // L'appli passe en arrière-plan : on envoie tout de suite ce qui n'est pas encore en ligne
     document.addEventListener('visibilitychange', () => {
@@ -3513,6 +3513,32 @@ async function leaguePushScore() {
     } catch (err) { /* hors ligne : au prochain envoi */ }
 }
 
+/** Cadeaux déposés depuis Supabase (table « gifts », supabase/cadeaux.sql) : on supprime la ligne
+    PUIS on ajoute les pièces, pour ne jamais les compter deux fois. */
+let claimingGifts = false;
+async function claimGifts() {
+    const c = cloudClient();
+    if (!c || !cloudUser || claimingGifts) return;
+    claimingGifts = true;
+    try {
+        const { data, error } = await c.from('gifts').select('id, coins, note');
+        if (error || !data?.length) return;
+        for (const gift of data) {
+            const { data: gone, error: delError } = await c.from('gifts').delete().eq('id', gift.id).select('id');
+            if (delError || !gone?.length) continue;   // déjà récupéré (autre appareil)
+            state.data.coins += gift.coins;
+            saveData();
+            renderHeader();
+            if (!$('shopScreen').hidden) renderShop();
+            showToast(`🎁 +${gift.coins} 🪙${gift.note ? ` : ${gift.note}` : ' offertes !'}`);
+        }
+    } catch (err) {
+        /* hors ligne, ou table pas encore créée */
+    } finally {
+        claimingGifts = false;
+    }
+}
+
 /** Ce que les amis voient de mon profil (jamais la sauvegarde complète, qui reste privée). */
 function profileSummary() {
     const d = state.data;
@@ -3688,6 +3714,7 @@ async function leagueFetch() {
     const c = cloudClient();
     if (!c || !cloudUser || !navigator.onLine || leagueBusy) return;
     lastLeagueLoad = Date.now();
+    claimGifts();   // pièces offertes depuis Supabase (table gifts)
     leagueBusy = true;
     try {
         const me = cloudUser.id;

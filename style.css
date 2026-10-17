@@ -2406,3 +2406,11 @@ button.podium-col { padding: 0; border: 0; background: none; color: inherit; fon
 .title-name span { color: var(--muted); font-size: 0.8rem; font-weight: 700; }
 .title-row.is-current .title-name span { color: var(--green-ink); }
 .title-xp { color: var(--muted); font-size: 0.85rem; font-weight: 800; white-space: nowrap; }
+/* Titre toujours à côté de l'XP, même sur un petit téléphone */
+.xp-row { flex-wrap: nowrap; }
+.xp-row .card-big { flex-shrink: 0; }
+.title-chip { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 700px) {
+    .xp-row .card-big { font-size: 1.6rem; }
+    .title-chip { padding: 5px 10px; font-size: 0.85rem; }
+}
