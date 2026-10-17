@@ -93,7 +93,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `fitToKeyboard` mesure la place libre sous « Vérifier » et agrandit image + question (variable CSS --fit),
   appelé AVANT affichage dans showCard (fondu retiré : il donnait un « clignement »). Photos : `photoSize` [l, h] pour réserver la place.
   Zoom photo : pointerdown = preventDefault seulement, ouverture au click (sinon le même tap la refermait).
-- Parcours : décors = une icône par thème (`THEME_DECOR`) ; tap = bulle d'anecdote (`showFact`). Bouton flottant
+- Parcours : décors = une icône par thème (`THEME_DECOR`) ; tap = bulle d'anecdote (`showFact`). Anecdotes dans
+  `facts.js` (THEME_FACTS, 10 par thème = 150) : chaque icône a la sienne (`data-fact`). Décors en z-index 2
+  (sinon le parcours, pleine largeur, prenait les taps). L'utilisateur veut « presque 1 anecdote par icône ». Bouton flottant
   « 📍 Mon niveau » (⬆/⬇) quand le niveau en cours est hors écran. Drapeaux zoomables (loupe) comme les photos.
   Correction : nombres en lettres = chiffres (`NUMBER_WORDS` dans `normalize`, sauf « un/une »).
 - Boutons secondaires (`.btn-ghost`) : contour fin gris partout ; dans le bandeau de correction, contour couleur du bandeau.

@@ -1286,6 +1286,9 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .tour-skip[hidden] + .tour-next { margin-left: auto; }
 
 /* Parcours : décors cliquables (anecdotes) */
+/* Le parcours couvre toute la largeur : les décors passent au-dessus pour recevoir les taps
+   (le conteneur laisse passer les taps ailleurs, seules les icônes les captent) */
+.map-decorations { z-index: 2; }
 .map-decorations .decor-badge { pointer-events: auto; cursor: pointer; }
 .fact-bubble {
     position: fixed;

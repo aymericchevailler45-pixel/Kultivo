@@ -838,65 +838,35 @@ async function copyText(text, button) {
 /* ---------- Décors latéraux ---------- */
 
 // Une icône par thème du jeu, et quelques anecdotes (un tap sur l'icône du parcours en affiche une)
+// Une icône par thème du jeu. Les anecdotes sont dans facts.js (THEME_FACTS) :
+// chaque icône du parcours a la sienne (tap = bulle).
 const THEME_DECOR = [
-    { theme: 'Histoire', icon: '📜', facts: [
-        'La guerre de Cent Ans a en réalité duré 116 ans, de 1337 à 1453.',
-        'Napoléon n’était pas petit : environ 1,69 m, la taille moyenne de son époque.',
-        'Cléopâtre a vécu plus près de nous que de la construction de la pyramide de Khéops.'] },
-    { theme: 'Sciences', icon: '🔬', facts: [
-        'La lumière du Soleil met environ 8 minutes à nous parvenir.',
-        'Les pieuvres ont trois cœurs et du sang bleu.',
-        'Une cuillère à café d’étoile à neutrons pèserait près d’un milliard de tonnes.'] },
-    { theme: 'Géographie', icon: '🌍', facts: [
-        'La Russie s’étend sur 11 fuseaux horaires.',
-        'Le lac Baïkal contient environ 20 % de l’eau douce liquide de surface de la planète.',
-        'C’est le Canada qui possède le plus long littoral du monde.'] },
-    { theme: 'Technologie', icon: '💡', facts: [
-        'Le premier message envoyé sur ARPANET, en 1969, devait être « LOGIN »… le système a planté après « LO ».',
-        'Le premier « bug » informatique était un vrai papillon de nuit coincé dans un ordinateur, en 1947.'] },
-    { theme: 'Musique', icon: '🎼', facts: [
-        'Beethoven a composé sa Neuvième Symphonie alors qu’il était presque totalement sourd.',
-        'La Marseillaise a été composée à Strasbourg, en 1792, par Rouget de Lisle.'] },
-    { theme: 'Littérature', icon: '📚', facts: [
-        'Pour connaître les ventes des Misérables, Victor Hugo aurait écrit à son éditeur un simple « ? ». Réponse : « ! ».',
-        'Le Petit Prince est traduit dans plus de 500 langues et dialectes.'] },
-    { theme: 'Jeux', icon: '🎲', facts: [
-        'Le Monopoly s’inspire d’un jeu créé par Elizabeth Magie pour dénoncer les excès des propriétaires.',
-        'Un Rubik’s Cube peut prendre plus de 43 milliards de milliards de positions différentes.'] },
-    { theme: 'Cinéma', icon: '🎬', facts: [
-        'Dans Psychose, le « sang » de la scène de la douche était du sirop de chocolat.',
-        'La première projection payante des frères Lumière a eu lieu en 1895, dans un café parisien.'] },
-    { theme: 'Gastronomie', icon: '🧀', facts: [
-        'Le miel ne se périme presque jamais : on en a retrouvé de comestible dans des tombes égyptiennes.',
-        'Le croissant viendrait de Vienne, en Autriche : d’où le nom de « viennoiserie ».'] },
-    { theme: 'Sport', icon: '⚽', facts: [
-        'Le marathon mesure 42,195 km depuis les JO de Londres en 1908.',
-        'Les premiers Jeux olympiques modernes ont eu lieu à Athènes, en 1896.'] },
-    { theme: 'Arts', icon: '🎨', facts: [
-        'La Joconde n’a ni sourcils ni cils visibles.',
-        'Van Gogh n’aurait vendu qu’un seul tableau de son vivant.'] },
-    { theme: 'Langue française', icon: '🗣️', facts: [
-        '« Anticonstitutionnellement » (25 lettres) est l’un des plus longs mots du dictionnaire.',
-        'Le mot « oiseau » contient les cinq voyelles a, e, i, o, u en seulement six lettres.'] },
-    { theme: 'Mythologie', icon: '⚡', facts: [
-        'Le mot « panique » vient du dieu Pan, qui semait la terreur chez les voyageurs.',
-        'Achille n’était vulnérable qu’au talon : d’où l’expression « talon d’Achille ».'] },
-    { theme: 'Drapeaux', icon: '🚩', facts: [
-        'Le drapeau du Népal est le seul drapeau national qui ne soit pas rectangulaire.',
-        'Le drapeau du Danemark serait le plus ancien drapeau national encore utilisé.'] },
-    { theme: 'Monuments', icon: '🏛️', facts: [
-        'La tour Eiffel grandit d’une quinzaine de centimètres en été, à cause de la dilatation du métal.',
-        'La Grande Muraille de Chine n’est pas visible à l’œil nu depuis l’espace, contrairement à la légende.'] }
+    { theme: 'Histoire', icon: '📜' },
+    { theme: 'Sciences', icon: '🔬' },
+    { theme: 'Géographie', icon: '🌍' },
+    { theme: 'Technologie', icon: '💡' },
+    { theme: 'Musique', icon: '🎼' },
+    { theme: 'Littérature', icon: '📚' },
+    { theme: 'Jeux', icon: '🎲' },
+    { theme: 'Cinéma', icon: '🎬' },
+    { theme: 'Gastronomie', icon: '🧀' },
+    { theme: 'Sport', icon: '⚽' },
+    { theme: 'Arts', icon: '🎨' },
+    { theme: 'Langue française', icon: '🗣️' },
+    { theme: 'Mythologie', icon: '⚡' },
+    { theme: 'Drapeaux', icon: '🚩' },
+    { theme: 'Monuments', icon: '🏛️' }
 ];
 const DECOR_ICONS = THEME_DECOR.map(t => t.icon);   // décors de l'écran de leçon (sur ordinateur)
 
-/** Bulle d'anecdote près de l'icône touchée. */
+/** Bulle d'anecdote près de l'icône touchée (chaque icône a son anecdote attitrée). */
 function showFact(theme, badge) {
     const entry = THEME_DECOR.find(t => t.theme === theme);
-    if (!entry) return;
+    const facts = (typeof THEME_FACTS !== 'undefined' && THEME_FACTS[theme]) || [];
+    if (!entry || !facts.length) return;
     $('factTitle').textContent = `${entry.icon} ${entry.theme}`;
     // Espaces insécables autour de « », : ! ? : la ponctuation ne se retrouve jamais seule en début de ligne
-    const fact = entry.facts[Math.floor(Math.random() * entry.facts.length)];
+    const fact = facts[Number(badge.dataset.fact || 0) % facts.length];
     $('factText').textContent = fact.replace(/« /g, '« ').replace(/ ([»:!?])/g, ' $1');
     const bubble = $('factBubble');
     bubble.hidden = false;
@@ -919,11 +889,13 @@ function updateToCurrentBtn() {
 
 function buildDecor(container, count) {
     container.replaceChildren();
+    const seen = {};   // combien d'icônes de chaque thème déjà posées → anecdote suivante du thème
     for (let i = 0; i < count; i++) {
         const badge = el('span', `decor-badge ${i % 2 === 0 ? 'left' : 'right'} float-${(i % 3) + 1}`);
         const entry = THEME_DECOR[(i * 7 + 3) % THEME_DECOR.length];
         badge.textContent = entry.icon;
         badge.dataset.theme = entry.theme;
+        badge.dataset.fact = String(seen[entry.theme] = (seen[entry.theme] ?? -1) + 1);
         // position dans la zone latérale (0,15 à 0,85), pseudo-aléatoire mais stable
         const k = 0.15 + 0.7 * (0.5 + 0.5 * Math.sin(i * 2.399));
         badge.style.setProperty('--k', k.toFixed(2));
