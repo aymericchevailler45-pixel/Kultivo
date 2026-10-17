@@ -163,8 +163,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   version dorée à X exemplaires, idée validée pour plus tard).
 - Mystère du 2026-10-17 : la progression de l'utilisateur s'est retrouvée sur le compte de TEST
   (test-kultivo-14620@kultivo-test.fr, créé par Claude pour tester) au lieu du sien ; copiée sur son compte par SQL.
-  Cause non trouvée (le code envoie bien sous `cloudUser.id`). Vérifier que sa ligne `saves` (bef7f100…) se met
-  à jour quand il joue, puis supprimer le compte de test.
+  Cause non trouvée (le code envoie bien sous `cloudUser.id`). Vérifié à 12:50 : sa ligne `saves` (bef7f100…) se
+  met bien à jour quand il joue. Compte de test à supprimer par l'utilisateur (Authentication → Users).
+  Tables du classement créées et testées le 2026-10-17 (droits OK, anti-triche OK). Pas de règle DELETE sur
+  `profiles` / `scores` : pour effacer, supprimer le compte (cascade).
 
 ## levels.js (important)
 - Lit `QUESTIONS`, écrase `q.niveau` et `LEVEL_NAMES`. Le champ `niveau` du fichier questions n'est qu'un secours.
