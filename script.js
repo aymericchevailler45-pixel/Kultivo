@@ -2902,21 +2902,26 @@ async function cloudLogout() {
 /* ---------- Tutoriel de découverte (après l'accueil) ---------- */
 
 // Chaque étape : l'élément mis en lumière (ou rien = bulle au centre) et le texte
+// (espaces insécables avant « : » et « ! » : jamais seuls en début de ligne)
 const TOUR_STEPS = [
     { target: () => document.querySelector('.node.is-current'),
-      text: 'Voici ton parcours 🗺️ Chaque rond est un niveau de questions. Touche celui qui brille pour jouer !' },
-    { target: () => null,
-      text: 'Tu croiseras aussi des niveaux spéciaux : 🔗 des paires à associer, ⏳ des frises à remettre dans l’ordre et 🏆 des défis tous les 10 niveaux.' },
+      text: 'Voici ton parcours 🗺️ Chaque rond est un niveau de questions. Touche celui qui brille pour jouer\u00a0!' },
+    { target: () => document.querySelector('.node.is-pairs'),
+      text: 'Ce carré bleu 🔗 est un niveau spécial\u00a0: des paires à associer (pays et capitales, films et réalisateurs…).' },
+    { target: () => document.querySelector('.node.is-order'),
+      text: 'Ce losange orange ⏳ aussi\u00a0: des cartes à remettre dans l’ordre (dates, tailles, distances…).' },
+    { target: () => document.querySelector('.node.is-challenge'),
+      text: 'Et tous les 10 niveaux, un défi 🏆 qui mélange les questions des niveaux précédents.' },
     { target: () => document.querySelector('.chips'),
-      text: 'En haut : tes pièces 🪙 (pour la boutique), ton XP ⭐ et ta série 🔥 de jours d’affilée. Touche-les pour en savoir plus.' },
+      text: 'En haut\u00a0: tes pièces 🪙 (pour la boutique), ton XP ⭐ et ta série 🔥 de jours d’affilée.' },
     { target: () => document.querySelector('.nav-btn[data-screen="challenges"]'),
-      text: 'Défis : ton objectif du jour, le défi du jour (le même pour tout le monde) et le sprint de 60 secondes.' },
+      text: 'Défis\u00a0: ton objectif du jour, le défi du jour et le sprint de 60 secondes.' },
     { target: () => document.querySelector('.nav-btn[data-screen="shop"]'),
-      text: 'Boutique : des indices, des cœurs de secours et des gels pour protéger ta série.' },
+      text: 'Boutique\u00a0: des indices, des cœurs de secours et des gels pour protéger ta série.' },
     { target: () => document.querySelector('.nav-btn[data-screen="profile"]'),
-      text: 'Profil : ton titre, tes records, tes badges à récupérer et ta sauvegarde en ligne.' },
-    { target: () => document.querySelector('.node.is-current'),
-      text: 'Une erreur te coûte un cœur ❤️, et les questions ratées reviennent en révision. C’est parti ! 🚀' }
+      text: 'Profil\u00a0: ton titre, tes records, tes badges à récupérer et ta sauvegarde en ligne.' },
+    { target: () => null,
+      text: 'Une erreur te coûte un cœur ❤️, et les questions ratées reviennent en révision. C’est parti\u00a0! 🚀' }
 ];
 let tourStep = 0;
 
@@ -3088,9 +3093,9 @@ function renderOnboard() {
         skip.hidden = false;
     } else if (onboard.level === 'beginner') {
         title.textContent = 'Parfait, on commence par les bases !';
-        text.textContent = 'Ton premier niveau t’attend. Bonne partie !';
+        text.textContent = 'Ton premier niveau t’attend sur le parcours. Bonne partie !';
         body.append(big('🌱'), title, text, welcomeGiftBox());
-        next.textContent = 'Commencer le niveau 1';
+        next.textContent = 'Découvrir le parcours';
     } else {
         title.textContent = 'Un petit test pour te placer ?';
         text.textContent = 'Réponds à quelques questions de plus en plus difficiles : tu commenceras directement à ton niveau, sans passer par les questions trop faciles pour toi.';
@@ -3130,7 +3135,7 @@ function finishOnboarding(start) {
     saveData();
     renderHeader();
     if (start === 'placement') startSession('placement');
-    else startSession('level', 1);
+    else showScreen('map');   // tutoriel d'abord ; le joueur lance le niveau 1 quand il veut
 }
 
 /* ---------- Récap animé de fin de leçon ---------- */

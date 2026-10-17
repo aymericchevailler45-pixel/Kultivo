@@ -104,7 +104,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Accueil du premier lancement (écran `onboard`, façon Duolingo, `onboarded`) : bienvenue → « comment juges-tu ta
   culture G ? » (`selfLevel`) → objectif quotidien → test de placement (ou niveau 1 direct si « Je débute »).
   Objectifs affichés en « 1 niveau par jour » (XP en petit). Placement expliqué simplement (pas de « sauter 10 niveaux »).
-  Tutoriel guidé (`TOUR_STEPS`, `tourDone`) à la 1re arrivée sur le parcours après l'accueil : écran assombri,
+  « Je débute » / « Non merci » → parcours + tutoriel (pas de lancement direct du niveau 1).
+  Tutoriel guidé (`TOUR_STEPS`, 9 étapes, montre vraiment 🔗 ⏳ 🏆) à la 1re arrivée sur le parcours : écran assombri,
   élément mis en lumière, bulle Suivant / Passer. Messages (toasts) : 2,5 s, fermables d'un tap.
   Cadeau de bienvenue à la fin : 100 🪙 + 1 🧊 (`WELCOME_COINS`, `WELCOME_FREEZES`, une seule fois : `welcomeGift`).
 - Récap de fin de leçon animé : tuiles XP / Précision / Temps (défi du jour : Score ; sprint : Bonnes / Record)
