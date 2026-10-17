@@ -3319,17 +3319,32 @@ async function askNewPassword() {
     showToast(error ? 'Impossible de changer le mot de passe, réessaie.' : '✅ Mot de passe changé !');
 }
 
+/** Déconnexion : la partie appartient au compte. On l'envoie une dernière fois, puis l'appareil repart de zéro
+    (nouveau joueur sans compte) ; elle revient en se reconnectant. */
 async function cloudLogout() {
-    if (!await askConfirm({ title: 'Se déconnecter ?', text: 'Ta progression reste sur cet appareil, mais ne sera plus sauvegardée en ligne.', yes: 'Me déconnecter', danger: true })) return;
+    if (!await askConfirm({
+        title: 'Se déconnecter ?',
+        text: 'Ta partie reste dans ton compte. Cet appareil repartira de zéro jusqu’à ce que tu te reconnectes.',
+        yes: 'Me déconnecter', danger: true
+    })) return;
+    if (!navigator.onLine) {
+        showToast('📶 Il faut internet pour te déconnecter sans perdre tes dernières parties.');
+        return;
+    }
     await cloudPush();
+    if (cloudMeta().dirty) {   // l'envoi n'a pas abouti : on ne prend pas le risque d'effacer
+        showToast('☁️ Sauvegarde impossible pour le moment : réessaie dans un instant.');
+        return;
+    }
     try { await cloudClient().auth.signOut(); } catch (err) { /* tant pis */ }
     cloudUser = null;
-    setCloudMeta({ updatedAt: null });
-    league = null;
-    saveLeagueCache();
-    renderCloudCard();
-    if (!$('leagueScreen').hidden) renderLeague();
-    showToast('Déconnecté. Ta progression reste sur cet appareil.');
+    // Appareil remis à zéro (comme un nouveau joueur) ; la clé de sauvegarde reste la même
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeData(defaultData())));
+        localStorage.removeItem(CLOUD_META_KEY);
+        localStorage.removeItem(LEAGUE_KEY);
+    } catch (err) { /* tant pis */ }
+    location.reload();
 }
 
 /** Question oui / non dans une fenêtre du jeu (au lieu de confirm(), moche et qui affiche l'adresse du site).

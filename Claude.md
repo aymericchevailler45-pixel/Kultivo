@@ -198,6 +198,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   l'appareil, il n'écrase pas (appareil vide → `applyRemote`, sinon fenêtre « Quelle progression garder ? »).
   `cloudPush(true)` seulement pour « Celle de cet appareil ». Réponses courtes des monuments ajoutées
   (Pise, Eiffel, Sydney, Gard, Liberté).
+- Déconnexion (2026-10-17, demande de l'utilisateur : « le compte n'est pas juste une sauvegarde ») : dernier
+  envoi (refusé hors ligne ou si l'envoi échoue), puis l'appareil repart de ZÉRO (nouveau joueur sans compte,
+  accueil) ; la partie revient en se reconnectant (appareil vide → `applyRemote`).
 - Plus de confirm() du navigateur (moche, affiche l'adresse du site) : `askConfirm({ title, text, yes, danger })`
   (fenêtre `askModal`, promesse true/false). Supabase gratuit : pause après 7 jours sans activité (Restore).
 - Pseudo demandé dès l'accueil (étape 4/5, juste après la création du compte ou la connexion ; « Plus tard »
