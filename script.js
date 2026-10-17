@@ -3236,8 +3236,8 @@ function renderCloudCard() {
     const btn = $('cloudBtn');
     btn.hidden = !window.supabase && !cloudUser;
     if (!cloudUser) {
-        btn.textContent = '☁️ Sauvegarder';
-        btn.title = 'Créer un compte pour sauvegarder ta progression en ligne';
+        btn.textContent = '👤 Se connecter';
+        btn.title = 'Se connecter à son compte, ou en créer un';
         return;
     }
     const meta = cloudMeta();
@@ -4984,7 +4984,7 @@ function bindEvents() {
     // Sauvegarde en ligne
     $('cloudBtn').addEventListener('click', () => {
         if (cloudUser) { renderCloudCard(); $('accountModal').hidden = false; }
-        else openAuthModal('signup');
+        else openAuthModal('login');
     });
     $('closeAccountBtn').addEventListener('click', () => { $('accountModal').hidden = true; });
     $('cloudLogoutBtn').addEventListener('click', () => { $('accountModal').hidden = true; cloudLogout(); });
