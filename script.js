@@ -816,36 +816,6 @@ function dailyQuestions(day) {
     return seededShuffle(sorted, `culture-g-${day}`).slice(0, DAILY_SIZE);
 }
 
-function dailyShareText(day) {
-    const r = state.data.daily[day];
-    if (!r) return '';
-    const [y, m, d] = day.split('-');
-    return `🧠 Kultivo — Défi du jour ${d}/${m}/${y}\n${r.grid}\n${r.score}/${DAILY_SIZE} en ${fmtTime(r.seconds)}`;
-}
-
-async function copyText(text, button) {
-    let ok = false;
-    try {
-        await navigator.clipboard.writeText(text);
-        ok = true;
-    } catch (err) { /* repli ci-dessous */ }
-    if (!ok) {
-        const area = el('textarea');
-        area.value = text;
-        area.style.cssText = 'position:fixed;opacity:0;';
-        document.body.append(area);
-        area.select();
-        try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
-        area.remove();
-    }
-    if (!ok) { window.prompt('Copie ton résultat :', text); return; }
-    if (button) {
-        const old = button.textContent;
-        button.textContent = 'Copié ✓';
-        setTimeout(() => { button.textContent = old; }, 2000);
-    }
-}
-
 /* ---------- Décors latéraux ---------- */
 
 // Une icône par thème du jeu, et quelques anecdotes (un tap sur l'icône du parcours en affiche une)
@@ -943,7 +913,7 @@ function showScreen(name) {
         // Première arrivée sur le parcours après l'accueil : petit tutoriel
         if (state.data.onboarded && !state.data.tourDone) setTimeout(startTour, 500);
     }
-    if (name === 'challenges') { window.scrollTo(0, 0); renderChallenges(); }
+    if (name === 'challenges') { window.scrollTo(0, 0); renderChallenges(); leagueLoad(); }
     if (name === 'league') { window.scrollTo(0, 0); leagueMsg = null; renderLeague(); leagueLoad(); }
     if (name === 'shop') { window.scrollTo(0, 0); renderShop(); }
     if (name === 'profile') { window.scrollTo(0, 0); renderProfile(); }
@@ -1417,7 +1387,7 @@ function renderChallenges() {
     // Défi du jour
     const result = data.daily[today];
     if (result) {
-        $('dailyDesc').textContent = 'Défi terminé, bravo ! Un nouveau défi t’attend demain.';
+        $('dailyDesc').textContent = 'Terminé ! Nouveau défi demain.';
         $('dailyScore').textContent = `${result.score}/${DAILY_SIZE}`;
         $('dailyTime').textContent = `en ${fmtTime(result.seconds)}`;
         $('dailyGrid').textContent = result.grid;
@@ -1425,9 +1395,10 @@ function renderChallenges() {
         $('dailyDesc').textContent = `${DAILY_SIZE} questions, les mêmes pour tout le monde. Un seul essai !`;
     }
     $('dailyResult').hidden = !result;
+    $('dailyDesc').hidden = !!result;   // terminé : l'encadré du résultat suffit
     $('dailyCard').classList.toggle('card-violet', !result);   // cadre violet = « à faire aujourd'hui »
     $('dailyBtn').hidden = !!result;
-    $('dailyCopyBtn').hidden = !result;
+    renderDailyFriends(result);
 
     // Sprint : record et dernière partie dans deux encadrés
     const { sprint: best, lastSprint, lastSprintRecord } = data.best;
@@ -2719,6 +2690,7 @@ function endSession(win) {
         const seconds = Math.round((Date.now() - state.startedAt) / 1000);
         state.data.daily[day] = { score: state.correct, seconds, grid: state.grid.join('') };
         addXp(XP_DAILY_DONE);
+        leaguePushScore();   // score du jour visible tout de suite par les amis
         setEnd({
             emoji: state.correct >= DAILY_SIZE ? '🎯' : '📅',
             title: 'Défi du jour terminé',
@@ -2729,9 +2701,9 @@ function endSession(win) {
                 statTime()
             ],
             extra: rewardSummary(),
-            primary: 'Copier mon résultat',
-            onPrimary: () => copyText(dailyShareText(day), $('endPrimary')),
-            secondary: 'Retour aux défis',
+            primary: 'Comparer avec mes amis',
+            onPrimary: () => { returnToMap(); showScreen('challenges'); },
+            secondary: 'Retour au parcours',
             onSecondary: returnToMap
         });
         $('endPrimary').className = 'btn btn-violet';
@@ -3417,11 +3389,16 @@ async function leaguePushScore() {
     lastScorePush = Date.now();
     const week = weekStart();
     const prev = shiftDays(week, -7);
+    const row = {
+        user_id: cloudUser.id, week, week_xp: Math.min(15000, weekXp(week)),
+        prev_week: prev, prev_week_xp: Math.min(15000, weekXp(prev)), streak: currentStreak()
+    };
+    // Défi du jour (colonnes ajoutées par supabase/defi-du-jour.sql) : comparé avec les amis
+    const today = state.data.daily[todayKey()];
+    const daily = today ? { daily_day: todayKey(), daily_score: today.score, daily_seconds: today.seconds } : {};
     try {
-        await c.from('scores').upsert({
-            user_id: cloudUser.id, week, week_xp: Math.min(15000, weekXp(week)),
-            prev_week: prev, prev_week_xp: Math.min(15000, weekXp(prev)), streak: currentStreak()
-        });
+        const { error } = await c.from('scores').upsert({ ...row, ...daily });
+        if (error && today) await c.from('scores').upsert(row);   // colonnes du défi pas encore créées
     } catch (err) { /* hors ligne : au prochain envoi */ }
 }
 
@@ -3434,12 +3411,57 @@ function refreshLeagueView() {
     renderLeague();
 }
 
+/** Défi du jour : mon score et celui de mes amis aujourd'hui (le meilleur score, puis le plus rapide). */
+function renderDailyFriends(result) {
+    const box = $('dailyFriends');
+    box.replaceChildren();
+    const hasLeague = cloudUser && league?.userId === cloudUser.id && league.pseudo;
+    if (!hasLeague || !league.friends.length) {
+        const link = el('button', 'daily-friends-link');
+        link.type = 'button';
+        link.textContent = '👥 Ajoute des amis pour comparer vos scores →';
+        link.addEventListener('click', () => showScreen('league'));
+        box.append(link);
+        return;
+    }
+    const today = todayKey();
+    const rows = league.friends.map(f => ({
+        pseudo: f.pseudo,
+        played: f.daily_day === today,
+        score: f.daily_score,
+        seconds: f.daily_seconds
+    }));
+    if (result) rows.push({ pseudo: league.pseudo, me: true, played: true, score: result.score, seconds: result.seconds });
+    rows.sort((a, b) => (b.played - a.played) || (b.score - a.score) || (a.seconds - b.seconds));
+    const title = el('p', 'daily-friends-title');
+    const done = rows.filter(r => r.played && !r.me).length;
+    title.textContent = `👥 Tes amis aujourd’hui · ${done}/${league.friends.length} ont joué`;
+    const list = el('ol', 'daily-friends-list');
+    let place = 0;
+    rows.forEach(r => {
+        const li = el('li', `${r.me ? 'is-me' : ''}${r.played ? '' : ' is-waiting'}`);
+        const pos = el('span', 'df-pos');
+        if (r.played) place++;
+        pos.textContent = !r.played ? '·' : ['🥇', '🥈', '🥉'][place - 1] || String(place);
+        const name = el('span', 'df-name');
+        name.textContent = r.me ? 'Toi' : r.pseudo;
+        const score = el('b', 'df-score');
+        score.textContent = r.played ? `${r.score}/${DAILY_SIZE}` : 'pas encore joué';
+        const time = el('span', 'df-time');
+        time.textContent = r.played ? `${Math.floor(r.seconds / 60)}:${String(r.seconds % 60).padStart(2, '0')}` : '';
+        li.append(pos, name, score, time);
+        list.append(li);
+    });
+    box.append(title, list);
+}
+
 /** Mise à jour automatique : toutes les 15 s sur l'onglet Classement, toutes les minutes ailleurs,
     et tout de suite quand on revient dans l'appli. */
 let lastLeagueLoad = 0;
 function leagueTick() {
     if (!cloudUser || document.hidden || !navigator.onLine) return;
-    const wait = $('leagueScreen').hidden ? 60000 : 15000;
+    const watching = !$('leagueScreen').hidden || !$('challengesScreen').hidden;   // classement, ou scores du défi
+    const wait = watching ? 15000 : 60000;
     if (Date.now() - lastLeagueLoad >= wait - 500) leagueLoad();
     else refreshLeagueView();
 }
@@ -3471,7 +3493,7 @@ async function leagueFetch() {
         if (others.length) {
             const { data: profs } = await c.from('profiles').select('user_id, pseudo').in('user_id', others);
             (profs || []).forEach(p => { pseudos[p.user_id] = p.pseudo; });
-            const { data: sc } = await c.from('scores').select('user_id, week, week_xp, prev_week, prev_week_xp, streak').in('user_id', others);
+            const { data: sc } = await c.from('scores').select('*').in('user_id', others);
             (sc || []).forEach(s => { scores[s.user_id] = s; });
         }
         const row = l => {
@@ -3506,6 +3528,7 @@ async function leagueFetch() {
     }
     updateNavNotifications();
     refreshLeagueView();
+    if (!$('challengesScreen').hidden) renderDailyFriends(state.data.daily[todayKey()]);
     await handleInvite();
     checkPodium();
 }
@@ -3774,12 +3797,9 @@ function renderLeague() {
     h.textContent = '🏆 Ligue des amis';
     const left = el('span', 'league-left');
     left.textContent = `⏳ ${plural(weekDaysLeft(), 'jour', 'jours')}`;
-    left.title = 'Temps restant avant la fin de la semaine (lundi)';
+    left.title = 'XP gagnés depuis lundi · temps restant avant la fin de la semaine';
     head.append(h, left);
     rank.append(head);
-    const [y, m, d] = week.split('-').map(Number);
-    const since = new Date(y, m - 1, d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
-    para(rank, `XP gagnés depuis le lundi ${since}`, 'muted league-sub');
 
     const avatar = (pseudo, cls = '') => {
         const a = el('span', `league-avatar ${cls}`);
@@ -3835,7 +3855,7 @@ function renderLeague() {
         : myIndex === 0 ? (rows[0].xp > 0 ? '🏆 Tu es en tête : garde ta place jusqu’à lundi !' : 'Personne n’a encore joué cette semaine : à toi de commencer !')
         : `Tu es ${myIndex + 1}e · encore ${rows[myIndex - 1].xp - rows[myIndex].xp + 1} XP pour dépasser ${rows[myIndex - 1].pseudo} !`;
     para(rank, tip, 'league-tip');
-    para(rank, `🎁 Lundi : un coffre de cartes si tu bats au moins un ami (${PODIUM_MIN_XP} XP minimum). Plus tu en bats, plus il est gros !`, 'muted league-sub');
+    para(rank, '🎁 Lundi : un coffre si tu bats au moins un ami.', 'muted league-sub');
 
     // 4) Amis : demandes reçues, ajout par pseudo, invitation, liste
     const friends = card('league-friends', '👥 Amis');
@@ -4407,8 +4427,6 @@ function bindEvents() {
     });
 
     $('dailyBtn').addEventListener('click', () => openChallengeModal('daily'));
-    $('dailyCopyBtn').addEventListener('click', () =>
-        copyText(dailyShareText(todayKey()), $('dailyCopyBtn')));
     $('sprintBtn').addEventListener('click', () => openChallengeModal('sprint'));
     $('placementBtn').addEventListener('click', () => openPlacementModal());
     $('modalSecondaryBtn').addEventListener('click', closeStartModal);

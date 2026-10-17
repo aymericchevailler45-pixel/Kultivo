@@ -2197,3 +2197,81 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     text-align: center;
 }
 .league-me { color: var(--muted); font-size: 0.9rem; font-weight: 800; }
+
+/* Défi du jour : scores des amis */
+.daily-friends { display: flex; flex-direction: column; gap: 6px; }
+.daily-friends-link {
+    padding: 10px 12px;
+    border: 2px dashed var(--line);
+    border-radius: 14px;
+    background: none;
+    color: var(--violet-ink);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+.daily-friends-title { color: var(--muted); font-size: 0.85rem; font-weight: 800; }
+.daily-friends-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.daily-friends-list li {
+    display: grid;
+    grid-template-columns: 26px 1fr auto 52px;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    background: var(--bg);
+    font-weight: 800;
+}
+.daily-friends-list li.is-me { background: var(--violet-tint); color: var(--violet-ink); }
+.daily-friends-list li.is-waiting { color: var(--muted); font-weight: 700; }
+.daily-friends-list li.is-waiting .df-score { font-size: 0.8rem; font-weight: 700; }
+.df-pos { text-align: center; }
+.df-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.df-time { color: var(--muted); font-size: 0.8rem; text-align: right; }
+
+/* Téléphone : Défis et Classement plus compacts */
+@media (max-width: 700px) {
+    .challenges-grid, .league-grid { gap: 10px; }
+    .challenges-grid > .card, .league-grid > .card { padding: 14px 16px; gap: 10px; border-radius: 20px; }
+    .challenges-grid .card h2, .league-grid .card h2 { font-size: 1.1rem; }
+    .goal-main { gap: 8px; }
+    .goal-card .card-big { font-size: 1.4rem; }
+    .goal-section { gap: 6px; padding-top: 10px; }
+    .goal-choice { padding: 6px 4px; gap: 1px; font-size: 0.8rem; }
+    .goal-choice b { font-size: 0.9rem; }
+    .goal-note { font-size: 0.78rem; }
+    #dailyDesc, #sprintDesc { font-size: 0.9rem; }
+    .score-box { padding: 8px 10px; gap: 2px; }
+    .score-big { font-size: 1.7rem; }
+    .score-label { font-size: 0.72rem; }
+    .score-box .emoji-grid { margin-top: 2px; font-size: 1rem; }
+    .challenges-grid .card-actions .btn { padding: 11px 16px; font-size: 1rem; }
+
+    .league-avatar { width: 44px; height: 44px; border-width: 3px; font-size: 1.15rem; }
+    .league-avatar.ring-1 { width: 52px; height: 52px; font-size: 1.4rem; }
+    .league-podium { gap: 8px; padding-top: 0; }
+    .podium-col { gap: 2px; }
+    .podium-crown { height: 1.1rem; font-size: 1rem; }
+    .podium-name { font-size: 0.9rem; }
+    .podium-xp { font-size: 0.78rem; }
+    .podium-step { padding-top: 4px; font-size: 1.15rem; border-radius: 10px 10px 4px 4px; }
+    .place-1 .podium-step { height: 54px; }
+    .place-2 .podium-step { height: 40px; }
+    .place-3 .podium-step { height: 30px; }
+    .league-list .league-row { padding: 6px 10px; }
+    .league-tip { padding: 8px 10px; font-size: 0.9rem; }
+    .league-sub { font-size: 0.8rem; }
+}
+@media (max-width: 700px) {
+    /* Résultat du défi du jour sur une rangée : gros score à gauche, détails à droite */
+    #dailyResult:not([hidden]) {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        column-gap: 14px;
+        align-items: center;
+        text-align: left;
+    }
+    #dailyResult .score-big { grid-column: 1; grid-row: 1 / span 3; font-size: 2rem; }
+    #dailyResult .score-label, #dailyResult .score-sub, #dailyResult .emoji-grid { grid-column: 2; }
+    .daily-friends-list li { grid-template-columns: 24px 1fr auto 40px; padding: 5px 10px; }
+}

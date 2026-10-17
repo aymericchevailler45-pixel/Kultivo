@@ -164,6 +164,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (l'utilisateur trouvait trop facile qu'à deux l'un gagne forcément).
   Affichage : « Ligue des amis », podium 2e · 1er · 3e (avatars = initiale colorée, couronne), puis liste avec
   barres ; « Ton pseudo » en haut de la carte Amis.
+- Défi du jour comparé avec les amis (remplace « Copier mon résultat », demandé le 2026-10-17) : colonnes
+  `daily_day`, `daily_score`, `daily_seconds` dans `scores` (`supabase/defi-du-jour.sql`, à lancer une fois),
+  envoyées par `leaguePushScore` (repli sans ces colonnes si le SQL n'est pas lancé) ; liste dans la carte
+  Défi du jour (`renderDailyFriends` : meilleur score puis plus rapide, « pas encore joué »). Écran de fin du
+  défi : bouton « Comparer avec mes amis ». Onglets Défis et Classement compacts sur téléphone.
 - Plus de confirm() du navigateur (moche, affiche l'adresse du site) : `askConfirm({ title, text, yes, danger })`
   (fenêtre `askModal`, promesse true/false). Supabase gratuit : pause après 7 jours sans activité (Restore).
 - Pseudo demandé dès l'accueil (étape 4/5, juste après la création du compte ou la connexion ; « Plus tard »

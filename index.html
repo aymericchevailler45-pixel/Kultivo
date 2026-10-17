@@ -69,7 +69,6 @@
                 <article class="card goal-card">
                     <div class="goal-main">
                         <h2>🎯 Objectif du jour</h2>
-                        <p class="muted">Gagne des XP en jouant pour remplir la jauge.</p>
                         <p class="card-big" id="goalText"></p>
                         <div class="meter" role="progressbar" aria-label="Progression de l'objectif du jour"
                              id="goalMeter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -88,14 +87,14 @@
                     <h2>📅 Défi du jour</h2>
                     <p id="dailyDesc"></p>
                     <div class="score-box score-violet" id="dailyResult" hidden>
-                        <span class="score-label">Ton résultat du jour</span>
+                        <span class="score-label">Ton résultat · nouveau défi demain</span>
                         <b class="score-big" id="dailyScore"></b>
                         <span class="score-sub" id="dailyTime"></span>
                         <div class="emoji-grid" id="dailyGrid"></div>
                     </div>
+                    <div class="daily-friends" id="dailyFriends"></div>
                     <div class="card-actions">
                         <button type="button" id="dailyBtn" class="btn btn-violet">Jouer</button>
-                        <button type="button" id="dailyCopyBtn" class="btn btn-ghost" hidden>Copier mon résultat</button>
                     </div>
                 </article>
 
