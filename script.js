@@ -2792,25 +2792,24 @@ function timeAgo(iso) {
     return `le ${new Date(iso).toLocaleDateString('fr-FR')}`;
 }
 
+/** Petit bouton du profil (« ☁️ Sauvegarder ma progression » / « ☁️ Sauvegardé il y a… ») et fenêtre « Mon compte ». */
 function renderCloudCard() {
-    const available = !!window.supabase;
-    $('cloudOut').hidden = !!cloudUser;
-    $('cloudIn').hidden = !cloudUser;
-    $('cloudOutActions').hidden = !available;
-    $('cloudOutText').textContent = available
-        ? 'Crée un compte pour ne jamais perdre ta progression et la retrouver sur tous tes appareils.'
-        : 'Sauvegarde en ligne indisponible pour le moment (pas de connexion ?).';
-    if (cloudUser) {
-        const meta = cloudMeta();
-        $('cloudEmail').textContent = cloudUser.email || '';
-        $('cloudStatus').textContent = meta.dirty
-            ? '⏳ Sauvegarde en cours…'
-            : meta.updatedAt ? `Sauvegardé ${timeAgo(meta.updatedAt)}` : '';
+    const btn = $('cloudBtn');
+    btn.hidden = !window.supabase && !cloudUser;
+    if (!cloudUser) {
+        btn.textContent = '☁️ Sauvegarder ma progression';
+        return;
     }
+    const meta = cloudMeta();
+    const status = meta.dirty ? 'Sauvegarde en cours…' : meta.updatedAt ? `Sauvegardé ${timeAgo(meta.updatedAt)}` : 'Connecté';
+    btn.textContent = `☁️ ${status}`;
+    $('accountEmail').textContent = cloudUser.email || '';
+    $('accountStatus').textContent = `☁️ ${status}`;
 }
 
 /* Fenêtre « Créer un compte / Se connecter » */
 let authMode = 'signup';
+let authDone = null;   // à appeler après une connexion réussie (ex. : passer à l'étape suivante de l'accueil)
 function openAuthModal(mode) {
     authMode = mode;
     const signup = mode === 'signup';
@@ -2861,7 +2860,8 @@ async function submitAuth(e) {
     $('authPassword').value = '';
     showToast(signup ? '☁️ Compte créé : ta progression est sauvegardée en ligne !' : '☁️ Connecté !');
     renderCloudCard();
-    await cloudSync(true);
+    await cloudSync(true);   // peut récupérer la progression du compte (et relancer le jeu)
+    if (authDone) { const next = authDone; authDone = null; next(); }
 }
 
 async function forgotPassword() {
@@ -2892,7 +2892,7 @@ async function cloudLogout() {
 
 /* ---------- Accueil du premier lancement ---------- */
 
-const ONBOARD_STEPS = 4;
+const ONBOARD_STEPS = 5;
 const ONBOARD_LEVELS = [
     { id: 'beginner', icon: '🌱', title: 'Je débute',        sub: 'Je préfère commencer par les bases' },
     { id: 'average',  icon: '📚', title: 'Je me débrouille', sub: 'Je connais les grands classiques' },
@@ -2995,6 +2995,22 @@ function renderOnboard() {
         })));
         body.append(title, text, list);
         next.textContent = 'Continuer';
+    } else if (step === 3) {
+        // Compte (facultatif) : sauvegarde en ligne dès le début
+        if (cloudUser || !window.supabase) { onboard.step++; renderOnboard(); return; }
+        title.textContent = 'Sauvegarde ta progression';
+        text.textContent = 'Crée un compte pour ne jamais la perdre et la retrouver sur tous tes appareils.';
+        const login = el('button', 'auth-link');
+        login.type = 'button';
+        login.textContent = 'J’ai déjà un compte : me connecter';
+        login.addEventListener('click', () => {
+            authDone = () => { onboard.step++; renderOnboard(); };
+            openAuthModal('login');
+        });
+        body.append(big('☁️'), title, text, login);
+        next.textContent = 'Créer un compte';
+        skip.textContent = 'Plus tard';
+        skip.hidden = false;
     } else if (onboard.level === 'beginner') {
         title.textContent = 'Parfait, on commence par les bases !';
         text.textContent = 'Ton premier niveau t’attend. Bonne partie !';
@@ -3011,6 +3027,11 @@ function renderOnboard() {
 }
 
 function onboardNext() {
+    if (onboard.step === 3) {   // étape « compte » : le bouton principal ouvre la création de compte
+        authDone = () => { onboard.step++; renderOnboard(); };
+        openAuthModal('signup');
+        return;
+    }
     if (onboard.step < ONBOARD_STEPS - 1) {
         onboard.step++;
         renderOnboard();
@@ -3244,7 +3265,7 @@ function bindEvents() {
         const screen = MAIN_SCREENS.find(name => !$(`${name}Screen`).hidden);
         if (!screen || e.touches.length !== 1) return;
         if (!$('startModal').hidden || !$('quitModal').hidden || !$('streakModal').hidden) return;
-        if (!$('authModal').hidden || !$('cloudConflictModal').hidden) return;
+        if (!$('authModal').hidden || !$('cloudConflictModal').hidden || !$('accountModal').hidden) return;
         if (e.target.closest('input, textarea')) return;
         const t = e.touches[0];
         if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone
@@ -3281,7 +3302,10 @@ function bindEvents() {
     $('userInput').addEventListener('blur', () => setTimeout(updateKeyboardMode, 150));
 
     $('onboardNext').addEventListener('click', onboardNext);
-    $('onboardSkip').addEventListener('click', () => finishOnboarding('level'));
+    $('onboardSkip').addEventListener('click', () => {
+        if (onboard.step === 3) { onboard.step++; renderOnboard(); }   // « Plus tard » : pas de compte
+        else finishOnboarding('level');
+    });
     $('onboardBack').addEventListener('click', () => {
         if (onboard.step > 0) { onboard.step--; renderOnboard(); }
     });
@@ -3368,9 +3392,12 @@ function bindEvents() {
     });
 
     // Sauvegarde en ligne
-    $('cloudSignupBtn').addEventListener('click', () => openAuthModal('signup'));
-    $('cloudLoginBtn').addEventListener('click', () => openAuthModal('login'));
-    $('cloudLogoutBtn').addEventListener('click', cloudLogout);
+    $('cloudBtn').addEventListener('click', () => {
+        if (cloudUser) { renderCloudCard(); $('accountModal').hidden = false; }
+        else openAuthModal('signup');
+    });
+    $('closeAccountBtn').addEventListener('click', () => { $('accountModal').hidden = true; });
+    $('cloudLogoutBtn').addEventListener('click', () => { $('accountModal').hidden = true; cloudLogout(); });
     $('closeAuthBtn').addEventListener('click', () => { $('authModal').hidden = true; });
     $('authSwitch').addEventListener('click', () => openAuthModal(authMode === 'signup' ? 'login' : 'signup'));
     $('authForgot').addEventListener('click', forgotPassword);
@@ -3427,8 +3454,8 @@ function bindEvents() {
             if (e.key === 'Escape' || e.key === 'Enter') $('photoZoom').click();
             return;
         }
-        if (!$('authModal').hidden || !$('cloudConflictModal').hidden) {
-            if (e.key === 'Escape' && !$('authModal').hidden) $('authModal').hidden = true;
+        if (!$('authModal').hidden || !$('cloudConflictModal').hidden || !$('accountModal').hidden) {
+            if (e.key === 'Escape') { $('authModal').hidden = true; $('accountModal').hidden = true; }
             return;   // le formulaire gère lui-même la touche Entrée
         }
         if (!$('reportModal').hidden) {

@@ -137,30 +137,12 @@
                         </div>
                         <p class="muted" id="profileNext"></p>
                         <button type="button" id="soundBtn" class="sound-toggle"></button>
+                        <button type="button" id="cloudBtn" class="sound-toggle" hidden></button>
                     </div>
                     <div class="hero-tiles">
                         <div class="tile"><span class="tile-label">🔥 Série</span><b id="tileStreak">—</b></div>
                         <div class="tile"><span class="tile-label">✅ Réussite</span><b id="tileRate">—</b></div>
                         <div class="tile"><span class="tile-label">🗺️ Niveaux</span><b id="tileLevels">—</b></div>
-                    </div>
-                </article>
-
-                <!-- Sauvegarde en ligne (compte Supabase, facultatif) -->
-                <article class="card cloud-card" id="cloudCard">
-                    <h2>☁️ Sauvegarde en ligne</h2>
-                    <div id="cloudOut" class="cloud-block">
-                        <p class="muted" id="cloudOutText">Crée un compte pour ne jamais perdre ta progression et la retrouver sur tous tes appareils.</p>
-                        <div class="cloud-actions" id="cloudOutActions">
-                            <button type="button" id="cloudSignupBtn" class="btn btn-green">Créer un compte</button>
-                            <button type="button" id="cloudLoginBtn" class="btn btn-ghost">Se connecter</button>
-                        </div>
-                    </div>
-                    <div id="cloudIn" class="cloud-block" hidden>
-                        <p>✅ Connecté : <b id="cloudEmail"></b></p>
-                        <p class="muted" id="cloudStatus"></p>
-                        <div class="cloud-actions">
-                            <button type="button" id="cloudLogoutBtn" class="btn btn-ghost">Se déconnecter</button>
-                        </div>
                     </div>
                 </article>
 
@@ -362,6 +344,17 @@
             </form>
             <button type="button" id="authSwitch" class="auth-link"></button>
             <button type="button" id="authForgot" class="auth-link" hidden>Mot de passe oublié ?</button>
+        </div>
+    </div>
+
+    <!-- COMPTE : mon compte (connecté) -->
+    <div id="accountModal" class="modal-overlay" hidden>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+            <button type="button" id="closeAccountBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="accountTitle">☁️ Mon compte</h2>
+            <p>Connecté : <b id="accountEmail"></b></p>
+            <p id="accountStatus"></p>
+            <button type="button" id="cloudLogoutBtn" class="btn btn-ghost btn-full">Se déconnecter</button>
         </div>
     </div>
 
