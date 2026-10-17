@@ -152,6 +152,15 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 4. Supabase (l'utilisateur voulait "voir demain") : classement entre amis, synchronisation et sauvegarde en ligne,
    défi du jour partagé. Clé publique (anon) uniquement côté navigateur, règles RLS à configurer.
 5. Entraînement par thème.
+6. Plus tard (« au cas où », décidé le 2026-10-17) : Play Store via PWABuilder (aucun changement de code, compte
+   Google Play payant, fichier assetlinks, politique de confidentialité), puis éventuellement Capacitor (~95 % du code
+   gardé) pour notifications de rappel / Google Play Jeux. Connexion « avec Google » via Supabase à ajouter alors.
+- Sauvegarde en ligne (FAITE le 2026-10-17) : table `saves` (user_id, data jsonb, xp, updated_at), RLS « chacun
+  la sienne ». Comptes e-mail + mot de passe, « Confirm email » désactivé (quota d'e-mails Supabase gratuit).
+  Bibliothèque `vendor/supabase.min.js` (v2.45.4, locale pour marcher hors ligne). Carte « ☁️ Sauvegarde en
+  ligne » dans le profil. `saveData` → `cloudChanged` → envoi 5 s plus tard (+ quand l'appli passe en arrière-
+  plan). `cloudSync` au lancement/connexion : compte plus récent → appliqué ; deux progressions différentes →
+  fenêtre « Quelle progression garder ? ». Métadonnées locales : localStorage `kultivo_cloud`.
 
 ## Règles de travail
 - Ne pas réécrire tout le projet : modifier ciblé, garder les noms existants (états, clés localStorage).

@@ -145,6 +145,25 @@
                     </div>
                 </article>
 
+                <!-- Sauvegarde en ligne (compte Supabase, facultatif) -->
+                <article class="card cloud-card" id="cloudCard">
+                    <h2>☁️ Sauvegarde en ligne</h2>
+                    <div id="cloudOut" class="cloud-block">
+                        <p class="muted" id="cloudOutText">Crée un compte pour ne jamais perdre ta progression et la retrouver sur tous tes appareils.</p>
+                        <div class="cloud-actions" id="cloudOutActions">
+                            <button type="button" id="cloudSignupBtn" class="btn btn-green">Créer un compte</button>
+                            <button type="button" id="cloudLoginBtn" class="btn btn-ghost">Se connecter</button>
+                        </div>
+                    </div>
+                    <div id="cloudIn" class="cloud-block" hidden>
+                        <p>✅ Connecté : <b id="cloudEmail"></b></p>
+                        <p class="muted" id="cloudStatus"></p>
+                        <div class="cloud-actions">
+                            <button type="button" id="cloudLogoutBtn" class="btn btn-ghost">Se déconnecter</button>
+                        </div>
+                    </div>
+                </article>
+
                 <!-- Sur téléphone : un onglet à la fois, pour éviter de faire défiler toute la page -->
                 <div class="profile-tabs" role="tablist" aria-label="Sections du profil">
                     <button type="button" class="profile-tab" data-tab="badges" role="tab">🎖️ Badges</button>
@@ -329,6 +348,40 @@
         <p class="zoom-hint">Touche l’écran pour revenir</p>
     </div>
 
+    <!-- COMPTE : créer un compte / se connecter -->
+    <div id="authModal" class="modal-overlay" hidden>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+            <button type="button" id="closeAuthBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="authTitle">☁️ Créer un compte</h2>
+            <p>Ta progression sera sauvegardée en ligne et retrouvée sur tous tes appareils.</p>
+            <form id="authForm" class="auth-form" novalidate>
+                <input type="email" id="authEmail" class="auth-input" placeholder="Ton e-mail" autocomplete="email" required>
+                <input type="password" id="authPassword" class="auth-input" placeholder="Mot de passe (6 caractères minimum)" autocomplete="new-password" required>
+                <p class="auth-error" id="authError" role="alert"></p>
+                <button type="submit" id="authSubmit" class="btn btn-green btn-full">Créer mon compte</button>
+            </form>
+            <button type="button" id="authSwitch" class="auth-link"></button>
+            <button type="button" id="authForgot" class="auth-link" hidden>Mot de passe oublié ?</button>
+        </div>
+    </div>
+
+    <!-- COMPTE : deux progressions différentes (appareil / compte) -->
+    <div id="cloudConflictModal" class="modal-overlay" hidden>
+        <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="conflictTitle">
+            <h2 id="conflictTitle">☁️ Quelle progression garder ?</h2>
+            <p>Ton compte et cet appareil n’ont pas la même progression.</p>
+            <div class="conflict-choices">
+                <button type="button" id="keepCloudBtn" class="conflict-choice">
+                    <b>☁️ Celle du compte</b><span id="conflictCloud"></span>
+                </button>
+                <button type="button" id="keepDeviceBtn" class="conflict-choice">
+                    <b>📱 Celle de cet appareil</b><span id="conflictDevice"></span>
+                </button>
+            </div>
+            <p class="conflict-note">L’autre progression sera remplacée.</p>
+        </div>
+    </div>
+
     <!-- SIGNALER UNE QUESTION -->
     <div id="reportModal" class="modal-overlay" hidden>
         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
@@ -376,6 +429,7 @@
     <script src="pairs.js"></script>
     <script src="order.js"></script>
     <script src="levels.js"></script>
+    <script src="vendor/supabase.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -20,6 +20,11 @@ const STORAGE_KEY = 'cultureG_v2';
 // des règles de la base (les joueurs peuvent seulement AJOUTER un signalement, jamais lire les autres).
 // Ne jamais mettre ici la clé « service_role » / « secret ».
 const SUPABASE_URL = 'https://wqfqdhsvpkczaifgosel.supabase.co';
+const CLOUD_META_KEY = 'kultivo_cloud';   // { updatedAt: version en ligne connue, dirty: changements pas encore envoyés }
+let sbClient = null;                       // client Supabase (bibliothèque vendor/supabase.min.js)
+let cloudUser = null;                      // joueur connecté (null = pas de compte)
+let cloudPushTimer = null;
+let cloudBusy = false;
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxZnFkaHN2cGtjemFpZmdvc2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNjE2NTUsImV4cCI6MjEwNzczNzY1NX0.EGJvwXjBlSQKP2N-xTNdebuSD33IevVYe6cE7NpOZMk';
 
 // XP gagnés
@@ -366,6 +371,7 @@ function saveData() {
     } catch (err) {
         /* stockage indisponible (navigation privée…) : on continue sans sauvegarder */
     }
+    cloudChanged();   // si un compte est connecté : envoi en ligne quelques secondes plus tard
 }
 
 const state = {
@@ -2665,6 +2671,225 @@ async function flushReports() {
     }
 }
 
+/* ---------- Sauvegarde en ligne (Supabase, table « saves ») ---------- */
+
+function cloudMeta() {
+    try { return JSON.parse(localStorage.getItem(CLOUD_META_KEY) || '{}'); } catch (err) { return {}; }
+}
+function setCloudMeta(meta) {
+    try { localStorage.setItem(CLOUD_META_KEY, JSON.stringify({ ...cloudMeta(), ...meta })); } catch (err) { /* tant pis */ }
+}
+
+function cloudClient() {
+    if (!sbClient && window.supabase) {
+        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: { persistSession: true, autoRefreshToken: true, storageKey: 'kultivo_auth', detectSessionInUrl: true }
+        });
+    }
+    return sbClient;
+}
+
+/** À chaque sauvegarde locale : on note qu'il y a du nouveau, et on l'envoie 5 s plus tard (une seule fois). */
+function cloudChanged() {
+    setCloudMeta({ dirty: true });
+    if (!cloudUser) return;
+    clearTimeout(cloudPushTimer);
+    cloudPushTimer = setTimeout(cloudPush, 5000);
+}
+
+async function cloudPush() {
+    const c = cloudClient();
+    clearTimeout(cloudPushTimer);
+    if (!c || !cloudUser || !navigator.onLine) return;
+    const updatedAt = new Date().toISOString();
+    try {
+        const { error } = await c.from('saves').upsert({
+            user_id: cloudUser.id, data: state.data, xp: state.data.xp, updated_at: updatedAt
+        });
+        if (!error) {
+            setCloudMeta({ dirty: false, updatedAt });
+            renderCloudCard();
+        }
+    } catch (err) { /* hors ligne : on réessaiera */ }
+}
+
+const isEmptyProgress = d => !d.xp && !Object.values(d.done || {}).some(Boolean);
+function progressSummary(d) {
+    const done = Object.values(d.done || {}).filter(Boolean).length;
+    return `${d.xp || 0} XP · ${plural(done, 'niveau terminé', 'niveaux terminés')}`;
+}
+
+/** Remplace la progression de l'appareil par celle du compte, puis relance le jeu. */
+function applyRemote(remote) {
+    state.data = normalizeData({ ...defaultData(), ...remote.data });
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); } catch (err) { /* tant pis */ }
+    setCloudMeta({ dirty: false, updatedAt: remote.updated_at });
+    location.reload();
+}
+
+let pendingRemote = null;
+function openCloudConflict(remote) {
+    pendingRemote = remote;
+    $('conflictCloud').textContent = progressSummary(remote.data);
+    $('conflictDevice').textContent = progressSummary(state.data);
+    $('cloudConflictModal').hidden = false;
+}
+
+/** Au lancement et à la connexion : qui a la version la plus récente, le compte ou l'appareil ? */
+async function cloudSync(justLoggedIn) {
+    const c = cloudClient();
+    if (cloudBusy || !c || !cloudUser || !navigator.onLine) return;
+    cloudBusy = true;
+    try {
+        const { data: remote, error } = await c.from('saves')
+            .select('data, xp, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+        if (error) return;
+        const meta = cloudMeta();
+        if (!remote) { await cloudPush(); return; }                       // compte tout neuf
+        const remoteNewer = !meta.updatedAt || new Date(remote.updated_at) > new Date(meta.updatedAt);
+        if (!remoteNewer) { if (meta.dirty) await cloudPush(); return; }   // l'appareil est à jour
+        // Le compte a avancé ailleurs (autre appareil) ou c'est une première connexion sur cet appareil
+        if (isEmptyProgress(state.data)) { applyRemote(remote); return; }
+        if (!meta.dirty && !justLoggedIn) { applyRemote(remote); return; }
+        if (JSON.stringify(remote.data) === JSON.stringify(state.data)) { setCloudMeta({ dirty: false, updatedAt: remote.updated_at }); return; }
+        openCloudConflict(remote);
+    } catch (err) {
+        /* hors ligne ou erreur : on réessaiera plus tard */
+    } finally {
+        cloudBusy = false;
+        renderCloudCard();
+    }
+}
+
+async function cloudInit() {
+    const c = cloudClient();
+    renderCloudCard();
+    if (!c) return;
+    c.auth.onAuthStateChange((event, session) => {
+        cloudUser = session?.user || null;
+        renderCloudCard();
+        if (event === 'PASSWORD_RECOVERY') setTimeout(askNewPassword, 300);
+    });
+    try {
+        const { data } = await c.auth.getSession();
+        cloudUser = data.session?.user || null;
+    } catch (err) { cloudUser = null; }
+    renderCloudCard();
+    cloudSync(false);
+    window.addEventListener('online', () => cloudSync(false));
+    // L'appli passe en arrière-plan : on envoie tout de suite ce qui n'est pas encore en ligne
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden' && cloudMeta().dirty) cloudPush();
+    });
+}
+
+function timeAgo(iso) {
+    if (!iso) return '';
+    const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (minutes < 1) return 'à l’instant';
+    if (minutes < 60) return `il y a ${minutes} min`;
+    if (minutes < 1440) return `il y a ${Math.round(minutes / 60)} h`;
+    return `le ${new Date(iso).toLocaleDateString('fr-FR')}`;
+}
+
+function renderCloudCard() {
+    const available = !!window.supabase;
+    $('cloudOut').hidden = !!cloudUser;
+    $('cloudIn').hidden = !cloudUser;
+    $('cloudOutActions').hidden = !available;
+    $('cloudOutText').textContent = available
+        ? 'Crée un compte pour ne jamais perdre ta progression et la retrouver sur tous tes appareils.'
+        : 'Sauvegarde en ligne indisponible pour le moment (pas de connexion ?).';
+    if (cloudUser) {
+        const meta = cloudMeta();
+        $('cloudEmail').textContent = cloudUser.email || '';
+        $('cloudStatus').textContent = meta.dirty
+            ? '⏳ Sauvegarde en cours…'
+            : meta.updatedAt ? `Sauvegardé ${timeAgo(meta.updatedAt)}` : '';
+    }
+}
+
+/* Fenêtre « Créer un compte / Se connecter » */
+let authMode = 'signup';
+function openAuthModal(mode) {
+    authMode = mode;
+    const signup = mode === 'signup';
+    $('authTitle').textContent = signup ? '☁️ Créer un compte' : '☁️ Se connecter';
+    $('authSubmit').textContent = signup ? 'Créer mon compte' : 'Me connecter';
+    $('authSubmit').disabled = false;
+    $('authSwitch').textContent = signup ? 'J’ai déjà un compte : me connecter' : 'Pas encore de compte : en créer un';
+    $('authPassword').autocomplete = signup ? 'new-password' : 'current-password';
+    $('authForgot').hidden = signup;
+    $('authError').textContent = '';
+    $('authModal').hidden = false;
+    $('authEmail').focus();
+}
+
+function authErrorText(error) {
+    const m = (error?.message || '').toLowerCase();
+    if (m.includes('invalid login')) return 'E-mail ou mot de passe incorrect.';
+    if (m.includes('already registered') || m.includes('already been registered')) return 'Un compte existe déjà avec cet e-mail : connecte-toi.';
+    if (m.includes('email') && (m.includes('invalid') || m.includes('valid email'))) return 'Cette adresse e-mail n’est pas valide.';
+    if (m.includes('password')) return 'Mot de passe trop faible : au moins 6 caractères.';
+    if (m.includes('rate') || m.includes('too many')) return 'Trop d’essais : réessaie dans quelques minutes.';
+    return 'Impossible pour le moment. Vérifie ta connexion et réessaie.';
+}
+
+async function submitAuth(e) {
+    e.preventDefault();
+    const c = cloudClient();
+    const email = $('authEmail').value.trim();
+    const password = $('authPassword').value;
+    const signup = authMode === 'signup';
+    if (!c) { $('authError').textContent = 'Connexion impossible pour le moment.'; return; }
+    if (!email.includes('@')) { $('authError').textContent = 'Indique ton adresse e-mail.'; return; }
+    if (password.length < 6) { $('authError').textContent = 'Le mot de passe doit faire au moins 6 caractères.'; return; }
+    const btn = $('authSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Un instant…';
+    const { data, error } = signup
+        ? await c.auth.signUp({ email, password })
+        : await c.auth.signInWithPassword({ email, password });
+    if (error || !data.user || (signup && !data.session)) {
+        $('authError').textContent = error ? authErrorText(error) : 'Impossible pour le moment. Réessaie.';
+        btn.disabled = false;
+        btn.textContent = signup ? 'Créer mon compte' : 'Me connecter';
+        return;
+    }
+    cloudUser = data.user;
+    $('authModal').hidden = true;
+    $('authPassword').value = '';
+    showToast(signup ? '☁️ Compte créé : ta progression est sauvegardée en ligne !' : '☁️ Connecté !');
+    renderCloudCard();
+    await cloudSync(true);
+}
+
+async function forgotPassword() {
+    const c = cloudClient();
+    const email = $('authEmail').value.trim();
+    if (!c || !email.includes('@')) { $('authError').textContent = 'Écris d’abord ton e-mail ci-dessus.'; return; }
+    await c.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    $('authError').textContent = 'Si un compte existe avec cet e-mail, tu vas recevoir un lien pour changer ton mot de passe.';
+}
+
+/** Arrivée depuis le lien « mot de passe oublié » reçu par e-mail. */
+async function askNewPassword() {
+    const password = prompt('Choisis ton nouveau mot de passe (6 caractères minimum) :');
+    if (!password || password.length < 6) return;
+    const { error } = await cloudClient().auth.updateUser({ password });
+    showToast(error ? 'Impossible de changer le mot de passe, réessaie.' : '✅ Mot de passe changé !');
+}
+
+async function cloudLogout() {
+    if (!confirm('Se déconnecter ? Ta progression reste sur cet appareil, mais ne sera plus sauvegardée en ligne.')) return;
+    await cloudPush();
+    try { await cloudClient().auth.signOut(); } catch (err) { /* tant pis */ }
+    cloudUser = null;
+    setCloudMeta({ updatedAt: null });
+    renderCloudCard();
+    showToast('Déconnecté. Ta progression reste sur cet appareil.');
+}
+
 /* ---------- Accueil du premier lancement ---------- */
 
 const ONBOARD_STEPS = 4;
@@ -3019,6 +3244,7 @@ function bindEvents() {
         const screen = MAIN_SCREENS.find(name => !$(`${name}Screen`).hidden);
         if (!screen || e.touches.length !== 1) return;
         if (!$('startModal').hidden || !$('quitModal').hidden || !$('streakModal').hidden) return;
+        if (!$('authModal').hidden || !$('cloudConflictModal').hidden) return;
         if (e.target.closest('input, textarea')) return;
         const t = e.touches[0];
         if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone
@@ -3141,6 +3367,21 @@ function bindEvents() {
         if (e.target === $('reportModal')) $('reportModal').hidden = true;
     });
 
+    // Sauvegarde en ligne
+    $('cloudSignupBtn').addEventListener('click', () => openAuthModal('signup'));
+    $('cloudLoginBtn').addEventListener('click', () => openAuthModal('login'));
+    $('cloudLogoutBtn').addEventListener('click', cloudLogout);
+    $('closeAuthBtn').addEventListener('click', () => { $('authModal').hidden = true; });
+    $('authSwitch').addEventListener('click', () => openAuthModal(authMode === 'signup' ? 'login' : 'signup'));
+    $('authForgot').addEventListener('click', forgotPassword);
+    $('authForm').addEventListener('submit', submitAuth);
+    $('keepCloudBtn').addEventListener('click', () => { if (pendingRemote) applyRemote(pendingRemote); });
+    $('keepDeviceBtn').addEventListener('click', async () => {
+        $('cloudConflictModal').hidden = true;
+        await cloudPush();
+        showToast('📱 Progression de cet appareil gardée et sauvegardée en ligne.');
+    });
+
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
         closeQuitModal();
@@ -3186,6 +3427,10 @@ function bindEvents() {
             if (e.key === 'Escape' || e.key === 'Enter') $('photoZoom').click();
             return;
         }
+        if (!$('authModal').hidden || !$('cloudConflictModal').hidden) {
+            if (e.key === 'Escape' && !$('authModal').hidden) $('authModal').hidden = true;
+            return;   // le formulaire gère lui-même la touche Entrée
+        }
         if (!$('reportModal').hidden) {
             if (e.key === 'Escape') $('reportModal').hidden = true;
             return;   // fenêtre ouverte : Entrée ne doit pas valider la question derrière
@@ -3209,6 +3454,7 @@ function bindEvents() {
 function init() {
     bindEvents();
     flushReports();                                         // signalements restés en attente
+    cloudInit();                                            // compte connecté ? synchronisation
     window.addEventListener('online', flushReports);        // dès que la connexion revient
     buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
     buildDecor($('lessonDecor'), 8);
