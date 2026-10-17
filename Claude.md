@@ -141,6 +141,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   une ligne de 7 petites cartes par thème (image seule), tap = carte en grand. Pastille sur l'onglet Parcours =
   coffres à ouvrir. Les niveaux déjà faits (et ceux validés par le placement) donnent leurs coffres.
   À venir : coffres en récompense du classement entre amis (podium de la semaine).
+  Ouverture façon Clash Royale (demande de l'utilisateur : rapide et fluide) : carte de dos (logo), qui tremble
+  plus ou moins longtemps selon la rareté avec une lueur de sa couleur (`CARD_CHARGE_MS`), puis se retourne ;
+  épique/légendaire : rayons qui tournent + confettis de sa couleur (`CARD_CONFETTI`, `launchConfetti(palette)`).
+  Un tap pendant l'animation la termine (`chest.finish`). Plusieurs coffres : grille de dos qui se retournent en cascade.
+  Explication unique (`tipChest`, même système que le tutoriel) quand un coffre attend : après un placement,
+  « ton test t'a fait passer N coffres », bouton « Ouvrir les coffres » qui les ouvre. Tutoriel : étape coffre.
+- Boutique compacte sur téléphone (icône à gauche, boutons côte à côte) ; coffre de cartes juste sous les pièces.
 
 ## levels.js (important)
 - Lit `QUESTIONS`, écrase `q.niveau` et `LEVEL_NAMES`. Le champ `niveau` du fichier questions n'est qu'un secours.

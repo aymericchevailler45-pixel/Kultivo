@@ -323,6 +323,7 @@ function defaultData() {
         welcomeGift: false,              // cadeau de bienvenue déjà donné
         tourDone: false,                 // tutoriel de découverte déjà vu
         tipReview: false,                // explication du bouton « ↻ à revoir » déjà vue
+        tipChest: false,                 // explication du 1er coffre à ouvrir déjà vue
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -1053,6 +1054,7 @@ function renderMap() {
 
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
     setTimeout(updateToCurrentBtn, 50);
+    if (!state.data.tipChest && readyChests().length) maybeShowChestTip();
 }
 
 /* ---------- Coffres et collection de cartes ---------- */
@@ -1142,45 +1144,114 @@ function openCardBoxes(boxes, title) {
     $('chestModal').hidden = false;
 }
 
-/** Plusieurs coffres : toutes les cartes gagnées en grille (« Nouvelle » en vert). */
-function showChestSummary(results) {
+/* Ouverture façon « Clash Royale » : la carte arrive de dos, tremble plus ou moins longtemps selon sa
+   rareté (lueur de sa couleur), puis se retourne. Épique / légendaire : rayons de lumière et confettis.
+   Un tap (sur la carte ou le bouton) pendant l'animation la termine tout de suite. */
+const CARD_CHARGE_MS = { common: 250, rare: 550, epic: 900, legendary: 1300 };
+const CARD_CONFETTI = { epic: ['#8b5cf6', '#c9b6ff', '#ffffff'], legendary: ['#ffc800', '#ffb300', '#fff3b0', '#ff9600'] };
+
+/** Carte retournable : dos (logo) + face. */
+function cardFlip(card, big) {
+    const flip = el('div', `flip rarity-${card.rarity}${big ? ' is-big' : ''}`);
+    const rays = el('div', 'flip-rays');
+    const inner = el('div', 'flip-inner');
+    const back = el('div', 'flip-back');
+    const logo = el('img');
+    logo.src = 'icons/logo.svg';
+    logo.alt = '';
+    back.append(logo);
+    const front = el('div', 'flip-front');
+    front.append(cardFace(card, big));
+    inner.append(back, front);
+    flip.append(rays, inner);
+    return flip;
+}
+
+/** Effets au moment où la carte se retourne (son, confettis selon la rareté). */
+function cardRevealFx(rarity) {
+    playSound(rarity === 'common' ? 'pair' : rarity === 'rare' ? 'good' : 'win');
+    if (CARD_CONFETTI[rarity]) launchConfetti(CARD_CONFETTI[rarity]);
+}
+
+/** Une seule carte en grand : charge, puis se retourne. */
+function revealCard(chest) {
+    const { card, isNew, coins } = chest.results[chest.step];
+    const flip = cardFlip(card, true);
+    $('chestTitle').textContent = `Carte ${chest.step + 1} / ${chest.results.length}`;
+    $('chestStage').replaceChildren(flip);
+    $('chestNote').textContent = '';
+    $('chestBtn').textContent = chest.step < chest.results.length - 1 ? 'Carte suivante' : 'Super !';
+    flip.classList.add('is-charging');
+    chest.finish = () => {
+        chest.finish = null;
+        clearTimeout(chest.timer);
+        flip.classList.remove('is-charging');
+        flip.classList.add('is-flipped');
+        cardRevealFx(card.rarity);
+        $('chestNote').textContent = isNew ? '✨ Nouvelle carte !' : `Déjà dans ta collection : +${coins} 🪙`;
+    };
+    chest.timer = setTimeout(() => chest.finish && chest.finish(), CARD_CHARGE_MS[card.rarity]);
+    flip.addEventListener('click', () => chest.finish && chest.finish());
+}
+
+/** Plusieurs coffres : toutes les cartes en grille, de dos, qui se retournent l'une après l'autre. */
+function showChestSummary(chest) {
+    const { results } = chest;
     const grid = el('div', 'chest-summary');
-    for (const { card, isNew } of results) {
-        const btn = el('div', 'kcard-btn');
-        btn.append(cardFace(card));
+    const flips = results.map(({ card, isNew }) => {
+        const flip = cardFlip(card, false);
         if (isNew) {
             const tag = el('span', 'kcard-new');
             tag.textContent = 'Nouvelle';
-            btn.append(tag);
+            flip.append(tag);
         }
-        grid.append(btn);
-    }
+        grid.append(flip);
+        return flip;
+    });
     const fresh = results.filter(r => r.isNew).length;
     const coins = results.reduce((sum, r) => sum + r.coins, 0);
+    const order = Object.keys(CARD_RARITIES);
+    const best = results.reduce((top, r) => order.indexOf(r.card.rarity) > order.indexOf(top) ? r.card.rarity : top, 'common');
     $('chestTitle').textContent = `🃏 ${plural(results.length, 'carte', 'cartes')}`;
     $('chestStage').replaceChildren(grid);
-    $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
+    $('chestNote').textContent = '';
     $('chestBtn').textContent = 'Super !';
+
+    let i = 0;
+    const done = () => {
+        chest.finish = null;
+        if (CARD_CONFETTI[best]) launchConfetti(CARD_CONFETTI[best]);
+        $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
+    };
+    const step = () => {
+        flips[i].classList.add('is-flipped');
+        if (i % 2 === 0) playSound('pair');
+        i++;
+        if (i < flips.length) chest.timer = setTimeout(step, 110);
+        else done();
+    };
+    chest.finish = () => {   // tap pendant l'animation : tout se retourne d'un coup
+        clearTimeout(chest.timer);
+        flips.forEach(f => f.classList.add('is-flipped'));
+        done();
+    };
+    chest.timer = setTimeout(step, 250);
 }
 
 /** Bouton du coffre : ouvre, puis montre la carte suivante (ou toutes d'un coup), puis ferme. */
 function chestNext() {
     const chest = state.chest;
     if (!chest) { closeChest(); return; }
+    if (chest.finish) { chest.finish(); return; }   // animation en cours : on la termine
     chest.step++;
     if (chest.step >= chest.results.length || (chest.many && chest.step > 0)) { closeChest(); return; }
-    if (chest.step === 0) { playSound('win'); launchConfetti(); }
-    if (chest.many) { showChestSummary(chest.results); return; }
-    const { card, isNew, coins } = chest.results[chest.step];
-    if (chest.step > 0) playSound(card.rarity === 'epic' || card.rarity === 'legendary' ? 'win' : 'pair');
-    $('chestTitle').textContent = `Carte ${chest.step + 1} / ${chest.results.length}`;
-    $('chestStage').replaceChildren(cardFace(card, true));
-    $('chestNote').textContent = isNew ? '✨ Nouvelle carte !' : `Déjà dans ta collection : +${coins} 🪙`;
-    $('chestBtn').textContent = chest.step < chest.results.length - 1 ? 'Carte suivante' : 'Super !';
+    if (chest.many) showChestSummary(chest);
+    else revealCard(chest);
 }
 
 function closeChest() {
     const wasChest = !!state.chest;
+    if (wasChest) clearTimeout(state.chest.timer);
     state.chest = null;
     $('chestModal').hidden = true;
     if (wasChest) {
@@ -1636,7 +1707,7 @@ function renderShop() {
 
     // Coffre de cartes : ouvert tout de suite à l'achat
     const owned = CARDS.filter(c => data.cards[c.id]).length;
-    const chest = el('article', 'card shop-card shop-half');
+    const chest = el('article', 'card shop-card shop-chest');
     const icon = el('div', 'shop-icon');
     icon.textContent = '🎁';
     const name = el('h2');
@@ -1659,7 +1730,7 @@ function renderShop() {
     });
     actions.append(btn);
     chest.append(icon, name, desc, stock, actions);
-    grid.append(chest);
+    wallet.after(chest);   // juste sous les pièces : bien visible
 }
 
 function buyItem(id, qty) {
@@ -3275,6 +3346,8 @@ const TOUR_STEPS = [
       text: 'Les losanges orange ⏳ aussi\u00a0: des cartes à remettre dans l’ordre (dates, tailles, distances…).' },
     { target: () => document.querySelector('.node.is-challenge:not(.is-done)'),
       text: 'Et tous les 10 niveaux, un défi 🏆 qui mélange les questions des niveaux précédents.' },
+    { target: () => document.querySelector('.chest-node:not(.is-open)'),
+      text: 'Tous les 5 niveaux, un coffre 🎁 : il contient des cartes à collectionner (dans ton Profil).' },
     { target: () => document.querySelector('.chips'),
       text: 'En haut\u00a0: tes pièces 🪙 (pour la boutique), ton XP ⭐ et ta série 🔥 de jours d’affilée.' },
     { target: () => document.querySelector('.nav-btn[data-screen="challenges"]'),
@@ -3326,6 +3399,35 @@ function maybeShowReviewTip() {
     }, 700);
 }
 
+/* Explication ponctuelle : le 1er coffre à ouvrir (après un placement : tous ceux des niveaux sautés) */
+let chestTipPending = false;
+
+function maybeShowChestTip() {
+    const data = state.data;
+    if (chestTipPending || data.tipChest) return;
+    // Joueur qui a déjà ouvert des coffres : il connaît, pas besoin d'explication
+    if (Object.keys(data.chests).length > 0) { data.tipChest = true; saveData(); return; }
+    chestTipPending = true;
+    setTimeout(() => {
+        chestTipPending = false;
+        const n = readyChests().length;
+        const ready = n > 0 && !$('mapScreen').hidden && $('tour').hidden && $('chestModal').hidden
+            && (!data.onboarded || data.tourDone) && !data.tipChest;
+        if (!ready) return;
+        const text = n > 1 && data.placement
+            ? `🎁 Ton test de placement t’a fait passer ${n} coffres ! Ils t’attendent tous : ouvre-les d’un coup.`
+            : n > 1
+                ? `🎁 ${n} coffres t’attendent ! Ouvre-les tous d’un coup.`
+                : '🎁 Un coffre t’attend ! Il contient des cartes à collectionner.';
+        tourSteps = [{ target: () => document.querySelector('.chest-node.is-ready'), text }];
+        tourFlag = 'tipChest';
+        tourLastLabel = n > 1 ? 'Ouvrir les coffres' : 'Ouvrir le coffre';
+        tourStep = 0;
+        $('tour').hidden = false;
+        showTourStep();
+    }, 700);
+}
+
 function showTourStep() {
     if (tourStep >= tourSteps.length) { endTour(); return; }
     const step = tourSteps[tourStep];
@@ -3361,10 +3463,16 @@ function endTour() {
     $('tour').hidden = true;
     state.data[tourFlag] = true;
     saveData();
+    if (tourFlag === 'tipChest') {
+        const list = readyChests();
+        if (list.length) openChests(list);
+        return;
+    }
     if (tourFlag !== 'tourDone') return;
     // Retour au niveau qui attend le joueur (niveau 1 ou celui du placement) : le tutoriel a fait défiler la carte
     const current = document.querySelector('.node.is-current');
     if (current) current.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    if (readyChests().length) setTimeout(maybeShowChestTip, 600);   // après un placement : coffres des niveaux sautés
 }
 
 /* ---------- Accueil du premier lancement ---------- */
@@ -3655,7 +3763,7 @@ function toggleSound() {
 }
 
 /** Pluie de confettis (pas de confettis si l'appareil demande moins d'animations). */
-function launchConfetti() {
+function launchConfetti(palette) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const canvas = el('canvas', 'confetti');
     document.body.append(canvas);
@@ -3667,7 +3775,7 @@ function launchConfetti() {
     canvas.height = H * ratio;
     ctx.scale(ratio, ratio);
 
-    const colors = ['#58cc02', '#ffc800', '#8b5cf6', '#1899d6', '#ff9600', '#e5484d'];
+    const colors = palette || ['#58cc02', '#ffc800', '#8b5cf6', '#1899d6', '#ff9600', '#e5484d'];
     const bits = Array.from({ length: 140 }, () => ({
         x: W / 2 + (Math.random() - 0.5) * W * 0.3,
         y: H * 0.35,
