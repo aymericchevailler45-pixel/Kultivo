@@ -185,7 +185,7 @@ const THEME_FACTS = {
         'Le Taj Mahal semble changer de couleur selon l’heure de la journée.',
         'Le Colisée pouvait être couvert d’une immense toile pour protéger les spectateurs du soleil.',
         'La tour de Pise penchait déjà pendant sa construction.',
-        'La Sagrada Família, à Barcelone, est en construction depuis 1882.',
+        'La Sagrada Família est en chantier depuis 1882 : sa plus haute tour n’a été terminée qu’en 2026, et les travaux continuent.',
         'Le Machu Picchu n’a été révélé au grand public qu’en 1911.',
         'La pyramide de Khéops a été le plus haut monument construit par l’homme pendant près de 4 000 ans.'
     ]
