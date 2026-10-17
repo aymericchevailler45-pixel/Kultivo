@@ -3475,10 +3475,110 @@ async function leaguePushScore() {
     // Défi du jour (colonnes ajoutées par supabase/defi-du-jour.sql) : comparé avec les amis
     const today = state.data.daily[todayKey()];
     const daily = today ? { daily_day: todayKey(), daily_score: today.score, daily_seconds: today.seconds } : {};
+    // Résumé du profil, visible par les amis (colonne de supabase/profil-ami.sql)
+    const summary = { summary: profileSummary() };
     try {
-        const { error } = await c.from('scores').upsert({ ...row, ...daily });
-        if (error && today) await c.from('scores').upsert(row);   // colonnes du défi pas encore créées
+        for (const attempt of [{ ...row, ...daily, ...summary }, { ...row, ...daily }, row]) {
+            const { error } = await c.from('scores').upsert(attempt);
+            if (!error) break;   // sinon : colonnes pas encore créées, on réessaie avec moins
+        }
     } catch (err) { /* hors ligne : au prochain envoi */ }
+}
+
+/** Ce que les amis voient de mon profil (jamais la sauvegarde complète, qui reste privée). */
+function profileSummary() {
+    const d = state.data;
+    return {
+        xp: d.xp,
+        title: titleFor(d.xp).current.name,
+        streak: currentStreak(),
+        bestStreak: Math.max(d.best.streak, currentStreak()),
+        levels: Object.values(d.done).filter(Boolean).length,
+        rate: d.totals.tries > 0 ? Math.round((d.totals.right / d.totals.tries) * 100) : null,
+        sprint: d.best.sprint || 0,
+        badges: Object.keys(d.badges).filter(id => d.badges[id]),
+        cards: Object.keys(d.cards).filter(id => d.cards[id])
+    };
+}
+
+/** Profil d'un ami : série, stats, badges et cartes (d'après son résumé). */
+function openFriendProfile(f) {
+    const body = $('friendBody');
+    body.replaceChildren();
+    const s = f.summary;
+    const head = el('div', 'friend-head');
+    const name = el('h2');
+    name.textContent = f.pseudo;
+    const sub = el('p', 'friend-title');
+    sub.textContent = s ? `🎖️ ${s.title} · ${s.xp} XP` : 'Profil pas encore disponible';
+    head.append(avatarEl(f.pseudo, f.look, 'is-big'), name, sub);
+    body.append(head);
+
+    if (!s) {
+        const p = el('p', 'muted');
+        p.textContent = `Son profil s’affichera dès que ${f.pseudo} aura rejoué avec la dernière version du jeu.`;
+        body.append(p);
+    } else {
+        const nbsp = '\u00a0';
+        const tiles = el('div', 'friend-tiles');
+        [
+            ['🔥 Série', plural(s.streak, 'jour', 'jours').replace(' ', nbsp)],
+            ['✅ Réussite', s.rate === null ? '—' : `${s.rate}${nbsp}%`],
+            ['🗺️ Niveaux', `${s.levels}${nbsp}/${nbsp}${MAX_LEVEL}`],
+            ['🌋 Record série', plural(s.bestStreak, 'jour', 'jours').replace(' ', nbsp)],
+            ['⚡ Sprint', String(s.sprint)],
+            ['📅 Semaine', `${friendWeekXp(f, weekStart())}${nbsp}XP`]
+        ].forEach(([label, value]) => {
+            const t = el('div', 'tile');
+            const l = el('span', 'tile-label');
+            l.textContent = label;
+            const b = el('b');
+            b.textContent = value;
+            t.append(l, b);
+            tiles.append(t);
+        });
+        body.append(tiles);
+
+        const badges = BADGES.filter(b => s.badges.includes(b.id));
+        const bh = el('h3', 'friend-section');
+        bh.textContent = `🎖️ Badges · ${badges.length}/${BADGES.length}`;
+        const bl = el('div', 'friend-badges');
+        badges.forEach(b => {
+            const i = el('span', 'friend-badge');
+            i.textContent = b.icon;
+            i.title = `${b.name} : ${b.desc}`;
+            bl.append(i);
+        });
+        if (!badges.length) bl.textContent = 'Aucun badge pour l’instant.';
+        body.append(bh, bl);
+
+        const order = Object.keys(CARD_RARITIES);
+        const cards = CARDS.filter(c => s.cards.includes(c.id))
+            .sort((a, b) => order.indexOf(b.rarity) - order.indexOf(a.rarity));
+        const ch = el('h3', 'friend-section');
+        ch.textContent = `🃏 Cartes · ${cards.length}/${CARDS.length}`;
+        const cl = el('div', 'friend-cards');
+        cards.forEach(card => {
+            const btn = el('button', 'kcard-btn');
+            btn.type = 'button';
+            btn.append(cardFace(card));
+            btn.addEventListener('click', () => { $('friendModal').hidden = true; openCardView(card); });
+            cl.append(btn);
+        });
+        if (!cards.length) cl.textContent = 'Aucune carte pour l’instant.';
+        body.append(ch, cl);
+    }
+
+    const remove = el('button', 'friend-remove');
+    remove.type = 'button';
+    remove.textContent = 'Retirer de mes amis';
+    remove.addEventListener('click', () => {
+        $('friendModal').hidden = true;
+        removeFriend(f.link, `Retirer ${f.pseudo} de tes amis ?`);
+    });
+    body.append(remove);
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
 }
 
 /** Redessine l'onglet Classement s'il a changé, sauf pendant qu'on tape dans un champ (sinon le texte serait effacé). */
@@ -3871,7 +3971,7 @@ function renderLeague() {
     const week = weekStart();
     const rows = [
         { pseudo: league.pseudo, look: state.data.avatar, xp: weekXp(week), streak: currentStreak(), me: true },
-        ...league.friends.map(f => ({ pseudo: f.pseudo, look: f.look, xp: friendWeekXp(f, week), streak: f.week === week ? f.streak : 0 }))
+        ...league.friends.map(f => ({ pseudo: f.pseudo, look: f.look, friend: f, xp: friendWeekXp(f, week), streak: f.week === week ? f.streak : 0 }))
     ].sort((a, b) => b.xp - a.xp || (a.me ? -1 : b.me ? 1 : 0));
     const rank = card('league-rank');
     const head = el('div', 'league-head');
@@ -3888,7 +3988,8 @@ function renderLeague() {
     [1, 0, 2].forEach(i => {   // ordre visuel : 2e, 1er, 3e
         const r = top[i];
         if (!r) return;
-        const col = el('div', `podium-col place-${i + 1}${r.me ? ' is-me' : ''}`);
+        const col = el(r.friend ? 'button' : 'div', `podium-col place-${i + 1}${r.me ? ' is-me' : ''}`);
+        if (r.friend) { col.type = 'button'; col.addEventListener('click', () => openFriendProfile(r.friend)); }
         const crown = el('span', 'podium-crown');
         crown.textContent = i === 0 && r.xp > 0 ? '👑' : '';
         const name = el('span', 'podium-name');
@@ -3906,7 +4007,8 @@ function renderLeague() {
         const leader = Math.max(1, rows[0].xp);
         const list = el('ol', 'league-list');
         rows.slice(3).forEach((r, k) => {
-            const li = el('li', `league-row${r.me ? ' is-me' : ''}`);
+            const li = el('li', `league-row${r.me ? ' is-me' : ''}${r.friend ? ' is-link' : ''}`);
+            if (r.friend) li.addEventListener('click', () => openFriendProfile(r.friend));
             const pos = el('span', 'league-pos');
             pos.textContent = String(k + 4);
             const name = el('span', 'league-name');
@@ -3955,15 +4057,29 @@ function renderLeague() {
     if (people.length) {
         const ul = el('ul', 'league-people');
         people.forEach(f => {
-            const li = el('li');
-            const name = el('span');
-            name.textContent = f.pending ? `${f.pseudo} · en attente` : f.pseudo;
-            const x = el('button', 'icon-btn league-remove');
-            x.type = 'button';
-            x.textContent = '✕';
-            x.setAttribute('aria-label', f.pending ? `Annuler la demande à ${f.pseudo}` : `Retirer ${f.pseudo} de tes amis`);
-            x.addEventListener('click', () => removeFriend(f.link, f.pending ? null : `Retirer ${f.pseudo} de tes amis ?`));
-            li.append(name, x);
+            const li = el('li', `friend-row${f.pending ? ' is-pending' : ''}`);
+            const name = el('span', 'friend-name');
+            const strong = el('b');
+            strong.textContent = f.pseudo;
+            const info = el('span', 'friend-info');
+            const s = f.summary;
+            info.textContent = f.pending ? 'Demande envoyée · en attente'
+                : s ? `🎖️ ${s.title}${s.streak > 0 ? ` · 🔥 ${s.streak}` : ''}` : 'Ami';
+            name.append(strong, info);
+            li.append(avatarEl(f.pseudo, f.look, 'is-small'), name);
+            if (f.pending) {
+                const x = el('button', 'icon-btn league-remove');
+                x.type = 'button';
+                x.textContent = '✕';
+                x.setAttribute('aria-label', `Annuler la demande à ${f.pseudo}`);
+                x.addEventListener('click', () => removeFriend(f.link));
+                li.append(x);
+            } else {
+                const go = el('span', 'friend-go');
+                go.textContent = '›';
+                li.append(go);
+                li.addEventListener('click', () => openFriendProfile(f));
+            }
             ul.append(li);
         });
         friends.append(ul);
@@ -4523,6 +4639,8 @@ function bindEvents() {
         });
     });
     $('avatarBtn').addEventListener('click', openAvatarModal);
+    $('closeFriendBtn').addEventListener('click', () => { $('friendModal').hidden = true; });
+    $('friendModal').addEventListener('click', e => { if (e.target === $('friendModal')) $('friendModal').hidden = true; });
     $('avatarDone').addEventListener('click', closeAvatarModal);
     $('avatarModal').addEventListener('click', e => { if (e.target === $('avatarModal')) closeAvatarModal(); });
     setProfileTab('badges');
@@ -4545,7 +4663,7 @@ function bindEvents() {
         if (!screen || e.touches.length !== 1) return;
         if (!$('startModal').hidden || !$('quitModal').hidden || !$('streakModal').hidden) return;
         if (!$('authModal').hidden || !$('cloudConflictModal').hidden || !$('accountModal').hidden) return;
-        if (!$('chestModal').hidden || !$('askModal').hidden || !$('avatarModal').hidden) return;
+        if (!$('chestModal').hidden || !$('askModal').hidden || !$('avatarModal').hidden || !$('friendModal').hidden) return;
         if (e.target.closest('input, textarea')) return;
         const t = e.touches[0];
         if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone
