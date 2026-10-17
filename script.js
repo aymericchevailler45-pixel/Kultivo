@@ -60,7 +60,11 @@ const TITLES = [
     { xp: 1200, name: 'Érudit' },
     { xp: 2000, name: 'Savant' },
     { xp: 3500, name: 'Sage' },
-    { xp: 6000, name: 'Encyclopédie vivante' }
+    { xp: 6000, name: 'Encyclopédie vivante' },   // ≈ fin du parcours (~40 XP par niveau)
+    // Au-delà : pour ceux qui continuent (défi du jour, sprint, révisions)
+    { xp: 10000, name: 'Puits de science' },
+    { xp: 15000, name: 'Oracle' },
+    { xp: 25000, name: 'Légende de Kultivo' }
 ];
 
 /* ---------- Structure des niveaux ---------- */
