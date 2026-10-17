@@ -306,6 +306,7 @@ function defaultData() {
         placement: null,                 // test de placement fait : { day, start }
         placementOffered: false,         // popup de bienvenue déjà montrée
         pairStats: {},                   // niveaux Paires : « famille:élément » -> { miss, streak, last }
+        orderStats: {},                  // niveaux Ordre : « famille:carte » -> { miss, streak, last }
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -322,7 +323,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -2478,7 +2479,10 @@ function buildOrderRounds(level) {
     const t = pairTarget(level);   // même difficulté visée que les niveaux Paires
     const n = orderSize(level);
     const nearCount = f => f.items.filter(it => Math.abs(it[3] - t) <= 1.2).length;
-    const eligible = shuffle(ORDER_FAMILIES.filter(f => nearCount(f) >= n));
+    // Tirage pondéré : une famille avec des cartes mal placées a plus de chances de sortir
+    const missedIn = f => f.items.filter(it => orderMiss(orderKey(f, it[0])) > 0).length;
+    const adapted = ORDER_FAMILIES.filter(f => nearCount(f) >= n);
+    const eligible = weightedPick(adapted, f => 1 + missedIn(f), adapted.length);
     const families = [];
     for (const f of eligible) {
         if (families.length < ORDER_ROUNDS && !families.some(g => g.theme === f.theme)) families.push(f);
@@ -2491,26 +2495,55 @@ function buildOrderRounds(level) {
     return families.map(family => ({ family, items: pickOrderItems(family, t, n, progress), placed: [], checked: false }));
 }
 
+/* Statistiques des cartes de frise (même principe que les paires : révisions et répétition espacée) */
+const orderKey = (family, label) => `${family.id}:${label}`;
+const orderMiss = key => state.data.orderStats[key]?.miss || 0;
+
+function orderIsDue(key) {
+    const s = state.data.orderStats[key];
+    if (!s || !s.streak || !s.last) return true;
+    const days = REVIEW_DAYS[Math.min(s.streak, REVIEW_DAYS.length - 1)];
+    return Date.now() - s.last >= days * 86400000;
+}
+
+function recordOrderCard(key, ok) {
+    const entry = state.data.orderStats[key] || { miss: 0 };
+    entry.miss = ok ? Math.max(0, entry.miss - 1) : entry.miss + 1;
+    entry.streak = ok ? (entry.streak || 0) + 1 : 0;
+    entry.last = Date.now();
+    state.data.orderStats[key] = entry;
+}
+
 /** Cartes proches de la difficulté visée. Au début, on exige qu'elles soient bien espacées
-    dans le classement (faciles à départager) ; plus loin, elles peuvent être voisines. */
+    dans le classement (faciles à départager) ; plus loin, elles peuvent être voisines.
+    Les cartes déjà mal placées reviennent (2 au plus par frise), les cartes bien sues passent derrière. */
 function pickOrderItems(family, t, n, progress) {
     const sorted = [...family.items].sort((a, b) => a[1] - b[1]);
     const rank = new Map(sorted.map((it, i) => [it, i]));
     const pool = family.items
-        .map(it => ({ it, key: Math.abs(it[3] - t) + Math.random() * 0.8 }))
+        .map(it => {
+            let score = Math.abs(it[3] - t) + Math.random() * 0.8;
+            if (!orderIsDue(orderKey(family, it[0]))) score += 0.8;
+            return { it, key: score };
+        })
         .sort((a, b) => a.key - b.key)
         .map(x => x.it)
         .slice(0, Math.max(n + 4, Math.ceil(family.items.length * 0.7)));
+    const must = family.items
+        .filter(it => orderMiss(orderKey(family, it[0])) > 0 && it[3] <= t + 1.2)
+        .sort((a, b) => orderMiss(orderKey(family, b[0])) - orderMiss(orderKey(family, a[0])) || Math.random() - 0.5)
+        .slice(0, Math.min(2, n - 1));
+    const rest = pool.filter(it => !must.includes(it));
     const minGap = Math.max(1, Math.round((1 - progress) * 3));   // 3 rangs d'écart au début, 1 à la fin
     let best = null;
     for (let attempt = 0; attempt < 60; attempt++) {
-        const pick = shuffle(pool).slice(0, n);
+        const pick = shuffle([...must, ...shuffle(rest).slice(0, n - must.length)]);
         const ranks = pick.map(it => rank.get(it)).sort((a, b) => a - b);
         const gap = Math.min(...ranks.slice(1).map((r, i) => r - ranks[i]));
         if (!best || gap > best.gap) best = { pick, gap };
         if (gap >= minGap) break;
     }
-    return best.pick.map(([label, value, shown]) => ({ label, value, shown }));
+    return best.pick.map(([label, value, shown]) => ({ label, value, shown, key: orderKey(family, label) }));
 }
 
 function showOrderRound() {
@@ -2630,6 +2663,8 @@ function orderButton() {
 function checkOrder(round) {
     const correct = [...round.items.keys()].sort((a, b) => round.items[a].value - round.items[b].value);
     const right = correct.filter((idx, i) => round.placed[i] === idx).length;
+    correct.forEach((idx, i) => recordOrderCard(round.items[idx].key, round.placed[i] === idx));
+    saveData();
     round.checked = true;
     state.phase = 'order-feedback';
     state.done++;
