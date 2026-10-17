@@ -135,7 +135,10 @@
             <div class="page-grid profile-grid" id="profileGrid">
                 <article class="card card-hero">
                     <div class="hero-main">
-                        <h2 id="profileTitle"></h2>
+                        <div class="hero-title">
+                            <button type="button" id="avatarBtn" class="avatar-btn" aria-label="Changer mon avatar"></button>
+                            <h2 id="profileTitle"></h2>
+                        </div>
                         <p class="card-big" id="profileXp"></p>
                         <div class="meter" id="titleMeter" role="progressbar" aria-label="Progression vers le prochain titre"
                              aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -409,6 +412,19 @@
             <div class="report-reasons" id="reportReasons" role="radiogroup"></div>
             <textarea id="reportComment" class="report-comment" rows="2" placeholder="Un détail à ajouter ? (facultatif)"></textarea>
             <button type="button" id="reportSendBtn" class="btn btn-green btn-full" disabled>Envoyer le signalement</button>
+        </div>
+    </div>
+
+    <!-- MON AVATAR : couleur et dessin (ou initiale) -->
+    <div id="avatarModal" class="modal-overlay" hidden>
+        <div class="modal-content avatar-sheet" role="dialog" aria-modal="true" aria-labelledby="avatarTitle">
+            <h2 id="avatarTitle">Mon avatar</h2>
+            <div class="avatar-preview" id="avatarPreview"></div>
+            <p class="avatar-label">Couleur</p>
+            <div class="avatar-colors" id="avatarColors"></div>
+            <p class="avatar-label">Dans le rond</p>
+            <div class="avatar-emojis" id="avatarEmojis"></div>
+            <button type="button" id="avatarDone" class="btn btn-green btn-full">C’est bon</button>
         </div>
     </div>
 

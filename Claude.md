@@ -169,6 +169,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   envoyées par `leaguePushScore` (repli sans ces colonnes si le SQL n'est pas lancé) ; liste dans la carte
   Défi du jour (`renderDailyFriends` : meilleur score puis plus rapide, « pas encore joué »). Écran de fin du
   défi : bouton « Comparer avec mes amis ». Onglets Défis et Classement compacts sur téléphone.
+- Avatar personnalisable (2026-10-17) : bouton rond en haut du Profil (`avatarBtn`, crayon) → fenêtre « Mon
+  avatar » (`avatarModal`) : 12 couleurs (`AVATAR_HUES`), initiale ou 24 dessins Twemoji déjà dans `emoji/`
+  (`AVATAR_EMOJIS`). Sauvegarde `avatar: { hue, emoji }` ; envoyé aux amis via `profiles.avatar_hue/avatar_emoji`
+  (`supabase/avatar.sql`, `pushAvatar`) ; `avatarEl(pseudo, look, cls)` partout (podium, liste).
+- Profil (téléphone) : toucher Badges / Cartes / Records / Thèmes fait défiler pour mettre les onglets en haut.
 - Plus de confirm() du navigateur (moche, affiche l'adresse du site) : `askConfirm({ title, text, yes, danger })`
   (fenêtre `askModal`, promesse true/false). Supabase gratuit : pause après 7 jours sans activité (Restore).
 - Pseudo demandé dès l'accueil (étape 4/5, juste après la création du compte ou la connexion ; « Plus tard »

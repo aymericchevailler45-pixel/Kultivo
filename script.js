@@ -316,6 +316,7 @@ function defaultData() {
         cards: {},                       // collection : id de carte (cards.js) -> nombre d'exemplaires
         chests: {},                      // coffres du parcours ouverts : n° du niveau -> date
         podium: {},                      // classement : lundi de la semaine -> place obtenue (0 = rien)
+        avatar: null,                    // avatar choisi : { hue: 0-359, emoji: '🦉' ou null = initiale }
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -1416,6 +1417,7 @@ function renderProfile() {
     const { current, next } = titleFor(data.xp);
 
     $('profileTitle').textContent = `🎖️ ${current.name}`;
+    $('avatarBtn').replaceChildren(avatarEl(myAvatarName(), data.avatar), el('span', 'avatar-edit'));
     renderSoundBtn();
     $('profileXp').textContent = `${data.xp} XP`;
     if (next) {
@@ -3339,6 +3341,83 @@ function askConfirm({ title, text = '', yes = 'Oui', no = 'Annuler', danger = fa
     });
 }
 
+/* ---------- Avatar : rond de couleur avec l'initiale du pseudo, ou un petit dessin ---------- */
+
+const AVATAR_HUES = [0, 25, 45, 90, 140, 175, 200, 225, 260, 290, 320, 340];
+const AVATAR_EMOJIS = ['🦉', '🦈', '🦖', '🐋', '🐍', '🐎', '🍄', '🌻', '🎸', '🎷', '🎮', '🎲',
+                       '🧩', '🔭', '🧲', '💡', '🤖', '⚽', '🏆', '🍿', '🥐', '🗿', '🌋', '🚂'];
+
+/** Nom utilisé pour l'initiale : le pseudo, sinon « Moi ». */
+const myAvatarName = () => (cloudUser && league?.userId === cloudUser.id && league.pseudo) || 'Moi';
+
+/** Rond d'avatar. `look` = { hue, emoji } choisi par le joueur ; sinon couleur tirée du pseudo et initiale. */
+function avatarEl(pseudo, look, cls = '') {
+    const a = el('span', `league-avatar ${cls}`);
+    let hue = look?.hue;
+    if (!Number.isInteger(hue)) {
+        hue = 0;
+        for (const ch of pseudo) hue = (hue * 31 + ch.codePointAt(0)) % 360;
+    }
+    a.style.setProperty('--hue', String(hue));
+    if (look?.emoji) a.append(emojiImg(look.emoji));
+    else a.textContent = [...pseudo][0].toUpperCase();
+    return a;
+}
+
+function openAvatarModal() {
+    if (!state.data.avatar) {
+        const auto = avatarEl(myAvatarName(), null);
+        state.data.avatar = { hue: Number(auto.style.getPropertyValue('--hue')), emoji: null };
+    }
+    renderAvatarModal();
+    $('avatarModal').hidden = false;
+}
+
+function renderAvatarModal() {
+    const look = state.data.avatar;
+    const name = myAvatarName();
+    $('avatarPreview').replaceChildren(avatarEl(name, look, 'is-big'));
+    const colors = $('avatarColors');
+    colors.replaceChildren();
+    AVATAR_HUES.forEach(hue => {
+        const b = el('button', `avatar-swatch${look.hue === hue ? ' is-active' : ''}`);
+        b.type = 'button';
+        b.style.setProperty('--hue', String(hue));
+        b.setAttribute('aria-label', 'Choisir cette couleur');
+        b.addEventListener('click', () => { look.hue = hue; renderAvatarModal(); });
+        colors.append(b);
+    });
+    const pics = $('avatarEmojis');
+    pics.replaceChildren();
+    [null, ...AVATAR_EMOJIS].forEach(emoji => {
+        const b = el('button', `avatar-pick${look.emoji === emoji ? ' is-active' : ''}`);
+        b.type = 'button';
+        if (emoji) b.append(emojiImg(emoji));
+        else b.textContent = [...name][0].toUpperCase();
+        b.setAttribute('aria-label', emoji ? 'Choisir ce dessin' : 'Mettre mon initiale');
+        b.addEventListener('click', () => { look.emoji = emoji; renderAvatarModal(); });
+        pics.append(b);
+    });
+}
+
+function closeAvatarModal() {
+    $('avatarModal').hidden = true;
+    saveData();
+    pushAvatar();
+    if (!$('profileScreen').hidden) renderProfile();
+    if (!$('leagueScreen').hidden) renderLeague();
+}
+
+/** Envoie l'avatar avec le pseudo, pour que les amis le voient (colonnes de supabase/avatar.sql). */
+async function pushAvatar() {
+    const c = cloudClient();
+    const look = state.data.avatar;
+    if (!c || !cloudUser || !look || !league?.pseudo || league.userId !== cloudUser.id) return;
+    try {
+        await c.from('profiles').update({ avatar_hue: look.hue, avatar_emoji: look.emoji }).eq('user_id', cloudUser.id);
+    } catch (err) { /* hors ligne, ou colonnes pas encore créées */ }
+}
+
 /* ---------- Classement entre amis (Supabase : profiles, friendships, scores) ---------- */
 /* XP de la semaine (du lundi au dimanche, calculée depuis `activeDays`), amis ajoutés par pseudo
    avec une demande à accepter, lien d'invitation, coffre pour le podium de la semaine passée. */
@@ -3484,21 +3563,23 @@ async function leagueFetch() {
     leagueBusy = true;
     try {
         const me = cloudUser.id;
-        const { data: mine } = await c.from('profiles').select('pseudo').eq('user_id', me).maybeSingle();
+        const { data: mine } = await c.from('profiles').select('*').eq('user_id', me).maybeSingle();
         const { data: links, error } = await c.from('friendships').select('id, requester, addressee, status');
         if (error) return;
         const others = [...new Set((links || []).map(l => l.requester === me ? l.addressee : l.requester))];
         const pseudos = {};
         const scores = {};
         if (others.length) {
-            const { data: profs } = await c.from('profiles').select('user_id, pseudo').in('user_id', others);
-            (profs || []).forEach(p => { pseudos[p.user_id] = p.pseudo; });
+            const { data: profs } = await c.from('profiles').select('*').in('user_id', others);
+            (profs || []).forEach(p => { pseudos[p.user_id] = p; });
             const { data: sc } = await c.from('scores').select('*').in('user_id', others);
             (sc || []).forEach(s => { scores[s.user_id] = s; });
         }
         const row = l => {
             const id = l.requester === me ? l.addressee : l.requester;
-            return { link: l.id, id, pseudo: pseudos[id] || '?', ...(scores[id] || { week: null, week_xp: 0, prev_week: null, prev_week_xp: 0, streak: 0 }) };
+            const prof = pseudos[id] || {};
+            const look = Number.isInteger(prof.avatar_hue) ? { hue: prof.avatar_hue, emoji: prof.avatar_emoji || null } : null;
+            return { link: l.id, id, pseudo: prof.pseudo || '?', look, ...(scores[id] || { week: null, week_xp: 0, prev_week: null, prev_week_xp: 0, streak: 0 }) };
         };
         const before = league?.userId === me ? league : null;
         const fresh = {
@@ -3628,6 +3709,7 @@ async function setPseudo(raw) {
     if (error) return error.code === '23505' ? 'Ce pseudo est déjà pris, choisis-en un autre.' : 'Impossible pour le moment. Réessaie.';
     league = { ...(league || {}), userId: cloudUser.id, pseudo, friends: league?.friends || [], incoming: league?.incoming || [], outgoing: league?.outgoing || [] };
     saveLeagueCache();
+    pushAvatar();
     showToast(`🥇 Ton pseudo : ${pseudo}`);
     leagueLoad();
     return null;
@@ -3788,8 +3870,8 @@ function renderLeague() {
     // 3) Classement de la semaine : podium (3 premiers) puis liste
     const week = weekStart();
     const rows = [
-        { pseudo: league.pseudo, xp: weekXp(week), streak: currentStreak(), me: true },
-        ...league.friends.map(f => ({ pseudo: f.pseudo, xp: friendWeekXp(f, week), streak: f.week === week ? f.streak : 0 }))
+        { pseudo: league.pseudo, look: state.data.avatar, xp: weekXp(week), streak: currentStreak(), me: true },
+        ...league.friends.map(f => ({ pseudo: f.pseudo, look: f.look, xp: friendWeekXp(f, week), streak: f.week === week ? f.streak : 0 }))
     ].sort((a, b) => b.xp - a.xp || (a.me ? -1 : b.me ? 1 : 0));
     const rank = card('league-rank');
     const head = el('div', 'league-head');
@@ -3801,14 +3883,6 @@ function renderLeague() {
     head.append(h, left);
     rank.append(head);
 
-    const avatar = (pseudo, cls = '') => {
-        const a = el('span', `league-avatar ${cls}`);
-        let hash = 0;
-        for (const ch of pseudo) hash = (hash * 31 + ch.codePointAt(0)) % 360;
-        a.style.setProperty('--hue', String(hash));
-        a.textContent = [...pseudo][0].toUpperCase();
-        return a;
-    };
     const top = rows.slice(0, 3);
     const podium = el('div', `league-podium count-${top.length}`);
     [1, 0, 2].forEach(i => {   // ordre visuel : 2e, 1er, 3e
@@ -3823,7 +3897,7 @@ function renderLeague() {
         xp.textContent = `${r.xp} XP`;
         const step = el('div', 'podium-step');
         step.textContent = String(i + 1);
-        col.append(crown, avatar(r.pseudo, `ring-${i + 1}`), name, xp, step);
+        col.append(crown, avatarEl(r.pseudo, r.look, `ring-${i + 1}`), name, xp, step);
         podium.append(col);
     });
     rank.append(podium);
@@ -3844,7 +3918,7 @@ function renderLeague() {
             name.append(bar);
             const xp = el('b', 'league-xp');
             xp.textContent = `${r.xp} XP`;
-            li.append(pos, avatar(r.pseudo, 'is-small'), name, xp);
+            li.append(pos, avatarEl(r.pseudo, r.look, 'is-small'), name, xp);
             list.append(li);
         });
         rank.append(list);
@@ -4440,8 +4514,17 @@ function bindEvents() {
         else openQuitModal();
     });
     document.querySelectorAll('.profile-tab').forEach(tab => {
-        tab.addEventListener('click', () => setProfileTab(tab.dataset.tab));
+        tab.addEventListener('click', () => {
+            setProfileTab(tab.dataset.tab);
+            // Téléphone : les onglets remontent en haut de l'écran (juste sous la barre du haut)
+            const tabs = document.querySelector('.profile-tabs');
+            const y = tabs.getBoundingClientRect().top + window.scrollY - $('topbar').offsetHeight - 8;
+            window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+        });
     });
+    $('avatarBtn').addEventListener('click', openAvatarModal);
+    $('avatarDone').addEventListener('click', closeAvatarModal);
+    $('avatarModal').addEventListener('click', e => { if (e.target === $('avatarModal')) closeAvatarModal(); });
     setProfileTab('badges');
 
     $('chestBtn').addEventListener('click', chestNext);
@@ -4462,7 +4545,7 @@ function bindEvents() {
         if (!screen || e.touches.length !== 1) return;
         if (!$('startModal').hidden || !$('quitModal').hidden || !$('streakModal').hidden) return;
         if (!$('authModal').hidden || !$('cloudConflictModal').hidden || !$('accountModal').hidden) return;
-        if (!$('chestModal').hidden || !$('askModal').hidden) return;
+        if (!$('chestModal').hidden || !$('askModal').hidden || !$('avatarModal').hidden) return;
         if (e.target.closest('input, textarea')) return;
         const t = e.touches[0];
         if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone
