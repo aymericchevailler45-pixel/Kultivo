@@ -179,7 +179,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Profil d'un ami (2026-10-17) : tap sur un ami (liste, podium, classement) → `friendModal` (`openFriendProfile`) :
   titre, XP, série, réussite, niveaux, record de série, sprint, XP de la semaine, badges et cartes. Données :
   `scores.summary` (jsonb, `supabase/profil-ami.sql`), résumé envoyé avec le score (`profileSummary`) — la
-  sauvegarde complète reste privée. « Retirer de mes amis » est dans ce profil (plus de ✕ dans la liste,
+  sauvegarde complète reste privée. Carte ou badge touché dans ce profil → vue en grand (`openCardView` / `openBadgeView`
+  avec `onBack`) : « ← Retour » et ✕ ramènent au profil de l'ami (`chestBack`). « Retirer de mes amis » est dans ce profil (plus de ✕ dans la liste,
   sauf pour annuler une demande). Liste d'amis : lignes avec avatar, pseudo, titre et série, flèche ›.
 - Donner / retirer des pièces (2026-10-17) : l'utilisateur modifie DIRECTEMENT la case `coins` dans Table Editor →
   saves (`supabase/table-joueurs.sql`). Déclencheur `saves_fill` : si seule la case coins change, la différence

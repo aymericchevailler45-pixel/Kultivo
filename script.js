@@ -1231,11 +1231,13 @@ function chestNext() {
     else revealCard(chest);
 }
 
+let chestBack = null;   // carte / badge ouvert depuis le profil d'un ami : y revenir en fermant
 function closeChest() {
     const wasChest = !!state.chest;
     if (wasChest) clearTimeout(state.chest.timer);
     state.chest = null;
     $('chestModal').hidden = true;
+    if (chestBack) { const back = chestBack; chestBack = null; back(); return; }
     if (wasChest) {
         renderHeader();
         if (!$('mapScreen').hidden) {
@@ -1268,12 +1270,32 @@ function cardFace(card, big = false) {
 }
 
 /** Carte de la collection en grand (même fenêtre que le coffre). */
-function openCardView(card) {
+function openCardView(card, onBack = null) {
     state.chest = null;
+    chestBack = onBack;
     $('chestTitle').textContent = `🃏 ${card.theme}`;
     $('chestStage').replaceChildren(cardFace(card, true));
     $('chestNote').textContent = '';
-    $('chestBtn').textContent = 'Fermer';
+    $('chestBtn').textContent = onBack ? '← Retour' : 'Fermer';
+    $('chestModal').hidden = false;
+}
+
+/** Badge en grand (depuis le profil d'un ami), même fenêtre que les cartes. */
+function openBadgeView(badge, onBack = null) {
+    state.chest = null;
+    chestBack = onBack;
+    $('chestTitle').textContent = '🎖️ Badge';
+    const box = el('div', 'badge-big');
+    const icon = el('div', 'badge-big-icon');
+    icon.textContent = badge.icon;
+    const name = el('b');
+    name.textContent = badge.name;
+    const desc = el('p');
+    desc.textContent = badge.desc;
+    box.append(icon, name, desc);
+    $('chestStage').replaceChildren(box);
+    $('chestNote').textContent = '';
+    $('chestBtn').textContent = onBack ? '← Retour' : 'Fermer';
     $('chestModal').hidden = false;
 }
 
@@ -3664,9 +3686,14 @@ function openFriendProfile(f) {
         bh.textContent = `🎖️ Badges · ${badges.length}/${BADGES.length}`;
         const bl = el('div', 'friend-badges');
         badges.forEach(b => {
-            const i = el('span', 'friend-badge');
+            const i = el('button', 'friend-badge');
+            i.type = 'button';
             i.textContent = b.icon;
-            i.title = `${b.name} : ${b.desc}`;
+            i.setAttribute('aria-label', `${b.name} : ${b.desc}`);
+            i.addEventListener('click', () => {
+                $('friendModal').hidden = true;
+                openBadgeView(b, () => { $('friendModal').hidden = false; });
+            });
             bl.append(i);
         });
         if (!badges.length) bl.textContent = 'Aucun badge pour l’instant.';
@@ -3682,7 +3709,10 @@ function openFriendProfile(f) {
             const btn = el('button', 'kcard-btn');
             btn.type = 'button';
             btn.append(cardFace(card));
-            btn.addEventListener('click', () => { $('friendModal').hidden = true; openCardView(card); });
+            btn.addEventListener('click', () => {
+                $('friendModal').hidden = true;
+                openCardView(card, () => { $('friendModal').hidden = false; });
+            });
             cl.append(btn);
         });
         if (!cards.length) cl.textContent = 'Aucune carte pour l’instant.';
