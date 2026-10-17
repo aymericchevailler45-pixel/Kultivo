@@ -105,7 +105,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   culture G ? » (`selfLevel`) → objectif quotidien → test de placement (ou niveau 1 direct si « Je débute »).
   Objectifs affichés en « 1 niveau par jour » (XP en petit). Placement expliqué simplement (pas de « sauter 10 niveaux »).
   « Je débute » / « Non merci » → parcours + tutoriel (pas de lancement direct du niveau 1).
-  Tutoriel guidé (`TOUR_STEPS`, 9 étapes, montre vraiment 🔗 ⏳ 🏆) à la 1re arrivée sur le parcours : écran assombri,
+  Tutoriel guidé (`TOUR_STEPS`, 9 étapes, montre les 🔗 ⏳ 🏆 PAS encore faits : sinon ils sont dorés) à la 1re arrivée sur le parcours : écran assombri,
   élément mis en lumière, bulle Suivant / Passer ; à la fin, retour automatique au niveau en cours.
   Même système pour des explications ponctuelles : 1re apparition de « ↻ à revoir » (`REVIEW_TIP`, `tipReview`).
   Écrans d'accueil en position fixe plein écran (bouton toujours visible). Messages (toasts) : 2,5 s, fermables d'un tap.

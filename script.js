@@ -2908,11 +2908,11 @@ async function cloudLogout() {
 const TOUR_STEPS = [
     { target: () => document.querySelector('.node.is-current'),
       text: 'Voici ton parcours 🗺️ Chaque rond est un niveau de questions. Touche celui qui brille pour jouer\u00a0!' },
-    { target: () => document.querySelector('.node.is-pairs'),
-      text: 'Ce carré bleu 🔗 est un niveau spécial\u00a0: des paires à associer (pays et capitales, films et réalisateurs…).' },
-    { target: () => document.querySelector('.node.is-order'),
-      text: 'Ce losange orange ⏳ aussi\u00a0: des cartes à remettre dans l’ordre (dates, tailles, distances…).' },
-    { target: () => document.querySelector('.node.is-challenge'),
+    { target: () => document.querySelector('.node.is-pairs:not(.is-done)'),
+      text: 'Les carrés bleus 🔗 sont des niveaux spéciaux\u00a0: des paires à associer (pays et capitales, films et réalisateurs…).' },
+    { target: () => document.querySelector('.node.is-order:not(.is-done)'),
+      text: 'Les losanges orange ⏳ aussi\u00a0: des cartes à remettre dans l’ordre (dates, tailles, distances…).' },
+    { target: () => document.querySelector('.node.is-challenge:not(.is-done)'),
       text: 'Et tous les 10 niveaux, un défi 🏆 qui mélange les questions des niveaux précédents.' },
     { target: () => document.querySelector('.chips'),
       text: 'En haut\u00a0: tes pièces 🪙 (pour la boutique), ton XP ⭐ et ta série 🔥 de jours d’affilée.' },
@@ -3055,17 +3055,22 @@ function onboardOption({ icon, title, sub, selected, onPick }) {
     s.textContent = sub;
     text.append(t, s);
     btn.append(ico, text);
-    btn.addEventListener('click', () => { onPick(); renderOnboard(); });
+    btn.addEventListener('click', () => { onPick(); renderOnboard(false); });   // sans rejouer l'animation
     return btn;
 }
 
-function renderOnboard() {
+function renderOnboard(animate = true) {
     const step = onboard.step;
     const body = $('onboardBody');
+    const scroll = $('onboardScreen').scrollTop;
     body.replaceChildren();
     body.classList.remove('is-entering');
-    void body.offsetWidth;   // relance l'animation d'entrée
-    body.classList.add('is-entering');
+    if (animate) {
+        void body.offsetWidth;   // relance l'animation d'entrée (seulement en changeant d'étape)
+        body.classList.add('is-entering');
+    } else {
+        requestAnimationFrame(() => { $('onboardScreen').scrollTop = scroll; });   // pas de saut
+    }
 
     $('onboardDots').replaceChildren(...Array.from({ length: ONBOARD_STEPS }, (_, i) =>
         el('span', `onboard-dot${i <= step ? ' is-done' : ''}`)));
