@@ -326,6 +326,7 @@ function defaultData() {
         tourDone: false,                 // tutoriel de découverte déjà vu
         tipReview: false,                // explication du bouton « ↻ à revoir » déjà vue
         tipChest: false,                 // explication du 1er coffre à ouvrir déjà vue
+        tipReviews: false,               // explication de « + X révisions » déjà vue
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -1035,6 +1036,7 @@ function renderMap() {
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
     setTimeout(updateToCurrentBtn, 50);
     if (!state.data.tipChest && readyChests().length) maybeShowChestTip();
+    else if (!state.data.tipReviews && currentReviewsLabel()) maybeShowReviewsTip();
 }
 
 /* ---------- Coffres et collection de cartes ---------- */
@@ -4252,7 +4254,7 @@ function startTour() {
 /* Explication ponctuelle (une seule fois) : la 1re apparition du bouton « ↻ à revoir » */
 const REVIEW_TIP = [{
     target: () => $('reviewBtn'),
-    text: '↻ Tes questions ratées t’attendent ici. Révise-les : chaque bonne réponse du premier coup en retire une de la liste.'
+    text: '↻ Tes erreurs t’attendent ici. Une bonne réponse les retire de la liste\u00a0; elles reviendront plus tard dans tes niveaux, pour bien les retenir.'
 }];
 let reviewTipPending = false;
 
@@ -4271,6 +4273,36 @@ function maybeShowReviewTip() {
         $('tour').hidden = false;
         showTourStep();
     }, 700);
+}
+
+/* Explication ponctuelle : la 1re fois que le niveau en cours affiche « + X révisions » */
+let reviewsTipPending = false;
+const currentReviewsLabel = () => {
+    const node = document.querySelector('.node.is-current:not(.is-pairs):not(.is-order):not(.is-challenge)');
+    const meta = node && node.closest('.stop')?.querySelector('.stop-meta');
+    return meta && meta.textContent.includes('révision') ? meta : null;
+};
+
+function maybeShowReviewsTip() {
+    const data = state.data;
+    if (reviewsTipPending || data.tipReviews) return;
+    reviewsTipPending = true;
+    setTimeout(() => {
+        reviewsTipPending = false;
+        const target = currentReviewsLabel();
+        const ready = target && !$('mapScreen').hidden && $('tour').hidden && $('chestModal').hidden
+            && (!data.onboarded || data.tourDone) && !data.tipReviews;
+        if (!ready) return;
+        tourSteps = [{
+            target: currentReviewsLabel,
+            text: '🔁 Les révisions\u00a0: tes erreurs à corriger, et des questions que tu connais déjà, qui reviennent au bon moment pour ne pas les oublier.'
+        }];
+        tourFlag = 'tipReviews';
+        tourLastLabel = 'Compris !';
+        tourStep = 0;
+        $('tour').hidden = false;
+        showTourStep();
+    }, 900);
 }
 
 /* Explication ponctuelle : le 1er coffre à ouvrir (après un placement : tous ceux des niveaux sautés) */

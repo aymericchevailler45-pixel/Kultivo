@@ -118,7 +118,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   « Je débute » / « Non merci » → parcours + tutoriel (pas de lancement direct du niveau 1).
   Tutoriel guidé (`TOUR_STEPS`, 9 étapes, montre les 🔗 ⏳ 🏆 PAS encore faits : sinon ils sont dorés) à la 1re arrivée sur le parcours : écran assombri,
   élément mis en lumière, bulle Suivant / Passer ; à la fin, retour automatique au niveau en cours.
-  Même système pour des explications ponctuelles : 1re apparition de « ↻ à revoir » (`REVIEW_TIP`, `tipReview`).
+  Même système pour des explications ponctuelles : 1re apparition de « ↻ à revoir » (`REVIEW_TIP`, `tipReview` :
+  « tes erreurs… elles reviendront plus tard dans tes niveaux ») et 1re fois que le niveau en cours affiche
+  « + X révisions » (`maybeShowReviewsTip`, `tipReviews` : « reviennent au bon moment », SANS les délais exacts,
+  à la demande de l'utilisateur).
   Écrans d'accueil en position fixe plein écran (bouton toujours visible). Messages (toasts) : 2,5 s, fermables d'un tap.
   Cadeau de bienvenue à la fin : 100 🪙 + 1 🧊 (`WELCOME_COINS`, `WELCOME_FREEZES`, une seule fois : `welcomeGift`).
 - Récap de fin de leçon animé : tuiles XP / Précision / Temps (défi du jour : Score ; sprint : Bonnes / Record)
