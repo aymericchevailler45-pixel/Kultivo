@@ -1247,6 +1247,44 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 }
 .sound-toggle[aria-pressed="false"] { color: var(--muted); }
 
+/* Tutoriel : écran assombri, un « trou » de lumière sur l'élément expliqué, une bulle de texte */
+.tour { position: fixed; inset: 0; z-index: 90; }
+.tour-hole {
+    position: fixed;
+    border-radius: 18px;
+    box-shadow: 0 0 0 9999px rgba(10, 16, 32, 0.68);
+    pointer-events: none;
+    transition: all 0.25s ease;
+}
+.tour-bubble {
+    position: fixed;
+    left: 50%;
+    width: min(92vw, 380px);
+    transform: translateX(-50%);
+    padding: 16px;
+    border-radius: 18px;
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: top 0.25s ease;
+}
+.tour-text { margin: 0 0 12px; font-weight: 700; line-height: 1.4; }
+.tour-foot { display: flex; align-items: center; gap: 10px; }
+.tour-dots { color: var(--muted); font-size: 0.85rem; font-weight: 800; }
+.tour-skip {
+    margin-left: auto;
+    padding: 6px;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.tour-next { padding: 10px 18px; font-size: 1rem; }
+.tour-skip[hidden] + .tour-next { margin-left: auto; }
+
 /* Confettis de fin de niveau */
 /* Sauvegarde en ligne */
 .cloud-block { display: flex; flex-direction: column; gap: 10px; }

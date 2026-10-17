@@ -306,6 +306,7 @@ function defaultData() {
         frozenDays: {},                  // jours manqués sauvés par un gel de série
         selfLevel: null,                 // niveau annoncé à l'accueil : 'beginner', 'average' ou 'expert'
         welcomeGift: false,              // cadeau de bienvenue déjà donné
+        tourDone: false,                 // tutoriel de découverte déjà vu
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -785,7 +786,8 @@ function showToast(text) {
     const toast = el('div', 'toast');
     toast.textContent = text;
     box.append(toast);
-    setTimeout(() => toast.remove(), 4500);
+    toast.addEventListener('click', () => toast.remove());   // un tap le ferme
+    setTimeout(() => toast.remove(), 2500);
 }
 
 /* ---------- Défi du jour ---------- */
@@ -866,7 +868,11 @@ function showScreen(name) {
         else btn.removeAttribute('aria-current');
     });
 
-    if (name === 'map') renderMap();
+    if (name === 'map') {
+        renderMap();
+        // Première arrivée sur le parcours après l'accueil : petit tutoriel
+        if (state.data.onboarded && !state.data.tourDone) setTimeout(startTour, 500);
+    }
     if (name === 'challenges') { window.scrollTo(0, 0); renderChallenges(); }
     if (name === 'shop') { window.scrollTo(0, 0); renderShop(); }
     if (name === 'profile') { window.scrollTo(0, 0); renderProfile(); }
@@ -1429,7 +1435,7 @@ function openPlacementModal(welcome = false) {
 
     $('modalTitle').textContent = welcome ? '👋 Bienvenue ! Un test de placement ?' : '🧭 Test de placement';
     const maxStart = PLACEMENT_STEPS * CHALLENGE_EVERY + 1;
-    $('modalDesc').textContent = `Ce test sert à te placer sur le parcours selon ta culture G. Les questions sont de plus en plus dures : chaque étape réussie te fait sauter 10 niveaux, jusqu’au niveau ${maxStart}. Le test s’arrête dès que tu rates une étape, et tu démarres là.`;
+    $('modalDesc').textContent = `Réponds à quelques questions de plus en plus difficiles : tu commenceras directement à ton niveau (jusqu’au niveau ${maxStart}), sans passer par les questions trop faciles pour toi.`;
     $('modalStatsText').textContent = `${PLACEMENT_STEPS} étapes · 2 bonnes réponses sur 3 pour en passer une · sans XP ni cœurs`;
     $('startLevelBtn').textContent = 'Faire le test de placement';
     $('modalSecondaryBtn').textContent = 'Non merci, je commence au niveau 1';
@@ -2893,6 +2899,72 @@ async function cloudLogout() {
     showToast('Déconnecté. Ta progression reste sur cet appareil.');
 }
 
+/* ---------- Tutoriel de découverte (après l'accueil) ---------- */
+
+// Chaque étape : l'élément mis en lumière (ou rien = bulle au centre) et le texte
+const TOUR_STEPS = [
+    { target: () => document.querySelector('.node.is-current'),
+      text: 'Voici ton parcours 🗺️ Chaque rond est un niveau de questions. Touche celui qui brille pour jouer !' },
+    { target: () => null,
+      text: 'Tu croiseras aussi des niveaux spéciaux : 🔗 des paires à associer, ⏳ des frises à remettre dans l’ordre et 🏆 des défis tous les 10 niveaux.' },
+    { target: () => document.querySelector('.chips'),
+      text: 'En haut : tes pièces 🪙 (pour la boutique), ton XP ⭐ et ta série 🔥 de jours d’affilée. Touche-les pour en savoir plus.' },
+    { target: () => document.querySelector('.nav-btn[data-screen="challenges"]'),
+      text: 'Défis : ton objectif du jour, le défi du jour (le même pour tout le monde) et le sprint de 60 secondes.' },
+    { target: () => document.querySelector('.nav-btn[data-screen="shop"]'),
+      text: 'Boutique : des indices, des cœurs de secours et des gels pour protéger ta série.' },
+    { target: () => document.querySelector('.nav-btn[data-screen="profile"]'),
+      text: 'Profil : ton titre, tes records, tes badges à récupérer et ta sauvegarde en ligne.' },
+    { target: () => document.querySelector('.node.is-current'),
+      text: 'Une erreur te coûte un cœur ❤️, et les questions ratées reviennent en révision. C’est parti ! 🚀' }
+];
+let tourStep = 0;
+
+function startTour() {
+    if (!$('mapScreen').hidden && $('tour').hidden && !state.data.tourDone) {
+        tourStep = 0;
+        $('tour').hidden = false;
+        showTourStep();
+    }
+}
+
+function showTourStep() {
+    if (tourStep >= TOUR_STEPS.length) { endTour(); return; }
+    const step = TOUR_STEPS[tourStep];
+    const target = step.target();
+    if (target) target.scrollIntoView({ block: 'center' });
+    $('tourText').textContent = step.text;
+    $('tourDots').textContent = `${tourStep + 1}/${TOUR_STEPS.length}`;
+    $('tourNext').textContent = tourStep === TOUR_STEPS.length - 1 ? 'C’est parti !' : 'Suivant';
+    $('tourSkip').hidden = tourStep === TOUR_STEPS.length - 1;
+    setTimeout(placeTour, 60);   // après le défilement
+}
+
+/** Place le trou de lumière sur l'élément, et la bulle au-dessous (ou au-dessus s'il n'y a pas la place). */
+function placeTour() {
+    const step = TOUR_STEPS[tourStep];
+    const target = step && step.target();
+    const hole = $('tourHole');
+    const bubble = $('tourBubble');
+    const margin = 8;
+    if (!target) {
+        hole.style.cssText = 'top:50%;left:50%;width:0;height:0;';
+        bubble.style.top = `${Math.max(16, window.innerHeight / 2 - bubble.offsetHeight / 2)}px`;
+        return;
+    }
+    const r = target.getBoundingClientRect();
+    hole.style.cssText = `top:${r.top - margin}px;left:${r.left - margin}px;width:${r.width + margin * 2}px;height:${r.height + margin * 2}px;`;
+    const below = r.bottom + margin + 14;
+    const fitsBelow = below + bubble.offsetHeight < window.innerHeight - 8;
+    bubble.style.top = `${fitsBelow ? below : Math.max(8, r.top - margin - 14 - bubble.offsetHeight)}px`;
+}
+
+function endTour() {
+    $('tour').hidden = true;
+    state.data.tourDone = true;
+    saveData();
+}
+
 /* ---------- Accueil du premier lancement ---------- */
 
 const ONBOARD_STEPS = 5;
@@ -2903,7 +2975,7 @@ const ONBOARD_LEVELS = [
 ];
 // Repères pour choisir son objectif (un niveau rapporte environ 40 à 60 XP)
 const GOAL_ICONS = ['🐢', '🚶', '🔥'];
-const GOAL_HINTS = { 60: 'Environ 1 niveau par jour', 150: '2 à 3 niveaux par jour', 250: '4 à 5 niveaux par jour' };
+const GOAL_HINTS = { 60: '1 niveau par jour', 150: '2 à 3 niveaux par jour', 250: '4 à 5 niveaux par jour' };
 
 const onboard = { step: 0, level: null };
 const WELCOME_COINS = 100;    // cadeau de bienvenue, donné une seule fois à la fin de l'accueil
@@ -2991,8 +3063,8 @@ function renderOnboard() {
         list.setAttribute('role', 'radiogroup');
         GOAL_CHOICES.forEach((choice, i) => list.append(onboardOption({
             icon: GOAL_ICONS[i],
-            title: `${choice.label} · ${choice.xp} XP / jour`,
-            sub: `${GOAL_HINTS[choice.xp] || ''} · 🎁 ${choice.reward} 🪙`,
+            title: `${choice.label} · ${GOAL_HINTS[choice.xp] || `${choice.xp} XP par jour`}`,
+            sub: `${choice.xp} XP par jour · 🎁 ${choice.reward} 🪙 de récompense`,
             selected: state.data.goal === choice.xp,
             onPick: () => { state.data.goal = choice.xp; saveData(); }
         })));
@@ -3021,7 +3093,7 @@ function renderOnboard() {
         next.textContent = 'Commencer le niveau 1';
     } else {
         title.textContent = 'Un petit test pour te placer ?';
-        text.textContent = `Des questions de plus en plus dures : chaque étape réussie te fait sauter 10 niveaux, jusqu’au niveau ${PLACEMENT_STEPS * CHALLENGE_EVERY + 1}.`;
+        text.textContent = 'Réponds à quelques questions de plus en plus difficiles : tu commenceras directement à ton niveau, sans passer par les questions trop faciles pour toi.';
         body.append(big('🧭'), title, text, welcomeGiftBox());
         next.textContent = 'Faire le test de placement';
         skip.textContent = 'Non merci, je commence au niveau 1';
@@ -3412,6 +3484,10 @@ function bindEvents() {
         await cloudPush();
         showToast('📱 Progression de cet appareil gardée et sauvegardée en ligne.');
     });
+
+    $('tourNext').addEventListener('click', () => { tourStep++; showTourStep(); });
+    $('tourSkip').addEventListener('click', endTour);
+    window.addEventListener('resize', () => { if (!$('tour').hidden) placeTour(); });
 
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {

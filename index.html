@@ -416,6 +416,19 @@
         </div>
     </div>
 
+    <!-- TUTORIEL : l'écran s'assombrit, un élément est mis en lumière, une bulle explique -->
+    <div id="tour" class="tour" hidden>
+        <div class="tour-hole" id="tourHole"></div>
+        <div class="tour-bubble" id="tourBubble" role="dialog" aria-live="polite">
+            <p class="tour-text" id="tourText"></p>
+            <div class="tour-foot">
+                <span class="tour-dots" id="tourDots"></span>
+                <button type="button" id="tourSkip" class="tour-skip">Passer</button>
+                <button type="button" id="tourNext" class="btn btn-green tour-next">Suivant</button>
+            </div>
+        </div>
+    </div>
+
     <!-- NOTIFICATIONS (nouveaux badges…) -->
     <div class="toasts" id="toasts" aria-live="polite"></div>
 
