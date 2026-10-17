@@ -32,7 +32,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Les mots génériques de tête (`GENERIC_WORDS` : musée, lac, traité, bataille…) peuvent être omis :
   « Orsay » vaut « le musée d'Orsay », sauf si la forme courte est déjà écrite dans la question.
   Inutile donc d'ajouter ces formes courtes dans `a` ; ajouter plutôt les noms de famille seuls, surnoms, etc.
-- Révisions : questions ratées des niveaux PRÉCÉDENTS reviennent en priorité (tirage pondéré, 3 à 8 par leçon), complétées par des
+- Révisions : questions ratées des niveaux PRÉCÉDENTS reviennent en priorité (tirage pondéré, 3 à 5 par leçon depuis le 2026-10-17 : 12 questions max), complétées par des
   questions DÉJÀ VUES et « dues » (jamais des questions jamais vues : sinon absurde après un placement),
   répétition espacée (`REVIEW_DAYS`) : une question bien connue revient de plus en plus rarement.
 - 150 niveaux (depuis le 2026-10-16), un Défi tous les 10 niveaux (pioche dans les 9 niveaux précédents, 10 questions, 2 cœurs).

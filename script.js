@@ -12,7 +12,7 @@ const CHALLENGE_EVERY = 10;      // un niveau défi tous les 10 niveaux
 const CHALLENGE_SIZE = 10;       // nombre de questions d'un niveau défi
 const CHALLENGE_HEARTS = 2;      // cœurs pendant un niveau défi
 const REVIEW_MIN = 3;            // cartes de révision ajoutées à chaque niveau (minimum)
-const REVIEW_MAX = 8;            // maximum : +1 place par tranche de 3 questions ratées
+const REVIEW_MAX = 5;            // maximum : +1 place par tranche de 3 questions ratées (12 questions au plus par niveau)
 const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs »
 const STORAGE_KEY = 'cultureG_v2';
 
@@ -1872,7 +1872,7 @@ function weightedPick(items, weightOf, k) {
 
 /**
  * Révisions d'un niveau normal.
- * - Le nombre de places grandit avec le nombre de questions ratées (3 à 8).
+ * - Le nombre de places grandit avec le nombre de questions ratées (3 à 5).
  * - On pioche dans les erreurs des niveaux PRÉCÉDENTS seulement (une révision porte sur ce qui vient avant ;
  *   toutes les erreurs restent dans le bouton « ↻ à revoir »).
  * - Tirage pondéré : plus une question est ratée, plus elle a de chances de sortir,
