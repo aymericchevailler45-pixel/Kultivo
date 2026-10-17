@@ -1081,7 +1081,9 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
         cursor: pointer;
     }
     .profile-tab.is-active { background: var(--surface); border-color: var(--line); color: var(--ink); }
+    .profile-tab { padding: 8px 2px; font-size: 0.82rem; white-space: nowrap; }
     #profileGrid > [data-section] { display: none; }
+    #profileGrid[data-tab="cards"]   > [data-section="cards"],
     #profileGrid[data-tab="badges"]  > [data-section="badges"],
     #profileGrid[data-tab="records"] > [data-section="records"],
     #profileGrid[data-tab="themes"]  > [data-section="themes"] { display: flex; }
@@ -1745,3 +1747,159 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .hint-title span { color: var(--gold-deep); }
 .hint-options { display: flex; flex-direction: column; gap: 8px; }
 .hint-options .btn { text-align: left; font-size: 1rem; }
+/* ============================================================
+   Coffres du parcours et collection de cartes
+   ============================================================ */
+:root {
+    --r-common: #9aa6bd;
+    --r-rare: #1899d6;
+    --r-epic: #8b5cf6;
+    --r-legendary: #ffb300;
+}
+
+/* Coffre sur le parcours (entre deux niveaux) */
+.chest-stop { gap: 0; }
+.chest-node {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--locked);
+    box-shadow: 0 5px 0 var(--locked-deep);
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+.chest-node.is-locked { filter: grayscale(1); opacity: 0.6; }
+.chest-node.is-ready {
+    background: var(--gold);
+    box-shadow: 0 5px 0 var(--gold-deep), 0 0 0 6px rgba(255, 200, 0, 0.25);
+    animation: chestWiggle 2.2s ease-in-out infinite;
+}
+.chest-node.is-open { opacity: 0.55; filter: grayscale(0.6); }
+.chest-node.is-open::after {
+    content: '✓';
+    position: absolute;
+    right: -6px;
+    bottom: -6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--on-green);
+    font-size: 0.85rem;
+    font-weight: 900;
+    line-height: 24px;
+}
+.chest-node:active { transform: translateY(5px); box-shadow: none; }
+@keyframes chestWiggle {
+    0%, 70%, 100% { transform: rotate(0); }
+    76% { transform: rotate(-9deg); }
+    82% { transform: rotate(8deg); }
+    88% { transform: rotate(-5deg); }
+    94% { transform: rotate(3deg); }
+}
+
+/* Fenêtre du coffre */
+.chest-sheet { text-align: center; }
+.chest-stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 280px;
+    margin: 6px 0 10px;
+}
+.chest-gift {
+    border: 0;
+    background: none;
+    font-size: 7rem;
+    line-height: 1;
+    cursor: pointer;
+    animation: chestWiggle 1.4s ease-in-out infinite;
+}
+.modal-content p.chest-note { min-height: 1.4em; margin: 0 0 14px; color: var(--ink); font-weight: 800; }
+
+/* Carte à collectionner */
+.kcard {
+    --r: var(--r-common);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    padding: 6px 4px;
+    border: 3px solid var(--r);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--r);
+    color: var(--ink);
+    text-align: center;
+}
+.kcard.rarity-rare      { --r: var(--r-rare); }
+.kcard.rarity-epic      { --r: var(--r-epic); }
+.kcard.rarity-legendary { --r: var(--r-legendary); background: linear-gradient(160deg, rgba(255, 200, 0, 0.18), var(--surface) 60%); }
+.kcard-art .emoji-img { width: 2.2rem; height: 2.2rem; }
+.kcard-name { font-size: 0.72rem; font-weight: 800; line-height: 1.15; }
+.kcard.is-missing {
+    border-style: dashed;
+    background: var(--bg);
+    box-shadow: none;
+    opacity: 0.55;
+    color: var(--muted);
+    font-size: 1.6rem;
+    font-weight: 900;
+}
+
+.kcard.is-big {
+    width: 220px;
+    aspect-ratio: auto;
+    min-height: 280px;
+    padding: 18px 16px;
+    gap: 8px;
+    border-width: 4px;
+    box-shadow: 0 6px 0 var(--r), 0 0 28px color-mix(in srgb, var(--r) 45%, transparent);
+    animation: cardReveal 0.45s ease-out;
+}
+.kcard.is-big .kcard-art .emoji-img { width: 5.5rem; height: 5.5rem; }
+.kcard.is-big .kcard-name { font-size: 1.2rem; font-weight: 900; }
+.kcard-meta { color: var(--r); font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+.kcard.rarity-common .kcard-meta { color: var(--muted); }
+.kcard.rarity-legendary .kcard-meta { color: var(--gold-deep); }
+.modal-content p.kcard-text { margin: 0; color: var(--ink); font-size: 0.92rem; font-weight: 700; }
+@keyframes cardReveal {
+    from { transform: rotateY(90deg) scale(0.8); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .chest-node.is-ready, .chest-gift, .kcard.is-big { animation: none; }
+}
+
+/* Collection (profil) */
+.card-collection-list { display: flex; flex-direction: column; gap: 6px; }
+.card-theme-head { margin-top: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 800; }
+.card-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.kcard-btn { position: relative; padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
+.kcard-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--surface);
+    font-size: 0.7rem;
+    font-weight: 900;
+}
+/* Téléphone : une ligne de 7 petites cartes par thème (image seule ; on touche pour voir le nom et l'anecdote) */
+@media (max-width: 600px) {
+    .card-row { gap: 5px; }
+    .kcard:not(.is-big) { padding: 2px; border-width: 2px; border-radius: 9px; box-shadow: 0 2px 0 var(--r); }
+    .kcard:not(.is-big) .kcard-name { display: none; }
+    .kcard-art .emoji-img { width: 1.7rem; height: 1.7rem; }
+    .kcard.is-missing { font-size: 1.1rem; }
+    .kcard-count { top: -5px; right: -4px; padding: 0 4px; font-size: 0.62rem; }
+}

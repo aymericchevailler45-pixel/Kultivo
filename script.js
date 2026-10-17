@@ -88,6 +88,10 @@ const isOrder = n => n % CHALLENGE_EVERY === ORDER_AT;
 /** 4 cartes au début du parcours, 5 au milieu, 6 à la fin. */
 const orderSize = level => level < 40 ? 4 : level < 85 ? 5 : 6;
 
+// Coffres du parcours : un coffre après chaque niveau multiple de 5 (2 cartes ; 3 après un défi)
+const CHEST_EVERY = 5;
+const chestSize = n => n % CHALLENGE_EVERY === 0 ? 3 : 2;
+
 // Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
 // Limité à 6 étapes (départ au niveau 61 au mieux, sur 150) pour garder du jeu à faire.
 const PLACEMENT_MAX_STEPS = 6;
@@ -307,6 +311,8 @@ function defaultData() {
         placementOffered: false,         // popup de bienvenue déjà montrée
         pairStats: {},                   // niveaux Paires : « famille:élément » -> { miss, streak, last }
         orderStats: {},                  // niveaux Ordre : « famille:carte » -> { miss, streak, last }
+        cards: {},                       // collection : id de carte (cards.js) -> nombre d'exemplaires
+        chests: {},                      // coffres du parcours ouverts : n° du niveau -> date
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -323,7 +329,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -965,6 +971,12 @@ function updateNavNotifications() {
     const challengesBtn = document.querySelector('.nav-btn[data-screen="challenges"]');
     if (unclaimedGoals > 0) challengesBtn.setAttribute('data-notif', unclaimedGoals);
     else challengesBtn.removeAttribute('data-notif');
+
+    // 3. Coffres à ouvrir sur le parcours
+    const chests = readyChests().length;
+    const mapBtn = document.querySelector('.nav-btn[data-screen="map"]');
+    if (chests > 0) mapBtn.setAttribute('data-notif', chests);
+    else mapBtn.removeAttribute('data-notif');
 }
 
 
@@ -1034,10 +1046,183 @@ function renderMap() {
         list.append(li);
 
         if (!locked && (!done || n === state.data.unlocked)) focusNode = btn;
+        if (n % CHEST_EVERY === 0) list.append(chestStop(n));
     }
 
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
     setTimeout(updateToCurrentBtn, 50);
+}
+
+/* ---------- Coffres et collection de cartes ---------- */
+
+const chestReady = n => !!state.data.done[n] && !state.data.chests[n];
+const readyChests = () => {
+    const list = [];
+    for (let n = CHEST_EVERY; n <= MAX_LEVEL; n += CHEST_EVERY) if (chestReady(n)) list.push(n);
+    return list;
+};
+
+/** Coffre posé sur le parcours, juste au-dessus du niveau n : gris (à gagner), doré (à ouvrir) ou ouvert. */
+function chestStop(n) {
+    const ready = chestReady(n);
+    const opened = !!state.data.chests[n];
+    const li = el('li', 'stop chest-stop');
+    li.style.setProperty('--x', `${Math.round(Math.sin((n + 0.5) * 1.3) * 52)}px`);
+    const btn = el('button', `chest-node ${ready ? 'is-ready' : opened ? 'is-open' : 'is-locked'}`);
+    btn.type = 'button';
+    btn.textContent = '🎁';
+    btn.setAttribute('aria-label', ready ? `Coffre à ouvrir (${chestSize(n)} cartes)`
+        : opened ? 'Coffre déjà ouvert' : `Coffre : termine le niveau ${n} pour l’ouvrir`);
+    btn.addEventListener('click', () => {
+        if (chestReady(n)) openChest(n);
+        else showToast(state.data.chests[n] ? '🎁 Coffre déjà ouvert. Tes cartes sont dans le Profil.'
+            : `🎁 Termine le niveau ${n} pour ouvrir ce coffre.`);
+    });
+    li.append(btn);
+    return li;
+}
+
+/** Tire une carte : rareté au hasard (pondérée), puis de préférence une carte pas encore possédée. */
+function drawCard(minRarity, exclude) {
+    const order = Object.keys(CARD_RARITIES);
+    const allowed = order.slice(order.indexOf(minRarity || 'common'));
+    const rarity = weightedPick(allowed, r => CARD_RARITIES[r].weight, 1)[0];
+    const pool = CARDS.filter(c => c.rarity === rarity && !exclude.includes(c));
+    const missing = pool.filter(c => !state.data.cards[c.id]);
+    const from = missing.length && Math.random() < 0.8 ? missing : pool;
+    return from[Math.floor(Math.random() * from.length)];
+}
+
+/** Ouvre le coffre du niveau n : les cartes sont gagnées (et enregistrées) tout de suite, puis montrées une à une. */
+function openChest(n) {
+    const data = state.data;
+    const size = chestSize(n);
+    const picked = [];
+    for (let i = 0; i < size; i++) {
+        // Gros coffre (après un défi) : au moins une carte rare ou mieux
+        const needRare = size >= 3 && i === size - 1 && picked.every(c => c.rarity === 'common');
+        picked.push(drawCard(needRare ? 'rare' : null, picked));
+    }
+    const results = picked.map(card => {
+        const isNew = !data.cards[card.id];
+        data.cards[card.id] = (data.cards[card.id] || 0) + 1;
+        const coins = isNew ? 0 : CARD_RARITIES[card.rarity].dupCoins;
+        data.coins += coins;
+        return { card, isNew, coins };
+    });
+    data.chests[n] = Date.now();
+    saveData();
+
+    state.chest = { results, step: -1, n };
+    $('chestTitle').textContent = n % CHALLENGE_EVERY === 0 ? '🎁 Gros coffre !' : '🎁 Coffre';
+    const stage = $('chestStage');
+    stage.replaceChildren();
+    const gift = el('button', 'chest-gift');
+    gift.type = 'button';
+    gift.textContent = '🎁';
+    gift.setAttribute('aria-label', 'Ouvrir le coffre');
+    gift.addEventListener('click', chestNext);
+    stage.append(gift);
+    $('chestNote').textContent = `${plural(size, 'carte', 'cartes')} à l’intérieur. Touche le coffre !`;
+    $('chestBtn').textContent = 'Ouvrir';
+    $('chestModal').hidden = false;
+}
+
+/** Bouton du coffre : ouvre, puis montre la carte suivante, puis ferme. */
+function chestNext() {
+    const chest = state.chest;
+    if (!chest) { closeChest(); return; }
+    chest.step++;
+    if (chest.step >= chest.results.length) { closeChest(); return; }
+    if (chest.step === 0) { playSound('win'); launchConfetti(); }
+    const { card, isNew, coins } = chest.results[chest.step];
+    if (chest.step > 0) playSound(card.rarity === 'epic' || card.rarity === 'legendary' ? 'win' : 'pair');
+    $('chestTitle').textContent = `Carte ${chest.step + 1} / ${chest.results.length}`;
+    $('chestStage').replaceChildren(cardFace(card, true));
+    $('chestNote').textContent = isNew ? '✨ Nouvelle carte !' : `Déjà dans ta collection : +${coins} 🪙`;
+    $('chestBtn').textContent = chest.step < chest.results.length - 1 ? 'Carte suivante' : 'Super !';
+}
+
+function closeChest() {
+    const wasChest = !!state.chest;
+    state.chest = null;
+    $('chestModal').hidden = true;
+    if (wasChest) {
+        renderHeader();
+        if (!$('mapScreen').hidden) renderMap();
+    }
+}
+
+/** Une carte : cadre de la couleur de sa rareté, image, nom (et, en grand, thème et anecdote). */
+function cardFace(card, big = false) {
+    const box = el('div', `kcard rarity-${card.rarity}${big ? ' is-big' : ''}`);
+    const art = el('div', 'kcard-art');
+    art.append(emojiImg(card.icon));
+    const name = el('div', 'kcard-name');
+    name.textContent = card.name;
+    box.append(art, name);
+    if (big) {
+        const meta = el('div', 'kcard-meta');
+        meta.textContent = `${CARD_RARITIES[card.rarity].name} · ${card.theme}`;
+        const text = el('p', 'kcard-text');
+        text.textContent = card.text;
+        box.append(meta, text);
+    }
+    return box;
+}
+
+/** Carte de la collection en grand (même fenêtre que le coffre). */
+function openCardView(card) {
+    state.chest = null;
+    $('chestTitle').textContent = `🃏 ${card.theme}`;
+    $('chestStage').replaceChildren(cardFace(card, true));
+    const count = state.data.cards[card.id] || 0;
+    $('chestNote').textContent = count > 1 ? `Tu l’as en ${count} exemplaires.` : '';
+    $('chestBtn').textContent = 'Fermer';
+    $('chestModal').hidden = false;
+}
+
+/** Profil : la collection, rangée par thème (cartes manquantes en gris). */
+function renderCollection() {
+    const owned = CARDS.filter(c => state.data.cards[c.id]).length;
+    $('cardCount').textContent = `${owned} / ${CARDS.length}`;
+    const grid = $('cardGrid');
+    grid.replaceChildren();
+    if (owned === 0) {
+        const hint = el('p', 'muted');
+        hint.textContent = 'Ouvre les coffres 🎁 du parcours pour gagner tes premières cartes.';
+        grid.append(hint);
+    }
+    const themes = [...new Set(CARDS.map(c => c.theme))];
+    for (const theme of themes) {
+        const cards = CARDS.filter(c => c.theme === theme);
+        const head = el('div', 'card-theme-head');
+        const n = cards.filter(c => state.data.cards[c.id]).length;
+        head.textContent = `${theme} · ${n}/${cards.length}`;
+        const row = el('div', 'card-row');
+        for (const card of cards) {
+            const count = state.data.cards[card.id] || 0;
+            if (count) {
+                const btn = el('button', 'kcard-btn');
+                btn.type = 'button';
+                btn.append(cardFace(card));
+                if (count > 1) {
+                    const badge = el('span', 'kcard-count');
+                    badge.textContent = `×${count}`;
+                    btn.append(badge);
+                }
+                btn.setAttribute('aria-label', `${card.name}, ${CARD_RARITIES[card.rarity].name}`);
+                btn.addEventListener('click', () => openCardView(card));
+                row.append(btn);
+            } else {
+                const box = el('div', `kcard is-missing rarity-${card.rarity}`);
+                box.textContent = '?';
+                box.title = `Carte ${CARD_RARITIES[card.rarity].name.toLowerCase()} pas encore trouvée`;
+                row.append(box);
+            }
+        }
+        grid.append(head, row);
+    }
 }
 
 function renderChallenges() {
@@ -1216,6 +1401,8 @@ function renderProfile() {
         row.append(head, meter, sub);
         bars.append(row);
     });
+
+    renderCollection();
 
     // Badges
     const grid = $('badgeGrid');
@@ -3479,6 +3666,12 @@ function bindEvents() {
     });
     setProfileTab('badges');
 
+    $('chestBtn').addEventListener('click', chestNext);
+    $('closeChestBtn').addEventListener('click', () => {
+        // Coffre fermé avant la fin : les cartes sont déjà gagnées, on met juste l'affichage à jour
+        closeChest();
+    });
+
     $('soundBtn').addEventListener('click', toggleSound);
     $('lessonSoundBtn').addEventListener('click', toggleSound);
     renderSoundBtn();
@@ -3491,6 +3684,7 @@ function bindEvents() {
         if (!screen || e.touches.length !== 1) return;
         if (!$('startModal').hidden || !$('quitModal').hidden || !$('streakModal').hidden) return;
         if (!$('authModal').hidden || !$('cloudConflictModal').hidden || !$('accountModal').hidden) return;
+        if (!$('chestModal').hidden) return;
         if (e.target.closest('input, textarea')) return;
         const t = e.touches[0];
         if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone

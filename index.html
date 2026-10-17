@@ -152,6 +152,7 @@
                 <!-- Sur téléphone : un onglet à la fois, pour éviter de faire défiler toute la page -->
                 <div class="profile-tabs" role="tablist" aria-label="Sections du profil">
                     <button type="button" class="profile-tab" data-tab="badges" role="tab">🎖️ Badges</button>
+                    <button type="button" class="profile-tab" data-tab="cards" role="tab">🃏 Cartes</button>
                     <button type="button" class="profile-tab" data-tab="records" role="tab">🏅 Records</button>
                     <button type="button" class="profile-tab" data-tab="themes" role="tab">📊 Thèmes</button>
                 </div>
@@ -164,6 +165,11 @@
                 <article class="card card-themes" data-section="themes">
                     <h2>📊 Réussite par thème</h2>
                     <div id="themeBars"></div>
+                </article>
+
+                <article class="card wide card-collection" data-section="cards">
+                    <h2>🃏 Collection <span class="muted" id="cardCount"></span></h2>
+                    <div class="card-collection-list" id="cardGrid"></div>
                 </article>
 
                 <article class="card wide card-badges" data-section="badges">
@@ -326,6 +332,17 @@
         </div>
     </div>
 
+    <!-- COFFRE DU PARCOURS / CARTE DE LA COLLECTION EN GRAND -->
+    <div id="chestModal" class="modal-overlay" hidden>
+        <div class="modal-content chest-sheet" role="dialog" aria-modal="true" aria-labelledby="chestTitle">
+            <button type="button" id="closeChestBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="chestTitle">🎁 Coffre</h2>
+            <div class="chest-stage" id="chestStage"></div>
+            <p class="chest-note" id="chestNote" aria-live="polite"></p>
+            <button type="button" id="chestBtn" class="btn btn-green btn-full">Ouvrir</button>
+        </div>
+    </div>
+
     <!-- PHOTO EN GRAND (monuments) -->
     <div id="photoZoom" class="photo-zoom" role="dialog" aria-label="Photo en grand" tabindex="-1" hidden>
         <img id="photoZoomImg" alt="Photo du monument en grand">
@@ -444,6 +461,7 @@
     <script src="pairs.js"></script>
     <script src="order.js"></script>
     <script src="facts.js"></script>
+    <script src="cards.js"></script>
     <script src="levels.js"></script>
     <script src="vendor/supabase.min.js"></script>
     <script src="script.js"></script>

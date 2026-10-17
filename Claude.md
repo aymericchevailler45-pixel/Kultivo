@@ -12,6 +12,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - `levels.js` : répartit automatiquement les questions dans les niveaux (voir plus bas).
 - `order.js` : `ORDER_FAMILIES` (16 familles, ~225 cartes, dont « Vitesses » `[texte, valeur de tri, valeur affichée, d]`)
   pour les niveaux Ordre. Jamais deux valeurs identiques dans une famille.
+- `cards.js` : `CARDS` (105 cartes à collectionner, 7 par thème : 3 communes, 2 rares, 1 épique, 1 légendaire)
+  et `CARD_RARITIES` (chances de tirage, pièces pour un doublon). Image = emoji Twemoji (dossier `emoji/`, + `sw.js`).
 - `pairs.js` : `PAIR_FAMILIES` (14 familles, ~285 paires `[gauche, droite, d]`) pour les niveaux Paires.
 - ATTENTION GitHub Pages : Cache-Control max-age=600 (copie de 10 min sur le CDN). Pour vérifier une mise en
   ligne, tester l'URL SANS paramètre (le « ?n= » contourne le CDN et ment). Depuis kultivo-v6, le service worker
@@ -125,6 +127,16 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   6 étapes au plus (`PLACEMENT_MAX_STEPS`, départ au niveau 61 max sur 150 ; à réajuster si le parcours grandit), 2 bonnes sur 3 pour passer, arrêt à la 1re étape ratée.
   Valide les niveaux sautés (`done`), enregistre `placement: { day, start }`. Pas d'XP, pas de stats,
   et les niveaux sautés ne comptent pas pour les badges.
+
+- Coffres et collection (2026-10-17, idée de l'utilisateur) : un coffre 🎁 sur le parcours après chaque niveau
+  multiple de 5 (`CHEST_EVERY`, `chestStop`) : gris tant que le niveau n'est pas fini, doré quand il est à ouvrir,
+  coché une fois ouvert (`chests` : n° -> date). 2 cartes, 3 après un défi (dont au moins une rare ou mieux).
+  Les cartes sont gagnées dès l'ouverture (`openChest`, sauvegardé), puis montrées une à une (`chestNext`).
+  Tirage : rareté pondérée, puis 80 % de chances de prendre une carte pas encore possédée ; doublon = pièces.
+  Collection (`cards` : id -> nombre) dans le Profil, onglet « 🃏 Cartes » (`renderCollection`) : sur téléphone,
+  une ligne de 7 petites cartes par thème (image seule), tap = carte en grand. Pastille sur l'onglet Parcours =
+  coffres à ouvrir. Les niveaux déjà faits (et ceux validés par le placement) donnent leurs coffres.
+  À venir : coffres en récompense du classement entre amis (podium de la semaine).
 
 ## levels.js (important)
 - Lit `QUESTIONS`, écrase `q.niveau` et `LEVEL_NAMES`. Le champ `niveau` du fichier questions n'est qu'un secours.
