@@ -239,6 +239,18 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Une question « dure » doit demander un détail précis, pas le personnage célèbre.
 - Tester dans le navigateur reste à faire côté utilisateur (la répartition a été vérifiée par simulation).
 
+## Prochaines étapes (proposées le 2026-10-17)
+1. Entraînement par thème (questions déjà débloquées d'un thème au choix).
+2. Cartes dorées : 3 exemplaires d'une carte → version dorée brillante (le nombre est déjà dans `cards`).
+3. Revoir les indices (demande de l'utilisateur) : ils portent aujourd'hui sur la réponse complète
+   (« Albert Einstein » → « A »). Les baser sur le mot qui compte : la variante courte déjà acceptée dans `a`
+   (« Einstein » → « E », « Ein… », « 8 lettres »), sinon le dernier mot pour une personne. Vérifier dates,
+   nombres et noms en plusieurs mots (« Tour Eiffel », « New York »). Code : `answerCore`, `hintText`.
+4. Plus de questions (bloc de 100 + 10 niveaux) ou nouveau thème.
+5. Bouton « Revoir le tutoriel » dans le Profil.
+6. Mode « Qui suis-je ? » (indices dévoilés un par un).
+7. Ligues façon Duolingo (quand il y aura assez de joueurs), connexion Google, Play Store (PWABuilder).
+
 ## Idées pour la suite (par ordre conseillé)
 1. Notes `d` des anciennes questions relues le 2026-10-16 (82 corrigées, 5 reformulées : 144, 156, 713, 1215, 1304).
    À refaire seulement si l'utilisateur trouve un niveau mal dosé en jouant.
