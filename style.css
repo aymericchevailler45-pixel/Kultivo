@@ -2414,3 +2414,5 @@ button.podium-col { padding: 0; border: 0; background: none; color: inherit; fon
     .xp-row .card-big { font-size: 1.6rem; }
     .title-chip { padding: 5px 10px; font-size: 0.85rem; }
 }
+/* Titre : toujours entier (passe sur 2 lignes dans la pastille plutôt que d'être coupé) */
+.title-chip { overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.2; text-align: left; border-radius: 14px; }

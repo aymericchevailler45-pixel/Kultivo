@@ -3122,9 +3122,10 @@ async function cloudPush() {
     if (!c || !cloudUser || !navigator.onLine) return;
     const updatedAt = new Date().toISOString();
     try {
-        const { error } = await c.from('saves').upsert({
-            user_id: cloudUser.id, data: state.data, xp: state.data.xp, updated_at: updatedAt
-        });
+        const base = { user_id: cloudUser.id, data: state.data, xp: state.data.xp, updated_at: updatedAt };
+        // coins / niveau : colonnes de supabase/table-joueurs.sql, pour lire (et changer les pièces) dans la table
+        let { error } = await c.from('saves').upsert({ ...base, coins: state.data.coins, niveau: state.data.unlocked });
+        if (error) ({ error } = await c.from('saves').upsert(base));
         if (!error) {
             setCloudMeta({ dirty: false, updatedAt });
             renderCloudCard();
@@ -3526,11 +3527,11 @@ async function claimGifts() {
         for (const gift of data) {
             const { data: gone, error: delError } = await c.from('gifts').delete().eq('id', gift.id).select('id');
             if (delError || !gone?.length) continue;   // déjà récupéré (autre appareil)
-            state.data.coins += gift.coins;
+            state.data.coins = Math.max(0, state.data.coins + gift.coins);
             saveData();
             renderHeader();
             if (!$('shopScreen').hidden) renderShop();
-            showToast(`🎁 +${gift.coins} 🪙${gift.note ? ` : ${gift.note}` : ' offertes !'}`);
+            showToast(gift.coins > 0 ? `🎁 +${gift.coins} 🪙 offertes !` : `🪙 ${gift.coins} pièces (ajustement)`);
         }
     } catch (err) {
         /* hors ligne, ou table pas encore créée */

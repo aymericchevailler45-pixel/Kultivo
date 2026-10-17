@@ -178,10 +178,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `scores.summary` (jsonb, `supabase/profil-ami.sql`), résumé envoyé avec le score (`profileSummary`) — la
   sauvegarde complète reste privée. « Retirer de mes amis » est dans ce profil (plus de ✕ dans la liste,
   sauf pour annuler une demande). Liste d'amis : lignes avec avatar, pseudo, titre et série, flèche ›.
-- Donner des pièces (2026-10-17) : NE PLUS modifier `saves.data` à la main (le jeu ouvert réécrit par-dessus).
-  Boîte à cadeaux `gifts` (`supabase/cadeaux.sql`) : insert into gifts (user_id, coins) values (…) ;
-  `claimGifts` (au lancement et à chaque rechargement du classement, ~1 min) efface la ligne puis ajoute les pièces.
-  Id du compte de l'utilisateur : bef7f100-48e2-4713-a11a-5bad72725390.
+- Donner / retirer des pièces (2026-10-17) : l'utilisateur modifie DIRECTEMENT la case `coins` dans Table Editor →
+  saves (`supabase/table-joueurs.sql`). Déclencheur `saves_fill` : si seule la case coins change, la différence
+  part dans la table `gifts` ; `claimGifts` (lancement + ~1 min) efface la ligne puis ajoute/retire les pièces
+  (jamais sous 0). Sinon le déclencheur recopie coins / niveau (= `unlocked`) / pseudo depuis le jeu.
+  NE PAS modifier `saves.data` à la main (le jeu ouvert réécrit par-dessus). Id du compte de l'utilisateur :
+  bef7f100-48e2-4713-a11a-5bad72725390. D'autres joueurs existent déjà dans la table (6 lignes le 2026-10-17).
 - Profil : pseudo à côté de l'avatar (`profileName`, « Mon profil » sans pseudo), titre en pastille à côté de
   l'XP (`profileTitle`) → liste de tous les titres (`titlesModal`, `openTitlesModal` : atteints ✓, actuel, 🔒).
 - Profil (téléphone) : toucher Badges / Cartes / Records / Thèmes fait défiler pour mettre les onglets en haut.
