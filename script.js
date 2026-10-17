@@ -88,9 +88,11 @@ const isOrder = n => n % CHALLENGE_EVERY === ORDER_AT;
 /** 4 cartes au début du parcours, 5 au milieu, 6 à la fin. */
 const orderSize = level => level < 40 ? 4 : level < 85 ? 5 : 6;
 
-// Coffres du parcours : un coffre après chaque niveau multiple de 5 (2 cartes ; 3 après un défi)
+// Coffres du parcours : un coffre après chaque niveau multiple de 5 (3 cartes ; 4 après un défi, dont une rare ou mieux)
 const CHEST_EVERY = 5;
-const chestSize = n => n % CHALLENGE_EVERY === 0 ? 3 : 2;
+const chestSize = n => n % CHALLENGE_EVERY === 0 ? 4 : 3;
+const SHOP_CHEST = { price: 150, size: 3 };   // coffre de la boutique : 3 cartes, dont une rare ou mieux
+const GOAL_CARDS = 1;                          // carte offerte avec la récompense de l'objectif du jour
 
 // Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
 // Limité à 6 étapes (départ au niveau 61 au mieux, sur 150) pour garder du jeu à faire.
@@ -1096,14 +1098,22 @@ function drawCard(minRarity, exclude) {
 /** Ouvre les coffres des niveaux donnés : les cartes sont gagnées (et enregistrées) tout de suite.
     Un seul coffre : cartes montrées une à une. Plusieurs : toutes les cartes d'un coup, en grille. */
 function openChests(levels) {
+    for (const n of levels) state.data.chests[n] = Date.now();
+    const boxes = levels.map(n => ({ size: chestSize(n), rare: n % CHALLENGE_EVERY === 0 }));
+    const title = levels.length > 1 ? `🎁 ${levels.length} coffres !`
+        : levels[0] % CHALLENGE_EVERY === 0 ? '🎁 Gros coffre !' : '🎁 Coffre';
+    openCardBoxes(boxes, title);
+}
+
+/** Tire les cartes de chaque coffre ({ size, rare : au moins une rare ou mieux }), les ajoute à la collection
+    (doublon = pièces), enregistre, puis ouvre la fenêtre du coffre. */
+function openCardBoxes(boxes, title) {
     const data = state.data;
     const results = [];
-    for (const n of levels) {
-        const size = chestSize(n);
+    for (const { size, rare } of boxes) {
         const picked = [];
         for (let i = 0; i < size; i++) {
-            // Gros coffre (après un défi) : au moins une carte rare ou mieux
-            const needRare = size >= 3 && i === size - 1 && picked.every(c => c.rarity === 'common');
+            const needRare = rare && i === size - 1 && picked.every(c => c.rarity === 'common');
             picked.push(drawCard(needRare ? 'rare' : null, picked));
         }
         for (const card of picked) {
@@ -1113,14 +1123,12 @@ function openChests(levels) {
             data.coins += coins;
             results.push({ card, isNew, coins });
         }
-        data.chests[n] = Date.now();
     }
     saveData();
 
-    const many = levels.length > 1;
+    const many = boxes.length > 1;
     state.chest = { results, step: -1, many };
-    $('chestTitle').textContent = many ? `🎁 ${levels.length} coffres !`
-        : levels[0] % CHALLENGE_EVERY === 0 ? '🎁 Gros coffre !' : '🎁 Coffre';
+    $('chestTitle').textContent = title;
     const stage = $('chestStage');
     stage.replaceChildren();
     const gift = el('button', 'chest-gift');
@@ -1183,6 +1191,8 @@ function closeChest() {
             renderMap();
             window.scrollTo(0, y);
         }
+        if (!$('shopScreen').hidden) renderShop();
+        if (!$('challengesScreen').hidden) renderChallenges();
     }
 }
 
@@ -1290,7 +1300,8 @@ function renderChallenges() {
             saveData();
             renderHeader();
             renderChallenges(); // Met à jour l'écran pour cacher le bouton
-            showToast(`🎁 +${reward} 🪙 pour ton objectif du jour !`);
+            // + une carte à collectionner (même fenêtre que les coffres)
+            openCardBoxes([{ size: GOAL_CARDS }], `🎯 +${reward} 🪙 et une carte !`);
         });
         
         hintBox.append(claimBtn);
@@ -1622,6 +1633,33 @@ function renderShop() {
         card.append(icon, name, desc, stock, actions);
         grid.append(card);
     });
+
+    // Coffre de cartes : ouvert tout de suite à l'achat
+    const owned = CARDS.filter(c => data.cards[c.id]).length;
+    const chest = el('article', 'card shop-card shop-half');
+    const icon = el('div', 'shop-icon');
+    icon.textContent = '🎁';
+    const name = el('h2');
+    name.textContent = 'Coffre de cartes';
+    const desc = el('p');
+    desc.textContent = `${SHOP_CHEST.size} cartes à collectionner, dont au moins une rare.`;
+    const stock = el('p', 'muted');
+    stock.textContent = `Ta collection : ${owned} / ${CARDS.length}`;
+    const actions = el('div', 'card-actions');
+    const btn = el('button', 'btn btn-green');
+    btn.type = 'button';
+    btn.textContent = `Ouvrir · ${SHOP_CHEST.price} 🪙`;
+    btn.disabled = data.coins < SHOP_CHEST.price;
+    btn.addEventListener('click', () => {
+        if (state.data.coins < SHOP_CHEST.price) return;
+        state.data.coins -= SHOP_CHEST.price;
+        openCardBoxes([{ size: SHOP_CHEST.size, rare: true }], '🎁 Coffre de cartes');
+        renderHeader();
+        renderShop();
+    });
+    actions.append(btn);
+    chest.append(icon, name, desc, stock, actions);
+    grid.append(chest);
 }
 
 function buyItem(id, qty) {

@@ -130,7 +130,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 
 - Coffres et collection (2026-10-17, idée de l'utilisateur) : un coffre 🎁 sur le parcours après chaque niveau
   multiple de 5 (`CHEST_EVERY`, `chestStop`) : gris tant que le niveau n'est pas fini, doré quand il est à ouvrir,
-  coché une fois ouvert (`chests` : n° -> date). 2 cartes, 3 après un défi (dont au moins une rare ou mieux).
+  coché une fois ouvert (`chests` : n° -> date). 3 cartes, 4 après un défi (dont au moins une rare ou mieux)
+  → 105 cartes tirées sur le parcours. Autres sources : boutique (`SHOP_CHEST`, 150 🪙, 3 cartes dont une rare,
+  ouvert à l'achat) et objectif du jour (pièces + 1 carte, `GOAL_CARDS`). Tout passe par `openCardBoxes`.
   Les cartes sont gagnées dès l'ouverture (`openChests`, sauvegardé), puis montrées une à une (`chestNext`).
   Un tap sur un coffre ouvre TOUS les coffres en attente (demande de l'utilisateur, placé au niveau 41) : cartes
   en grille (`showChestSummary`). Après ouverture, le parcours reste où il était (pas de retour au niveau en cours).
