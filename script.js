@@ -3116,12 +3116,25 @@ function cloudChanged() {
     cloudPushTimer = setTimeout(cloudPush, 5000);
 }
 
-async function cloudPush() {
+/** Envoie la progression. Protection : l'XP ne baisse jamais en jouant ; si la sauvegarde en ligne a PLUS d'XP
+    que l'appareil (ex. : données effacées, autre appareil), on ne l'écrase pas — on la récupère si l'appareil
+    est vide, sinon on demande laquelle garder. `force` : choix explicite « Celle de cet appareil ». */
+async function cloudPush(force = false) {
     const c = cloudClient();
     clearTimeout(cloudPushTimer);
     if (!c || !cloudUser || !navigator.onLine) return;
     const updatedAt = new Date().toISOString();
     try {
+        if (!force) {
+            const { data: remote, error: readError } = await c.from('saves')
+                .select('data, xp, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+            if (readError) return;   // on réessaiera plus tard, sans risque d'écraser quoi que ce soit
+            if (remote && (remote.xp || 0) > (state.data.xp || 0)) {
+                if (isEmptyProgress(state.data)) applyRemote(remote);
+                else if ($('cloudConflictModal').hidden) openCloudConflict(remote);
+                return;
+            }
+        }
         const base = { user_id: cloudUser.id, data: state.data, xp: state.data.xp, updated_at: updatedAt };
         // coins / niveau : colonnes de supabase/table-joueurs.sql, pour lire (et changer les pièces) dans la table
         let { error } = await c.from('saves').upsert({ ...base, coins: state.data.coins, niveau: state.data.unlocked });
@@ -4935,7 +4948,7 @@ function bindEvents() {
     $('keepCloudBtn').addEventListener('click', () => { if (pendingRemote) applyRemote(pendingRemote); });
     $('keepDeviceBtn').addEventListener('click', async () => {
         $('cloudConflictModal').hidden = true;
-        await cloudPush();
+        await cloudPush(true);
         showToast('📱 Progression de cet appareil gardée et sauvegardée en ligne.');
     });
 
@@ -4953,7 +4966,10 @@ function bindEvents() {
     });
 
     $('resetBtn').addEventListener('click', async () => {
-        if (!await askConfirm({ title: 'Tout effacer ?', text: 'Tes niveaux, ton XP, ta série et tes statistiques seront perdus.', yes: 'Tout effacer', danger: true })) return;
+        const text = cloudUser
+            ? 'Tu es connecté : ta sauvegarde en ligne n’est pas effacée et reviendra toute seule. Pour repartir de zéro, déconnecte-toi d’abord.'
+            : 'Tes niveaux, ton XP, ta série et tes statistiques seront perdus.';
+        if (!await askConfirm({ title: 'Tout effacer ?', text, yes: 'Tout effacer', danger: true })) return;
         state.data = normalizeData(defaultData());
         saveData();
         renderHeader();

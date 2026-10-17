@@ -193,6 +193,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Profil : pseudo à côté de l'avatar (`profileName`, « Mon profil » sans pseudo), titre en pastille à côté de
   l'XP (`profileTitle`) → liste de tous les titres (`titlesModal`, `openTitlesModal` : atteints ✓, actuel, 🔒).
 - Profil (téléphone) : toucher Badges / Cartes / Records / Thèmes fait défiler pour mettre les onglets en haut.
+- Protection de la sauvegarde (2026-10-17, après une perte chez l'utilisateur : « Tout effacer » fait en étant
+  connecté avait envoyé une progression vide) : `cloudPush` relit d'abord la ligne ; si elle a PLUS d'XP que
+  l'appareil, il n'écrase pas (appareil vide → `applyRemote`, sinon fenêtre « Quelle progression garder ? »).
+  `cloudPush(true)` seulement pour « Celle de cet appareil ». Réponses courtes des monuments ajoutées
+  (Pise, Eiffel, Sydney, Gard, Liberté).
 - Plus de confirm() du navigateur (moche, affiche l'adresse du site) : `askConfirm({ title, text, yes, danger })`
   (fenêtre `askModal`, promesse true/false). Supabase gratuit : pause après 7 jours sans activité (Restore).
 - Pseudo demandé dès l'accueil (étape 4/5, juste après la création du compte ou la connexion ; « Plus tard »
