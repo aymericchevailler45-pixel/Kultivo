@@ -2422,3 +2422,21 @@ button.podium-col { padding: 0; border: 0; background: none; color: inherit; fon
 .title-chip { overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.2; text-align: left; border-radius: 14px; }
 .daily-friends-list li.df-gap { display: block; height: auto; padding: 0; background: none; color: var(--muted); text-align: center; line-height: 0.8; }
 .daily-friends-list li.df-gap::before { content: '⋯'; font-weight: 900; }
+
+/* Mot de passe : bouton « œil » pour afficher / masquer */
+.password-field { position: relative; }
+.password-field .auth-input { width: 100%; padding-right: 52px; }
+.password-eye {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transform: translateY(-50%);
+}

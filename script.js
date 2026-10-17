@@ -3254,13 +3254,15 @@ let authDone = null;   // à appeler après une connexion réussie (ex. : passer
 function openAuthModal(mode) {
     authMode = mode;
     const signup = mode === 'signup';
-    $('authTitle').textContent = signup ? '☁️ Créer un compte' : '☁️ Se connecter';
+    $('authTitle').textContent = signup ? '👤 Créer un compte' : '👤 Se connecter';
     $('authSubmit').textContent = signup ? 'Créer mon compte' : 'Me connecter';
     $('authSubmit').disabled = false;
     $('authSwitch').textContent = signup ? 'J’ai déjà un compte : me connecter' : 'Pas encore de compte : en créer un';
     $('authPassword').autocomplete = signup ? 'new-password' : 'current-password';
     $('authForgot').hidden = signup;
     $('authError').textContent = '';
+    $('authPassword').type = 'password';   // toujours masqué à l'ouverture
+    $('authEye').textContent = '👁️';
     $('authModal').hidden = false;
     $('authEmail').focus();
 }
@@ -4987,6 +4989,16 @@ function bindEvents() {
         else openAuthModal('login');
     });
     $('closeAccountBtn').addEventListener('click', () => { $('accountModal').hidden = true; });
+    // Œil du mot de passe : afficher / masquer ce qu'on tape
+    $('authEye').addEventListener('click', () => {
+        const input = $('authPassword');
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        $('authEye').textContent = show ? '🙈' : '👁️';
+        $('authEye').setAttribute('aria-pressed', String(show));
+        $('authEye').setAttribute('aria-label', show ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+        input.focus();
+    });
     $('cloudLogoutBtn').addEventListener('click', () => { $('accountModal').hidden = true; cloudLogout(); });
     $('closeAuthBtn').addEventListener('click', () => { $('authModal').hidden = true; });
     $('authSwitch').addEventListener('click', () => openAuthModal(authMode === 'signup' ? 'login' : 'signup'));

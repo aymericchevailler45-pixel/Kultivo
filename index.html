@@ -366,10 +366,13 @@
         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="authTitle">
             <button type="button" id="closeAuthBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
             <h2 id="authTitle">☁️ Créer un compte</h2>
-            <p>Ta progression sera sauvegardée en ligne et retrouvée sur tous tes appareils.</p>
+            <p>Ton compte garde ta partie : tu la retrouves sur tous tes appareils.</p>
             <form id="authForm" class="auth-form" novalidate>
                 <input type="email" id="authEmail" class="auth-input" placeholder="Ton e-mail" autocomplete="email" required>
-                <input type="password" id="authPassword" class="auth-input" placeholder="Mot de passe (6 caractères minimum)" autocomplete="new-password" required>
+                <div class="password-field">
+                    <input type="password" id="authPassword" class="auth-input" placeholder="Mot de passe (6 caractères minimum)" autocomplete="new-password" required>
+                    <button type="button" id="authEye" class="password-eye" aria-label="Afficher le mot de passe" aria-pressed="false">👁️</button>
+                </div>
                 <p class="auth-error" id="authError" role="alert"></p>
                 <button type="submit" id="authSubmit" class="btn btn-green btn-full">Créer mon compte</button>
             </form>
