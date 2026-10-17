@@ -307,6 +307,7 @@ function defaultData() {
         selfLevel: null,                 // niveau annoncé à l'accueil : 'beginner', 'average' ou 'expert'
         welcomeGift: false,              // cadeau de bienvenue déjà donné
         tourDone: false,                 // tutoriel de découverte déjà vu
+        tipReview: false,                // explication du bouton « ↻ à revoir » déjà vue
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -920,6 +921,7 @@ function renderHeader() {
     const label = el('span', 'chip-unit');
     label.textContent = ' à revoir';
     btn.replaceChildren(`↻ ${n}`, label);
+    if (n > 0 && !state.data.tipReview) maybeShowReviewTip();   // 1re apparition : petite explication
 
     // NOUVEAU : Met à jour les pastilles rouges à chaque changement d'écran ou gain d'XP
     updateNavNotifications();
@@ -2924,30 +2926,60 @@ const TOUR_STEPS = [
       text: 'Une erreur te coûte un cœur ❤️, et les questions ratées reviennent en révision. C’est parti\u00a0! 🚀' }
 ];
 let tourStep = 0;
+let tourSteps = TOUR_STEPS;     // étapes en cours (le tutoriel, ou une explication ponctuelle)
+let tourFlag = 'tourDone';      // ce qu'on retient dans la sauvegarde une fois fini
+let tourLastLabel = 'C’est parti !';
 
 function startTour() {
     if (!$('mapScreen').hidden && $('tour').hidden && !state.data.tourDone) {
+        tourSteps = TOUR_STEPS;
+        tourFlag = 'tourDone';
+        tourLastLabel = 'C’est parti !';
         tourStep = 0;
         $('tour').hidden = false;
         showTourStep();
     }
 }
 
+/* Explication ponctuelle (une seule fois) : la 1re apparition du bouton « ↻ à revoir » */
+const REVIEW_TIP = [{
+    target: () => $('reviewBtn'),
+    text: '↻ Tes questions ratées t’attendent ici. Révise-les : chaque bonne réponse du premier coup en retire une de la liste.'
+}];
+let reviewTipPending = false;
+
+function maybeShowReviewTip() {
+    if (reviewTipPending || state.data.tipReview) return;
+    reviewTipPending = true;
+    setTimeout(() => {
+        reviewTipPending = false;
+        const ready = !$('mapScreen').hidden && $('tour').hidden && !$('reviewBtn').hidden
+            && (!state.data.onboarded || state.data.tourDone) && !state.data.tipReview;
+        if (!ready) return;
+        tourSteps = REVIEW_TIP;
+        tourFlag = 'tipReview';
+        tourLastLabel = 'Compris !';
+        tourStep = 0;
+        $('tour').hidden = false;
+        showTourStep();
+    }, 700);
+}
+
 function showTourStep() {
-    if (tourStep >= TOUR_STEPS.length) { endTour(); return; }
-    const step = TOUR_STEPS[tourStep];
+    if (tourStep >= tourSteps.length) { endTour(); return; }
+    const step = tourSteps[tourStep];
     const target = step.target();
     if (target) target.scrollIntoView({ block: 'center' });
     $('tourText').textContent = step.text;
-    $('tourDots').textContent = `${tourStep + 1}/${TOUR_STEPS.length}`;
-    $('tourNext').textContent = tourStep === TOUR_STEPS.length - 1 ? 'C’est parti !' : 'Suivant';
-    $('tourSkip').hidden = tourStep === TOUR_STEPS.length - 1;
+    $('tourDots').textContent = tourSteps.length > 1 ? `${tourStep + 1}/${tourSteps.length}` : '';
+    $('tourNext').textContent = tourStep === tourSteps.length - 1 ? tourLastLabel : 'Suivant';
+    $('tourSkip').hidden = tourStep === tourSteps.length - 1;
     setTimeout(placeTour, 60);   // après le défilement
 }
 
 /** Place le trou de lumière sur l'élément, et la bulle au-dessous (ou au-dessus s'il n'y a pas la place). */
 function placeTour() {
-    const step = TOUR_STEPS[tourStep];
+    const step = tourSteps[tourStep];
     const target = step && step.target();
     const hole = $('tourHole');
     const bubble = $('tourBubble');
@@ -2966,8 +2998,9 @@ function placeTour() {
 
 function endTour() {
     $('tour').hidden = true;
-    state.data.tourDone = true;
+    state.data[tourFlag] = true;
     saveData();
+    if (tourFlag !== 'tourDone') return;
     // Retour au niveau qui attend le joueur (niveau 1 ou celui du placement) : le tutoriel a fait défiler la carte
     const current = document.querySelector('.node.is-current');
     if (current) current.scrollIntoView({ block: 'center', behavior: 'smooth' });
