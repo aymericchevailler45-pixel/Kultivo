@@ -1059,10 +1059,9 @@ function renderChallenges() {
 
     const hintBox = $('goalHint');
     hintBox.replaceChildren(); // On vide la zone
+    hintBox.hidden = !isReached;   // pas encore atteint : la barre suffit (pas de phrase répétée)
 
-    if (!isReached) {
-        hintBox.textContent = `Encore ${data.goal - xp} XP pour gagner 🎁 ${reward} 🪙`;
-    } else if (isReached && !isClaimed) {
+    if (isReached && !isClaimed) {
         const claimBtn = el('button', 'btn btn-green');
         claimBtn.textContent = `🎁 Récupérer ${reward} 🪙`;
         claimBtn.style.marginTop = '10px';

@@ -49,6 +49,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   placée → elle revient. Après « Vérifier » : bon ordre + valeurs affichées (vert/rouge, « Tu avais mis… »).
   Frise fausse = 1 cœur. Niveaux Ordre à 2 cœurs (comme les défis) : au plus 1 frise ratée (avant : 3 cœurs, trop facile).
   2 XP par carte bien placée. Début du parcours : cartes espacées dans le classement.
+  Révisions des frises (2026-10-17) : `orderStats` (clé « famille:carte », { miss, streak, last }) comme `pairStats`.
+  Carte mal placée → revient (2 au plus par frise, `pickOrderItems`), carte bien sue → plus rare (`REVIEW_DAYS`),
+  familles avec erreurs tirées plus souvent (`buildOrderRounds`, `weightedPick`).
 - Objectifs du jour (2026-10-16, demandé par l'utilisateur) : 60 / 150 / 250 XP (≈ 1, 2-3, 4-5 niveaux),
   récompenses 10 / 25 / 50 🪙. Anciens objectifs convertis dans `normalizeData` (`OLD_GOALS`).
 - Compteurs du haut cliquables : 🪙 → Boutique, ⭐ → Profil, 🔥 → calendrier de série (`streakModal`).
