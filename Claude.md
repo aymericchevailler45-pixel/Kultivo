@@ -96,7 +96,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   habituel : tailles « à mi-chemin » (ni trop grand, ni trop petit). Photo de monument : tap = plein écran
   (`photoZoom`, avec crédit), retap = retour. Pas de boutons collés au clavier (refusé) : à la place,
   `fitToKeyboard` mesure la place libre sous « Vérifier » et agrandit image + question (variable CSS --fit),
-  appelé AVANT affichage dans showCard (fondu retiré : il donnait un « clignement »). Photos : `photoSize` [l, h] pour réserver la place.
+  appelé AVANT affichage dans showCard (fondu retiré : il donnait un « clignement »). Photos : `photoSize` [l, h] pour réserver la place ; nouvelle photo cachée (`is-loading`) jusqu’à son chargement (sinon l’ancienne restait affichée un instant), photos de la leçon préchargées.
   Zoom photo : pointerdown = preventDefault seulement, ouverture au click (sinon le même tap la refermait).
 - Parcours : décors = une icône par thème (`THEME_DECOR`) ; tap = bulle d'anecdote (`showFact`). Anecdotes dans
   `facts.js` (THEME_FACTS, 10 par thème = 150) : chaque icône a la sienne (`data-fact`). Décors en z-index 2
