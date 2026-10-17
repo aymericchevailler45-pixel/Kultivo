@@ -413,6 +413,16 @@
         </div>
     </div>
 
+    <!-- QUESTION OUI / NON DU JEU (remplace la fenêtre grise du navigateur) : askConfirm() -->
+    <div id="askModal" class="modal-overlay" hidden>
+        <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="askTitle" aria-describedby="askText">
+            <h2 id="askTitle"></h2>
+            <p id="askText"></p>
+            <button type="button" id="askYes" class="btn btn-green btn-full"></button>
+            <button type="button" id="askNo" class="btn btn-ghost btn-full">Annuler</button>
+        </div>
+    </div>
+
     <!-- POPUP DE CONFIRMATION POUR QUITTER UNE LEÇON -->
     <div id="quitModal" class="modal-overlay" hidden>
         <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="quitTitle" aria-describedby="quitDesc">

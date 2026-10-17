@@ -159,8 +159,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `?ami=pseudo` (partage du téléphone, sinon copie). Cache local `kultivo_league`. Pastille = demandes reçues.
   Mise à jour automatique (`leagueTick`) : toutes les 15 s sur l'onglet Classement, 60 s ailleurs, et au retour
   dans l'appli ; message quand une demande arrive ou est acceptée ; pas de redessin pendant qu'on tape.
-  Podium (`checkPodium`, une fois par semaine, `podium` : lundi -> place) : 1er 5 cartes, 2e 4, 3e 3 (dont une
-  rare), seulement à 2 joueurs ou plus ayant joué, et jamais pour le dernier.
+  Coffre du lundi (`checkPodium`, une fois par semaine, `podium` : lundi -> place) : selon le nombre d'amis
+  BATTUS (1 battu = 2 cartes … 5 max, une rare dès 3 cartes), au moins `PODIUM_MIN_XP` (100) XP dans la semaine
+  (l'utilisateur trouvait trop facile qu'à deux l'un gagne forcément).
+  Affichage : « Ligue des amis », podium 2e · 1er · 3e (avatars = initiale colorée, couronne), puis liste avec
+  barres ; « Ton pseudo » en haut de la carte Amis.
+- Plus de confirm() du navigateur (moche, affiche l'adresse du site) : `askConfirm({ title, text, yes, danger })`
+  (fenêtre `askModal`, promesse true/false). Supabase gratuit : pause après 7 jours sans activité (Restore).
 - Pseudo demandé dès l'accueil (étape 4/5, juste après la création du compte ou la connexion ; « Plus tard »
   possible ; sauté si le compte a déjà un pseudo). Champ `pseudoField` vérifié pendant la saisie : rouge si trop
   court ou caractère interdit, « Vérification… » puis « ✓ Disponible » (vert) ou « déjà pris » (rouge) ;

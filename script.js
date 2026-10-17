@@ -3331,7 +3331,7 @@ async function askNewPassword() {
 }
 
 async function cloudLogout() {
-    if (!confirm('Se déconnecter ? Ta progression reste sur cet appareil, mais ne sera plus sauvegardée en ligne.')) return;
+    if (!await askConfirm({ title: 'Se déconnecter ?', text: 'Ta progression reste sur cet appareil, mais ne sera plus sauvegardée en ligne.', yes: 'Me déconnecter', danger: true })) return;
     await cloudPush();
     try { await cloudClient().auth.signOut(); } catch (err) { /* tant pis */ }
     cloudUser = null;
@@ -3343,6 +3343,30 @@ async function cloudLogout() {
     showToast('Déconnecté. Ta progression reste sur cet appareil.');
 }
 
+/** Question oui / non dans une fenêtre du jeu (au lieu de confirm(), moche et qui affiche l'adresse du site).
+    Renvoie une promesse : true = oui. `danger` : bouton rouge (retirer, effacer…). */
+function askConfirm({ title, text = '', yes = 'Oui', no = 'Annuler', danger = false }) {
+    const nbsp = t => t.replace(/ ([?!:»])/g, ' $1');   // « ? » jamais seul en début de ligne
+    $('askTitle').textContent = nbsp(title);
+    $('askText').textContent = nbsp(text);
+    $('askText').hidden = !text;
+    $('askYes').textContent = yes;
+    $('askYes').classList.toggle('btn-red', danger);
+    $('askYes').classList.toggle('btn-green', !danger);
+    $('askNo').textContent = no;
+    $('askModal').hidden = false;
+    return new Promise(resolve => {
+        const done = answer => {
+            $('askModal').hidden = true;
+            $('askYes').onclick = $('askNo').onclick = $('askModal').onclick = null;
+            resolve(answer);
+        };
+        $('askYes').onclick = () => done(true);
+        $('askNo').onclick = () => done(false);
+        $('askModal').onclick = e => { if (e.target === $('askModal')) done(false); };   // tap à côté = non
+    });
+}
+
 /* ---------- Classement entre amis (Supabase : profiles, friendships, scores) ---------- */
 /* XP de la semaine (du lundi au dimanche, calculée depuis `activeDays`), amis ajoutés par pseudo
    avec une demande à accepter, lien d'invitation, coffre pour le podium de la semaine passée. */
@@ -3350,7 +3374,7 @@ async function cloudLogout() {
 const LEAGUE_KEY = 'kultivo_league';   // dernière version connue (affichée tout de suite, et hors ligne)
 const INVITE_KEY = 'kultivo_invite';   // pseudo reçu par un lien d'invitation, en attente
 const PSEUDO_RE = /^[A-Za-z0-9À-ÿ_.-]{3,16}$/;
-const PODIUM_CARDS = { 1: 5, 2: 4, 3: 3 };   // cartes du coffre de podium (dont au moins une rare)
+const PODIUM_MIN_XP = 100;             // XP minimum dans la semaine pour avoir le coffre du lundi
 let league = loadLeagueCache();
 let leagueBusy = false;
 let leagueMsg = null;                  // message sous le champ « ajouter un ami » : { text, kind: 'bad' | 'good' }
@@ -3493,19 +3517,20 @@ function checkPodium() {
     const last = shiftDays(weekStart(), -7);
     if (data.podium[last] !== undefined) return;
     const mine = weekXp(last);
-    const players = [mine, ...league.friends.map(f => friendWeekXp(f, last))].filter(xp => xp > 0);
+    const others = league.friends.map(f => friendWeekXp(f, last));
+    // Coffre = selon le nombre d'amis battus (1 battu = 2 cartes … jusqu'à 5), avec un minimum d'XP joués :
+    // à deux, il faut battre son ami ; plus on est nombreux, plus le coffre est gros.
+    const beaten = others.filter(xp => xp < mine).length;
+    const rank = 1 + others.filter(xp => xp > mine).length;
     data.podium[last] = 0;
-    if (mine > 0 && players.length >= 2) {
-        const rank = 1 + players.filter(xp => xp > mine).length;
-        // Le dernier n'a rien (sinon, à deux, tout le monde gagnerait)
-        if (PODIUM_CARDS[rank] && rank < players.length) {
-            data.podium[last] = rank;
-            saveData();
-            const medal = ['🥇', '🥈', '🥉'][rank - 1];
-            openCardBoxes([{ size: PODIUM_CARDS[rank], rare: true }],
-                `${medal} ${rank === 1 ? '1er' : `${rank}e`} de la semaine !`);
-            return;
-        }
+    if (mine >= PODIUM_MIN_XP && beaten > 0) {
+        data.podium[last] = rank;
+        saveData();
+        const size = Math.min(5, 1 + beaten);
+        const place = rank === 1 ? '1er' : `${rank}e`;
+        openCardBoxes([{ size, rare: size >= 3 }],
+            `${['🥇', '🥈', '🥉'][rank - 1] || '🏅'} ${place} de la semaine : ${plural(beaten, 'ami battu', 'amis battus')} !`);
+        return;
     }
     saveData();
 }
@@ -3611,7 +3636,7 @@ async function acceptFriend(link) {
 }
 
 async function removeFriend(link, question) {
-    if (question && !confirm(question)) return;
+    if (question && !await askConfirm({ title: question, text: 'Vous ne vous verrez plus dans le classement.', yes: 'Retirer', danger: true })) return;
     await cloudClient().from('friendships').delete().eq('id', link);
     await leagueLoad();
 }
@@ -3649,7 +3674,7 @@ async function handleInvite() {
     try { localStorage.removeItem(INVITE_KEY); } catch (err) { /* tant pis */ }
     if (pseudo.toLowerCase() === league.pseudo.toLowerCase()) return;
     if ([...league.friends, ...league.outgoing].some(f => f.pseudo.toLowerCase() === pseudo.toLowerCase())) return;
-    if (!confirm(`${pseudo} t’a invité sur Kultivo. L’ajouter en ami ?`)) return;
+    if (!await askConfirm({ title: `👥 ${pseudo} t’a invité`, text: 'L’ajouter à tes amis pour vous comparer chaque semaine ?', yes: 'Ajouter', no: 'Non merci' })) return;
     await addFriend(pseudo);
 }
 
@@ -3737,39 +3762,84 @@ function renderLeague() {
         return;
     }
 
-    // 3) Classement de la semaine
+    // 3) Classement de la semaine : podium (3 premiers) puis liste
     const week = weekStart();
     const rows = [
         { pseudo: league.pseudo, xp: weekXp(week), streak: currentStreak(), me: true },
         ...league.friends.map(f => ({ pseudo: f.pseudo, xp: friendWeekXp(f, week), streak: f.week === week ? f.streak : 0 }))
     ].sort((a, b) => b.xp - a.xp || (a.me ? -1 : b.me ? 1 : 0));
-    const rank = card('league-rank', '🥇 Cette semaine');
-    para(rank, `Fin dans ${plural(weekDaysLeft(), 'jour', 'jours')} · podium = coffre de cartes 🎁`, 'muted league-sub');
-    const list = el('ol', 'league-list');
-    rows.forEach((r, i) => {
-        const li = el('li', `league-row${r.me ? ' is-me' : ''}`);
-        const pos = el('span', 'league-pos');
-        pos.textContent = i < 3 && r.xp > 0 ? ['🥇', '🥈', '🥉'][i] : String(i + 1);
-        const name = el('span', 'league-name');
-        name.textContent = r.me ? `${r.pseudo} (toi)` : r.pseudo;
-        const streak = el('span', 'league-streak');
-        streak.textContent = r.streak > 0 ? `🔥 ${r.streak}` : '';
-        const xp = el('b', 'league-xp');
+    const rank = card('league-rank');
+    const head = el('div', 'league-head');
+    const h = el('h2');
+    h.textContent = '🏆 Ligue des amis';
+    const left = el('span', 'league-left');
+    left.textContent = `⏳ ${plural(weekDaysLeft(), 'jour', 'jours')}`;
+    left.title = 'Temps restant avant la fin de la semaine (lundi)';
+    head.append(h, left);
+    rank.append(head);
+    const [y, m, d] = week.split('-').map(Number);
+    const since = new Date(y, m - 1, d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+    para(rank, `XP gagnés depuis le lundi ${since}`, 'muted league-sub');
+
+    const avatar = (pseudo, cls = '') => {
+        const a = el('span', `league-avatar ${cls}`);
+        let hash = 0;
+        for (const ch of pseudo) hash = (hash * 31 + ch.codePointAt(0)) % 360;
+        a.style.setProperty('--hue', String(hash));
+        a.textContent = [...pseudo][0].toUpperCase();
+        return a;
+    };
+    const top = rows.slice(0, 3);
+    const podium = el('div', `league-podium count-${top.length}`);
+    [1, 0, 2].forEach(i => {   // ordre visuel : 2e, 1er, 3e
+        const r = top[i];
+        if (!r) return;
+        const col = el('div', `podium-col place-${i + 1}${r.me ? ' is-me' : ''}`);
+        const crown = el('span', 'podium-crown');
+        crown.textContent = i === 0 && r.xp > 0 ? '👑' : '';
+        const name = el('span', 'podium-name');
+        name.textContent = r.me ? 'Toi' : r.pseudo;
+        const xp = el('span', 'podium-xp');
         xp.textContent = `${r.xp} XP`;
-        li.append(pos, name, streak, xp);
-        list.append(li);
+        const step = el('div', 'podium-step');
+        step.textContent = String(i + 1);
+        col.append(crown, avatar(r.pseudo, `ring-${i + 1}`), name, xp, step);
+        podium.append(col);
     });
-    rank.append(list);
-    const myIndex = rows.findIndex(r => r.me);
-    if (rows.length === 1) para(rank, 'Ajoute des amis ci-dessous pour vous comparer chaque semaine !');
-    else if (myIndex === 0) para(rank, rows[0].xp > 0 ? '🏆 Tu es en tête, garde ta place !' : 'Personne n’a encore joué cette semaine : à toi de commencer !', 'league-tip');
-    else {
-        const ahead = rows[myIndex - 1];
-        para(rank, `Encore ${ahead.xp - rows[myIndex].xp + 1} XP pour dépasser ${ahead.pseudo} !`, 'league-tip');
+    rank.append(podium);
+
+    if (rows.length > 3) {
+        const leader = Math.max(1, rows[0].xp);
+        const list = el('ol', 'league-list');
+        rows.slice(3).forEach((r, k) => {
+            const li = el('li', `league-row${r.me ? ' is-me' : ''}`);
+            const pos = el('span', 'league-pos');
+            pos.textContent = String(k + 4);
+            const name = el('span', 'league-name');
+            name.textContent = r.me ? `${r.pseudo} (toi)` : r.pseudo;
+            const bar = el('span', 'league-bar');
+            const fill = el('i');
+            fill.style.width = `${Math.round((r.xp / leader) * 100)}%`;
+            bar.append(fill);
+            name.append(bar);
+            const xp = el('b', 'league-xp');
+            xp.textContent = `${r.xp} XP`;
+            li.append(pos, avatar(r.pseudo, 'is-small'), name, xp);
+            list.append(li);
+        });
+        rank.append(list);
     }
+
+    const myIndex = rows.findIndex(r => r.me);
+    const tip = rows.length === 1 ? 'Ajoute des amis ci-dessous pour vous comparer chaque semaine !'
+        : myIndex === 0 ? (rows[0].xp > 0 ? '🏆 Tu es en tête : garde ta place jusqu’à lundi !' : 'Personne n’a encore joué cette semaine : à toi de commencer !')
+        : `Tu es ${myIndex + 1}e · encore ${rows[myIndex - 1].xp - rows[myIndex].xp + 1} XP pour dépasser ${rows[myIndex - 1].pseudo} !`;
+    para(rank, tip, 'league-tip');
+    para(rank, `🎁 Lundi : un coffre de cartes si tu bats au moins un ami (${PODIUM_MIN_XP} XP minimum). Plus tu en bats, plus il est gros !`, 'muted league-sub');
 
     // 4) Amis : demandes reçues, ajout par pseudo, invitation, liste
     const friends = card('league-friends', '👥 Amis');
+    para(friends, `Ton pseudo : ${league.pseudo}`, 'league-me');
     league.incoming.forEach(f => {
         const row = el('div', 'league-request');
         const text = el('span');
@@ -3804,7 +3874,6 @@ function renderLeague() {
         });
         friends.append(ul);
     }
-    para(friends, `Ton pseudo : ${league.pseudo}`, 'muted league-sub');
 }
 
 /* ---------- Tutoriel de découverte (après l'accueil) ---------- */
@@ -4375,7 +4444,7 @@ function bindEvents() {
         if (!screen || e.touches.length !== 1) return;
         if (!$('startModal').hidden || !$('quitModal').hidden || !$('streakModal').hidden) return;
         if (!$('authModal').hidden || !$('cloudConflictModal').hidden || !$('accountModal').hidden) return;
-        if (!$('chestModal').hidden) return;
+        if (!$('chestModal').hidden || !$('askModal').hidden) return;
         if (e.target.closest('input, textarea')) return;
         const t = e.touches[0];
         if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;   // bords : geste « retour » du téléphone
@@ -4567,8 +4636,8 @@ function bindEvents() {
         if (e.target === $('quitModal')) closeQuitModal();
     });
 
-    $('resetBtn').addEventListener('click', () => {
-        if (!confirm('Effacer tous tes niveaux, ton XP, ta série et tes statistiques ?')) return;
+    $('resetBtn').addEventListener('click', async () => {
+        if (!await askConfirm({ title: 'Tout effacer ?', text: 'Tes niveaux, ton XP, ta série et tes statistiques seront perdus.', yes: 'Tout effacer', danger: true })) return;
         state.data = normalizeData(defaultData());
         saveData();
         renderHeader();
