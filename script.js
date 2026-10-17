@@ -5101,7 +5101,19 @@ function init() {
     buildDecor($('lessonDecor'), 8);
     checkBadges(true);   // badges déjà mérités : on les attribue sans notification
     renderHeader();
+    // Au rechargement (ex. : après une connexion), le navigateur remettait l'ancienne position de défilement :
+    // c'est le jeu qui décide (niveau en cours au centre)
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     showScreen('map');
+    // Une fois tout affiché (polices, images), on recentre le niveau en cours, sauf si le joueur a déjà défilé
+    const firstY = window.scrollY;
+    window.addEventListener('load', () => {
+        const current = document.querySelector('.node.is-current');
+        if (current && !$('mapScreen').hidden && Math.abs(window.scrollY - firstY) < 5) {
+            current.scrollIntoView({ block: 'center' });
+            updateToCurrentBtn();
+        }
+    }, { once: true });
 
     // Tout premier lancement : parcours d'accueil (niveau, objectif, puis test de placement ou niveau 1)
     const d = state.data;
