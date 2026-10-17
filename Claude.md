@@ -159,6 +159,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `?ami=pseudo` (partage du téléphone, sinon copie). Cache local `kultivo_league`. Pastille = demandes reçues.
   Podium (`checkPodium`, une fois par semaine, `podium` : lundi -> place) : 1er 5 cartes, 2e 4, 3e 3 (dont une
   rare), seulement à 2 joueurs ou plus ayant joué, et jamais pour le dernier.
+- Pseudo demandé dès l'accueil (étape 4/5, juste après la création du compte ou la connexion ; « Plus tard »
+  possible ; sauté si le compte a déjà un pseudo). Champ `pseudoField` vérifié pendant la saisie : rouge si trop
+  court ou caractère interdit, « Vérification… » puis « ✓ Disponible » (vert) ou « déjà pris » (rouge) ;
+  bouton Valider grisé tant que ce n'est pas bon. Même champ dans l'onglet Classement.
 - Doublons de cartes : donnent des pièces, plus de « ×2 » affiché (le nombre reste dans `cards`, pour une future
   version dorée à X exemplaires, idée validée pour plus tard).
 - Mystère du 2026-10-17 : la progression de l'utilisateur s'est retrouvée sur le compte de TEST

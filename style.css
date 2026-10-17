@@ -2093,3 +2093,13 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 /* 5 onglets sur téléphone : textes un peu plus petits */
 @media (max-width: 900px) { .nav-btn { font-size: 0.7rem; } }
 .league-friends .btn-full { padding: 12px; font-size: 1rem; }
+
+/* Champ pseudo : vérifié pendant la saisie (rouge = invalide ou pris, vert = disponible) */
+.pseudo-field { display: flex; flex-direction: column; gap: 6px; width: 100%; text-align: left; }
+.pseudo-field .auth-input { margin: 0; }
+.auth-input.is-bad  { border-color: var(--red); background: var(--red-tint); }
+.auth-input.is-good { border-color: var(--green); }
+.pseudo-msg { min-height: 1.3em; margin: 0; color: var(--muted); font-size: 0.88rem; font-weight: 700; }
+.pseudo-msg.is-bad  { color: var(--red-ink); }
+.pseudo-msg.is-good { color: var(--green-ink); }
+.onboard-body .pseudo-field { max-width: 420px; margin: 8px auto 0; }

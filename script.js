@@ -944,7 +944,7 @@ function showScreen(name) {
         if (state.data.onboarded && !state.data.tourDone) setTimeout(startTour, 500);
     }
     if (name === 'challenges') { window.scrollTo(0, 0); renderChallenges(); }
-    if (name === 'league') { window.scrollTo(0, 0); renderLeague(); leagueLoad(); }
+    if (name === 'league') { window.scrollTo(0, 0); leagueMsg = null; renderLeague(); leagueLoad(); }
     if (name === 'shop') { window.scrollTo(0, 0); renderShop(); }
     if (name === 'profile') { window.scrollTo(0, 0); renderProfile(); }
 }
@@ -3353,7 +3353,7 @@ const PSEUDO_RE = /^[A-Za-z0-9À-ÿ_.-]{3,16}$/;
 const PODIUM_CARDS = { 1: 5, 2: 4, 3: 3 };   // cartes du coffre de podium (dont au moins une rare)
 let league = loadLeagueCache();
 let leagueBusy = false;
-let leagueMsg = '';                    // petit message sous le champ « ajouter un ami »
+let leagueMsg = null;                  // message sous le champ « ajouter un ami » : { text, kind: 'bad' | 'good' }
 
 function loadLeagueCache() {
     try { return JSON.parse(localStorage.getItem(LEAGUE_KEY) || 'null'); } catch (err) { return null; }
@@ -3399,8 +3399,14 @@ async function leaguePushScore() {
     } catch (err) { /* hors ligne : au prochain envoi */ }
 }
 
-/** Recharge pseudo, amis, demandes et scores. */
-async function leagueLoad() {
+/** Recharge pseudo, amis, demandes et scores (un seul chargement à la fois : les autres appels l'attendent). */
+let leaguePromise = null;
+function leagueLoad() {
+    if (!leaguePromise) leaguePromise = leagueFetch().finally(() => { leaguePromise = null; });
+    return leaguePromise;
+}
+
+async function leagueFetch() {
     const c = cloudClient();
     if (!c || !cloudUser || !navigator.onLine || leagueBusy) return;
     leagueBusy = true;
@@ -3467,25 +3473,79 @@ function checkPodium() {
     saveData();
 }
 
+const escapeLike = text => text.replace(/[\\%_]/g, '\\$&');
+
+/** Pseudo déjà utilisé par un autre joueur ? (null = impossible de vérifier, hors ligne) */
+async function pseudoTaken(pseudo) {
+    try {
+        const { data, error } = await cloudClient().from('profiles').select('user_id')
+            .ilike('pseudo', escapeLike(pseudo)).maybeSingle();
+        if (error) return null;
+        return !!data && data.user_id !== cloudUser?.id;
+    } catch (err) { return null; }
+}
+
+/** Champ « pseudo » vérifié pendant la saisie : rouge si invalide ou déjà pris, vert si disponible.
+    `onReady(true/false)` dit si on peut valider (pour activer le bouton). */
+function pseudoField(onReady) {
+    const wrap = el('div', 'pseudo-field');
+    const input = el('input', 'auth-input');
+    input.placeholder = 'Ton pseudo';
+    input.maxLength = 16;
+    input.autocomplete = 'off';
+    input.autocapitalize = 'off';
+    input.spellcheck = false;
+    const msg = el('p', 'pseudo-msg');
+    wrap.append(input, msg);
+    let ready = false;
+    let timer = null;
+    let seq = 0;
+    const show = (text, kind) => {
+        msg.textContent = text;
+        msg.className = `pseudo-msg${kind ? ` is-${kind}` : ''}`;
+        input.classList.toggle('is-bad', kind === 'bad');
+        input.classList.toggle('is-good', kind === 'good');
+    };
+    const setReady = value => { ready = value; onReady(value); };
+    const check = () => {
+        const value = input.value.trim();
+        clearTimeout(timer);
+        seq++;
+        setReady(false);
+        if (!value) return show('Entre 3 et 16 caractères : lettres, chiffres, « _ », « . » ou « - ».');
+        if (value.length < 3) return show(`Trop court : encore ${plural(3 - value.length, 'caractère', 'caractères')}.`, 'bad');
+        if (!PSEUDO_RE.test(value)) return show('Pas d’espace ni de signe spécial (seulement « _ », « . » ou « - »).', 'bad');
+        show('Vérification…');
+        const mine = seq;
+        timer = setTimeout(async () => {
+            const taken = await pseudoTaken(value);
+            if (mine !== seq) return;   // le joueur a continué à taper
+            if (taken) return show('Ce pseudo est déjà pris, choisis-en un autre.', 'bad');
+            show(taken === null ? '' : '✓ Disponible !', 'good');
+            setReady(true);
+        }, 400);
+    };
+    input.addEventListener('input', check);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter' && ready) wrap.dispatchEvent(new Event('submit')); });
+    wrap.value = () => input.value.trim();
+    wrap.showError = text => { show(text, 'bad'); setReady(false); };
+    check();
+    return wrap;
+}
+
+/** Enregistre le pseudo. Renvoie un message d'erreur, ou null si c'est bon. */
 async function setPseudo(raw) {
     const c = cloudClient();
     const pseudo = raw.trim();
-    if (!PSEUDO_RE.test(pseudo)) {
-        leagueMsg = 'De 3 à 16 caractères : lettres, chiffres, « _ », « . » ou « - ».';
-        renderLeague();
-        return;
-    }
+    if (!c || !cloudUser) return 'Connecte-toi d’abord à ton compte.';
+    if (!PSEUDO_RE.test(pseudo)) return 'Ce pseudo n’est pas valide.';
     const { error } = await c.from('profiles').upsert({ user_id: cloudUser.id, pseudo });
-    if (error) {
-        leagueMsg = error.code === '23505' ? 'Ce pseudo est déjà pris, choisis-en un autre.' : 'Impossible pour le moment. Réessaie.';
-        renderLeague();
-        return;
-    }
-    leagueMsg = '';
+    if (error) return error.code === '23505' ? 'Ce pseudo est déjà pris, choisis-en un autre.' : 'Impossible pour le moment. Réessaie.';
     league = { ...(league || {}), userId: cloudUser.id, pseudo, friends: league?.friends || [], incoming: league?.incoming || [], outgoing: league?.outgoing || [] };
     saveLeagueCache();
-    renderLeague();
+    showToast(`🥇 Ton pseudo : ${pseudo}`);
     leagueLoad();
+    return null;
 }
 
 /** Ajout par pseudo : envoie une demande (ou accepte celle que l'autre nous a déjà envoyée). */
@@ -3493,18 +3553,18 @@ async function addFriend(raw) {
     const c = cloudClient();
     const pseudo = raw.trim();
     if (!pseudo) return;
-    const say = text => { leagueMsg = text; renderLeague(); };
+    const say = (text, kind = 'bad') => { leagueMsg = { text, kind }; renderLeague(); };
     if (pseudo.toLowerCase() === league.pseudo.toLowerCase()) return say('C’est ton propre pseudo 😉');
     const { data: found } = await c.from('profiles').select('user_id, pseudo')
-        .ilike('pseudo', pseudo.replace(/[\\%_]/g, '\\$&')).maybeSingle();
+        .ilike('pseudo', escapeLike(pseudo)).maybeSingle();
     if (!found) return say(`Aucun joueur ne s’appelle « ${pseudo} ».`);
     const known = [...league.friends, ...league.outgoing].find(f => f.id === found.user_id);
     if (known) return say(league.friends.includes(known) ? `${found.pseudo} est déjà ton ami.` : `Demande déjà envoyée à ${found.pseudo}.`);
     const theirs = league.incoming.find(f => f.id === found.user_id);
-    if (theirs) { await acceptFriend(theirs.link); return say(`✅ ${found.pseudo} et toi êtes maintenant amis !`); }
+    if (theirs) { await acceptFriend(theirs.link); return say(`✓ ${found.pseudo} et toi êtes maintenant amis !`, 'good'); }
     const { error } = await c.from('friendships').insert({ requester: cloudUser.id, addressee: found.user_id });
     if (error) return say('Impossible pour le moment. Réessaie.');
-    say(`✅ Demande envoyée à ${found.pseudo}.`);
+    say(`✓ Demande envoyée à ${found.pseudo}.`, 'good');
     leagueLoad();
 }
 
@@ -3605,7 +3665,7 @@ function renderLeague() {
         f.append(input, b);
         f.addEventListener('submit', e => { e.preventDefault(); onSubmit(input.value); });
         box.append(f);
-        if (leagueMsg) para(box, leagueMsg, 'league-msg');
+        if (leagueMsg) para(box, leagueMsg.text, `pseudo-msg is-${leagueMsg.kind}`);
         return input;
     };
 
@@ -3620,10 +3680,23 @@ function renderLeague() {
     // 2) Pas encore de pseudo
     if (!league || league.userId !== cloudUser.id || !league.pseudo) {
         const box = card('league-intro', '🥇 Choisis ton pseudo');
-        para(box, league && league.userId === cloudUser.id
-            ? 'C’est sous ce nom que tes amis te verront et pourront t’ajouter.'
-            : 'Chargement…');
-        if (league && league.userId === cloudUser.id) form(box, 'Ton pseudo', 'Valider', setPseudo);
+        if (!league || league.userId !== cloudUser.id) { para(box, 'Chargement…'); return; }
+        para(box, 'C’est sous ce nom que tes amis te verront et pourront t’ajouter.');
+        const ok = el('button', 'btn btn-green btn-full');
+        ok.type = 'button';
+        ok.textContent = 'Valider';
+        ok.disabled = true;
+        const field = pseudoField(ready => { ok.disabled = !ready; });
+        const submit = async () => {
+            if (ok.disabled) return;
+            ok.disabled = true;
+            const err = await setPseudo(field.value());
+            if (err) field.showError(err);
+            else renderLeague();
+        };
+        ok.addEventListener('click', submit);
+        field.addEventListener('submit', submit);
+        box.append(field, ok);
         return;
     }
 
@@ -3950,15 +4023,35 @@ function renderOnboard(animate = true) {
         body.append(title, text, list);
         next.textContent = 'Continuer';
     } else if (step === 3) {
-        // Compte (facultatif) : sauvegarde en ligne dès le début
-        if (cloudUser || !window.supabase) { onboard.step++; renderOnboard(); return; }
+        // Compte (facultatif) : sauvegarde en ligne dès le début, puis pseudo pour le classement
+        if (onboardAccountDone()) { onboard.step++; renderOnboard(); return; }
+        if (cloudUser) {
+            if (!onboard.pseudoLoaded) {   // compte existant : il a peut-être déjà un pseudo
+                onboard.pseudoLoaded = true;
+                title.textContent = 'Un instant…';
+                body.append(big('🥇'), title);
+                next.disabled = true;
+                leagueLoad().finally(() => { if (onboard.step === 3) renderOnboard(false); });
+                return;
+            }
+            title.textContent = 'Choisis ton pseudo';
+            text.textContent = 'Tes amis te trouveront grâce à lui dans l’onglet Classement.';
+            onboard.pseudoField = pseudoField(ready => { next.disabled = !ready; });
+            onboard.pseudoField.addEventListener('submit', onboardNext);
+            body.append(big('🥇'), title, text, onboard.pseudoField);
+            next.textContent = 'Valider';
+            next.disabled = true;
+            skip.textContent = 'Plus tard';
+            skip.hidden = false;
+            return;
+        }
         title.textContent = 'Sauvegarde ta progression';
         text.textContent = 'Crée un compte pour ne jamais la perdre et la retrouver sur tous tes appareils.';
         const login = el('button', 'auth-link');
         login.type = 'button';
         login.textContent = 'J’ai déjà un compte : me connecter';
         login.addEventListener('click', () => {
-            authDone = () => { onboard.step++; renderOnboard(); };
+            authDone = () => renderOnboard();   // reste sur l’étape : elle propose ensuite le pseudo
             openAuthModal('login');
         });
         body.append(big('☁️'), title, text, login);
@@ -3980,9 +4073,27 @@ function renderOnboard(animate = true) {
     }
 }
 
-function onboardNext() {
+/** Étape « compte » terminée : pas de compte possible, ou compte + pseudo (choisi, déjà existant ou remis à plus tard). */
+function onboardAccountDone() {
+    if (!window.supabase) return true;
+    if (!cloudUser) return false;
+    return onboard.pseudoSkipped || (league?.userId === cloudUser.id && !!league.pseudo);
+}
+
+async function onboardNext() {
+    if (onboard.step === 3 && cloudUser && onboard.pseudoField) {   // étape du pseudo
+        const next = $('onboardNext');
+        if (next.disabled) return;
+        next.disabled = true;
+        const err = await setPseudo(onboard.pseudoField.value());
+        if (err) { onboard.pseudoField.showError(err); return; }
+        onboard.pseudoField = null;
+        onboard.step++;
+        renderOnboard();
+        return;
+    }
     if (onboard.step === 3) {   // étape « compte » : le bouton principal ouvre la création de compte
-        authDone = () => { onboard.step++; renderOnboard(); };
+        authDone = () => renderOnboard();   // reste sur l’étape : elle propose ensuite le pseudo
         openAuthModal('signup');
         return;
     }
@@ -4265,11 +4376,21 @@ function bindEvents() {
 
     $('onboardNext').addEventListener('click', onboardNext);
     $('onboardSkip').addEventListener('click', () => {
-        if (onboard.step === 3) { onboard.step++; renderOnboard(); }   // « Plus tard » : pas de compte
+        if (onboard.step === 3) {   // « Plus tard » : pas de compte, ou pas de pseudo pour l'instant
+            if (cloudUser) onboard.pseudoSkipped = true;
+            onboard.pseudoField = null;
+            onboard.step++;
+            renderOnboard();
+        }
         else finishOnboarding('level');
     });
     $('onboardBack').addEventListener('click', () => {
-        if (onboard.step > 0) { onboard.step--; renderOnboard(); }
+        if (onboard.step > 0) {
+            onboard.step--;
+            if (onboard.step === 3 && onboardAccountDone()) onboard.step--;   // étape compte déjà faite : on la saute
+            onboard.pseudoField = null;
+            renderOnboard();
+        }
     });
 
     $('coinChip').addEventListener('click', () => showScreen('shop'));
