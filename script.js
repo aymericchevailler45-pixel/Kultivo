@@ -3514,12 +3514,13 @@ function openTitlesModal() {
 
 /* ---------- Entraînement par thème (banque séparée : entrainement/*.js) ----------
    5 paliers par thème (questions triées par difficulté). Pour monter : réussir les 2/3 du palier (au moins une
-   fois) ET en maîtriser 1/3 (réussies encore un autre jour). Session de 10 : au moins 6 nouvelles, au plus
-   2 révisions de l'entraînement (erreurs d'abord) et 2 erreurs du parcours. Sans cœurs, XP réduits. */
+   fois) ET en maîtriser 1/3 (réussies encore un autre jour). Session de 10, uniquement la banque d'entraînement
+   (le parcours a ses propres révisions) : au plus 2 révisions (erreurs d'abord), le reste en nouveautés.
+   Sans cœurs, XP réduits. */
 const TRAIN_TIERS = 5;
 const TRAIN_SESSION = 10;
 const TRAIN_MAX_REVIEWS = 2;
-const TRAIN_MAX_PARCOURS = 2;
+const TRAIN_TIER_NAMES = ['Découverte', 'Initié', 'Confirmé', 'Expert', 'Maître'];
 const XP_TRAINING = 2;
 
 const trainingBank = theme => (typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS)
@@ -3576,8 +3577,6 @@ function pickTrainingCards(theme) {
     const missed = shuffle(open.filter(q => missCount(q.id) > 0)).sort((a, b) => missCount(b.id) - missCount(a.id));
     const due = shuffle(open.filter(q => seen(q) && missCount(q.id) === 0 && isDue(q) && !isMastered(q.id)));
     take([...missed, ...due], TRAIN_MAX_REVIEWS);
-    // 2) Erreurs du parcours déjà découvertes dans ce thème (2 au plus)
-    take(shuffle(QUESTIONS.filter(q => q.theme === theme && missCount(q.id) > 0)), TRAIN_MAX_PARCOURS);
     // 3) Nouveautés : palier en cours d'abord, puis paliers d'avant
     take(shuffle((tiers[cur - 1] || []).filter(q => !seen(q))), TRAIN_SESSION);
     take(shuffle(open.filter(q => !seen(q))), TRAIN_SESSION);
@@ -3585,6 +3584,22 @@ function pickTrainingCards(theme) {
     take(shuffle(tiers[cur - 1] || []).sort((a, b) => streakOf(a.id) - streakOf(b.id)), TRAIN_SESSION);
     take(shuffle(open), TRAIN_SESSION);
     return shuffle(picked).map(q => ({ q, review: seen(q) }));
+}
+
+/** Avant de commencer : rappel du palier et de ce qu'il reste pour le suivant. */
+async function confirmTraining(theme, icon) {
+    const pr = trainingProgress(theme);
+    const lines = [`Palier ${pr.tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`];
+    if (pr.tier < TRAIN_TIERS) {
+        let need = `Pour le palier ${pr.tier + 1} : ✅ ${Math.min(pr.right, pr.needRight)}/${pr.needRight} réussies`;
+        if (pr.needMastered) need += ` · ⏳ ${Math.min(pr.mastered, pr.needMastered)}/${pr.needMastered} maîtrisées`;
+        lines.push(need);
+    } else {
+        lines.push('Palier maximum : continue pour tout maîtriser !');
+    }
+    lines.push('10 questions · sans cœurs · 2 XP par bonne réponse');
+    const ok = await askConfirm({ title: `${icon} ${theme}`, text: lines.join('\n'), yes: 'Commencer', no: 'Plus tard' });
+    if (ok) startTraining(theme);
 }
 
 function startTraining(theme) {
@@ -3677,24 +3692,28 @@ function renderTraining() {
             tile.append(soon);
         } else {
             const pr = trainingProgress(theme);
-            const dots = el('span', 'train-dots');
-            dots.textContent = '●'.repeat(pr.tier) + '○'.repeat(TRAIN_TIERS - pr.tier);
-            dots.setAttribute('aria-label', `Palier ${pr.tier} sur ${TRAIN_TIERS}`);
-            const meter = el('div', 'meter train-meter');
-            const fill = el('div', 'meter-fill');
-            fill.style.width = `${Math.round(pr.totalMastered / pr.total * 100)}%`;
-            meter.append(fill);
+            const label = el('span', 'train-tier');
+            label.textContent = `Palier ${pr.tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`;
+            // 5 morceaux : pleins = paliers passés, le palier en cours se remplit selon ce qu'il reste à faire
+            const bar = el('div', 'train-steps');
+            const goal = pr.needRight + pr.needMastered;
+            const done = Math.min(pr.right, pr.needRight) + Math.min(pr.mastered, pr.needMastered);
+            for (let i = 1; i <= TRAIN_TIERS; i++) {
+                const seg = el('span', 'train-step');
+                const fill = el('i');
+                const part = i < pr.tier ? 1 : i > pr.tier ? 0 : (pr.tier >= TRAIN_TIERS && pr.ready ? 1 : goal ? done / goal : 0);
+                fill.style.width = `${Math.round(part * 100)}%`;
+                seg.append(fill);
+                bar.append(seg);
+            }
+            bar.setAttribute('aria-label', `Palier ${pr.tier} sur ${TRAIN_TIERS}`);
             const line = el('span', 'train-line');
             line.textContent = `${pr.totalMastered} / ${pr.total} maîtrisées`;
-            const next = el('span', 'train-next');
-            if (pr.tier >= TRAIN_TIERS) next.textContent = 'Palier max';
-            else next.textContent = `✅ ${Math.min(pr.right, pr.needRight)}/${pr.needRight} · ⏳ ${Math.min(pr.mastered, pr.needMastered)}/${pr.needMastered}`;
-            next.title = 'Pour le palier suivant : questions réussies · questions maîtrisées';
-            tile.append(dots, meter, line, next);
+            tile.append(label, bar, line);
             const errors = bank.filter(q => missCount(q.id) > 0).length;
             if (errors) tile.setAttribute('data-notif', errors);
         }
-        tile.addEventListener('click', () => startTraining(theme));
+        tile.addEventListener('click', () => (bank.length ? confirmTraining(theme, icon) : startTraining(theme)));
         grid.append(tile);
     });
 }

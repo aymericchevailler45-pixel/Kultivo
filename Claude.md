@@ -280,6 +280,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    (`setChallengesTab`, `renderTraining`), 15 cases de thème, `pickTrainingCards`, `trainingProgress`,
    `endTraining`, mode 'training' (sans cœurs, `XP_TRAINING` = 2). Banque : `entrainement/<theme>.js`
    (TRAINING_QUESTIONS, ids 10000+ par blocs de 1000, voir `banque.js` — JAMAIS de nom de fichier commençant par « _ » : GitHub Pages ne les sert pas (404)) : 50 questions par thème = 750.
+   Plus de questions du parcours dans l'entraînement (2026-10-18 : deux modes séparés). Paliers nommés
+   (`TRAIN_TIER_NAMES` : Découverte, Initié, Confirmé, Expert, Maître), barre en 5 morceaux sur chaque case ;
+   tap sur un thème → `confirmTraining` (palier, ce qu'il reste, « Commencer » / « Plus tard »).
    Palier 1 → 2 : 2/3 réussies suffisent ; ensuite + 1/3 maîtrisées. Re-toucher l'onglet Défis bascule
    Défis ⇄ Entraînement. Maîtrise = streak ≥ 2, une 2e réussite le même jour ne compte pas (`recordResult`). Contrôle des
    doublons / mots de la réponse dans la question : script `check_training.py` (scratchpad de la session).

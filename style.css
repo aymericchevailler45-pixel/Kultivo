@@ -2580,3 +2580,10 @@ input, textarea, [contenteditable] {
     text-align: center;
 }
 .train-page > .train-sub { grid-column: 1 / -1; margin: -6px 0 0; color: var(--muted); font-size: 0.85rem; font-weight: 700; text-align: center; }
+
+/* Entraînement : palier nommé et barre en 5 morceaux */
+.train-tier { color: var(--violet-ink); font-size: 0.8rem; font-weight: 900; }
+.train-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+.train-step { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.train-step i { display: block; height: 100%; border-radius: inherit; background: var(--violet); }
+#askText { white-space: pre-line; }
