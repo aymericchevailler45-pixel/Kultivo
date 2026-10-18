@@ -214,5 +214,191 @@
   "artist": "Lhasa Government",
   "license": "CC BY-SA 4.0",
   "source": "https://commons.wikimedia.org/wiki/File:Potala_Palace_HQ.jpg"
+ },
+ "brandebourg": {
+  "file": "brandebourg.jpg",
+  "artist": "Thomas Wolf, www.foto-tw.de",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Brandenburger_Tor_abends.jpg"
+ },
+ "kremlin": {
+  "file": "kremlin.jpg",
+  "artist": "Pavel Kazachkov from Moscow, Russia",
+  "license": "CC BY 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Moscow_Kremlin_(8281675670).jpg"
+ },
+ "sphinx": {
+  "file": "sphinx.jpg",
+  "artist": "Hesham Ebaid",
+  "license": "CC0",
+  "source": "https://commons.wikimedia.org/wiki/File:Sphinx_with_the_third_pyramid.jpg"
+ },
+ "abou-simbel": {
+  "file": "abou-simbel.jpg",
+  "artist": "youssef_alam",
+  "license": "CC BY 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Ramsis,_Aswan_Governorate,_Egypt_-_panoramio.jpg"
+ },
+ "mosquee-bleue": {
+  "file": "mosquee-bleue.jpg",
+  "artist": "Pedro Szekely from Los Angeles, USA",
+  "license": "CC BY-SA 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Istanbul_(34223582516)_(cropped).jpg"
+ },
+ "tour-londres": {
+  "file": "tour-londres.jpg",
+  "artist": "[Duncan] from Nottingham, UK",
+  "license": "CC BY 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Tower_of_London_from_the_Shard_(8515883950).jpg"
+ },
+ "frontenac": {
+  "file": "frontenac.jpg",
+  "artist": "Bernard Gagnon",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau_Frontenac_02.jpg"
+ },
+ "space-needle": {
+  "file": "space-needle.jpg",
+  "artist": "Jordon Kalilich",
+  "license": "Public domain",
+  "source": "https://commons.wikimedia.org/wiki/File:Space_Needle_2011-07-04.jpg"
+ },
+ "gateway-arch": {
+  "file": "gateway-arch.jpg",
+  "artist": "Daniel Schwen",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:St_Louis_night_expblend_cropped.jpg"
+ },
+ "maison-blanche": {
+  "file": "maison-blanche.jpg",
+  "artist": "Cezary p et MattWade",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:White_House_north_and_south_sides.jpg"
+ },
+ "capitole": {
+  "file": "capitole.jpg",
+  "artist": "Martin Falbisoner",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:US_Capitol_east_side.JPG"
+ },
+ "marina-bay": {
+  "file": "marina-bay.jpg",
+  "artist": "Supanut Arunoprayote",
+  "license": "CC BY 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Marina_Bay_Sands_(I).jpg"
+ },
+ "skytree": {
+  "file": "skytree.jpg",
+  "artist": "Kakidai",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Tokyo_Skytree_2014_%E2%85%A2.jpg"
+ },
+ "fushimi-inari": {
+  "file": "fushimi-inari.jpg",
+  "artist": "Basile Morin",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Torii_path_with_lantern_at_Fushimi_Inari_Taisha_Shrine,_Kyoto,_Japan.jpg"
+ },
+ "itsukushima": {
+  "file": "itsukushima.jpg",
+  "artist": "redlegsfan21",
+  "license": "CC BY-SA 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Itsukushima_Shrine_Torii_Gate_(13890465459).jpg"
+ },
+ "himeji": {
+  "file": "himeji.jpg",
+  "artist": "Nikos Kitsakis",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Himeji_castle_in_may_2015.jpg"
+ },
+ "terre-cuite": {
+  "file": "terre-cuite.jpg",
+  "artist": "xiquinhosilva",
+  "license": "CC BY 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:51714-Terracota-Army.jpg"
+ },
+ "temple-ciel": {
+  "file": "temple-ciel.jpg",
+  "artist": "Shujianyang",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Temple_of_Heaven_20160323_01.jpg"
+ },
+ "temple-or": {
+  "file": "temple-or.jpg",
+  "artist": "Shagil Kannur",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:The_Golden_Temple_of_Amrithsar_7.jpg"
+ },
+ "hawa-mahal": {
+  "file": "hawa-mahal.jpg",
+  "artist": "Chainwit.",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:East_facade_Hawa_Mahal_Jaipur_from_ground_level_(July_2022)_-_img_01.jpg"
+ },
+ "shwedagon": {
+  "file": "shwedagon.jpg",
+  "artist": "Bjørn Christian Tørrissen",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Shwedagon_Pagoda_2017.jpg"
+ },
+ "dome-rocher": {
+  "file": "dome-rocher.jpg",
+  "artist": "Ludvig14",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Jerusalem_DomeoftheRock_J65_(cropped).JPG"
+ },
+ "harbour-bridge": {
+  "file": "harbour-bridge.jpg",
+  "artist": "Servite et contribuere",
+  "license": "CC0",
+  "source": "https://commons.wikimedia.org/wiki/File:Sydney_Harbour_Bridge-16_October_2025.jpg"
+ },
+ "teotihuacan": {
+  "file": "teotihuacan.jpg",
+  "artist": "Burkhard Mücke",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:2020-02-11_Teotihuacan_la_Avenida_de_los_Muertos_y_la_Pir%C3%A1mide_del_Sol.jpg"
+ },
+ "saint-pierre": {
+  "file": "saint-pierre.jpg",
+  "artist": "Alvesgaspar",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg"
+ },
+ "duomo-florence": {
+  "file": "duomo-florence.jpg",
+  "artist": "Gary Campbell-Hall",
+  "license": "CC BY 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Cattedrale_di_Santa_Maria_del_Fiore_%E2%80%93_Il_Duomo_di_Firenze.jpg"
+ },
+ "rialto": {
+  "file": "rialto.jpg",
+  "artist": "kallerna",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Rialto_2025_4.jpg"
+ },
+ "garnier": {
+  "file": "garnier.jpg",
+  "artist": "Peter Rivera",
+  "license": "CC BY 2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Paris_Opera_full_frontal_architecture,_May_2009.jpg"
+ },
+ "palais-papes": {
+  "file": "palais-papes.jpg",
+  "artist": "François de Dijon",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Avignon_Palais_des_Papes_2013.jpg"
+ },
+ "fort-boyard": {
+  "file": "fort-boyard.jpg",
+  "artist": "Alexandre SEMUR",
+  "license": "CC BY-SA 4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Fort_boyards.jpg"
+ },
+ "strasbourg": {
+  "file": "strasbourg.jpg",
+  "artist": "Diliff",
+  "license": "CC BY-SA 3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Strasbourg_Cathedral_Exterior_-_Diliff.jpg"
  }
 }

@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v11';
+const CACHE = 'kultivo-v12';
 const FILES = [
     './',
     './index.html',
@@ -46,6 +46,37 @@ const FILES = [
     './icons/favicon.png',
     './icons/logo.svg',
     // photos des monuments (Wikimedia Commons)
+    './monuments/brandebourg.jpg',
+    './monuments/kremlin.jpg',
+    './monuments/sphinx.jpg',
+    './monuments/abou-simbel.jpg',
+    './monuments/mosquee-bleue.jpg',
+    './monuments/tour-londres.jpg',
+    './monuments/frontenac.jpg',
+    './monuments/space-needle.jpg',
+    './monuments/gateway-arch.jpg',
+    './monuments/maison-blanche.jpg',
+    './monuments/capitole.jpg',
+    './monuments/marina-bay.jpg',
+    './monuments/skytree.jpg',
+    './monuments/fushimi-inari.jpg',
+    './monuments/itsukushima.jpg',
+    './monuments/himeji.jpg',
+    './monuments/terre-cuite.jpg',
+    './monuments/temple-ciel.jpg',
+    './monuments/temple-or.jpg',
+    './monuments/hawa-mahal.jpg',
+    './monuments/shwedagon.jpg',
+    './monuments/dome-rocher.jpg',
+    './monuments/harbour-bridge.jpg',
+    './monuments/teotihuacan.jpg',
+    './monuments/saint-pierre.jpg',
+    './monuments/duomo-florence.jpg',
+    './monuments/rialto.jpg',
+    './monuments/garnier.jpg',
+    './monuments/palais-papes.jpg',
+    './monuments/fort-boyard.jpg',
+    './monuments/strasbourg.jpg',
     './monuments/alhambra.jpg',
     './monuments/angkor.jpg',
     './monuments/arc-triomphe.jpg',
