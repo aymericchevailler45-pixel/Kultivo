@@ -132,7 +132,7 @@ TRAINING_QUESTIONS.push(
     { id: 11115, theme: "Sciences", d: 2.0, q: "Quelle partie du tube digestif mesure environ 7 mètres de long ?", a: ["L’intestin grêle", "Intestin grêle", "Intestin grele", "Intestin"], exp: "Elle absorbe la plus grande partie des aliments." },
     { id: 11116, theme: "Sciences", d: 2.0, q: "Quel savant grec, maître d’Alexandre le Grand, a classé les animaux ?", a: ["Aristote"], exp: "Il a observé plus de 500 espèces." },
     { id: 11117, theme: "Sciences", d: 2.1, q: "Quelle lettre grecque désigne le nombre 3,14… ?", a: ["Pi", "π"], exp: "Le rapport entre le tour d’un cercle et son diamètre." },
-    { id: 11118, theme: "Sciences", d: 2.2, q: "Quel robot de la NASA explore le cratère Jezero, sur Mars, depuis 2021 ?", a: ["Perseverance", "Persévérance"], exp: "Il récolte des roches qui pourraient garder des traces de vie." },
+    { id: 11118, theme: "Sciences", d: 2.2, q: "Quel petit organe, sous le foie, stocke la bile ?", a: ["La vésicule biliaire", "Vésicule biliaire", "Vesicule biliaire", "Vésicule"], exp: "On peut vivre sans elle : elle est parfois retirée à cause de calculs." },
     { id: 11119, theme: "Sciences", d: 2.2, q: "Quel programme de la NASA veut renvoyer des astronautes sur la Lune ?", a: ["Artemis", "Artémis"], exp: "Du nom de la sœur jumelle d’Apollon." },
     { id: 11120, theme: "Sciences", d: 2.3, q: "Quel groupe d’experts de l’ONU publie les grands rapports sur le climat ?", a: ["Le GIEC", "GIEC", "IPCC"], exp: "Prix Nobel de la paix en 2007." },
     { id: 11121, theme: "Sciences", d: 2.3, q: "Quel phénomène de réchauffement du Pacifique bouleverse la météo mondiale ?", a: ["El Niño", "El Nino", "Nino"], exp: "« L’enfant Jésus » en espagnol : il arrive souvent vers Noël." },
