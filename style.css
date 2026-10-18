@@ -2587,3 +2587,4 @@ input, textarea, [contenteditable] {
 .train-step { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .train-step i { display: block; height: 100%; border-radius: inherit; background: var(--violet); }
 #askText { white-space: pre-line; }
+.train-errors { color: var(--red-ink); font-size: 0.75rem; font-weight: 800; }

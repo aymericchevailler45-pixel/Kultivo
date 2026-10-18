@@ -3586,14 +3586,23 @@ function pickTrainingCards(theme) {
     return shuffle(picked).map(q => ({ q, review: seen(q) }));
 }
 
+/** Ce qu'il reste à faire pour le palier suivant, en clair : « encore 3 questions à réussir et 4 à maîtriser ». */
+function trainingLeftText(pr) {
+    const right = Math.max(0, pr.needRight - pr.right);
+    const mastered = Math.max(0, pr.needMastered - pr.mastered);
+    const parts = [];
+    if (right) parts.push(`${plural(right, 'question', 'questions')} à réussir`);
+    if (mastered) parts.push(`${right ? mastered : plural(mastered, 'question', 'questions')} à maîtriser`);
+    return parts.length ? `encore ${parts.join(' et ')}` : 'c’est bon !';
+}
+
 /** Avant de commencer : rappel du palier et de ce qu'il reste pour le suivant. */
 async function confirmTraining(theme, icon) {
     const pr = trainingProgress(theme);
     const lines = [`Palier ${pr.tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`];
     if (pr.tier < TRAIN_TIERS) {
-        let need = `Pour le palier ${pr.tier + 1} : ✅ ${Math.min(pr.right, pr.needRight)}/${pr.needRight} réussies`;
-        if (pr.needMastered) need += ` · ⏳ ${Math.min(pr.mastered, pr.needMastered)}/${pr.needMastered} maîtrisées`;
-        lines.push(need);
+        lines.push(pr.ready ? `Palier ${pr.tier + 1} débloqué à la fin de ta prochaine session !`
+            : `Pour passer au palier ${pr.tier + 1} : ${trainingLeftText(pr)}.`);
     } else {
         lines.push('Palier maximum : continue pour tout maîtriser !');
     }
@@ -3620,10 +3629,7 @@ function endTraining() {
     if (tier > before) text = `🎉 Palier ${tier} débloqué en ${theme} !`;
     else if (tier >= TRAIN_TIERS && pr.ready) text = `${icon} ${theme} : tu es au palier maximum, bravo !`;
     else {
-        const left = [];
-        if (pr.right < pr.needRight) left.push(`${pr.needRight - pr.right} à réussir`);
-        if (pr.mastered < pr.needMastered) left.push(`${pr.needMastered - pr.mastered} à maîtriser`);
-        text = `${icon} Palier ${tier} → ${tier + 1} : encore ${left.join(' et ')}.`;
+        text = `${icon} Pour passer au palier ${tier + 1} : ${trainingLeftText(pr)}.`;
         if (pr.right >= pr.needRight) text += '\n🌙 Les questions reviennent un autre jour pour être maîtrisées.';
     }
     if (tier > before) launchConfetti();
@@ -3711,7 +3717,12 @@ function renderTraining() {
             line.textContent = `${pr.totalMastered} / ${pr.total} maîtrisées`;
             tile.append(label, bar, line);
             const errors = bank.filter(q => missCount(q.id) > 0).length;
-            if (errors) tile.setAttribute('data-notif', errors);
+            if (errors) {
+                const rev = el('span', 'train-errors');
+                rev.textContent = `↻ ${errors} à revoir`;
+                rev.title = 'Questions ratées : elles reviennent dans tes prochaines sessions';
+                tile.append(rev);
+            }
         }
         tile.addEventListener('click', () => (bank.length ? confirmTraining(theme, icon) : startTraining(theme)));
         grid.append(tile);
