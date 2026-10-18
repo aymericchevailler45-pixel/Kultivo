@@ -322,6 +322,7 @@ function defaultData() {
         podium: {},                      // classement : lundi de la semaine -> place obtenue (0 = rien)
         avatar: null,                    // avatar choisi : { hue: 0-359, emoji: '🦉' ou null = initiale }
         trainTier: {},                   // entraînement : thème -> palier débloqué (1 à 5)
+        trainTierDay: {},                // entraînement : thème -> jour du dernier palier gagné (1 par jour)
         tipTraining: false,              // explication des paliers déjà vue
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
@@ -341,7 +342,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -3544,11 +3545,12 @@ function trainingProgress(theme) {
     const mastered = qs.filter(q => isMastered(q.id)).length;
     const needRight = Math.ceil(qs.length * 2 / 3);
     // Palier 1 → 2 : réussir suffit (on peut monter dès le 1er jour) ; ensuite il faut aussi maîtriser 1/3
-    const needMastered = tier === 1 ? 0 : Math.ceil(qs.length / 3);
+    const needMastered = 0;   // règle simplifiée (2026-10-18) : seule la réussite compte pour monter
     const bank = trainingBank(theme);
     return {
         tier, right, mastered, needRight, needMastered, size: qs.length,
-        ready: qs.length > 0 && right >= needRight && mastered >= needMastered,
+        ready: qs.length > 0 && right >= needRight,
+        blockedToday: state.data.trainTierDay[theme] === todayKey(),   // déjà un palier gagné aujourd'hui
         totalMastered: bank.filter(q => isMastered(q.id)).length,
         total: bank.length
     };
@@ -3557,9 +3559,11 @@ function trainingProgress(theme) {
 /** Monte d'un ou plusieurs paliers si les conditions sont remplies. Renvoie le nouveau palier. */
 function updateTrainingTier(theme) {
     let tier = trainTierOf(theme);
-    while (tier < TRAIN_TIERS && trainingProgress(theme).ready) {
+    const pr = trainingProgress(theme);
+    if (tier < TRAIN_TIERS && pr.ready && !pr.blockedToday) {
         tier++;
         state.data.trainTier[theme] = tier;
+        state.data.trainTierDay[theme] = todayKey();   // au plus un palier par jour (et par thème)
     }
     return tier;
 }
@@ -3601,8 +3605,9 @@ async function confirmTraining(theme, icon) {
     const pr = trainingProgress(theme);
     const lines = [`Palier ${pr.tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`];
     if (pr.tier < TRAIN_TIERS) {
-        lines.push(pr.ready ? `Palier ${pr.tier + 1} débloqué à la fin de ta prochaine session !`
-            : `Pour passer au palier ${pr.tier + 1} : ${trainingLeftText(pr)}.`);
+        lines.push(!pr.ready ? `Pour passer au palier ${pr.tier + 1} : ${trainingLeftText(pr)}.`
+            : pr.blockedToday ? `🌙 Palier ${pr.tier + 1} demain : un seul palier par jour.`
+            : `Palier ${pr.tier + 1} débloqué à la fin de ta prochaine session !`);
     } else {
         lines.push('Palier maximum : continue pour tout maîtriser !');
     }
@@ -3629,8 +3634,9 @@ function endTraining() {
     if (tier > before) text = `🎉 Palier ${tier} débloqué en ${theme} !`;
     else if (tier >= TRAIN_TIERS && pr.ready) text = `${icon} ${theme} : tu es au palier maximum, bravo !`;
     else {
-        text = `${icon} Pour passer au palier ${tier + 1} : ${trainingLeftText(pr)}.`;
-        if (pr.right >= pr.needRight) text += '\n🌙 Les questions reviennent un autre jour pour être maîtrisées.';
+        text = pr.ready && pr.blockedToday
+            ? `🌙 Bravo ! Tu as déjà gagné un palier aujourd’hui en ${theme} : reviens demain pour passer au palier ${tier + 1}.`
+            : `${icon} Pour passer au palier ${tier + 1} : ${trainingLeftText(pr)}.`;
     }
     if (tier > before) launchConfetti();
     setEnd({
@@ -3668,7 +3674,7 @@ function showTrainingTip() {
     if (state.data.tipTraining || $('trainingPage').hidden || !$('tour').hidden) return;
     tourSteps = [{
         target: () => document.querySelector('.train-tile'),
-        text: '🎯 Chaque thème a 5 paliers. Pour monter, réussis les questions… et retiens-les : une question est maîtrisée quand tu la réussis encore un autre jour.'
+        text: '🎯 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un palier par jour au maximum).'
     }];
     tourFlag = 'tipTraining';
     tourLastLabel = 'Compris !';

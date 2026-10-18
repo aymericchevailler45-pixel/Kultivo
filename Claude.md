@@ -283,7 +283,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    Plus de questions du parcours dans l'entraînement (2026-10-18 : deux modes séparés). Paliers nommés
    (`TRAIN_TIER_NAMES` : Découverte, Initié, Confirmé, Expert, Maître), barre en 5 morceaux sur chaque case ;
    tap sur un thème → `confirmTraining` (palier, ce qu'il reste, « Commencer » / « Plus tard »).
-   Palier 1 → 2 : 2/3 réussies suffisent ; ensuite + 1/3 maîtrisées. Re-toucher l'onglet Défis bascule
+   RÈGLE SIMPLIFIÉE (2026-10-18, l'ancienne « 2/3 réussies + 1/3 maîtrisées » était incompréhensible) : monter =
+   réussir les 2/3 des questions du palier (cumulé entre sessions), AU PLUS UN PALIER PAR JOUR ET PAR THÈME
+   (`trainTierDay`). « Maîtrisée » ne sert plus qu'à la progression (x / 50) et aux futurs badges. Re-toucher l'onglet Défis bascule
    Défis ⇄ Entraînement. Maîtrise = streak ≥ 2, une 2e réussite le même jour ne compte pas (`recordResult`). Contrôle des
    doublons / mots de la réponse dans la question : script `check_training.py` (scratchpad de la session).
    Reste à faire : lots suivants jusqu'à 150 / thème, photos de monuments, badges bronze/argent/or par thème.
