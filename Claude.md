@@ -296,6 +296,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    Outils (scratchpad) : `add.sh <thème>` = ajoute lots/<thème>.txt puis `check_training.py` + `syntax_check.py`
    (vérif. JS sans navigateur : Edge headless ne répondait plus), annule si problème.
    Les paliers comptent maintenant 30 questions (2/3 = 20 à réussir) ; le palier déjà atteint est conservé.
+   1re visite : 3 bulles (`showTrainingTip`, drapeau `tipTraining2` ; l'ancien `tipTraining` = 1 bulle, gardé).
+   Captures d'écran : Edge headless ne marche plus via Bash, mais OK via PowerShell (`shot.ps1` du scratchpad).
    Reste à faire : badges bronze/argent/or par thème.
    PLAN d'origine :
    - banque de questions SÉPARÉE du parcours (fichier à part chargé seulement à l'ouverture du mode), objectif
