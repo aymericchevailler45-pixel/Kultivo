@@ -276,7 +276,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Tester dans le navigateur reste à faire côté utilisateur (la répartition a été vérifiée par simulation).
 
 ## Prochaines étapes (proposées le 2026-10-17)
-1. Entraînement par thème — PLAN VALIDÉ le 2026-10-18 :
+1. Entraînement par thème — FAIT le 2026-10-18 (1re version) : sous-onglet « 🎯 Entraînement » dans Défis
+   (`setChallengesTab`, `renderTraining`), 15 cases de thème, `pickTrainingCards`, `trainingProgress`,
+   `endTraining`, mode 'training' (sans cœurs, `XP_TRAINING` = 2). Banque : `entrainement/<theme>.js`
+   (TRAINING_QUESTIONS, ids 10000+ par blocs de 1000, voir `_banque.js`) : 50 questions par thème = 750.
+   Maîtrise = streak ≥ 2, une 2e réussite le même jour ne compte pas (`recordResult`). Contrôle des
+   doublons / mots de la réponse dans la question : script `check_training.py` (scratchpad de la session).
+   Reste à faire : lots suivants jusqu'à 150 / thème, photos de monuments, badges bronze/argent/or par thème.
+   PLAN d'origine :
    - banque de questions SÉPARÉE du parcours (fichier à part chargé seulement à l'ouverture du mode), objectif
      ~150 par thème ; on commence par 50 par thème (750), puis lots de 50 après validation de la qualité ;
    - Monuments / Drapeaux : environ 1/3 avec image (photo libre, drapeau flagcdn), le reste en questions
