@@ -94,10 +94,6 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   focus automatiquement à chaque question sans ouvrir le clavier,
   réajusté à 50/300/700 ms → images, question et étiquettes
   réduites pour garder « Vérifier » visible. Photos de monuments jamais recadrées (max-height, pas object-fit: cover).
-- Saut d'écran entre deux questions (corrigé le 2026-10-18) : le clavier se fermait puis se rouvrait. Désormais
-  le champ n'est plus mis en readOnly pendant la correction (saisie bloquée par `beforeinput`), et Vérifier /
-  Je ne sais pas / Continuer / indices ne prennent pas le focus (`keepFocus` : preventDefault sur pointerdown et
-  mousedown) → le clavier reste ouvert d'une question à l'autre. Fin de leçon : `blur` (clavier fermé).
 - Chez l'utilisateur, le clavier s'ouvre automatiquement à chaque question → le mode compact est son affichage
   habituel : tailles « à mi-chemin » (ni trop grand, ni trop petit). Photo de monument : tap = plein écran
   (`photoZoom`, avec crédit), retap = retour. Pas de boutons collés au clavier (refusé) : à la place,
