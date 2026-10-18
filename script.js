@@ -914,6 +914,7 @@ function showScreen(name) {
         else btn.removeAttribute('aria-current');
     });
 
+    refreshBackSnapshot();   // image de « retour » à jour (voir onBackButton)
     if (name === 'map') {
         renderMap();
         // Première arrivée sur le parcours après l'accueil : petit tutoriel
@@ -2345,6 +2346,7 @@ function closeQuitModal() {
 
 function returnToMap() {
     stopTimer();
+    stopEndStats();
     state.phase = 'idle';
     hideFeedback();
     renderHeader();
@@ -2511,6 +2513,7 @@ function showCard() {
     input.focus();
     // Le clavier reste souvent ouvert d'une question à l'autre : on ajuste AVANT que l'écran soit redessiné
     // (calcul immédiat, pas après coup), puis la question apparaît en fondu rapide.
+    refreshBackSnapshot();
     updateKeyboardMode();   // nouvelle question : mode compact AVANT l'affichage (taille clavier connue)
     fitToKeyboard();
     keepAnswerVisible();
@@ -4722,9 +4725,15 @@ function statAccuracy() {
 let endStatTimers = [];
 
 /** Les tuiles apparaissent l'une après l'autre, et leur chiffre défile de 0 jusqu'au résultat. */
-function renderEndStats(stats) {
+/** Arrête l'apparition des tuiles du récap (sinon leurs sons continuaient après avoir quitté l'écran). */
+function stopEndStats() {
     endStatTimers.forEach(clearTimeout);
     endStatTimers = [];
+    ['endPrimary', 'endSecondary', 'endRescue'].forEach(id => { $(id).disabled = false; });
+}
+
+function renderEndStats(stats) {
+    stopEndStats();
     const box = $('endStats');
     box.replaceChildren();
     box.hidden = stats.length === 0;
@@ -4745,6 +4754,13 @@ function renderEndStats(stats) {
             countUp(value, stat);
         }, 500 + i * 550));
     });
+    // Boutons grisés tant que les tuiles apparaissent (on ne quitte pas l'écran en plein récap)
+    if (!calm && stats.length) {
+        const buttons = ['endPrimary', 'endSecondary', 'endRescue'].map(id => $(id));
+        buttons.forEach(b => { b.disabled = true; });
+        endStatTimers.push(setTimeout(() => buttons.forEach(b => { b.disabled = false; }),
+            500 + (stats.length - 1) * 550 + 450));
+    }
 }
 
 function countUp(node, stat) {
@@ -5229,6 +5245,20 @@ function armBackGuard() {
     backGuard = true;
 }
 
+/* Au « retour », Chrome Android montre d'abord une image de l'écran « d'avant » (prise au moment où l'étape
+   d'avance a été ajoutée), puis l'appli réagit : un vieil écran apparaissait une seconde. On refait donc
+   l'étape d'avance (et donc l'image) à chaque changement d'écran ou de question, une fois l'écran dessiné. */
+let backRefreshing = false;
+let backRefreshTimer = null;
+function refreshBackSnapshot() {
+    clearTimeout(backRefreshTimer);
+    backRefreshTimer = setTimeout(() => {
+        if (!backGuard || backRefreshing) return;
+        backRefreshing = true;
+        history.back();   // revient sur l'étape de base (popstate ignoré ci-dessous), puis on la remet
+    }, 350);
+}
+
 /** Ferme la fenêtre ouverte la plus « haute » ; renvoie true si quelque chose a été fermé. */
 function closeTopOverlay() {
     const open = id => !$(id).hidden;
@@ -5256,7 +5286,8 @@ function closeTopOverlay() {
 
 function onBackButton() {
     backGuard = false;
-    if (closeTopOverlay()) { armBackGuard(); return; }
+    if (backRefreshing) { backRefreshing = false; armBackGuard(); return; }   // rafraîchissement, pas un vrai retour
+    if (closeTopOverlay()) { armBackGuard(); refreshBackSnapshot(); return; }
     if (!$('studyScreen').hidden) {
         if (state.phase === 'over') returnToMap();
         else openQuitModal();   // « Quitter ? » : la progression n'est plus perdue par erreur

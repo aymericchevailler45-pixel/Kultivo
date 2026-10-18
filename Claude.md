@@ -98,6 +98,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `onBackButton` : ferme la fenêtre ouverte (`closeTopOverlay`), sinon en leçon « Quitter ? », sinon onglet →
   Parcours, sinon sur le Parcours « Appuie encore sur retour pour quitter » (2e appui en 2,5 s = sortie).
   Nouvelle fenêtre → l'ajouter dans `closeTopOverlay`.
+  Chrome montre au « retour » une image de l'écran d'avant prise à l'ajout de l'étape → `refreshBackSnapshot`
+  (history.back puis pushState, popstate ignoré) après chaque changement d'écran / de question.
+- Récap de fin de leçon : boutons grisés pendant l'apparition des tuiles ; `stopEndStats` (timers et sons
+  arrêtés) en quittant l'écran.
 - Barre Chrome « clé / carte / adresse » au-dessus du clavier (2026-10-18) : due au champ mot de passe caché de la
   fenêtre de connexion. Il n'est `type=password` (et autocomplete) QUE fenêtre ouverte (`openAuthModal`) ; fermé
   (`closeAuthModal`) : champ texte vide, autocomplete off. N'a PAS suffi (Chrome ignore autocomplete=off).
