@@ -2538,7 +2538,8 @@ function verify(skipped = false) {
     if (skipped) state.lastTyped = '';
 
     const ok = verdict !== 'wrong';
-    input.readOnly = true;
+    // Pas de readOnly ici : sur Android il ferme le clavier, qui se rouvre à la question suivante (saut d'écran).
+    // La saisie est bloquée par « beforeinput » tant qu'on n'est pas en train de répondre.
     input.classList.add(ok ? 'is-ok' : 'is-wrong');
     $('answerActions').hidden = true;
     $('hintPanel').hidden = true;
@@ -2732,6 +2733,7 @@ function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryCl
 function endSession(win) {
     stopTimer();
     state.phase = 'over';
+    $('userInput').blur();   // fin de leçon : le clavier se ferme
     $('cardView').hidden = true;
     $('pairsView').hidden = true;
     $('orderView').hidden = true;
@@ -4871,6 +4873,18 @@ function bindEvents() {
     $('placementBtn').addEventListener('click', () => openPlacementModal());
     $('modalSecondaryBtn').addEventListener('click', closeStartModal);
     $('endRescue').addEventListener('click', useRescueHeart);
+
+    // Clavier ouvert d'une question à l'autre (sinon l'écran saute) :
+    // 1) la saisie est bloquée hors réponse (au lieu de rendre le champ readOnly) ;
+    $('userInput').addEventListener('beforeinput', e => { if (state.phase !== 'answering') e.preventDefault(); });
+    // 2) toucher Vérifier / Je ne sais pas / Continuer / un indice ne retire pas la main au champ de réponse
+    //    (le « clic » se fait quand même) : le clavier ne se ferme pas entre deux questions.
+    const keepFocus = e => {
+        if (document.activeElement !== $('userInput')) return;
+        if (e.target.closest('#answerActions button, #feedback .btn, #hintPanel button, #hintBtn')) e.preventDefault();
+    };
+    document.addEventListener('pointerdown', keepFocus);
+    document.addEventListener('mousedown', keepFocus);
 
     $('endPrimary').addEventListener('click', () => state.onEndPrimary && state.onEndPrimary());
     $('endSecondary').addEventListener('click', () => state.onEndSecondary && state.onEndSecondary());
