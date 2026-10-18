@@ -70,6 +70,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Cœur de secours : plus utilisé automatiquement, et PAS de popup (l'utilisateur trouvait ça pénible).
   Sur l'écran « Niveau raté », bouton `endRescue` au-dessus de « Réessayer » : continuer avec un cœur du stock,
   ou en acheter un sur le moment. Sans assez de pièces : simple ligne « 💡 il te manque X 🪙 » dans le texte.
+  Depuis le 2026-10-18 : bouton « 💖 Continuer · −100 🪙 », solde dessous (« Tu as X 🪙 · il t’en restera Y »,
+  `endRescueInfo`) et confirmation d'achat (`askConfirm`) avant de payer.
 - Signalement : lien « 🚩 Signaler cette question » dans le bandeau de correction → raison + commentaire,
   stocké dans `reports` (file d'attente sur l'appareil, invisible pour le joueur), puis envoyé à Supabase par
   `flushReports` (au lancement, après chaque signalement, au retour de la connexion) et retiré une fois envoyé.

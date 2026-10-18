@@ -2658,16 +2658,24 @@ function commit(ok) {
 const heartPrice = () => SHOP.find(i => i.id === 'heart').price;
 
 /** Bouton « continuer » de l'écran Niveau raté : utilise un cœur du stock, ou l'achète. */
-function useRescueHeart() {
+async function useRescueHeart() {
     if (state.phase !== 'over' || !state.canRescue) return;
     const data = state.data;
+    const price = heartPrice();
     if (data.inv.heart > 0) {
         data.inv.heart--;
-        showToast('💖 Cœur de secours utilisé : tu continues !');
-    } else if (data.coins >= heartPrice()) {
-        data.coins -= heartPrice();
+        showToast(`💖 Cœur de secours utilisé (il t’en reste ${data.inv.heart}) : tu continues !`);
+    } else if (data.coins >= price) {
+        // Achat : on confirme d'abord, avec le solde avant / après
+        const ok = await askConfirm({
+            title: '💖 Acheter un cœur de secours ?',
+            text: `${price} 🪙 seront retirées de tes ${data.coins} 🪙 : il t’en restera ${data.coins - price}.`,
+            yes: `Acheter · ${price} 🪙`
+        });
+        if (!ok || state.phase !== 'over' || data.coins < price) return;
+        data.coins -= price;
         data.totals.purchases++;
-        showToast('💖 Cœur de secours acheté : tu continues !');
+        showToast(`💖 −${price} 🪙 : tu continues ! (il te reste ${data.coins} 🪙)`);
     } else {
         return;
     }
@@ -2688,14 +2696,18 @@ function showRescueOption() {
     const price = heartPrice();
     const btn = $('endRescue');
     state.canRescue = inv.heart > 0 || coins >= price;
+    const info = $('endRescueInfo');
     if (inv.heart > 0) {
-        btn.textContent = `💖 Continuer avec un cœur de secours (${inv.heart} en stock)`;
+        btn.textContent = '💖 Continuer avec un cœur de secours';
+        info.textContent = `Gratuit : tu en as ${inv.heart} en stock.`;
     } else if (coins >= price) {
-        btn.textContent = `💖 Acheter un cœur et continuer · ${price} 🪙`;
+        btn.textContent = `💖 Continuer · −${price} 🪙`;
+        info.textContent = `Tu as ${coins} 🪙 · il t’en restera ${coins - price}.`;
     } else {
-        $('endText').textContent += `\n💡 Un cœur de secours (${price} 🪙) t’aurait permis de continuer. Il te manque ${price - coins} 🪙.`;
+        $('endText').textContent += `\n💡 Un cœur de secours coûte ${price} 🪙 pour continuer : tu en as ${coins}, il t’en manque ${price - coins}.`;
     }
     btn.hidden = !state.canRescue;
+    info.hidden = !state.canRescue;
 }
 
 /* ---------- Fin de leçon ---------- */
@@ -2704,6 +2716,7 @@ function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryCl
     renderEndStats(stats);
     $('endEmoji').textContent = emoji;
     $('endRescue').hidden = true;
+    $('endRescueInfo').hidden = true;
     state.canRescue = false;
     $('endTitle').textContent = title;
     $('endText').textContent = text;
