@@ -3332,6 +3332,16 @@ function renderCloudCard() {
 }
 
 /* Fenêtre « Créer un compte / Se connecter » */
+
+/** Fermeture : le champ mot de passe redevient un simple champ texte vide. Sinon Chrome voit un formulaire de
+    connexion dans la page et ajoute sa barre « clé / carte bancaire / adresse » au clavier, même pour répondre. */
+function closeAuthModal() {
+    $('authModal').hidden = true;
+    $('authPassword').value = '';
+    $('authPassword').type = 'text';
+    $('authPassword').autocomplete = 'off';
+    $('authEmail').autocomplete = 'off';
+}
 let authMode = 'signup';
 let authDone = null;   // à appeler après une connexion réussie (ex. : passer à l'étape suivante de l'accueil)
 function openAuthModal(mode) {
@@ -3349,6 +3359,8 @@ function openAuthModal(mode) {
     $('authPassword').placeholder = signup ? '6 caractères minimum' : 'Mot de passe';
     $('authEmail').placeholder = 'Ton e-mail';
     $('authPassword').type = 'password';   // toujours masqué à l'ouverture
+    $('authPassword').autocomplete = signup ? 'new-password' : 'current-password';
+    $('authEmail').autocomplete = 'email';
     $('authEye').textContent = '👁️';
     $('authModal').hidden = false;
     // Pas de focus automatique : le clavier ne s'ouvre que quand le joueur touche un champ (fenêtre entière visible)
@@ -3386,8 +3398,7 @@ async function submitAuth(e) {
         return;
     }
     cloudUser = data.user;
-    $('authModal').hidden = true;
-    $('authPassword').value = '';
+    closeAuthModal();
     showToast(signup ? '☁️ Compte créé : ta progression est sauvegardée en ligne !' : '☁️ Connecté !');
     renderCloudCard();
     await cloudSync(true);   // peut récupérer la progression du compte (et relancer le jeu)
@@ -5100,7 +5111,7 @@ function bindEvents() {
         input.focus();
     });
     $('cloudLogoutBtn').addEventListener('click', () => { $('accountModal').hidden = true; cloudLogout(); });
-    $('closeAuthBtn').addEventListener('click', () => { $('authModal').hidden = true; });
+    $('closeAuthBtn').addEventListener('click', closeAuthModal);
     $('authSwitch').addEventListener('click', () => openAuthModal(authMode === 'signup' ? 'login' : 'signup'));
     // Clavier ouvert sur un champ de la fenêtre : on garde le champ (et le bouton) visibles au-dessus du clavier
     ['authEmail', 'authPassword'].forEach(id => $(id).addEventListener('focus', () => {
@@ -5168,7 +5179,7 @@ function bindEvents() {
             return;
         }
         if (!$('authModal').hidden || !$('cloudConflictModal').hidden || !$('accountModal').hidden) {
-            if (e.key === 'Escape') { $('authModal').hidden = true; $('accountModal').hidden = true; }
+            if (e.key === 'Escape') { closeAuthModal(); $('accountModal').hidden = true; }
             return;   // le formulaire gère lui-même la touche Entrée
         }
         if (!$('reportModal').hidden) {

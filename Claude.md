@@ -94,6 +94,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   focus automatiquement à chaque question sans ouvrir le clavier,
   réajusté à 50/300/700 ms → images, question et étiquettes
   réduites pour garder « Vérifier » visible. Photos de monuments jamais recadrées (max-height, pas object-fit: cover).
+- Barre Chrome « clé / carte / adresse » au-dessus du clavier (2026-10-18) : due au champ mot de passe caché de la
+  fenêtre de connexion. Il n'est `type=password` (et autocomplete) QUE fenêtre ouverte (`openAuthModal`) ; fermé
+  (`closeAuthModal`) : champ texte vide, autocomplete off. À vérifier sur le téléphone de l'utilisateur.
 - Saut d'écran entre deux questions : ESSAYÉ le 2026-10-18 de garder le clavier ouvert (pas de readOnly, boutons
   sans focus) → ANNULÉ : le clavier ouvert cachait le bandeau de correction. L'utilisateur accepte le petit saut
   (le clavier doit se fermer pour voir la correction). Ne pas retenter.

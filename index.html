@@ -369,9 +369,9 @@
             <h2 id="authTitle">☁️ Créer un compte</h2>
             <p>Ton compte garde ta partie : tu la retrouves sur tous tes appareils.</p>
             <form id="authForm" class="auth-form" novalidate>
-                <input type="email" id="authEmail" class="auth-input" placeholder="Ton e-mail" autocomplete="email" required>
+                <input type="email" id="authEmail" class="auth-input" placeholder="Ton e-mail" autocomplete="off" required>
                 <div class="password-field">
-                    <input type="password" id="authPassword" class="auth-input" placeholder="Mot de passe (6 caractères minimum)" autocomplete="new-password" required>
+                    <input type="text" id="authPassword" class="auth-input" placeholder="Mot de passe" autocomplete="off" required>
                     <button type="button" id="authEye" class="password-eye" aria-label="Afficher le mot de passe" aria-pressed="false">👁️</button>
                 </div>
                 <p class="auth-error" id="authError" role="alert"></p>
