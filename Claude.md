@@ -288,7 +288,15 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    (`trainTierDay`). « Maîtrisée » ne sert plus qu'à la progression (x / 50) et aux futurs badges. Re-toucher l'onglet Défis bascule
    Défis ⇄ Entraînement. Maîtrise = streak ≥ 2, une 2e réussite le même jour ne compte pas (`recordResult`). Contrôle des
    doublons / mots de la réponse dans la question : script `check_training.py` (scratchpad de la session).
-   Reste à faire : lots suivants jusqu'à 150 / thème, photos de monuments, badges bronze/argent/or par thème.
+   Lots 2 et 3 FAITS le 2026-10-18 (demande de l'utilisateur, en son absence) : 150 questions par thème = 2 250,
+   ids x051-x150 dans chaque bloc, ajoutés en fin de fichier (2e `TRAINING_QUESTIONS.push`). Beaucoup de questions
+   récentes (tubes 2015-2025, séries, applis, IA, JO 2024, prix Goncourt…). Drapeaux : 38 nouveaux drapeaux en image
+   (flags/, sw.js). Monuments : questions photo (« Quel est ce monument ? ») sur des monuments ABSENTS du parcours,
+   photos Wikimedia libres de droits en 640 px dans monuments/ (crédit obligatoire, monuments/credits.json).
+   Outils (scratchpad) : `add.sh <thème>` = ajoute lots/<thème>.txt puis `check_training.py` + `syntax_check.py`
+   (vérif. JS sans navigateur : Edge headless ne répondait plus), annule si problème.
+   Les paliers comptent maintenant 30 questions (2/3 = 20 à réussir) ; le palier déjà atteint est conservé.
+   Reste à faire : badges bronze/argent/or par thème.
    PLAN d'origine :
    - banque de questions SÉPARÉE du parcours (fichier à part chargé seulement à l'ouverture du mode), objectif
      ~150 par thème ; on commence par 50 par thème (750), puis lots de 50 après validation de la qualité ;
