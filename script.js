@@ -1584,12 +1584,12 @@ function renderProfile() {
 const PACK_SIZE = 5;   // un pack de 5 coûte le prix de 4
 
 const SHOP = [
-    { id: 'hintLength', icon: '🔤', short: 'Longueur',        name: 'Indice : longueur',
-      desc: 'Le nombre de lettres et de mots de la réponse.', price: 15,  size: 'third' }, // avant: 5
-    { id: 'hintLetter', icon: '🅰️', short: 'Première lettre', name: 'Indice : première lettre',
-      desc: 'La première lettre de la réponse.',              price: 30, size: 'third' }, // avant: 10
-    { id: 'hintStart',  icon: '🔎', short: 'Début du mot',    name: 'Indice : début du mot',
-      desc: 'Les premières lettres de la réponse.',           price: 50, size: 'third' }, // avant: 20
+    { id: 'hintLength', icon: '🔤', short: 'Forme',           name: 'Indice : forme',
+      desc: 'Les mots et les lettres de la réponse, en cases vides.', price: 15,  size: 'third' }, // avant: 5
+    { id: 'hintLetter', icon: '🅰️', short: 'Initiales',       name: 'Indice : initiales',
+      desc: 'La première lettre de chaque mot.',              price: 30, size: 'third' }, // avant: 10
+    { id: 'hintStart',  icon: '🔎', short: 'Plus de lettres', name: 'Indice : plus de lettres',
+      desc: 'Environ un tiers des lettres de chaque mot.',    price: 50, size: 'third' }, // avant: 20
     { id: 'heart',      icon: '💖', short: 'Cœur de secours', name: 'Cœur de secours',
       desc: 'Quand tu perds ton dernier cœur, le jeu te propose de l’utiliser pour continuer ta leçon.', price: 100, size: 'half' }, // avant: 30
     { id: 'freeze',     icon: '🧊', short: 'Gel de série',    name: 'Gel de série',
@@ -1597,25 +1597,62 @@ const SHOP = [
 ];
 const HINT_IDS = ['hintLength', 'hintLetter', 'hintStart'];
 
-/** La réponse sans son article (« Le Nil » devient « Nil »). */
-function answerCore(q) {
-    return q.a[0].replace(/^(?:l['’]|le\s+|la\s+|les\s+|un\s+|une\s+|du\s+|des\s+)/i, '').trim();
+/* Indices en grille, comme au pendu : chaque indice dévoile un peu plus la même grille.
+   Niveau 1 (forme) : cases vides ; 2 (initiales) : 1re lettre de chaque mot ; 3 (plus de lettres) : environ un
+   tiers de chaque mot, toujours au moins une lettre de plus que les initiales. Petits mots montrés en entier. */
+const HINT_LEVEL = { hintLength: 1, hintLetter: 2, hintStart: 3 };
+const HINT_SMALL_WORDS = new Set(['le', 'la', 'les', 'l', 'de', 'du', 'des', 'd', 'un', 'une', 'et', 'à', 'au', 'aux', 'en']);
+
+/** Combien de lettres d'un mot sont montrées au niveau donné. */
+function hintShown(len, level) {
+    if (level <= 1) return 0;
+    if (level === 2) return 1;
+    return Math.min(len - 1, Math.max(2, Math.ceil(len / 3))) || 1;
 }
 
-function hintText(id, q) {
-    const core = answerCore(q);
-    const lettersIn = word => [...word].filter(c => /[\p{L}\p{N}]/u.test(c)).length;
-    if (id === 'hintLength') {
-        if (/^\d+$/.test(core)) return `${core.length} chiffres`;
-        const words = core.split(/\s+/);
-        return words.length === 1
-            ? `${lettersIn(core)} lettres`
-            : `${words.length} mots (${words.map(lettersIn).join(' + ')} lettres)`;
-    }
-    const chars = [...core];
-    if (id === 'hintLetter') return `Commence par « ${chars[0].toUpperCase()} »`;
-    const n = Math.max(1, Math.min(3, Math.ceil(chars.length / 3)));
-    return `Commence par « ${chars.slice(0, n).join('')}… »`;
+/** Grille de la réponse principale : mots (lettres et chiffres) et séparateurs (espaces, apostrophes, tirets). */
+function hintGrid(q, level) {
+    const answer = q.a[0].trim();
+    const parts = answer.match(/[\p{L}\p{N}]+|[^\p{L}\p{N}]+/gu) || [];
+    const words = parts.filter(t => /[\p{L}\p{N}]/u.test(t));
+    const box = el('div', 'hint-grid');
+    let word = null;
+    parts.forEach(part => {
+        if (!/[\p{L}\p{N}]/u.test(part)) {
+            // Séparateur : une espace coupe la ligne ; une apostrophe ou un tiret reste collé au mot
+            if (/\s/.test(part)) { word = null; return; }
+            if (!word) { word = el('span', 'hint-word'); box.append(word); }
+            const sep = el('span', 'hint-sep');
+            sep.textContent = part.trim();
+            word.append(sep);
+            return;
+        }
+        if (!word) { word = el('span', 'hint-word'); box.append(word); }
+        const small = words.length > 1 && HINT_SMALL_WORDS.has(part.toLowerCase());
+        const letters = [...part];
+        const shown = small ? letters.length : hintShown(letters.length, level);
+        letters.forEach((ch, i) => {
+            const cell = el('span', small ? 'hint-cell is-small' : i < shown ? 'hint-cell is-shown' : 'hint-cell');
+            cell.textContent = i < shown ? ch.toUpperCase() : '';
+            word.append(cell);
+        });
+    });
+    return box;
+}
+
+/** Affiche la grille avec le niveau le plus fort parmi les indices pris sur cette carte. */
+function renderHintGrid() {
+    const level = Math.max(0, ...[...state.hintUsed].map(id => HINT_LEVEL[id] || 0));
+    const list = $('hintList');
+    list.replaceChildren();
+    list.hidden = level === 0;
+    if (!level) return;
+    const li = el('li', 'hint-box');
+    const label = el('span', 'hint-label');
+    const item = SHOP.find(i => HINT_LEVEL[i.id] === level);
+    label.textContent = `${item.icon} ${item.short}`;
+    li.append(label, hintGrid(state.current.q, level));
+    list.append(li);
 }
 
 function renderHintOptions() {
@@ -1625,10 +1662,11 @@ function renderHintOptions() {
     HINT_IDS.forEach(id => {
         const item = SHOP.find(i => i.id === id);
         const owned = state.data.inv[id] || 0;
-        const used = state.hintUsed.has(id);
+        const best = Math.max(0, ...[...state.hintUsed].map(h => HINT_LEVEL[h] || 0));
+        const used = state.hintUsed.has(id) || HINT_LEVEL[id] <= best;   // déjà visible dans la grille
         const btn = el('button', 'btn btn-hint');
         btn.type = 'button';
-        btn.textContent = used ? `${item.icon} ${item.short} (déjà utilisé)`
+        btn.textContent = used ? `${item.icon} ${item.short} (déjà visible)`
             : owned > 0 ? `${item.icon} ${item.short} (en stock : ${owned})`
             : `${item.icon} ${item.short} · ${item.price} 🪙`;
         btn.disabled = used || (owned === 0 && state.data.coins < item.price);
@@ -1647,6 +1685,8 @@ function toggleHintPanel() {
 /** Utilise un indice du stock, ou l'achète au prix de la boutique s'il n'y en a plus. */
 function useHint(id) {
     if (state.phase !== 'answering' || state.hintUsed.has(id)) return;
+    const best = Math.max(0, ...[...state.hintUsed].map(h => HINT_LEVEL[h] || 0));
+    if (HINT_LEVEL[id] <= best) return;   // n'apporterait rien de plus
     const item = SHOP.find(i => i.id === id);
     const data = state.data;
     if ((data.inv[id] || 0) > 0) data.inv[id]--;
@@ -1657,11 +1697,7 @@ function useHint(id) {
     saveData();
     renderHeader();
 
-    const list = $('hintList');
-    const li = el('li');
-    li.textContent = `${item.icon} ${hintText(id, state.current.q)}`;
-    list.append(li);
-    list.hidden = false;
+    renderHintGrid();
     $('hintPanel').hidden = true;
     $('userInput').focus();
 }

@@ -256,10 +256,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 ## Prochaines étapes (proposées le 2026-10-17)
 1. Entraînement par thème (questions déjà débloquées d'un thème au choix).
 2. Cartes dorées : 3 exemplaires d'une carte → version dorée brillante (le nombre est déjà dans `cards`).
-3. Revoir les indices (demande de l'utilisateur) : ils portent aujourd'hui sur la réponse complète
-   (« Albert Einstein » → « A »). Les baser sur le mot qui compte : la variante courte déjà acceptée dans `a`
-   (« Einstein » → « E », « Ein… », « 8 lettres »), sinon le dernier mot pour une personne. Vérifier dates,
-   nombres et noms en plusieurs mots (« Tour Eiffel », « New York »). Code : `answerCore`, `hintText`.
+3. FAIT le 2026-10-18 — Indices en grille façon pendu (`hintGrid`, `renderHintGrid`, `HINT_LEVEL`) sur la réponse
+   principale `a[0]` : Forme (cases vides, 15 🪙) → Initiales (1re lettre de chaque mot, 30 🪙) → Plus de lettres
+   (≈ 1/3 de chaque mot, toujours ≥ 1 de plus que les initiales, 50 🪙). Mêmes id qu'avant (stocks gardés).
+   Petits mots (le, de, des…) montrés en gris sans trait ; apostrophes/tirets gardés ; un indice plus faible
+   que celui déjà pris est grisé « déjà visible ».
 4. Plus de questions (bloc de 100 + 10 niveaux) ou nouveau thème.
 5. Bouton « Revoir le tutoriel » dans le Profil.
 6. Mode « Qui suis-je ? » (indices dévoilés un par un).
