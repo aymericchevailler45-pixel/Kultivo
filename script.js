@@ -3618,6 +3618,7 @@ function endTraining() {
         stats: [statXp(), statAccuracy(), statTime()],
         extra: rewardSummary(),
         primary: 'Encore 10 questions',
+        primaryClass: 'btn-green',
         onPrimary: () => startTraining(theme),
         secondary: 'Retour aux thèmes',
         onSecondary: () => { returnToMap(); setChallengesTab('training'); }
