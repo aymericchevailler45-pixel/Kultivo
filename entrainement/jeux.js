@@ -64,7 +64,7 @@ TRAINING_QUESTIONS.push(
 /* Lots 2 et 3 (2026-10-18) : questions modernes et classiques */
 TRAINING_QUESTIONS.push(
     // Lot 2
-    { id: 16051, theme: "Jeux", d: 1.0, q: "Dans quel jeu vidéo de 2020 cherche-t-on l’imposteur parmi des petits astronautes ?", a: ["Among Us"], exp: "Un énorme succès pendant le confinement." },
+    { id: 16051, theme: "Jeux", d: 1.0, q: "Dans quel jeu vidéo, devenu un phénomène en 2020, cherche-t-on l’imposteur parmi des petits astronautes ?", a: ["Among Us"], exp: "Un énorme succès pendant le confinement." },
     { id: 16052, theme: "Jeux", d: 1.0, q: "Quel jeu de cartes rapide demande de repérer le seul symbole commun entre deux cartes ?", a: ["Dobble", "Spot it"], exp: "Chaque paire de cartes a toujours exactement un symbole en commun." },
     { id: 16053, theme: "Jeux", d: 1.2, q: "Quel petit dinosaure vert sert de monture à Mario ?", a: ["Yoshi"], exp: "Il avale ses ennemis avec sa longue langue." },
     { id: 16054, theme: "Jeux", d: 1.2, q: "Quelle boule rose de Nintendo aspire ses ennemis pour copier leurs pouvoirs ?", a: ["Kirby"], exp: "Créé en 1992 par Masahiro Sakurai." },
@@ -157,7 +157,7 @@ TRAINING_QUESTIONS.push(
     { id: 16140, theme: "Jeux", d: 3.4, q: "Quel nom portent les petites poupées-calmars de Nintendo qui tirent de l’encre ?", a: ["Les Inklings", "Inklings", "Inkling"], exp: "Les héros de « Splatoon »." },
     { id: 16141, theme: "Jeux", d: 3.5, q: "Quelle carte de tarot ne prend ni ne perd une levée, et vaut 4,5 points ?", a: ["L’excuse", "Excuse"], exp: "Avec le petit et le 21, c’est l’un des trois bouts." },
     { id: 16142, theme: "Jeux", d: 3.6, q: "Quel prodige des échecs, né en Iran, joue pour la France depuis 2021 ?", a: ["Alireza Firouzja", "Firouzja", "Alireza"], exp: "Il a été numéro 2 mondial à 18 ans." },
-    { id: 16143, theme: "Jeux", d: 3.6, q: "Quel jeu de 2018 fait jouer Zagreus, qui tente de s’échapper des Enfers grecs ?", a: ["Hades"], exp: "Zagreus est le fils du dieu des Enfers lui-même." },
+    { id: 16143, theme: "Jeux", d: 3.6, q: "Quel jeu de 2020 fait jouer Zagreus, qui tente de s’échapper des Enfers grecs ?", a: ["Hades"], exp: "Zagreus est le fils du dieu des Enfers lui-même." },
     { id: 16144, theme: "Jeux", d: 3.8, q: "Quel jeu vidéo phénomène de 2020 fait courir des haricots colorés dans un jeu télévisé délirant ?", a: ["Fall Guys"], exp: "Un « battle royale » très rigolo." },
     { id: 16145, theme: "Jeux", d: 4.0, q: "Comment s’appelle l’ouverture d’échecs 1.e4 c5 ?", a: ["La défense sicilienne", "Sicilienne", "Défense sicilienne"], exp: "L’ouverture la plus jouée contre 1.e4." },
     { id: 16146, theme: "Jeux", d: 4.0, q: "Quel petit jeu électronique de Nintendo des années 1980 avait un seul jeu par appareil ?", a: ["Game & Watch", "Game and Watch"], exp: "Avec l’heure en plus, d’où son nom." },

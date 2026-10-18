@@ -106,7 +106,7 @@ TRAINING_QUESTIONS.push(
     { id: 13090, theme: "Technologie", d: 3.0, q: "Quel pseudonyme se cache derrière l’inventeur du Bitcoin ?", a: ["Satoshi Nakamoto", "Nakamoto", "Satoshi"], exp: "Sa vraie identité reste un mystère." },
     { id: 13091, theme: "Technologie", d: 3.0, q: "Quelle actrice hollywoodienne a inventé un système de saut de fréquences, ancêtre du Wi-Fi ?", a: ["Hedy Lamarr", "Lamarr"], exp: "Pendant la Seconde Guerre mondiale, pour guider des torpilles." },
     { id: 13092, theme: "Technologie", d: 3.1, q: "Quel ingénieur a envoyé le premier e-mail et choisi le symbole @, en 1971 ?", a: ["Ray Tomlinson", "Tomlinson"], exp: "Le message ressemblait à « QWERTYUIOP »." },
-    { id: 13093, theme: "Technologie", d: 3.2, q: "Quelle informaticienne américaine a popularisé le mot « bug » après avoir trouvé un papillon de nuit dans un ordinateur ?", a: ["Grace Hopper", "Hopper"], exp: "Elle a aussi créé l’ancêtre du langage COBOL." },
+    { id: 13093, theme: "Technologie", d: 3.2, q: "Quelle informaticienne américaine a rendu célèbre l’histoire du papillon de nuit coincé dans un ordinateur, le premier « bug » ?", a: ["Grace Hopper", "Hopper"], exp: "En 1947, à Harvard ; elle a aussi créé l’ancêtre du langage COBOL." },
     { id: 13094, theme: "Technologie", d: 3.2, q: "Quel inventeur français a créé la carte à puce dans les années 1970 ?", a: ["Roland Moreno", "Moreno"], exp: "Utilisée ensuite dans les cartes bancaires et téléphoniques." },
     { id: 13095, theme: "Technologie", d: 3.4, q: "Quelle machine à calculer Blaise Pascal a-t-il inventée à 19 ans ?", a: ["La Pascaline", "Pascaline"], exp: "Pour aider son père, collecteur des impôts." },
     { id: 13096, theme: "Technologie", d: 3.5, q: "Quel patron d’origine taïwanaise dirige Nvidia, toujours en blouson de cuir ?", a: ["Jensen Huang", "Huang"], exp: "Il a cofondé l’entreprise en 1993, dans un restaurant." },
@@ -164,5 +164,5 @@ TRAINING_QUESTIONS.push(
     { id: 13147, theme: "Technologie", d: 4.2, q: "Quel ingénieur a créé le JavaScript en dix jours, en 1995 ?", a: ["Brendan Eich", "Eich"], exp: "Il a aussi cofondé Mozilla." },
     { id: 13148, theme: "Technologie", d: 4.2, q: "Quelle autorité française veille au respect de la vie privée sur Internet ?", a: ["La CNIL", "CNIL"], exp: "Commission nationale de l’informatique et des libertés, créée en 1978." },
     { id: 13149, theme: "Technologie", d: 4.4, q: "Quel laboratoire de Google a créé AlphaGo et AlphaFold ?", a: ["DeepMind", "Google DeepMind"], exp: "Fondé à Londres ; son patron a reçu le prix Nobel de chimie 2024." },
-    { id: 13150, theme: "Technologie", d: 4.6, q: "Quel ordinateur Thomson équipait les écoles françaises avec le plan « Informatique pour tous » en 1985 ?", a: ["Le MO5", "MO5", "Thomson MO5", "TO7", "TO7/70"], exp: "Avec son crayon optique pour toucher l’écran." }
+    { id: 13150, theme: "Technologie", d: 4.6, q: "Quel ordinateur Thomson équipait les écoles françaises avec le plan « Informatique pour tous » en 1985 ?", a: ["Le MO5", "MO5", "Thomson MO5", "TO7", "TO7/70"], exp: "Le plan voulait installer plus de 120 000 ordinateurs dans 50 000 écoles." }
 );
