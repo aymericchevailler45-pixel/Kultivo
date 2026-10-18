@@ -94,6 +94,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   focus automatiquement à chaque question sans ouvrir le clavier,
   réajusté à 50/300/700 ms → images, question et étiquettes
   réduites pour garder « Vérifier » visible. Photos de monuments jamais recadrées (max-height, pas object-fit: cover).
+- Saut d'écran entre deux questions : ESSAYÉ le 2026-10-18 de garder le clavier ouvert (pas de readOnly, boutons
+  sans focus) → ANNULÉ : le clavier ouvert cachait le bandeau de correction. L'utilisateur accepte le petit saut
+  (le clavier doit se fermer pour voir la correction). Ne pas retenter.
 - Chez l'utilisateur, le clavier s'ouvre automatiquement à chaque question → le mode compact est son affichage
   habituel : tailles « à mi-chemin » (ni trop grand, ni trop petit). Photo de monument : tap = plein écran
   (`photoZoom`, avec crédit), retap = retour. Pas de boutons collés au clavier (refusé) : à la place,
