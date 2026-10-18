@@ -3821,6 +3821,7 @@ function renderDailyFriends(result) {
     const today = todayKey();
     const rows = league.friends.map(f => ({
         pseudo: f.pseudo,
+        friend: f,
         played: f.daily_day === today,
         score: f.daily_score,
         seconds: f.daily_seconds
@@ -3845,7 +3846,8 @@ function renderDailyFriends(result) {
     shown.forEach(r => {
         const place = played.indexOf(r) + 1;
         if (place > TOP && r.me) list.append(el('li', 'df-gap'));   // « … » avant ma ligne
-        const li = el('li', r.me ? 'is-me' : '');
+        const li = el('li', r.me ? 'is-me' : 'is-link');
+        if (r.friend) li.addEventListener('click', () => openFriendProfile(r.friend));   // profil de l'ami
         const pos = el('span', 'df-pos');
         pos.textContent = ['🥇', '🥈', '🥉'][place - 1] || String(place);
         const name = el('span', 'df-name');

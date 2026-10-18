@@ -198,7 +198,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   avatar » (`avatarModal`) : 12 couleurs (`AVATAR_HUES`), initiale ou 24 dessins Twemoji déjà dans `emoji/`
   (`AVATAR_EMOJIS`). Sauvegarde `avatar: { hue, emoji }` ; envoyé aux amis via `profiles.avatar_hue/avatar_emoji`
   (`supabase/avatar.sql`, `pushAvatar`) ; `avatarEl(pseudo, look, cls)` partout (podium, liste).
-- Profil d'un ami (2026-10-17) : tap sur un ami (liste, podium, classement) → `friendModal` (`openFriendProfile`) :
+- Profil d'un ami (2026-10-17) : tap sur un ami (liste, podium, classement, liste du défi du jour) → `friendModal` (`openFriendProfile`) :
   titre, XP, série, réussite, niveaux, record de série, sprint, XP de la semaine, badges et cartes. Données :
   `scores.summary` (jsonb, `supabase/profil-ami.sql`), résumé envoyé avec le score (`profileSummary`) — la
   sauvegarde complète reste privée. Carte ou badge touché dans ce profil → vue en grand (`openCardView` / `openBadgeView`

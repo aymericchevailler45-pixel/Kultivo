@@ -2506,3 +2506,5 @@ input, textarea, [contenteditable] {
     user-select: text;
     -webkit-touch-callout: default;
 }
+.daily-friends-list li.is-link { cursor: pointer; }
+.daily-friends-list li.is-link:active { transform: scale(0.98); }
