@@ -5165,6 +5165,22 @@ function bindEvents() {
         }
     });
 
+    // Zone de réponse (multiligne d'une ligne) : jamais de retour à la ligne. Certains claviers Android
+    // n'envoient pas de touche « Enter » : on reconnaît alors le saut de ligne qu'ils veulent insérer.
+    let lastEnterKey = 0;
+    $('userInput').addEventListener('keydown', e => { if (e.key === 'Enter') lastEnterKey = Date.now(); });
+    $('userInput').addEventListener('beforeinput', e => {
+        if (e.inputType !== 'insertLineBreak' && e.inputType !== 'insertParagraph') return;
+        e.preventDefault();
+        if (Date.now() - lastEnterKey < 300) return;   // déjà traité par la touche Entrée
+        if (state.phase === 'answering') verify(false);
+        else if (state.phase === 'feedback') commit(state.verdict !== 'wrong');
+    });
+    $('userInput').addEventListener('input', () => {   // texte collé avec des retours à la ligne
+        const input = $('userInput');
+        if (/[\r\n]/.test(input.value)) input.value = input.value.replace(/[\r\n]+/g, ' ');
+    });
+
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && !$('startModal').hidden) {
             closeStartModal();

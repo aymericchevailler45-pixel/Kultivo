@@ -239,10 +239,12 @@
                     <figcaption id="questionPhotoCredit"></figcaption>
                 </figure>
 
-                <input type="text" id="userInput" class="answer-input"
+                <!-- Zone multiligne d'UNE ligne (et non <input>) : Chrome n'y ajoute pas sa barre de remplissage
+                     automatique (clé / carte bancaire / adresse) au-dessus du clavier. Entrée = valider. -->
+                <textarea id="userInput" class="answer-input" rows="1"
                        placeholder="Ta réponse"
                        autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
-                       enterkeyhint="done" aria-label="Ta réponse">
+                       enterkeyhint="done" aria-label="Ta réponse"></textarea>
 
                 <ul class="hint-list" id="hintList" hidden></ul>
 
