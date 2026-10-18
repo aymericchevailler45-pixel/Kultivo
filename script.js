@@ -3638,14 +3638,20 @@ function endTraining() {
             ? `🌙 Bravo ! Tu as déjà gagné un palier aujourd’hui en ${theme} : reviens demain pour passer au palier ${tier + 1}.`
             : `${icon} Pour passer au palier ${tier + 1} : ${trainingLeftText(pr)}.`;
     }
-    if (tier > before) launchConfetti();
+    const up = tier > before;
+    if (up) {
+        // Nouveau palier : on le dit en grand (titre, texte, bouton)
+        text = `${icon} ${theme} : tu passes au palier ${tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[tier - 1]}.\nLes questions vont être un peu plus difficiles.`;
+        launchConfetti();
+        playSound('win');
+    }
     setEnd({
-        emoji: tier > before ? '🏅' : '🎯',
-        title: `Entraînement · ${theme}`,
+        emoji: up ? '🏅' : '🎯',
+        title: up ? `🎉 Palier ${tier} débloqué !` : `Entraînement · ${theme}`,
         text,
         stats: [statXp(), statAccuracy(), statTime()],
         extra: rewardSummary(),
-        primary: 'Encore 10 questions',
+        primary: up ? `Commencer le palier ${tier}` : 'Encore 10 questions',
         primaryClass: 'btn-green',
         onPrimary: () => startTraining(theme),
         secondary: 'Retour aux thèmes',
