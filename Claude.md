@@ -298,7 +298,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    Les paliers comptent maintenant 30 questions (2/3 = 20 à réussir) ; le palier déjà atteint est conservé.
    1re visite : 3 bulles (`showTrainingTip`, drapeau `tipTraining2` ; l'ancien `tipTraining` = 1 bulle, gardé).
    Captures d'écran : Edge headless ne marche plus via Bash, mais OK via PowerShell (`shot.ps1` du scratchpad).
-   Reste à faire : badges bronze/argent/or par thème.
+   Reste à faire : badges bronze/argent/or par thème (50 / 100 / 150 maîtrisées).
+   IDÉE DE L'UTILISATEUR (2026-10-18, à faire) : faire gagner un COFFRE de cartes à chaque palier réussi
+   (via `openCardBoxes`, à montrer sur l'écran « Palier X débloqué ! » d'`endTraining`). Prévu avec les badges.
+   PROCHAINE SÉANCE (« on fera demain ») : badges par thème + coffres de palier, puis cartes dorées,
+   bouton « Revoir le tutoriel », lot de questions du parcours (faits vérifiés en ligne), mode « Qui suis-je ? ».
    PLAN d'origine :
    - banque de questions SÉPARÉE du parcours (fichier à part chargé seulement à l'ouverture du mode), objectif
      ~150 par thème ; on commence par 50 par thème (750), puis lots de 50 après validation de la qualité ;
