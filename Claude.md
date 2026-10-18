@@ -94,6 +94,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   focus automatiquement à chaque question sans ouvrir le clavier,
   réajusté à 50/300/700 ms → images, question et étiquettes
   réduites pour garder « Vérifier » visible. Photos de monuments jamais recadrées (max-height, pas object-fit: cover).
+- Touche retour du téléphone (2026-10-18) : une étape d'avance dans l'historique (`armBackGuard`), `popstate` →
+  `onBackButton` : ferme la fenêtre ouverte (`closeTopOverlay`), sinon en leçon « Quitter ? », sinon onglet →
+  Parcours, sinon sur le Parcours « Appuie encore sur retour pour quitter » (2e appui en 2,5 s = sortie).
+  Nouvelle fenêtre → l'ajouter dans `closeTopOverlay`.
 - Barre Chrome « clé / carte / adresse » au-dessus du clavier (2026-10-18) : due au champ mot de passe caché de la
   fenêtre de connexion. Il n'est `type=password` (et autocomplete) QUE fenêtre ouverte (`openAuthModal`) ; fermé
   (`closeAuthModal`) : champ texte vide, autocomplete off. N'a PAS suffi (Chrome ignore autocomplete=off).

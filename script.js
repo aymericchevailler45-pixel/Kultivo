@@ -5218,7 +5218,68 @@ function bindEvents() {
     });
 }
 
+/* ---------- Touche « retour » du téléphone ----------
+   Sans rien, elle quittait l'appli (et la leçon en cours était perdue). On garde une étape d'avance dans
+   l'historique du navigateur : chaque « retour » est intercepté et fait l'action logique de l'appli. */
+let backGuard = false;
+let backExitArmedAt = 0;
+function armBackGuard() {
+    if (backGuard) return;
+    history.pushState({ kultivo: true }, '');
+    backGuard = true;
+}
+
+/** Ferme la fenêtre ouverte la plus « haute » ; renvoie true si quelque chose a été fermé. */
+function closeTopOverlay() {
+    const open = id => !$(id).hidden;
+    if (open('askModal')) { $('askNo').click(); return true; }
+    if (open('photoZoom')) {
+        $('photoZoom').hidden = true;
+        if (state.phase === 'answering') { $('userInput').readOnly = false; $('userInput').focus(); }
+        return true;
+    }
+    if (open('chestModal')) { closeChest(); return true; }
+    if (open('avatarModal')) { closeAvatarModal(); return true; }
+    if (open('titlesModal')) { $('titlesModal').hidden = true; return true; }
+    if (open('friendModal')) { $('friendModal').hidden = true; return true; }
+    if (open('authModal')) { closeAuthModal(); return true; }
+    if (open('accountModal')) { $('accountModal').hidden = true; return true; }
+    if (open('reportModal')) { $('reportModal').hidden = true; return true; }
+    if (open('streakModal')) { $('streakModal').hidden = true; return true; }
+    if (open('quitModal')) { closeQuitModal(); return true; }
+    if (open('startModal')) { closeStartModal(); return true; }
+    if (open('tour')) { $('tourSkip').hidden ? $('tourNext').click() : $('tourSkip').click(); return true; }
+    if (open('factBubble')) { $('factBubble').hidden = true; return true; }
+    if (open('cloudConflictModal')) return true;   // choix obligatoire : on ne ferme pas
+    return false;
+}
+
+function onBackButton() {
+    backGuard = false;
+    if (closeTopOverlay()) { armBackGuard(); return; }
+    if (!$('studyScreen').hidden) {
+        if (state.phase === 'over') returnToMap();
+        else openQuitModal();   // « Quitter ? » : la progression n'est plus perdue par erreur
+        armBackGuard();
+        return;
+    }
+    if (!$('onboardScreen').hidden) {
+        if (onboard.step > 0) $('onboardBack').click();
+        armBackGuard();
+        return;
+    }
+    const screen = MAIN_SCREENS.find(name => !$(`${name}Screen`).hidden);
+    if (screen && screen !== 'map') { showScreen('map'); armBackGuard(); return; }
+    // Parcours : un 2e appui dans les 2,5 s quitte l'appli
+    if (Date.now() - backExitArmedAt < 2500) { history.back(); return; }
+    backExitArmedAt = Date.now();
+    showToast('Appuie encore sur retour pour quitter Kultivo');
+    setTimeout(() => { if (!backGuard && Date.now() - backExitArmedAt >= 2400) armBackGuard(); }, 2500);
+}
+window.addEventListener('popstate', onBackButton);
+
 function init() {
+    armBackGuard();   // touche retour du téléphone gérée par l'appli
     bindEvents();
     readInviteFromUrl();                                    // lien d'invitation « ?ami=pseudo »
     flushReports();                                         // signalements restés en attente
