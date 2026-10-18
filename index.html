@@ -65,7 +65,19 @@
 
         <!-- ÉCRAN 2 : DÉFIS -->
         <section id="challengesScreen" class="page" aria-label="Défis" hidden>
-            <div class="page-grid challenges-grid">
+            <!-- Deux sous-pages : les défis du jour, et l'entraînement par thème -->
+            <div class="challenges-tabs" role="tablist" aria-label="Défis ou entraînement">
+                <button type="button" class="challenges-tab is-active" data-sub="defis" role="tab" aria-selected="true">🏆 Défis</button>
+                <button type="button" class="challenges-tab" data-sub="training" role="tab" aria-selected="false">🎯 Entraînement</button>
+            </div>
+            <div class="page-grid train-page" id="trainingPage" hidden>
+                <article class="card train-intro">
+                    <h2>🎯 Entraînement par thème</h2>
+                    <p class="muted">10 questions rien que pour toi, jamais vues dans le parcours. Sans cœurs · 2 XP par bonne réponse.</p>
+                </article>
+                <div class="train-grid" id="trainingGrid"></div>
+            </div>
+            <div class="page-grid challenges-grid" id="defisPage">
                 <article class="card goal-card">
                     <div class="goal-main">
                         <h2>🎯 Objectif du jour</h2>
@@ -519,6 +531,22 @@
     <script src="pairs.js"></script>
     <script src="order.js"></script>
     <script src="facts.js"></script>
+    <script src="entrainement/_banque.js"></script>
+    <script src="entrainement/histoire.js"></script>
+    <script src="entrainement/sciences.js"></script>
+    <script src="entrainement/geographie.js"></script>
+    <script src="entrainement/technologie.js"></script>
+    <script src="entrainement/musique.js"></script>
+    <script src="entrainement/litterature.js"></script>
+    <script src="entrainement/jeux.js"></script>
+    <script src="entrainement/cinema.js"></script>
+    <script src="entrainement/gastronomie.js"></script>
+    <script src="entrainement/sport.js"></script>
+    <script src="entrainement/arts.js"></script>
+    <script src="entrainement/langue-francaise.js"></script>
+    <script src="entrainement/mythologie.js"></script>
+    <script src="entrainement/drapeaux.js"></script>
+    <script src="entrainement/monuments.js"></script>
     <script src="cards.js"></script>
     <script src="levels.js"></script>
     <script src="vendor/supabase.min.js"></script>

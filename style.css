@@ -2508,3 +2508,74 @@ input, textarea, [contenteditable] {
 }
 .daily-friends-list li.is-link { cursor: pointer; }
 .daily-friends-list li.is-link:active { transform: scale(0.98); }
+
+/* ============================================================
+   Défis : sous-onglets « Défis / Entraînement » et page Entraînement
+   ============================================================ */
+.challenges-tabs {
+    display: flex;
+    gap: 4px;
+    max-width: 520px;
+    margin: 0 auto 14px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--line);
+}
+.challenges-tab {
+    position: relative;
+    flex: 1;
+    padding: 9px 6px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+.challenges-tab.is-active { background: var(--surface); border-color: var(--line); color: var(--ink); }
+.train-page > .card, .train-page > .train-grid { grid-column: 1 / -1; }
+.train-intro { gap: 4px; }
+.train-intro p { font-size: 0.9rem; }
+.train-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.train-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border: 2px solid var(--line);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: 0 3px 0 var(--line);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.train-tile:active { transform: translateY(2px); box-shadow: none; }
+.train-tile.is-soon { opacity: 0.55; }
+.train-head { display: flex; align-items: center; gap: 8px; }
+.train-icon { font-size: 1.5rem; line-height: 1; }
+.train-name { font-size: 0.95rem; font-weight: 900; line-height: 1.15; }
+.train-dots { color: var(--violet); font-size: 0.85rem; letter-spacing: 2px; }
+.train-meter { height: 8px; }
+.train-line { color: var(--muted); font-size: 0.78rem; font-weight: 800; }
+.train-next { color: var(--ink); font-size: 0.78rem; font-weight: 800; }
+.train-tile[data-notif]::after {
+    content: attr(data-notif);
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--red);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 20px;
+    text-align: center;
+}

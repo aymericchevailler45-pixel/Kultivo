@@ -321,6 +321,8 @@ function defaultData() {
         chests: {},                      // coffres du parcours ouverts : n° du niveau -> date
         podium: {},                      // classement : lundi de la semaine -> place obtenue (0 = rien)
         avatar: null,                    // avatar choisi : { hue: 0-359, emoji: '🦉' ou null = initiale }
+        trainTier: {},                   // entraînement : thème -> palier débloqué (1 à 5)
+        tipTraining: false,              // explication des paliers déjà vue
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -339,7 +341,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -451,8 +453,11 @@ const REPLAY_MIN = 3;   // un niveau déjà terminé reprend au moins 3 question
 
 function recordResult(id, ok) {
     const entry = state.data.stats[id] || { miss: 0 };
+    // Entraînement : une question est « maîtrisée » quand on la réussit encore un AUTRE jour
+    const sameDay = entry.last && dayKey(new Date(entry.last)) === todayKey();
+    const keepStreak = ok && id >= TRAINING_ID_MIN && sameDay && (entry.streak || 0) >= 1;
     entry.miss = ok ? Math.max(0, entry.miss - 1) : entry.miss + 1;
-    entry.streak = ok ? (entry.streak || 0) + 1 : 0;   // réussites d'affilée
+    entry.streak = ok ? (keepStreak ? entry.streak : (entry.streak || 0) + 1) : 0;   // réussites d'affilée
     entry.tries = (entry.tries || 0) + 1;
     if (ok) entry.right = (entry.right || 0) + 1;
     entry.last = Date.now();
@@ -919,7 +924,7 @@ function showScreen(name) {
         // Première arrivée sur le parcours après l'accueil : petit tutoriel
         if (state.data.onboarded && !state.data.tourDone) setTimeout(startTour, 500);
     }
-    if (name === 'challenges') { window.scrollTo(0, 0); renderChallenges(); leagueLoad(); }
+    if (name === 'challenges') { window.scrollTo(0, 0); renderChallenges(); setChallengesTab(challengesTab); leagueLoad(); }
     if (name === 'league') { window.scrollTo(0, 0); leagueMsg = null; renderLeague(); leagueLoad(); }
     if (name === 'shop') { window.scrollTo(0, 0); renderShop(); }
     if (name === 'profile') { window.scrollTo(0, 0); renderProfile(); }
@@ -1993,6 +1998,8 @@ function startSession(requestedMode, level = 0) {
         items = placementCards(0);
     } else if (mode === 'challenge') {
         items = pickChallengeCards(level).map(q => ({ q, review: false }));
+    } else if (mode === 'training') {
+        items = pickTrainingCards(state.trainTheme);
     } else if (mode === 'level') {
         const fresh = levelCards(level).map(q => ({ q, review: false }));
         const old = pickReviewCards(level).map(q => ({ q, review: true }));
@@ -2010,7 +2017,7 @@ function startSession(requestedMode, level = 0) {
     const heartsMax = mode === 'challenge' || orderMode ? CHALLENGE_HEARTS : HEARTS_MAX;
     Object.assign(state, {
         mode, level,
-        returnTo: mode === 'daily' || mode === 'sprint' ? 'challenges' : 'map',
+        returnTo: mode === 'daily' || mode === 'sprint' || mode === 'training' ? 'challenges' : 'map',
         queue: pairsMode || orderMode ? [] : items,
         total: pairsMode ? items.reduce((sum, g) => sum + g.pairs.length, 0) : items.length,
         orderRounds: orderMode ? items : [],
@@ -2629,7 +2636,8 @@ function commit(ok) {
         const assisted = state.hintUsed.size > 0;   // avec un indice, la question n'est pas « maîtrisée »
         // Seule une réussite du premier coup, sans indice, réduit le compteur d'erreurs
         if (firstTry && !assisted) recordResult(id, true);
-        addXp(firstTry && !forced && !assisted ? XP_FIRST_TRY : XP_RETRY);
+        const clean = firstTry && !forced && !assisted;
+        addXp(mode === 'training' ? (clean ? XP_TRAINING : XP_RETRY) : (clean ? XP_FIRST_TRY : XP_RETRY));
         state.done++;
         if (forced) renderHearts();   // « J'avais juste » : le cœur n'est plus menacé, il arrête de clignoter
     } else {
@@ -2762,7 +2770,10 @@ function endSession(win) {
     bumpStreak();
     let celebrate = mode !== 'review';   // confettis (pas pour une simple révision)
 
-    if (mode === 'review') {
+    if (mode === 'training') {
+        celebrate = false;
+        endTraining();
+    } else if (mode === 'review') {
         state.data.totals.reviews++;
         addXp(XP_REVIEW_WIN);
         setEnd({
@@ -3499,6 +3510,191 @@ function openTitlesModal() {
         list.append(li);
     });
     $('titlesModal').hidden = false;
+}
+
+/* ---------- Entraînement par thème (banque séparée : entrainement/*.js) ----------
+   5 paliers par thème (questions triées par difficulté). Pour monter : réussir les 2/3 du palier (au moins une
+   fois) ET en maîtriser 1/3 (réussies encore un autre jour). Session de 10 : au moins 6 nouvelles, au plus
+   2 révisions de l'entraînement (erreurs d'abord) et 2 erreurs du parcours. Sans cœurs, XP réduits. */
+const TRAIN_TIERS = 5;
+const TRAIN_SESSION = 10;
+const TRAIN_MAX_REVIEWS = 2;
+const TRAIN_MAX_PARCOURS = 2;
+const XP_TRAINING = 2;
+
+const trainingBank = theme => (typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS)
+    .filter(q => q.theme === theme).sort((a, b) => a.d - b.d || a.id - b.id);
+
+/** Les 5 paliers d'un thème (du plus facile au plus dur). */
+function trainingTiers(theme) {
+    const bank = trainingBank(theme);
+    const size = Math.ceil(bank.length / TRAIN_TIERS) || 1;
+    return Array.from({ length: TRAIN_TIERS }, (_, i) => bank.slice(i * size, (i + 1) * size));
+}
+const trainTierOf = theme => Math.min(TRAIN_TIERS, Math.max(1, state.data.trainTier[theme] || 1));
+const isMastered = id => (state.data.stats[id]?.streak || 0) >= 2;
+const wasRight = id => (state.data.stats[id]?.right || 0) >= 1;
+
+/** Où en est le palier en cours : réussies / maîtrisées, et ce qu'il faut pour monter. */
+function trainingProgress(theme) {
+    const tier = trainTierOf(theme);
+    const qs = trainingTiers(theme)[tier - 1] || [];
+    const right = qs.filter(q => wasRight(q.id)).length;
+    const mastered = qs.filter(q => isMastered(q.id)).length;
+    const needRight = Math.ceil(qs.length * 2 / 3);
+    const needMastered = Math.ceil(qs.length / 3);
+    const bank = trainingBank(theme);
+    return {
+        tier, right, mastered, needRight, needMastered, size: qs.length,
+        ready: qs.length > 0 && right >= needRight && mastered >= needMastered,
+        totalMastered: bank.filter(q => isMastered(q.id)).length,
+        total: bank.length
+    };
+}
+
+/** Monte d'un ou plusieurs paliers si les conditions sont remplies. Renvoie le nouveau palier. */
+function updateTrainingTier(theme) {
+    let tier = trainTierOf(theme);
+    while (tier < TRAIN_TIERS && trainingProgress(theme).ready) {
+        tier++;
+        state.data.trainTier[theme] = tier;
+    }
+    return tier;
+}
+
+/** Les 10 questions d'une session. */
+function pickTrainingCards(theme) {
+    const tiers = trainingTiers(theme);
+    const cur = trainTierOf(theme);
+    const open = tiers.slice(0, cur).flat();               // paliers débloqués
+    const seen = q => !!state.data.stats[q.id];
+    const picked = [];
+    const take = (list, max) => { for (const q of list) { if (picked.length >= TRAIN_SESSION || max <= 0) break; if (!picked.includes(q)) { picked.push(q); max--; } } };
+
+    // 1) Révisions de l'entraînement (2 au plus) : erreurs d'abord, puis questions arrivées à échéance
+    const missed = shuffle(open.filter(q => missCount(q.id) > 0)).sort((a, b) => missCount(b.id) - missCount(a.id));
+    const due = shuffle(open.filter(q => seen(q) && missCount(q.id) === 0 && isDue(q) && !isMastered(q.id)));
+    take([...missed, ...due], TRAIN_MAX_REVIEWS);
+    // 2) Erreurs du parcours déjà découvertes dans ce thème (2 au plus)
+    take(shuffle(QUESTIONS.filter(q => q.theme === theme && missCount(q.id) > 0)), TRAIN_MAX_PARCOURS);
+    // 3) Nouveautés : palier en cours d'abord, puis paliers d'avant
+    take(shuffle((tiers[cur - 1] || []).filter(q => !seen(q))), TRAIN_SESSION);
+    take(shuffle(open.filter(q => !seen(q))), TRAIN_SESSION);
+    // 4) Plus rien de neuf : on s'exerce sur le palier en cours (les moins sues d'abord), puis le reste
+    take(shuffle(tiers[cur - 1] || []).sort((a, b) => streakOf(a.id) - streakOf(b.id)), TRAIN_SESSION);
+    take(shuffle(open), TRAIN_SESSION);
+    return shuffle(picked).map(q => ({ q, review: seen(q) }));
+}
+
+function startTraining(theme) {
+    if (!trainingBank(theme).length) { showToast('Questions bientôt disponibles pour ce thème.'); return; }
+    state.trainTheme = theme;
+    state.trainTierBefore = trainTierOf(theme);
+    startSession('training');
+}
+
+function endTraining() {
+    const theme = state.trainTheme;
+    state.data.totals.trainings = (state.data.totals.trainings || 0) + 1;
+    const before = state.trainTierBefore;
+    const tier = updateTrainingTier(theme);
+    const pr = trainingProgress(theme);
+    const icon = (THEME_DECOR.find(t => t.theme === theme) || {}).icon || '🎯';
+    let text;
+    if (tier > before) text = `🎉 Palier ${tier} débloqué en ${theme} !`;
+    else if (tier >= TRAIN_TIERS && pr.ready) text = `${icon} ${theme} : tu es au palier maximum, bravo !`;
+    else {
+        const left = [];
+        if (pr.right < pr.needRight) left.push(`${pr.needRight - pr.right} à réussir`);
+        if (pr.mastered < pr.needMastered) left.push(`${pr.needMastered - pr.mastered} à maîtriser`);
+        text = `${icon} Palier ${tier} → ${tier + 1} : encore ${left.join(' et ')}.`;
+        if (pr.right >= pr.needRight) text += '\n🌙 Les questions reviennent un autre jour pour être maîtrisées.';
+    }
+    if (tier > before) launchConfetti();
+    setEnd({
+        emoji: tier > before ? '🏅' : '🎯',
+        title: `Entraînement · ${theme}`,
+        text,
+        stats: [statXp(), statAccuracy(), statTime()],
+        extra: rewardSummary(),
+        primary: 'Encore 10 questions',
+        onPrimary: () => startTraining(theme),
+        secondary: 'Retour aux thèmes',
+        onSecondary: () => { returnToMap(); setChallengesTab('training'); }
+    });
+}
+
+/* Onglet Défis : deux sous-pages, « 🏆 Défis » et « 🎯 Entraînement » */
+let challengesTab = 'defis';
+function setChallengesTab(name) {
+    challengesTab = name;
+    document.querySelectorAll('.challenges-tab').forEach(t => {
+        const on = t.dataset.sub === name;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', String(on));
+    });
+    $('defisPage').hidden = name !== 'defis';
+    $('trainingPage').hidden = name !== 'training';
+    if (name === 'training') {
+        renderTraining();
+        if (!state.data.tipTraining) setTimeout(showTrainingTip, 400);
+    }
+}
+
+function showTrainingTip() {
+    if (state.data.tipTraining || $('trainingPage').hidden || !$('tour').hidden) return;
+    tourSteps = [{
+        target: () => document.querySelector('.train-tile'),
+        text: '🎯 Chaque thème a 5 paliers. Pour monter, réussis les questions… et retiens-les : une question est maîtrisée quand tu la réussis encore un autre jour.'
+    }];
+    tourFlag = 'tipTraining';
+    tourLastLabel = 'Compris !';
+    tourStep = 0;
+    $('tour').hidden = false;
+    showTourStep();
+}
+
+/** La page Entraînement : une case par thème (palier, progression, ce qu'il reste). */
+function renderTraining() {
+    const grid = $('trainingGrid');
+    grid.replaceChildren();
+    THEME_DECOR.forEach(({ theme, icon }) => {
+        const bank = trainingBank(theme);
+        const tile = el('button', `train-tile${bank.length ? '' : ' is-soon'}`);
+        tile.type = 'button';
+        const head = el('div', 'train-head');
+        const ic = el('span', 'train-icon');
+        ic.textContent = icon;
+        const name = el('b', 'train-name');
+        name.textContent = theme;
+        head.append(ic, name);
+        tile.append(head);
+        if (!bank.length) {
+            const soon = el('span', 'train-line');
+            soon.textContent = 'Bientôt disponible';
+            tile.append(soon);
+        } else {
+            const pr = trainingProgress(theme);
+            const dots = el('span', 'train-dots');
+            dots.textContent = '●'.repeat(pr.tier) + '○'.repeat(TRAIN_TIERS - pr.tier);
+            dots.setAttribute('aria-label', `Palier ${pr.tier} sur ${TRAIN_TIERS}`);
+            const meter = el('div', 'meter train-meter');
+            const fill = el('div', 'meter-fill');
+            fill.style.width = `${Math.round(pr.totalMastered / pr.total * 100)}%`;
+            meter.append(fill);
+            const line = el('span', 'train-line');
+            line.textContent = `${pr.totalMastered} / ${pr.total} maîtrisées`;
+            const next = el('span', 'train-next');
+            if (pr.tier >= TRAIN_TIERS) next.textContent = 'Palier max';
+            else next.textContent = `✅ ${Math.min(pr.right, pr.needRight)}/${pr.needRight} · ⏳ ${Math.min(pr.mastered, pr.needMastered)}/${pr.needMastered}`;
+            next.title = 'Pour le palier suivant : questions réussies · questions maîtrisées';
+            tile.append(dots, meter, line, next);
+            const errors = bank.filter(q => missCount(q.id) > 0).length;
+            if (errors) tile.setAttribute('data-notif', errors);
+        }
+        tile.addEventListener('click', () => startTraining(theme));
+        grid.append(tile);
+    });
 }
 
 /* ---------- Avatar : rond de couleur avec l'initiale du pseudo, ou un petit dessin ---------- */
@@ -4916,6 +5112,7 @@ function bindEvents() {
         });
     });
     $('avatarBtn').addEventListener('click', openAvatarModal);
+    document.querySelectorAll('.challenges-tab').forEach(t => t.addEventListener('click', () => setChallengesTab(t.dataset.sub)));
     $('profileTitle').addEventListener('click', openTitlesModal);
     $('closeTitlesBtn').addEventListener('click', () => { $('titlesModal').hidden = true; });
     $('titlesModal').addEventListener('click', e => { if (e.target === $('titlesModal')) $('titlesModal').hidden = true; });
