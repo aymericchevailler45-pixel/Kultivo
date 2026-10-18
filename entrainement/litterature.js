@@ -21,7 +21,7 @@ TRAINING_QUESTIONS.push(
     { id: 15016, theme: "Littérature", d: 2.0, q: "Quel professeur d’Oxford a écrit « Le Hobbit » ?", a: ["J. R. R. Tolkien", "Tolkien", "J.R.R. Tolkien"], exp: "Il a inventé plusieurs langues elfiques complètes." },
     { id: 15017, theme: "Littérature", d: 2.2, q: "Quel philosophe des Lumières a écrit « Candide » ?", a: ["Voltaire"], exp: "« Il faut cultiver notre jardin »." },
     { id: 15018, theme: "Littérature", d: 2.4, q: "Quel dramaturge a écrit « Le Cid » ?", a: ["Pierre Corneille", "Corneille"], exp: "D’où l’expression « dilemme cornélien »." },
-    { id: 15019, theme: "Littérature", d: 2.4, q: "Quelle autrice anglaise a écrit « Frankenstein » à 19 ans ?", a: ["Mary Shelley", "Shelley"], exp: "Le roman paraît en 1818 ; Frankenstein est le savant, pas le monstre." },
+    { id: 15019, theme: "Littérature", d: 2.4, q: "Quelle autrice anglaise a écrit « Frankenstein » avant même ses 20 ans ?", a: ["Mary Shelley", "Shelley"], exp: "Le roman paraît en 1818 ; Frankenstein est le savant, pas le monstre." },
     { id: 15020, theme: "Littérature", d: 2.4, q: "Quel orphelin de Charles Dickens ose réclamer plus de soupe ?", a: ["Oliver Twist", "Oliver"], exp: "« S’il vous plaît, monsieur, j’en voudrais encore »." },
 
     // Palier 3

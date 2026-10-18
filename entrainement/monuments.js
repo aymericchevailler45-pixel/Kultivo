@@ -39,7 +39,7 @@ TRAINING_QUESTIONS.push(
     { id: 24032, theme: "Monuments", d: 2.4, q: "En quelle année la tour Eiffel a-t-elle été inaugurée ?", a: ["1889"], exp: "Pour l’Exposition universelle, cent ans après la Révolution." },
 
     // Palier 4
-    { id: 24033, theme: "Monuments", d: 2.6, q: "Quel monument parisien abrite le tombeau de Napoléon ?", a: ["Les Invalides", "Invalides", "L’hôtel des Invalides"], exp: "Sous le dôme doré, depuis 1840." },
+    { id: 24033, theme: "Monuments", d: 2.6, q: "Quel monument parisien abrite le tombeau de Napoléon ?", a: ["Les Invalides", "Invalides", "L’hôtel des Invalides"], exp: "Sous le dôme doré : ses cendres reviennent à Paris en 1840, le tombeau est achevé en 1861." },
     { id: 24034, theme: "Monuments", d: 2.8, q: "Quelle ville de Galice est le but d’un des plus grands pèlerinages d’Europe ?", a: ["Saint-Jacques-de-Compostelle", "Compostelle", "Santiago de Compostela"], exp: "Sa cathédrale abriterait le tombeau de l’apôtre Jacques." },
     { id: 24035, theme: "Monuments", d: 2.8, q: "Dans quelle ville allemande se dresse une immense cathédrale gothique au bord du Rhin ?", a: ["Cologne", "Köln", "Koln"], exp: "Commencée en 1248, achevée en 1880." },
     { id: 24036, theme: "Monuments", d: 2.8, q: "Quel château de la Loire enjambe le Cher ?", a: ["Chenonceau", "Le château de Chenonceau"], exp: "Surnommé le « château des Dames »." },

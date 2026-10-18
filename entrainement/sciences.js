@@ -44,7 +44,7 @@ TRAINING_QUESTIONS.push(
     { id: 11035, theme: "Sciences", d: 3.2, q: "Quel est le pH de l’eau pure ?", a: ["7", "Sept"], exp: "En dessous, c’est acide ; au-dessus, c’est basique." },
     { id: 11036, theme: "Sciences", d: 3.3, q: "Quelle unité mesure une fréquence, comme celle d’une onde radio ?", a: ["Le hertz", "Hertz", "Hz"], exp: "Un hertz, c’est une oscillation par seconde." },
     { id: 11037, theme: "Sciences", d: 3.3, q: "Quel est l’élément chimique le plus abondant dans l’Univers ?", a: ["L’hydrogène", "Hydrogène", "Hydrogene", "H"], exp: "Il représente environ les trois quarts de la matière ordinaire." },
-    { id: 11038, theme: "Sciences", d: 3.4, q: "Quel est l’os du bras situé entre l’épaule et le coude ?", a: ["L’humérus", "Humérus", "Humerus"], exp: "Le fameux « petit juif » se trouve à son extrémité, au coude." },
+    { id: 11038, theme: "Sciences", d: 3.4, q: "Quel est l’os du bras situé entre l’épaule et le coude ?", a: ["L’humérus", "Humérus", "Humerus"], exp: "Un nerf passe tout près de son extrémité, au coude : d’où la décharge quand on s’y cogne." },
     { id: 11039, theme: "Sciences", d: 3.4, q: "Quel phénomène fait paraître une paille « cassée » dans un verre d’eau ?", a: ["La réfraction", "Réfraction", "Refraction"], exp: "La lumière change de direction en passant de l’air à l’eau." },
     { id: 11040, theme: "Sciences", d: 3.4, q: "Quel chimiste français est considéré comme le père de la chimie moderne ?", a: ["Lavoisier", "Antoine Lavoisier", "Antoine de Lavoisier"], exp: "« Rien ne se perd, rien ne se crée, tout se transforme »." },
 

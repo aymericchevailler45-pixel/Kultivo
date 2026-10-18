@@ -14,7 +14,7 @@ TRAINING_QUESTIONS.push(
 
     // Palier 2
     { id: 17011, theme: "Cinéma", d: 1.8, q: "Quel vagabond au chapeau melon et à la canne Chaplin a-t-il rendu célèbre ?", a: ["Charlot", "The Tramp"], exp: "Un personnage né en 1914, star du cinéma muet." },
-    { id: 17012, theme: "Cinéma", d: 1.8, q: "Quelle actrice a joué Hermione Granger dans la saga Harry Potter ?", a: ["Emma Watson", "Watson"], exp: "Elle avait 9 ans au début du tournage." },
+    { id: 17012, theme: "Cinéma", d: 1.8, q: "Quelle actrice a joué Hermione Granger dans la saga Harry Potter ?", a: ["Emma Watson", "Watson"], exp: "Choisie à 9 ans, elle en avait 10 au début du tournage." },
     { id: 17013, theme: "Cinéma", d: 2.0, q: "Quel clown terrifiant hante les enfants dans « Ça » ?", a: ["Grippe-Sou", "Grippe Sou", "Pennywise"], exp: "Tiré du roman de Stephen King." },
     { id: 17014, theme: "Cinéma", d: 2.0, q: "Quel acteur français a incarné Obélix dans plusieurs films ?", a: ["Gérard Depardieu", "Depardieu"], exp: "Quatre fois, de 1999 à 2012." },
     { id: 17015, theme: "Cinéma", d: 2.0, q: "Quelle saga met en scène Neo, la pilule rouge et la pilule bleue ?", a: ["Matrix", "The Matrix"], exp: "Le premier film, en 1999, a popularisé l’effet « bullet time »." },

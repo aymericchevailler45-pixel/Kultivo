@@ -16,7 +16,7 @@ TRAINING_QUESTIONS.push(
     { id: 14011, theme: "Musique", d: 1.8, q: "Quelle chanteuse colombienne a chanté « Hips Don’t Lie » ?", a: ["Shakira"], exp: "Elle a aussi chanté l’hymne de la Coupe du monde 2010, « Waka Waka »." },
     { id: 14012, theme: "Musique", d: 1.8, q: "Quel groupe de rock irlandais a pour chanteur Bono ?", a: ["U2"], exp: "Formé à Dublin en 1976." },
     { id: 14013, theme: "Musique", d: 2.0, q: "Quel chanteur belge a chanté « Ne me quitte pas » ?", a: ["Jacques Brel", "Brel"], exp: "Il a fini sa vie aux îles Marquises." },
-    { id: 14014, theme: "Musique", d: 2.0, q: "Quel groupe britannique mené par Chris Martin a chanté « Yellow » ?", a: ["Coldplay"], exp: "Formé à Londres en 1996." },
+    { id: 14014, theme: "Musique", d: 2.0, q: "Quel groupe britannique mené par Chris Martin a chanté « Yellow » ?", a: ["Coldplay"], exp: "Formé à Londres par des étudiants, à la fin des années 1990." },
     { id: 14015, theme: "Musique", d: 2.0, q: "Quel style de musique est né à La Nouvelle-Orléans au début du XXe siècle ?", a: ["Le jazz", "Jazz"], exp: "Né du blues, du ragtime et des fanfares." },
     { id: 14016, theme: "Musique", d: 2.0, q: "Combien de musiciens compte un quatuor ?", a: ["4", "Quatre"], exp: "Le quatuor à cordes : deux violons, un alto et un violoncelle." },
     { id: 14017, theme: "Musique", d: 2.0, q: "Quelle danse argentine se joue souvent au bandonéon ?", a: ["Le tango", "Tango"], exp: "Née à Buenos Aires à la fin du XIXe siècle." },

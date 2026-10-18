@@ -14,7 +14,7 @@ TRAINING_QUESTIONS.push(
 
     // Palier 2
     { id: 16011, theme: "Jeux", d: 1.4, q: "Quel jeu de cartes se joue seul, livré pendant des années avec Windows ?", a: ["Le Solitaire", "Solitaire", "La réussite", "Patience"], exp: "Il servait aussi à apprendre à utiliser la souris." },
-    { id: 16012, theme: "Jeux", d: 1.4, q: "Comment appelle-t-on la fin d’une partie d’échecs où le roi ne peut plus s’échapper ?", a: ["Échec et mat", "Mat", "Echec et mat"], exp: "De l’arabe « le roi est mort »." },
+    { id: 16012, theme: "Jeux", d: 1.4, q: "Comment appelle-t-on la fin d’une partie d’échecs où le roi ne peut plus s’échapper ?", a: ["Échec et mat", "Mat", "Echec et mat"], exp: "Du persan « shâh mât » : le roi est mort, ou le roi est pris au piège." },
     { id: 16013, theme: "Jeux", d: 1.4, q: "Quel frère de Mario porte une casquette verte ?", a: ["Luigi"], exp: "Il est plus grand et saute plus haut que son frère." },
     { id: 16014, theme: "Jeux", d: 1.6, q: "Quel héros vêtu de vert part sauver la princesse dans « The Legend of Zelda » ?", a: ["Link"], exp: "Beaucoup croient à tort qu’il s’appelle Zelda." },
     { id: 16015, theme: "Jeux", d: 1.6, q: "Quel jeu fait deviner le personnage de l’adversaire par des questions fermées ?", a: ["Qui est-ce ?", "Qui est-ce", "Qui est ce"], exp: "« Est-ce que ton personnage porte des lunettes ? »" },

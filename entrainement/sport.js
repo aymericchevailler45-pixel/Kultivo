@@ -32,7 +32,7 @@ TRAINING_QUESTIONS.push(
     { id: 19025, theme: "Sport", d: 2.2, q: "Quelle épreuve de ski alpin fait passer entre des portes très rapprochées ?", a: ["Le slalom", "Slalom"], exp: "Plus serré que le slalom géant." },
     { id: 19026, theme: "Sport", d: 2.2, q: "Quel pilote allemand a remporté sept titres de Formule 1, dont cinq avec Ferrari ?", a: ["Michael Schumacher", "Schumacher"], exp: "Champion en 1994, 1995 puis de 2000 à 2004." },
     { id: 19027, theme: "Sport", d: 2.2, q: "Quel pilote britannique a égalé ce record de sept titres de Formule 1 ?", a: ["Lewis Hamilton", "Hamilton"], exp: "Six de ses titres ont été gagnés avec Mercedes." },
-    { id: 19028, theme: "Sport", d: 2.4, q: "Quel tennisman serbe détient le record de titres du Grand Chelem chez les hommes ?", a: ["Novak Djokovic", "Djokovic"], exp: "Vingt-quatre titres en simple." },
+    { id: 19028, theme: "Sport", d: 2.4, q: "Quel tennisman serbe détient le record de titres du Grand Chelem chez les hommes ?", a: ["Novak Djokovic", "Djokovic"], exp: "Au moins 24 titres en simple, un record." },
     { id: 19029, theme: "Sport", d: 2.4, q: "Quelle ville a accueilli les premiers Jeux olympiques modernes, en 1896 ?", a: ["Athènes", "Athenes"], exp: "Un hommage aux Jeux de la Grèce antique." },
     { id: 19030, theme: "Sport", d: 2.4, q: "Quelle gymnaste américaine est la plus titrée de l’histoire aux championnats du monde ?", a: ["Simone Biles", "Biles"], exp: "Plusieurs figures portent son nom." },
 
