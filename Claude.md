@@ -276,7 +276,16 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Tester dans le navigateur reste à faire côté utilisateur (la répartition a été vérifiée par simulation).
 
 ## Prochaines étapes (proposées le 2026-10-17)
-1. Entraînement par thème (questions déjà débloquées d'un thème au choix).
+1. Entraînement par thème — PLAN VALIDÉ le 2026-10-18 :
+   - banque de questions SÉPARÉE du parcours (fichier à part chargé seulement à l'ouverture du mode), objectif
+     ~150 par thème ; on commence par 50 par thème (750), puis lots de 50 après validation de la qualité ;
+   - Monuments / Drapeaux : environ 1/3 avec image (photo libre, drapeau flagcdn), le reste en questions
+     classiques ; seulement des questions classiques (pas de paires ni de frises dans ce mode) ;
+   - carte « 🎯 Entraînement » dans Défis → grille des thèmes (progression « x / 150 maîtrisées ») ;
+   - session de 10 : ≥ 6 nouvelles de la banque, ≤ 2 révisions de la banque (erreurs d'abord), ≤ 2 ERREURS
+     du parcours déjà découvertes ; on complète toujours avec des nouveautés (pas trop de révision) ;
+   - 5 paliers de difficulté par thème, on monte en maîtrisant ; suivi séparé (stats propres) ;
+   - sans cœurs, XP réduits (2 par bonne réponse) ; badges par thème à 50 / 100 / 150 maîtrisées.
 2. Cartes dorées : 3 exemplaires d'une carte → version dorée brillante (le nombre est déjà dans `cards`).
 3. FAIT le 2026-10-18 — Indices en grille façon pendu (`hintGrid`, `renderHintGrid`, `HINT_LEVEL`) sur la réponse
    principale `a[0]` : Forme (cases vides, 15 🪙) → Initiales (1re lettre de chaque mot, 30 🪙) → Plus de lettres
