@@ -323,7 +323,8 @@ function defaultData() {
         avatar: null,                    // avatar choisi : { hue: 0-359, emoji: '🦉' ou null = initiale }
         trainTier: {},                   // entraînement : thème -> palier débloqué (1 à 5)
         trainTierDay: {},                // entraînement : thème -> jour du dernier palier gagné (1 par jour)
-        tipTraining: false,              // explication des paliers déjà vue
+        tipTraining: false,              // explication des paliers déjà vue (ancienne version, 1 bulle)
+        tipTraining2: false,             // explication de l'entraînement en 3 bulles (2026-10-18)
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -3672,17 +3673,23 @@ function setChallengesTab(name) {
     $('trainingPage').hidden = name !== 'training';
     if (name === 'training') {
         renderTraining();
-        if (!state.data.tipTraining) setTimeout(showTrainingTip, 400);
+        if (!state.data.tipTraining2) setTimeout(showTrainingTip, 400);
     }
 }
 
 function showTrainingTip() {
-    if (state.data.tipTraining || $('trainingPage').hidden || !$('tour').hidden) return;
+    if (state.data.tipTraining2 || $('trainingPage').hidden || !$('tour').hidden) return;
     tourSteps = [{
+        target: () => document.querySelector('.train-sub'),
+        text: '🎯 Ici, des questions à part, différentes du parcours, pour t’entraîner sur le thème de ton choix.'
+    }, {
         target: () => document.querySelector('.train-tile'),
-        text: '🎯 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un palier par jour au maximum).'
+        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un palier par jour au maximum).'
+    }, {
+        target: () => document.querySelector('.train-tile'),
+        text: '↻ Tes erreurs reviennent dans les sessions suivantes, jusqu’à ce que tu les saches.'
     }];
-    tourFlag = 'tipTraining';
+    tourFlag = 'tipTraining2';
     tourLastLabel = 'Compris !';
     tourStep = 0;
     $('tour').hidden = false;
