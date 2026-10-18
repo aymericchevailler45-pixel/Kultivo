@@ -103,6 +103,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   pas le saut. Ne pas retenter ; à accepter (animation de Chrome).
 - Récap de fin de leçon : boutons grisés pendant l'apparition des tuiles ; `stopEndStats` (timers et sons
   arrêtés) en quittant l'écran.
+- Textes non sélectionnables (body user-select: none, sauf champs de saisie) : évite « Toucher pour rechercher »
+  de Chrome (un tap sur un mot ouvrait une recherche Google), 2026-10-18.
 - Barre Chrome « clé / carte / adresse » au-dessus du clavier (2026-10-18) : due au champ mot de passe caché de la
   fenêtre de connexion. Il n'est `type=password` (et autocomplete) QUE fenêtre ouverte (`openAuthModal`) ; fermé
   (`closeAuthModal`) : champ texte vide, autocomplete off. N'a PAS suffi (Chrome ignore autocomplete=off).

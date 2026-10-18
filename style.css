@@ -2493,3 +2493,16 @@ textarea.answer-input {
     white-space: pre;
     overflow-wrap: normal;
 }
+
+/* Textes du jeu non sélectionnables : sinon un tap sur un mot le sélectionne et Chrome ouvre
+   « Toucher pour rechercher » (recherche Google en bas de l'écran). Les champs de saisie restent normaux. */
+body {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+input, textarea, [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+}
