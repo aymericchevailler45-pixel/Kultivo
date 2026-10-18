@@ -2579,3 +2579,4 @@ input, textarea, [contenteditable] {
     line-height: 20px;
     text-align: center;
 }
+.train-page > .train-sub { grid-column: 1 / -1; margin: -6px 0 0; color: var(--muted); font-size: 0.85rem; font-weight: 700; text-align: center; }
