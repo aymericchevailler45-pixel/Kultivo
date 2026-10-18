@@ -1,3 +1,62 @@
-/* Entraînement · Sport */
+/* Entraînement · Sport (ids 19000-19999) */
 TRAINING_QUESTIONS.push(
+    // Palier 1
+    { id: 19001, theme: "Sport", d: 1.0, q: "Dans quel sport marque-t-on des paniers ?", a: ["Le basket", "Basket", "Basket-ball", "Basketball"], exp: "Inventé en 1891 dans un gymnase américain." },
+    { id: 19002, theme: "Sport", d: 1.0, q: "Quelle ville a accueilli les Jeux olympiques d’été de 2024 ?", a: ["Paris"], exp: "Cent ans après les Jeux de 1924, déjà à Paris." },
+    { id: 19003, theme: "Sport", d: 1.0, q: "Quel sport pratiquait Roger Federer ?", a: ["Le tennis", "Tennis"], exp: "Vingt titres du Grand Chelem en simple." },
+    { id: 19004, theme: "Sport", d: 1.2, q: "Quel sport se joue avec une raquette et un volant ?", a: ["Le badminton", "Badminton"], exp: "Le volant peut dépasser 400 km/h lors d’un smash." },
+    { id: 19005, theme: "Sport", d: 1.2, q: "Combien de joueurs une équipe de rugby à XV aligne-t-elle sur le terrain ?", a: ["15", "Quinze"], exp: "Huit avants et sept arrières." },
+    { id: 19006, theme: "Sport", d: 1.2, q: "Dans quel sport cherche-t-on à rentrer la balle dans le trou en peu de coups ?", a: ["Le golf", "Golf"], exp: "Un parcours classique compte 18 trous." },
+    { id: 19007, theme: "Sport", d: 1.2, q: "Quel sport pratiquent les All Blacks de Nouvelle-Zélande ?", a: ["Le rugby", "Rugby"], exp: "Ils dansent le haka avant chaque match." },
+    { id: 19008, theme: "Sport", d: 1.2, q: "Quel sport se pratique debout sur une planche, dans les vagues ?", a: ["Le surf", "Surf"], exp: "Né à Hawaï, il est olympique depuis 2021." },
+    { id: 19009, theme: "Sport", d: 1.4, q: "Quel attaquant portugais a remporté cinq Ballons d’or ?", a: ["Cristiano Ronaldo", "Ronaldo", "CR7"], exp: "Le meilleur buteur de l’histoire des matchs internationaux." },
+    { id: 19010, theme: "Sport", d: 1.4, q: "Combien de minutes dure un match de football, hors prolongations ?", a: ["90", "Quatre-vingt-dix"], exp: "Deux mi-temps de 45 minutes, plus le temps additionnel." },
+
+    // Palier 2
+    { id: 19011, theme: "Sport", d: 1.6, q: "Quel nageur américain a remporté 23 médailles d’or olympiques ?", a: ["Michael Phelps", "Phelps"], exp: "Dont 8 lors des seuls Jeux de Pékin en 2008." },
+    { id: 19012, theme: "Sport", d: 1.6, q: "Quel pays a fixé les premières règles du football moderne, en 1863 ?", a: ["L’Angleterre", "Angleterre"], exp: "Avec la création de la Football Association à Londres." },
+    { id: 19013, theme: "Sport", d: 1.6, q: "Quelle lutte traditionnelle oppose de très lourds lutteurs au Japon ?", a: ["Le sumo", "Sumo"], exp: "Le perdant est celui qui sort du cercle ou touche le sol." },
+    { id: 19014, theme: "Sport", d: 1.6, q: "Quel tournoi du Grand Chelem se joue sur terre battue à Paris ?", a: ["Roland-Garros", "Roland Garros"], exp: "Du nom d’un aviateur français mort en 1918." },
+    { id: 19015, theme: "Sport", d: 1.8, q: "Quel pays a remporté la Coupe du monde de football 2022 ?", a: ["L’Argentine", "Argentine"], exp: "Face à la France, aux tirs au but, au Qatar." },
+    { id: 19016, theme: "Sport", d: 1.8, q: "Quel club de football joue au Parc des Princes ?", a: ["Le PSG", "PSG", "Paris Saint-Germain", "Paris SG"], exp: "Fondé en 1970." },
+    { id: 19017, theme: "Sport", d: 1.8, q: "Quel milieu français a donné un coup de tête en finale de la Coupe du monde 2006 ?", a: ["Zinédine Zidane", "Zidane", "Zizou"], exp: "Expulsé lors de son dernier match en carrière." },
+    { id: 19018, theme: "Sport", d: 1.8, q: "Quel tennisman suisse a remporté huit fois Wimbledon ?", a: ["Roger Federer", "Federer"], exp: "Un record chez les hommes." },
+    { id: 19019, theme: "Sport", d: 2.0, q: "Quel sport d’hiver associe ski de fond et tir à la carabine ?", a: ["Le biathlon", "Biathlon"], exp: "Martin Fourcade en est l’un des plus grands champions." },
+    { id: 19020, theme: "Sport", d: 2.0, q: "Dans quel sport parle-t-on de « strike » et de « spare » ?", a: ["Le bowling", "Bowling"], exp: "Le score parfait est de 300." },
+
+    // Palier 3
+    { id: 19021, theme: "Sport", d: 2.0, q: "Quel basketteur américain est surnommé « King James » ?", a: ["LeBron", "LeBron James", "Lebron James"], exp: "Le meilleur marqueur de l’histoire de la NBA." },
+    { id: 19022, theme: "Sport", d: 2.0, q: "Quel sport de batte est le plus populaire en Inde ?", a: ["Le cricket", "Cricket"], exp: "Certains matchs internationaux durent cinq jours." },
+    { id: 19023, theme: "Sport", d: 2.0, q: "Quel sport enchaîne natation, vélo et course à pied ?", a: ["Le triathlon", "Triathlon"], exp: "La version « Ironman » dépasse 220 km au total." },
+    { id: 19024, theme: "Sport", d: 2.2, q: "Comment est le maillot du meilleur grimpeur du Tour de France ?", a: ["À pois", "Blanc à pois rouges", "A pois", "Maillot à pois"], exp: "Créé en 1975, il est blanc à pois rouges." },
+    { id: 19025, theme: "Sport", d: 2.2, q: "Quelle épreuve de ski alpin fait passer entre des portes très rapprochées ?", a: ["Le slalom", "Slalom"], exp: "Plus serré que le slalom géant." },
+    { id: 19026, theme: "Sport", d: 2.2, q: "Quel pilote allemand a remporté sept titres de Formule 1, dont cinq avec Ferrari ?", a: ["Michael Schumacher", "Schumacher"], exp: "Champion en 1994, 1995 puis de 2000 à 2004." },
+    { id: 19027, theme: "Sport", d: 2.2, q: "Quel pilote britannique a égalé ce record de sept titres de Formule 1 ?", a: ["Lewis Hamilton", "Hamilton"], exp: "Six de ses titres ont été gagnés avec Mercedes." },
+    { id: 19028, theme: "Sport", d: 2.4, q: "Quel tennisman serbe détient le record de titres du Grand Chelem chez les hommes ?", a: ["Novak Djokovic", "Djokovic"], exp: "Vingt-quatre titres en simple." },
+    { id: 19029, theme: "Sport", d: 2.4, q: "Quelle ville a accueilli les premiers Jeux olympiques modernes, en 1896 ?", a: ["Athènes", "Athenes"], exp: "Un hommage aux Jeux de la Grèce antique." },
+    { id: 19030, theme: "Sport", d: 2.4, q: "Quelle gymnaste américaine est la plus titrée de l’histoire aux championnats du monde ?", a: ["Simone Biles", "Biles"], exp: "Plusieurs figures portent son nom." },
+
+    // Palier 4
+    { id: 19031, theme: "Sport", d: 2.4, q: "Quel boxeur américain était surnommé « Iron Mike » ?", a: ["Tyson", "Mike Tyson"], exp: "Champion du monde des lourds à 20 ans, un record." },
+    { id: 19032, theme: "Sport", d: 2.6, q: "Quelle joueuse américaine a remporté 23 titres du Grand Chelem en simple ?", a: ["Serena Williams", "Serena"], exp: "Sa sœur Venus est aussi une grande championne." },
+    { id: 19033, theme: "Sport", d: 2.6, q: "Quel nom porte le Tour d’Italie cycliste ?", a: ["Le Giro", "Giro", "Giro d’Italia"], exp: "Son leader porte le maillot rose." },
+    { id: 19034, theme: "Sport", d: 2.6, q: "Quel club anglais est surnommé « les Red Devils » ?", a: ["Manchester United", "Man United", "Manchester Utd"], exp: "Il joue à Old Trafford." },
+    { id: 19035, theme: "Sport", d: 2.8, q: "Quelle course à la voile en solitaire autour du monde part des Sables-d’Olonne ?", a: ["Le Vendée Globe", "Vendée Globe", "Vendee Globe"], exp: "Sans escale ni assistance, tous les quatre ans." },
+    { id: 19036, theme: "Sport", d: 2.8, q: "Quel sprinteur américain a gagné quatre médailles d’or à Berlin en 1936 ?", a: ["Jesse Owens", "Owens"], exp: "Un camouflet pour la propagande nazie." },
+    { id: 19037, theme: "Sport", d: 3.0, q: "Quelle nageuse française a été championne olympique du 400 m en 2004 ?", a: ["Laure Manaudou", "Manaudou"], exp: "À Athènes, à seulement 17 ans." },
+    { id: 19038, theme: "Sport", d: 3.0, q: "Quel joueur français a remporté Roland-Garros en 1983 ?", a: ["Yannick Noah", "Noah"], exp: "Le dernier Français à l’avoir gagné chez les hommes." },
+    { id: 19039, theme: "Sport", d: 3.0, q: "Combien de mètres mesure un bassin olympique ?", a: ["50", "Cinquante"], exp: "Avec dix couloirs, dont huit utilisés en finale." },
+    { id: 19040, theme: "Sport", d: 3.0, q: "Comment s’appelait le stade du FC Barcelone, le plus grand d’Europe ?", a: ["Le Camp Nou", "Camp Nou", "Nou Camp"], exp: "Près de 100 000 places." },
+
+    // Palier 5
+    { id: 19041, theme: "Sport", d: 3.2, q: "Quelle compétition de voile, créée en 1851, est le plus vieux trophée sportif international ?", a: ["La Coupe de l’America", "America’s Cup", "America's Cup", "Coupe de l'America"], exp: "Du nom de la goélette « America », sa première gagnante." },
+    { id: 19042, theme: "Sport", d: 3.4, q: "Quel skieur français a remporté trois médailles d’or aux Jeux de Grenoble en 1968 ?", a: ["Jean-Claude Killy", "Killy"], exp: "En descente, slalom géant et slalom." },
+    { id: 19043, theme: "Sport", d: 3.4, q: "Quel cycliste français surnommé « le Blaireau » a gagné cinq Tours de France ?", a: ["Bernard Hinault", "Hinault"], exp: "Le dernier Français vainqueur, en 1985." },
+    { id: 19044, theme: "Sport", d: 3.4, q: "Quel pilote brésilien de Formule 1 est mort à Imola en 1994 ?", a: ["Ayrton Senna", "Senna"], exp: "Triple champion du monde, une légende de la discipline." },
+    { id: 19045, theme: "Sport", d: 3.6, q: "Quel coureur kényan a couru un marathon en moins de 2 heures en 2019 ?", a: ["Eliud Kipchoge", "Kipchoge"], exp: "En 1 h 59 min 40 s, lors d’une course spéciale à Vienne." },
+    { id: 19046, theme: "Sport", d: 4.0, q: "Quel coureur marocain détient le record du monde du 1 500 m depuis 1998 ?", a: ["Hicham El Guerrouj", "El Guerrouj"], exp: "En 3 min 26 s, à Rome." },
+    { id: 19047, theme: "Sport", d: 4.0, q: "Quel tournoi de golf se dispute chaque année à Augusta, en Géorgie ?", a: ["Le Masters", "Masters", "The Masters"], exp: "Le vainqueur reçoit une célèbre veste verte." },
+    { id: 19048, theme: "Sport", d: 4.2, q: "Quel nom porte le trophée de la Coupe du monde de rugby ?", a: ["Webb-Ellis", "La coupe Webb-Ellis", "Webb Ellis", "Coupe Webb Ellis"], exp: "Du nom de l’élève qui aurait pris le ballon à la main en 1823." },
+    { id: 19049, theme: "Sport", d: 4.2, q: "En quelle année les femmes ont-elles participé pour la première fois aux Jeux olympiques ?", a: ["1900"], exp: "Aux Jeux de Paris, en tennis, golf ou voile." },
+    { id: 19050, theme: "Sport", d: 4.4, q: "Quel professeur canadien a inventé le basket-ball en 1891 ?", a: ["James Naismith", "Naismith"], exp: "Les premiers paniers étaient de vrais paniers à pêches." }
 );
