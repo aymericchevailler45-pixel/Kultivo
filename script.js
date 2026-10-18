@@ -914,7 +914,6 @@ function showScreen(name) {
         else btn.removeAttribute('aria-current');
     });
 
-    refreshBackSnapshot();   // image de « retour » à jour (voir onBackButton)
     if (name === 'map') {
         renderMap();
         // Première arrivée sur le parcours après l'accueil : petit tutoriel
@@ -2513,7 +2512,6 @@ function showCard() {
     input.focus();
     // Le clavier reste souvent ouvert d'une question à l'autre : on ajuste AVANT que l'écran soit redessiné
     // (calcul immédiat, pas après coup), puis la question apparaît en fondu rapide.
-    refreshBackSnapshot();
     updateKeyboardMode();   // nouvelle question : mode compact AVANT l'affichage (taille clavier connue)
     fitToKeyboard();
     keepAnswerVisible();
@@ -5245,20 +5243,6 @@ function armBackGuard() {
     backGuard = true;
 }
 
-/* Au « retour », Chrome Android montre d'abord une image de l'écran « d'avant » (prise au moment où l'étape
-   d'avance a été ajoutée), puis l'appli réagit : un vieil écran apparaissait une seconde. On refait donc
-   l'étape d'avance (et donc l'image) à chaque changement d'écran ou de question, une fois l'écran dessiné. */
-let backRefreshing = false;
-let backRefreshTimer = null;
-function refreshBackSnapshot() {
-    clearTimeout(backRefreshTimer);
-    backRefreshTimer = setTimeout(() => {
-        if (!backGuard || backRefreshing) return;
-        backRefreshing = true;
-        history.back();   // revient sur l'étape de base (popstate ignoré ci-dessous), puis on la remet
-    }, 350);
-}
-
 /** Ferme la fenêtre ouverte la plus « haute » ; renvoie true si quelque chose a été fermé. */
 function closeTopOverlay() {
     const open = id => !$(id).hidden;
@@ -5286,8 +5270,7 @@ function closeTopOverlay() {
 
 function onBackButton() {
     backGuard = false;
-    if (backRefreshing) { backRefreshing = false; armBackGuard(); return; }   // rafraîchissement, pas un vrai retour
-    if (closeTopOverlay()) { armBackGuard(); refreshBackSnapshot(); return; }
+    if (closeTopOverlay()) { armBackGuard(); return; }
     if (!$('studyScreen').hidden) {
         if (state.phase === 'over') returnToMap();
         else openQuitModal();   // « Quitter ? » : la progression n'est plus perdue par erreur
