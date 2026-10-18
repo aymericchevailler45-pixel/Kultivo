@@ -20,7 +20,7 @@ const FILES = [
     './order.js',
     './facts.js',
     './cards.js',
-    './entrainement/_banque.js',
+    './entrainement/banque.js',
     './entrainement/histoire.js',
     './entrainement/sciences.js',
     './entrainement/geographie.js',

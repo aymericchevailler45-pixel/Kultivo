@@ -3542,7 +3542,8 @@ function trainingProgress(theme) {
     const right = qs.filter(q => wasRight(q.id)).length;
     const mastered = qs.filter(q => isMastered(q.id)).length;
     const needRight = Math.ceil(qs.length * 2 / 3);
-    const needMastered = Math.ceil(qs.length / 3);
+    // Palier 1 → 2 : réussir suffit (on peut monter dès le 1er jour) ; ensuite il faut aussi maîtriser 1/3
+    const needMastered = tier === 1 ? 0 : Math.ceil(qs.length / 3);
     const bank = trainingBank(theme);
     return {
         tier, right, mastered, needRight, needMastered, size: qs.length,
@@ -5087,7 +5088,15 @@ function bindEvents() {
     $('reviewBtn').addEventListener('click', () => openReviewModal());
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', () => showScreen(btn.dataset.screen));
+        btn.addEventListener('click', () => {
+            // Onglet Défis touché alors qu'on y est déjà : bascule entre « Défis » et « Entraînement »
+            if (btn.dataset.screen === 'challenges' && !$('challengesScreen').hidden) {
+                setChallengesTab(challengesTab === 'defis' ? 'training' : 'defis');
+                window.scrollTo(0, 0);
+                return;
+            }
+            showScreen(btn.dataset.screen);
+        });
     });
 
     $('dailyBtn').addEventListener('click', () => openChallengeModal('daily'));
