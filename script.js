@@ -3897,7 +3897,7 @@ function setChallengesTab(name) {
     }
 }
 
-/** 1re visite de l'onglet Défis : objectif du jour, défi du jour et sprint, puis le sous-onglet « Entraînement » ;
+/** 1re visite de l'onglet Défis : objectif du jour, défi du jour, sprint, puis le sous-onglet « Entraînement » ;
     le dernier bouton (ou un tap sur l'onglet) y emmène, et l'explication de l'entraînement prend la suite. */
 function showChallengesTip() {
     const d = state.data;
@@ -3908,7 +3908,10 @@ function showChallengesTip() {
         text: '🎯 Ton objectif du jour : choisis ton rythme. Une fois atteint, reviens ici récupérer tes pièces !'
     }, {
         target: () => $('dailyCard'),
-        text: '📅 Le défi du jour : 10 questions, les mêmes pour tout le monde, un seul essai. Compare ton score avec tes amis ! Et ⚡ le sprint : un maximum de bonnes réponses en 60 secondes.'
+        text: '📅 Le défi du jour : 10 questions, les mêmes pour tout le monde, un seul essai. Compare ton score avec tes amis !'
+    }, {
+        target: () => $('sprintDesc').closest('.card'),
+        text: '⚡ Le sprint : un maximum de bonnes réponses en 60 secondes. Bats ton record !'
     }, {
         target: () => document.querySelector('.challenges-tab[data-sub="training"]'),
         text: '🎯 Nouveau : l’entraînement par thème ! Touche ici pour le découvrir.'
