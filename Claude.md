@@ -12,7 +12,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - `levels.js` : répartit automatiquement les questions dans les niveaux (voir plus bas).
 - `order.js` : `ORDER_FAMILIES` (16 familles, ~225 cartes, dont « Vitesses » `[texte, valeur de tri, valeur affichée, d]`)
   pour les niveaux Ordre. Jamais deux valeurs identiques dans une famille.
-- `cards.js` : `CARDS` (105 cartes à collectionner, 7 par thème : 3 communes, 2 rares, 1 épique, 1 légendaire)
+- `cards.js` : `CARDS` (150 cartes, 10 par thème : 4 communes, 3 rares, 1 épique, 1 légendaire, 1 Maître)
   et `CARD_RARITIES` (chances de tirage, pièces pour un doublon). Image = emoji Twemoji (dossier `emoji/`, + `sw.js`).
 - `pairs.js` : `PAIR_FAMILIES` (14 familles, ~285 paires `[gauche, droite, d]`) pour les niveaux Paires.
 - ATTENTION GitHub Pages : Cache-Control max-age=600 (copie de 10 min sur le CDN). Pour vérifier une mise en
@@ -298,10 +298,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    Les paliers comptent maintenant 30 questions (2/3 = 20 à réussir) ; le palier déjà atteint est conservé.
    1re visite : 3 bulles (`showTrainingTip`, drapeau `tipTraining2` ; l'ancien `tipTraining` = 1 bulle, gardé).
    Captures d'écran : Edge headless ne marche plus via Bash, mais OK via PowerShell (`shot.ps1` du scratchpad).
-   Reste à faire : badges bronze/argent/or par thème (50 / 100 / 150 maîtrisées).
-   IDÉE DE L'UTILISATEUR (2026-10-18, à faire) : faire gagner un COFFRE de cartes à chaque palier réussi
-   (via `openCardBoxes`, à montrer sur l'écran « Palier X débloqué ! » d'`endTraining`). Prévu avec les badges.
-   DÉCIDÉ LE 2026-10-19 (à faire) :
+   FAIT LE 2026-10-19 (voir ci-dessous ; `trainChests`, `trainMedals`, `trainChestBoxes`, `claimPendingTrainChests`,
+   `masterCard`, `TRAIN_MEDALS`, `SHINY_AT`/`isShiny`, `openLockedMaster`, `PODIUM_COINS`, `leagueWins`, badges league1/5/10) :
    - Coffre de palier : 2 cartes DU THÈME entraîné à chaque palier gagné (60 coffres max).
    - Collection à 10 cartes par thème (150) : +1 commune, +1 rare par thème (images dans emoji/), +1 carte
      « Maître » exclusive par thème, gagnée seulement au palier 5 de l'entraînement (jamais tirée au hasard).
@@ -311,10 +309,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      sur la case du thème et dans `confirmTraining`.
    - Cartes « dorées » → CARTES BRILLANTES ✨ (3 exemplaires) : la couleur de rareté reste (le doré = légendaire,
      ne pas brouiller), reflet holographique animé + petite étoile ✨ dans le coin, « Rare · Brillante » en grand.
-   - Ligue des amis : compteur de semaines gagnées (1re place) dans le Profil (« 🏆 3 fois 1er ») + badges à
-     1, 5 et 10 victoires. PAS de pièces selon la place (refusé). Données : `podium` (lundi -> place) suffit
+   - Ligue des amis : compteur de semaines gagnées (1re place) dans les Records + badges à 1, 5 et 10 victoires.
+     Pièces selon la place finalement OUI (demandé le 2026-10-19) : 🥇 50, 🥈 25, 🥉 10 (`PODIUM_COINS`).
+   - Médailles d'entraînement par thème : 🥉 1/3, 🥈 2/3, 🥇 toutes les questions maîtrisées (sur la case du thème,
+     dans les Records, annoncées en fin de session). Coffres de palier déjà gagnés avant : donnés à l'ouverture de l'onglet. Données : `podium` (lundi -> place) suffit
      (compter les valeurs === 1). Le coffre reste selon le nombre d'amis battus.
-   PROCHAINE SÉANCE (« on fera demain ») : badges par thème + coffres de palier, puis cartes dorées,
+   ENSUITE :
    bouton « Revoir le tutoriel », lot de questions du parcours (faits vérifiés en ligne), mode « Qui suis-je ? ».
    PLAN d'origine :
    - banque de questions SÉPARÉE du parcours (fichier à part chargé seulement à l'ouverture du mode), objectif

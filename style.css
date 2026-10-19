@@ -1757,6 +1757,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     --r-rare: #1899d6;
     --r-epic: #8b5cf6;
     --r-legendary: #ffb300;
+    --r-master: #46a302;   /* carte Maître (palier 5 de l'entraînement) : vert Kultivo */
 }
 
 /* Coffre sur le parcours (entre deux niveaux) */
@@ -1844,6 +1845,24 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .kcard.rarity-rare      { --r: var(--r-rare); }
 .kcard.rarity-epic      { --r: var(--r-epic); }
 .kcard.rarity-legendary { --r: var(--r-legendary); background: linear-gradient(160deg, color-mix(in srgb, var(--r-legendary) 20%, var(--surface)), var(--surface) 60%); }
+.kcard.rarity-master    { --r: var(--r-master); background: linear-gradient(160deg, color-mix(in srgb, var(--r-master) 22%, var(--surface)), var(--surface) 60%); }
+.kcard.is-locked { border-style: dashed; opacity: 0.8; font-size: 1.2rem; }
+.kcard.is-big.is-locked { min-height: 200px; font-size: 4rem; animation: none; }
+/* Carte brillante (3 exemplaires) : la couleur de rareté reste, un reflet holographique passe dessus */
+.kcard.is-shiny { overflow: hidden; }
+.kcard.is-shiny::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 44%, rgba(255, 140, 230, 0.45) 50%, rgba(120, 220, 255, 0.45) 56%, transparent 70%);
+    background-size: 250% 100%;
+    animation: cardShine 3.2s linear infinite;
+    pointer-events: none;
+}
+.kcard-sparkle { position: absolute; top: 1px; right: 3px; z-index: 1; font-size: 0.75rem; line-height: 1; }
+.kcard.is-big .kcard-sparkle { top: 8px; right: 10px; font-size: 1.4rem; }
+@keyframes cardShine { from { background-position: 160% 0; } to { background-position: -110% 0; } }
 .kcard-art .emoji-img { width: 2.2rem; height: 2.2rem; }
 .kcard-name { font-size: 0.72rem; font-weight: 800; line-height: 1.15; }
 .kcard.is-missing {
@@ -1871,19 +1890,20 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .kcard-meta { color: var(--r); font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
 .kcard.rarity-common .kcard-meta { color: var(--muted); }
 .kcard.rarity-legendary .kcard-meta { color: var(--gold-deep); }
+.kcard.rarity-master .kcard-meta { color: var(--r-master); }
 .modal-content p.kcard-text { margin: 0; color: var(--ink); font-size: 0.92rem; font-weight: 700; }
 @keyframes cardReveal {
     from { transform: rotateY(90deg) scale(0.8); opacity: 0; }
     to   { transform: none; opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .chest-node.is-ready, .chest-gift, .kcard.is-big { animation: none; }
+    .chest-node.is-ready, .chest-gift, .kcard.is-big, .kcard.is-shiny::after { animation: none; }
 }
 
 /* Collection (profil) */
 .card-collection-list { display: flex; flex-direction: column; gap: 6px; }
 .card-theme-head { margin-top: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 800; }
-.card-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.card-row { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
 .kcard-btn { position: relative; padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
 .kcard-count {
     position: absolute;
@@ -1896,9 +1916,9 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     font-size: 0.7rem;
     font-weight: 900;
 }
-/* Téléphone : une ligne de 7 petites cartes par thème (image seule ; on touche pour voir le nom et l'anecdote) */
+/* Téléphone : 2 lignes de 5 petites cartes par thème (image seule ; on touche pour voir le nom et l'anecdote) */
 @media (max-width: 600px) {
-    .card-row { gap: 5px; }
+    .card-row { grid-template-columns: repeat(5, 1fr); gap: 6px; }
     .kcard:not(.is-big) { padding: 2px; border-width: 2px; border-radius: 9px; box-shadow: 0 2px 0 var(--r); }
     .kcard:not(.is-big) .kcard-name { display: none; }
     .kcard-art .emoji-img { width: 1.7rem; height: 1.7rem; }
@@ -1939,6 +1959,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .flip.rarity-rare      { --r: var(--r-rare); }
 .flip.rarity-epic      { --r: var(--r-epic); }
 .flip.rarity-legendary { --r: var(--r-legendary); }
+.flip.rarity-master    { --r: var(--r-master); }
 .flip.is-big { width: 220px; }
 .flip-inner {
     position: relative;
@@ -1972,7 +1993,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .flip.is-charging { animation: cardShake 0.16s linear infinite; }
 .flip.is-charging .flip-back { box-shadow: 0 4px 0 #23600a, 0 0 30px 8px var(--r); }
 .flip.rarity-common.is-charging { animation-duration: 0.3s; }
-.flip.rarity-legendary.is-charging { animation-duration: 0.11s; }
+.flip.rarity-legendary.is-charging, .flip.rarity-master.is-charging { animation-duration: 0.11s; }
 @keyframes cardShake {
     0%, 100% { transform: translate(0, 0) rotate(0); }
     25% { transform: translate(-3px, 1px) rotate(-2deg); }
@@ -2588,3 +2609,5 @@ input, textarea, [contenteditable] {
 .train-step i { display: block; height: 100%; border-radius: inherit; background: var(--violet); }
 #askText { white-space: pre-line; }
 .train-errors { color: var(--red-ink); font-size: 0.75rem; font-weight: 800; }
+.train-master { color: var(--r-master); font-size: 0.72rem; font-weight: 800; }
+.train-medal { margin-left: auto; font-size: 1.1rem; line-height: 1; }

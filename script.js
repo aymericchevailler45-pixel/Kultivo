@@ -325,6 +325,8 @@ function defaultData() {
         trainTierDay: {},                // entraînement : thème -> jour du dernier palier gagné (1 par jour)
         tipTraining: false,              // explication des paliers déjà vue (ancienne version, 1 bulle)
         tipTraining2: false,             // explication de l'entraînement en 3 bulles (2026-10-18)
+        trainChests: {},                 // entraînement : thème -> dernier palier dont le coffre a été donné
+        trainMedals: {},                 // entraînement : thème -> médaille gagnée (1 bronze, 2 argent, 3 or)
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -343,7 +345,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -749,7 +751,8 @@ function badgeStats() {
         xp: d.xp,
         purchases: d.totals.purchases,
         mapComplete: !!d.done[MAX_LEVEL],
-        themeMastered: themeStats().some(t => t.total >= 5 && t.mastered === t.total)
+        themeMastered: themeStats().some(t => t.total >= 5 && t.mastered === t.total),
+        leagueWins: leagueWins()
     };
 }
 
@@ -793,8 +796,16 @@ const BADGES = [
 
     // Maîtrise Globale
     { id: 'specialist',icon: '🎓', name: 'Spécialiste',         desc: 'Maîtriser toutes les questions d’un thème', test: s => s.themeMastered },
-    { id: 'complete',  icon: '🗺️', name: 'Parcours complet',    desc: 'Terminer tous les niveaux',             test: s => s.mapComplete }
+    { id: 'complete',  icon: '🗺️', name: 'Parcours complet',    desc: 'Terminer tous les niveaux',             test: s => s.mapComplete },
+
+    // Ligue des amis
+    { id: 'league1',   icon: '🥇', name: 'Premier de la ligue', desc: 'Finir une semaine 1er de la Ligue des amis', test: s => s.leagueWins >= 1 },
+    { id: 'league5',   icon: '🏆', name: 'Champion des amis',   desc: 'Finir 5 semaines 1er de la Ligue des amis',  test: s => s.leagueWins >= 5 },
+    { id: 'league10',  icon: '👑', name: 'Légende de la ligue', desc: 'Finir 10 semaines 1er de la Ligue des amis', test: s => s.leagueWins >= 10 }
 ];
+
+/** Semaines terminées à la 1re place de la Ligue des amis. */
+const leagueWins = () => Object.values(state.data.podium || {}).filter(place => place === 1).length;
 
 /** Débloque les badges mérités. `silent` évite les notifications (au chargement). */
 function checkBadges(silent = false) {
@@ -1080,11 +1091,13 @@ function chestStop(n) {
 }
 
 /** Tire une carte : rareté au hasard (pondérée), puis de préférence une carte pas encore possédée. */
-function drawCard(minRarity, exclude) {
-    const order = Object.keys(CARD_RARITIES);
+function drawCard(minRarity, exclude, theme = null) {
+    const order = Object.keys(CARD_RARITIES).filter(r => CARD_RARITIES[r].weight > 0);   // jamais « Maître »
     const allowed = order.slice(order.indexOf(minRarity || 'common'));
     const rarity = weightedPick(allowed, r => CARD_RARITIES[r].weight, 1)[0];
-    const pool = CARDS.filter(c => c.rarity === rarity && !exclude.includes(c));
+    const inTheme = c => c.rarity === rarity && (!theme || c.theme === theme);
+    const fresh = CARDS.filter(c => inTheme(c) && !exclude.includes(c));
+    const pool = fresh.length ? fresh : CARDS.filter(inTheme);
     const missing = pool.filter(c => !state.data.cards[c.id]);
     const from = missing.length && Math.random() < 0.8 ? missing : pool;
     return from[Math.floor(Math.random() * from.length)];
@@ -1105,18 +1118,18 @@ function openChests(levels) {
 function openCardBoxes(boxes, title) {
     const data = state.data;
     const results = [];
-    for (const { size, rare } of boxes) {
-        const picked = [];
+    for (const { size = 0, rare, theme = null, fixed = [] } of boxes) {
+        const picked = [...fixed];
         for (let i = 0; i < size; i++) {
             const needRare = rare && i === size - 1 && picked.every(c => c.rarity === 'common');
-            picked.push(drawCard(needRare ? 'rare' : null, picked));
+            picked.push(drawCard(needRare ? 'rare' : null, picked, theme));
         }
         for (const card of picked) {
             const isNew = !data.cards[card.id];
             data.cards[card.id] = (data.cards[card.id] || 0) + 1;
             const coins = isNew ? 0 : CARD_RARITIES[card.rarity].dupCoins;
             data.coins += coins;
-            results.push({ card, isNew, coins });
+            results.push({ card, isNew, coins, shiny: data.cards[card.id] === SHINY_AT });
         }
     }
     saveData();
@@ -1140,11 +1153,14 @@ function openCardBoxes(boxes, title) {
 /* Ouverture façon « Clash Royale » : la carte arrive de dos, tremble plus ou moins longtemps selon sa
    rareté (lueur de sa couleur), puis se retourne. Épique / légendaire : rayons de lumière et confettis.
    Un tap (sur la carte ou le bouton) pendant l'animation la termine tout de suite. */
-const CARD_CHARGE_MS = { common: 250, rare: 550, epic: 900, legendary: 1300 };
-const CARD_CONFETTI = { epic: ['#8b5cf6', '#c9b6ff', '#ffffff'], legendary: ['#ffc800', '#ffb300', '#fff3b0', '#ff9600'] };
+const CARD_CHARGE_MS = { common: 250, rare: 550, epic: 900, legendary: 1300, master: 1300 };
+const CARD_CONFETTI = { epic: ['#8b5cf6', '#c9b6ff', '#ffffff'], legendary: ['#ffc800', '#ffb300', '#fff3b0', '#ff9600'],
+                        master: ['#58cc02', '#89e219', '#d7ffb8', '#ffffff'] };
+const SHINY_AT = 3;   // 3 exemplaires d'une carte : elle devient brillante ✨ (sa couleur de rareté ne change pas)
+const isShiny = card => card.rarity !== 'master' && (state.data.cards[card.id] || 0) >= SHINY_AT;
 
 /** Carte retournable : dos (logo) + face. */
-function cardFlip(card, big) {
+function cardFlip(card, big, shiny = false) {
     const flip = el('div', `flip rarity-${card.rarity}${big ? ' is-big' : ''}`);
     const rays = el('div', 'flip-rays');
     const inner = el('div', 'flip-inner');
@@ -1154,7 +1170,7 @@ function cardFlip(card, big) {
     logo.alt = '';
     back.append(logo);
     const front = el('div', 'flip-front');
-    front.append(cardFace(card, big));
+    front.append(cardFace(card, big, shiny));
     inner.append(back, front);
     flip.append(rays, inner);
     return flip;
@@ -1168,8 +1184,8 @@ function cardRevealFx(rarity) {
 
 /** Une seule carte en grand : charge, puis se retourne. */
 function revealCard(chest) {
-    const { card, isNew, coins } = chest.results[chest.step];
-    const flip = cardFlip(card, true);
+    const { card, isNew, coins, shiny } = chest.results[chest.step];
+    const flip = cardFlip(card, true, isShiny(card));
     $('chestTitle').textContent = `Carte ${chest.step + 1} / ${chest.results.length}`;
     $('chestStage').replaceChildren(flip);
     $('chestNote').textContent = '';
@@ -1181,7 +1197,9 @@ function revealCard(chest) {
         flip.classList.remove('is-charging');
         flip.classList.add('is-flipped');
         cardRevealFx(card.rarity);
-        $('chestNote').textContent = isNew ? '✨ Nouvelle carte !' : `Déjà dans ta collection : +${coins} 🪙`;
+        $('chestNote').textContent = isNew ? (card.rarity === 'master' ? '🏆 Carte Maître !' : '✨ Nouvelle carte !')
+            : shiny ? `✨ 3e exemplaire : elle devient brillante ! +${coins} 🪙`
+            : `Déjà dans ta collection : +${coins} 🪙`;
     };
     chest.timer = setTimeout(() => chest.finish && chest.finish(), CARD_CHARGE_MS[card.rarity]);
     flip.addEventListener('click', () => chest.finish && chest.finish());
@@ -1191,17 +1209,18 @@ function revealCard(chest) {
 function showChestSummary(chest) {
     const { results } = chest;
     const grid = el('div', 'chest-summary');
-    const flips = results.map(({ card, isNew }) => {
-        const flip = cardFlip(card, false);
-        if (isNew) {
+    const flips = results.map(({ card, isNew, shiny }) => {
+        const flip = cardFlip(card, false, isShiny(card));
+        if (isNew || shiny) {
             const tag = el('span', 'kcard-new');
-            tag.textContent = 'Nouvelle';
+            tag.textContent = card.rarity === 'master' ? 'Maître' : isNew ? 'Nouvelle' : 'Brillante';
             flip.append(tag);
         }
         grid.append(flip);
         return flip;
     });
     const fresh = results.filter(r => r.isNew).length;
+    const shinies = results.filter(r => r.shiny).length;
     const coins = results.reduce((sum, r) => sum + r.coins, 0);
     const order = Object.keys(CARD_RARITIES);
     const best = results.reduce((top, r) => order.indexOf(r.card.rarity) > order.indexOf(top) ? r.card.rarity : top, 'common');
@@ -1214,7 +1233,7 @@ function showChestSummary(chest) {
     const done = () => {
         chest.finish = null;
         if (CARD_CONFETTI[best]) launchConfetti(CARD_CONFETTI[best]);
-        $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
+        $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${shinies ? ` · ${plural(shinies, 'brillante', 'brillantes')}` : ''}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
     };
     const step = () => {
         flips[i].classList.add('is-flipped');
@@ -1263,16 +1282,22 @@ function closeChest() {
 }
 
 /** Une carte : cadre de la couleur de sa rareté, image, nom (et, en grand, thème et anecdote). */
-function cardFace(card, big = false) {
-    const box = el('div', `kcard rarity-${card.rarity}${big ? ' is-big' : ''}`);
+function cardFace(card, big = false, shiny = false) {
+    const box = el('div', `kcard rarity-${card.rarity}${big ? ' is-big' : ''}${shiny ? ' is-shiny' : ''}`);
     const art = el('div', 'kcard-art');
     art.append(emojiImg(card.icon));
     const name = el('div', 'kcard-name');
     name.textContent = card.name;
     box.append(art, name);
+    if (shiny) {
+        const star = el('span', 'kcard-sparkle');
+        star.textContent = '✨';
+        box.append(star);
+    }
     if (big) {
         const meta = el('div', 'kcard-meta');
-        meta.textContent = `${CARD_RARITIES[card.rarity].name} · ${card.theme}`;
+        meta.textContent = card.rarity === 'master' ? `Carte Maître · ${card.theme}`
+            : `${CARD_RARITIES[card.rarity].name}${shiny ? ' · Brillante' : ''} · ${card.theme}`;
         const text = el('p', 'kcard-text');
         text.textContent = card.text;
         box.append(meta, text);
@@ -1285,8 +1310,11 @@ function openCardView(card, onBack = null) {
     state.chest = null;
     chestBack = onBack;
     $('chestTitle').textContent = `🃏 ${card.theme}`;
-    $('chestStage').replaceChildren(cardFace(card, true));
-    $('chestNote').textContent = '';
+    $('chestStage').replaceChildren(cardFace(card, true, !onBack && isShiny(card)));
+    const count = onBack ? 0 : (state.data.cards[card.id] || 0);
+    $('chestNote').textContent = card.rarity === 'master' ? (onBack ? '' : '🏆 Gagnée au palier 5 de l’entraînement.')
+        : !count ? '' : count >= SHINY_AT ? `✨ Carte brillante (${count} exemplaires)`
+        : `${count} / ${SHINY_AT} exemplaires : à ${SHINY_AT}, elle devient brillante ✨`;
     $('chestBtn').textContent = onBack ? '← Retour' : 'Fermer';
     $('chestModal').hidden = false;
 }
@@ -1310,6 +1338,19 @@ function openBadgeView(badge, onBack = null) {
     $('chestModal').hidden = false;
 }
 
+/** Carte Maître pas encore gagnée : comment l'obtenir. */
+function openLockedMaster(card) {
+    state.chest = null;
+    chestBack = null;
+    $('chestTitle').textContent = '🏆 Carte Maître';
+    const box = el('div', 'kcard is-big is-missing is-locked rarity-master');
+    box.textContent = '🔒';
+    $('chestStage').replaceChildren(box);
+    $('chestNote').textContent = `Atteins le palier 5 en ${card.theme}, dans Défis → Entraînement, pour la gagner.`;
+    $('chestBtn').textContent = 'Compris';
+    $('chestModal').hidden = false;
+}
+
 /** Profil : la collection, rangée par thème (cartes manquantes en gris). */
 function renderCollection() {
     const owned = CARDS.filter(c => state.data.cards[c.id]).length;
@@ -1323,7 +1364,8 @@ function renderCollection() {
     }
     const themes = [...new Set(CARDS.map(c => c.theme))];
     for (const theme of themes) {
-        const cards = CARDS.filter(c => c.theme === theme);
+        const order = Object.keys(CARD_RARITIES);   // communes, rares, épique, légendaire, puis Maître
+        const cards = CARDS.filter(c => c.theme === theme).sort((x, y) => order.indexOf(x.rarity) - order.indexOf(y.rarity));
         const head = el('div', 'card-theme-head');
         const n = cards.filter(c => state.data.cards[c.id]).length;
         head.textContent = `${theme} · ${n}/${cards.length}`;
@@ -1333,9 +1375,19 @@ function renderCollection() {
             if (count) {
                 const btn = el('button', 'kcard-btn');
                 btn.type = 'button';
-                btn.append(cardFace(card));   // les doublons donnent des pièces (le nombre reste enregistré dans `cards`)
+                btn.append(cardFace(card, false, isShiny(card)));   // 3 exemplaires : brillante ; doublons = pièces
                 btn.setAttribute('aria-label', `${card.name}, ${CARD_RARITIES[card.rarity].name}`);
                 btn.addEventListener('click', () => openCardView(card));
+                row.append(btn);
+            } else if (card.rarity === 'master') {
+                // Carte Maître : verrouillée, on explique comment la gagner
+                const btn = el('button', 'kcard-btn');
+                btn.type = 'button';
+                const box = el('div', 'kcard is-missing is-locked rarity-master');
+                box.textContent = '🔒';
+                btn.append(box);
+                btn.setAttribute('aria-label', `Carte Maître ${theme}, verrouillée`);
+                btn.addEventListener('click', () => openLockedMaster(card));
                 row.append(btn);
             } else {
                 const box = el('div', `kcard is-missing rarity-${card.rarity}`);
@@ -1493,7 +1545,9 @@ function renderProfile() {
         ['📅 Meilleur défi du jour', bestDaily],
         ['✅ Réussies du premier coup', `${data.totals.right} sur ${data.totals.tries}`],
         ['🗺️ Niveaux terminés', `${doneCount} / ${MAX_LEVEL}`],
-        ['🎯 Jours d’objectif atteint', String(Object.keys(data.goalDays).length)]
+        ['🎯 Jours d’objectif atteint', String(Object.keys(data.goalDays).length)],
+        ['🏆 Semaines 1er de la ligue', String(leagueWins())],
+        ['🎖️ Médailles d’entraînement', trainMedalsText()]
     ];
     const list = $('recordsList');
     list.replaceChildren();
@@ -3557,6 +3611,49 @@ function trainingProgress(theme) {
     };
 }
 
+const masterCard = theme => CARDS.find(c => c.theme === theme && c.rarity === 'master');
+
+/** Coffres de palier pas encore donnés pour ce thème : 2 cartes du thème par palier gagné,
+    + la carte Maître au palier 5. Les marque comme donnés (l'ouverture enregistre la sauvegarde). */
+function trainChestBoxes(theme) {
+    const tier = trainTierOf(theme);
+    const from = state.data.trainChests[theme] || 1;
+    const boxes = [];
+    for (let t = from + 1; t <= tier; t++) {
+        const box = { size: 2, theme };
+        const master = masterCard(theme);
+        if (t === TRAIN_TIERS && master && !state.data.cards[master.id]) box.fixed = [master];
+        boxes.push(box);
+    }
+    if (tier > from) state.data.trainChests[theme] = tier;
+    return boxes;
+}
+
+/** « 🥇 2 · 🥈 1 · 🥉 3 » : médailles d'entraînement gagnées (la plus haute de chaque thème). */
+function trainMedalsText() {
+    const counts = [0, 0, 0];
+    for (const { theme } of THEME_DECOR) { const m = trainMedalOf(theme); if (m) counts[m - 1]++; }
+    return counts.some(Boolean) ? [2, 1, 0].filter(i => counts[i]).map(i => `${TRAIN_MEDALS[i].icon} ${counts[i]}`).join(' · ') : 'aucune';
+}
+
+/** Coffres en attente sur tous les thèmes (paliers gagnés avant l'arrivée des coffres) : ouverts d'un coup. */
+function claimPendingTrainChests() {
+    if (!$('tour').hidden || !$('chestModal').hidden) return;
+    const boxes = THEME_DECOR.flatMap(({ theme }) => trainChestBoxes(theme));
+    if (boxes.length) openCardBoxes(boxes, boxes.length > 1 ? `🎁 ${boxes.length} coffres de palier !` : '🎁 Coffre de palier');
+}
+
+/* Médailles par thème : bronze (1/3 des questions maîtrisées), argent (2/3), or (toutes). */
+const TRAIN_MEDALS = [
+    { icon: '🥉', name: 'bronze', part: 1 / 3 },
+    { icon: '🥈', name: 'argent', part: 2 / 3 },
+    { icon: '🥇', name: 'or', part: 1 }
+];
+function trainMedalOf(theme) {
+    const pr = trainingProgress(theme);
+    return pr.total ? TRAIN_MEDALS.filter(m => pr.totalMastered >= Math.ceil(pr.total * m.part)).length : 0;
+}
+
 /** Monte d'un ou plusieurs paliers si les conditions sont remplies. Renvoie le nouveau palier. */
 function updateTrainingTier(theme) {
     let tier = trainTierOf(theme);
@@ -3613,6 +3710,8 @@ async function confirmTraining(theme, icon) {
         lines.push('Palier maximum : continue pour tout maîtriser !');
     }
     lines.push('10 questions · sans cœurs · 2 XP par bonne réponse');
+    const master = masterCard(theme);
+    if (!(master && state.data.cards[master.id])) lines.push('🎁 Chaque palier gagné : 2 cartes du thème · 🏆 palier 5 : la carte Maître');
     const ok = await askConfirm({ title: `${icon} ${theme}`, text: lines.join('\n'), yes: 'Commencer', no: 'Plus tard' });
     if (ok) startTraining(theme);
 }
@@ -3646,6 +3745,14 @@ function endTraining() {
         launchConfetti();
         playSound('win');
     }
+    // Médaille du thème (bronze, argent, or) gagnée pendant cette session ?
+    const medal = trainMedalOf(theme);
+    if (medal > (state.data.trainMedals[theme] || 0)) {
+        state.data.trainMedals[theme] = medal;
+        const m = TRAIN_MEDALS[medal - 1];
+        text += `\n${m.icon} Médaille d’${m.name} en ${theme} !`;
+        saveData();
+    }
     setEnd({
         emoji: up ? '🏅' : '🎯',
         title: up ? `🎉 Palier ${tier} débloqué !` : `Entraînement · ${theme}`,
@@ -3658,6 +3765,11 @@ function endTraining() {
         secondary: 'Retour aux thèmes',
         onSecondary: () => { returnToMap(); setChallengesTab('training'); }
     });
+    // Coffre du palier gagné (2 cartes du thème ; au palier 5, la carte Maître en plus)
+    const boxes = trainChestBoxes(theme);
+    if (boxes.length) {
+        setTimeout(() => openCardBoxes(boxes, tier >= TRAIN_TIERS ? `🏆 Coffre du Maître · ${theme}` : `🎁 Coffre du palier ${tier}`), 900);
+    }
 }
 
 /* Onglet Défis : deux sous-pages, « 🏆 Défis » et « 🎯 Entraînement » */
@@ -3674,6 +3786,7 @@ function setChallengesTab(name) {
     if (name === 'training') {
         renderTraining();
         if (!state.data.tipTraining2) setTimeout(showTrainingTip, 400);
+        else setTimeout(claimPendingTrainChests, 400);
     }
 }
 
@@ -3684,7 +3797,7 @@ function showTrainingTip() {
         text: '🎯 Ici, des questions à part, différentes du parcours, pour t’entraîner sur le thème de ton choix.'
     }, {
         target: () => document.querySelector('.train-tile'),
-        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un palier par jour au maximum).'
+        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un par jour au maximum) : 🎁 un coffre de cartes à chaque palier, et 🏆 la carte Maître au palier 5 !'
     }, {
         target: () => document.querySelector('.train-tile'),
         text: '↻ Tes erreurs reviennent dans les sessions suivantes, jusqu’à ce que tu les saches.'
@@ -3710,6 +3823,13 @@ function renderTraining() {
         const name = el('b', 'train-name');
         name.textContent = theme;
         head.append(ic, name);
+        const medal = bank.length ? trainMedalOf(theme) : 0;
+        if (medal) {
+            const md = el('span', 'train-medal');
+            md.textContent = TRAIN_MEDALS[medal - 1].icon;
+            md.title = `Médaille d’${TRAIN_MEDALS[medal - 1].name}`;
+            head.append(md);
+        }
         tile.append(head);
         if (!bank.length) {
             const soon = el('span', 'train-line');
@@ -3734,7 +3854,10 @@ function renderTraining() {
             bar.setAttribute('aria-label', `Palier ${pr.tier} sur ${TRAIN_TIERS}`);
             const line = el('span', 'train-line');
             line.textContent = `${pr.totalMastered} / ${pr.total} maîtrisées`;
-            tile.append(label, bar, line);
+            const master = masterCard(theme);
+            const reward = el('span', 'train-master');
+            reward.textContent = master && state.data.cards[master.id] ? '🏆 Carte Maître obtenue' : '🏆 Palier 5 : carte Maître';
+            tile.append(label, bar, line, reward);
             const errors = bank.filter(q => missCount(q.id) > 0).length;
             if (errors) {
                 const rev = el('span', 'train-errors');
@@ -3832,6 +3955,7 @@ async function pushAvatar() {
 const LEAGUE_KEY = 'kultivo_league';   // dernière version connue (affichée tout de suite, et hors ligne)
 const INVITE_KEY = 'kultivo_invite';   // pseudo reçu par un lien d'invitation, en attente
 const PSEUDO_RE = /^[A-Za-z0-9À-ÿ_.-]{3,16}$/;
+const PODIUM_COINS = [50, 25, 10];       // pièces du lundi selon la place (1er, 2e, 3e)
 const PODIUM_MIN_XP = 100;             // XP minimum dans la semaine pour avoir le coffre du lundi
 let league = loadLeagueCache();
 let leagueBusy = false;
@@ -4213,8 +4337,11 @@ function checkPodium() {
         saveData();
         const size = Math.min(5, 1 + beaten);
         const place = rank === 1 ? '1er' : `${rank}e`;
+        const coins = PODIUM_COINS[rank - 1] || 0;   // pièces selon la place : 🥇 50, 🥈 25, 🥉 10
+        data.coins += coins;
         openCardBoxes([{ size, rare: size >= 3 }],
-            `${['🥇', '🥈', '🥉'][rank - 1] || '🏅'} ${place} de la semaine : ${plural(beaten, 'ami battu', 'amis battus')} !`);
+            `${['🥇', '🥈', '🥉'][rank - 1] || '🏅'} ${place} de la semaine : ${plural(beaten, 'ami battu', 'amis battus')}${coins ? ` · +${coins} 🪙` : ''} !`);
+        checkBadges();
         return;
     }
     saveData();
