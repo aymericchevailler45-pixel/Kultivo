@@ -332,6 +332,7 @@ function defaultData() {
         trainChests: {},                 // entraînement : thème -> dernier palier dont le coffre a été donné
         trainMedals: {},                 // entraînement : thème -> médaille gagnée (1 bronze, 2 argent, 3 or)
         shinyCards: {},                  // cartes rendues brillantes (touchées dans la collection après le 3e exemplaire)
+        themeComplete: {},               // collection : thème -> date où ses 10 cartes ont été réunies (fête montrée)
         streakWarnDay: '',               // jour où l'alerte « série en danger » a été montrée
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
@@ -351,7 +352,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -806,7 +807,9 @@ function badgeStats() {
         purchases: d.totals.purchases,
         mapComplete: !!d.done[MAX_LEVEL],
         themeMastered: themeStats().some(t => t.total >= 5 && t.mastered === t.total),
-        leagueWins: leagueWins()
+        leagueWins: leagueWins(),
+        themesComplete: completeThemes().length,
+        shinyTheme: shinyThemes().length > 0
     };
 }
 
@@ -855,7 +858,13 @@ const BADGES = [
     // Ligue des amis
     { id: 'league1',   icon: '🥇', name: 'Premier de la ligue', desc: 'Finir une semaine 1er de la Ligue des amis', test: s => s.leagueWins >= 1 },
     { id: 'league5',   icon: '🏆', name: 'Champion des amis',   desc: 'Finir 5 semaines 1er de la Ligue des amis',  test: s => s.leagueWins >= 5 },
-    { id: 'league10',  icon: '👑', name: 'Légende de la ligue', desc: 'Finir 10 semaines 1er de la Ligue des amis', test: s => s.leagueWins >= 10 }
+    { id: 'league10',  icon: '👑', name: 'Légende de la ligue', desc: 'Finir 10 semaines 1er de la Ligue des amis', test: s => s.leagueWins >= 10 },
+
+    // Collection de cartes
+    { id: 'collect1',  icon: '🃏', name: 'Collectionneur',      desc: 'Réunir les 10 cartes d’un thème',       test: s => s.themesComplete >= 1 },
+    { id: 'collect5',  icon: '📚', name: 'Grand collectionneur', desc: 'Réunir les 10 cartes de 5 thèmes',     test: s => s.themesComplete >= 5 },
+    { id: 'collectAll',icon: '💠', name: 'Collection parfaite', desc: 'Réunir les 150 cartes',                 test: s => s.themesComplete >= CARD_THEMES.length },
+    { id: 'shinyTheme',icon: '✨', name: 'Tout brille',         desc: 'Toutes les cartes d’un thème en brillantes (sauf la carte Maître)', test: s => s.shinyTheme }
 ];
 
 /** Semaines terminées à la 1re place de la Ligue des amis. */
@@ -1220,6 +1229,31 @@ const isShiny = card => card.rarity !== 'master' && (state.data.cards[card.id] |
 /** 3e exemplaire reçu mais pas encore « réveillé » : on le signale (pastille), un tap dans la collection lance l'animation. */
 const shinyPending = card => card.rarity !== 'master' && (state.data.cards[card.id] || 0) >= SHINY_AT && !state.data.shinyCards[card.id];
 const pendingShinyCount = () => CARDS.filter(shinyPending).length;
+const CARD_THEMES = [...new Set(CARDS.map(c => c.theme))];
+/** Thèmes dont les 10 cartes (carte Maître comprise) sont dans la collection. */
+const completeThemes = () => CARD_THEMES.filter(t => CARDS.filter(c => c.theme === t).every(c => state.data.cards[c.id]));
+/** Thèmes dont toutes les cartes normales sont brillantes (la carte Maître ne peut pas l'être). */
+const shinyThemes = () => CARD_THEMES.filter(t => CARDS.filter(c => c.theme === t && c.rarity !== 'master').every(isShiny));
+
+/** Collection d'un thème complétée : fête (une seule fois par thème), puis badges. */
+async function checkThemeComplete(silent = false) {
+    const fresh = completeThemes().filter(t => !state.data.themeComplete[t]);
+    if (!fresh.length) return;
+    for (const t of fresh) state.data.themeComplete[t] = todayKey();
+    saveData();
+    if (silent) return;
+    launchConfetti(CARD_CONFETTI.legendary);
+    playSound('win');
+    const names = fresh.join(', ');
+    const go = await askConfirm({
+        title: fresh.length > 1 ? '🃏 Collections complètes !' : '🃏 Collection complète !',
+        text: fresh.length > 1 ? `Tu as réuni toutes les cartes de : ${names}. Bravo !` : `Tu as réuni les 10 cartes ${names}, carte Maître comprise. Bravo !`,
+        yes: 'Voir ma collection',
+        no: 'Super !'
+    });
+    checkBadges();
+    if (go) { showScreen('profile'); setProfileTab('cards'); }
+}
 
 /** Carte retournable : dos (logo) + face. */
 function cardFlip(card, big, shiny = false) {
@@ -1341,6 +1375,7 @@ function closeChest() {
     $('chestModal').hidden = true;
     if (chestBack) { const back = chestBack; chestBack = null; back(); return; }
     if (wasChest) {
+        setTimeout(checkThemeComplete, 300);   // un thème vient d'être complété ?
         renderHeader();
         if (!$('mapScreen').hidden) {
             // On redessine le parcours sans revenir au niveau en cours : on reste où l'on était
@@ -1436,6 +1471,7 @@ function revealShiny(card) {
         $('chestNote').textContent = '✨ Ta carte est maintenant brillante !';
         renderCollection();
         updateNavNotifications();
+        checkBadges();   // « Tout brille » ?
     };
     const timer = setTimeout(finish, 1400);
     face.addEventListener('click', finish);
@@ -1472,7 +1508,8 @@ function renderCollection() {
         const cards = CARDS.filter(c => c.theme === theme).sort((x, y) => order.indexOf(x.rarity) - order.indexOf(y.rarity));
         const head = el('div', 'card-theme-head');
         const n = cards.filter(c => state.data.cards[c.id]).length;
-        head.textContent = `${theme} · ${n}/${cards.length}`;
+        head.textContent = `${theme} · ${n}/${cards.length}${n === cards.length ? ' ✓' : ''}`;
+        head.classList.toggle('is-complete', n === cards.length);
         const row = el('div', 'card-row');
         for (const card of cards) {
             const count = state.data.cards[card.id] || 0;
@@ -5960,6 +5997,7 @@ function init() {
     window.addEventListener('online', flushReports);        // dès que la connexion revient
     buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
     buildDecor($('lessonDecor'), 8);
+    checkThemeComplete(true);   // thèmes déjà complets : notés sans fête
     checkBadges(true);   // badges déjà mérités : on les attribue sans notification
     renderHeader();
     // Au rechargement (ex. : après une connexion), le navigateur remettait l'ancienne position de défilement :

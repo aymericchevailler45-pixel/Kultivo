@@ -1941,6 +1941,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 /* Collection (profil) */
 .card-collection-list { display: flex; flex-direction: column; gap: 6px; }
 .card-theme-head { margin-top: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 800; }
+.card-theme-head.is-complete { color: var(--gold-deep); }
 .card-row { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
 .kcard-btn { position: relative; padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
 .kcard-count {

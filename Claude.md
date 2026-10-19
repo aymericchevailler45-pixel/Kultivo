@@ -324,6 +324,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      série ≥ 2) : assez de gels → message ; sinon fenêtre « Acheter · X 🪙 » des gels manquants (max 5 jours).
      Le gel reste automatique (utilisé à la fin de la 1re leçon après les jours manqués, `bumpStreak`).
      Démo sans attendre : lien `?demo=gel` (gel manquant) ou `?demo=gel-ok` (assez de gels) : faux chiffres, rien d'enregistré.
+   - Thème complet = 10/10 (carte Maître comprise, choix de l'utilisateur) : fête à la fermeture du coffre
+     (`checkThemeComplete`, `themeComplete`), en-tête doré « 10/10 ✓ », badges collect1 / collect5 / collectAll
+     et « Tout brille » (toutes les cartes normales d'un thème brillantes).
    - Ligue des amis : compteur de semaines gagnées (1re place) dans les Records + badges à 1, 5 et 10 victoires.
      Pièces selon la place finalement OUI (demandé le 2026-10-19) : 🥇 50, 🥈 25, 🥉 10 (`PODIUM_COINS`).
    - Médailles d'entraînement par thème : 🥉 1/3, 🥈 2/3, 🥇 toutes les questions maîtrisées (sur la case du thème,
