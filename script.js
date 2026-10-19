@@ -3897,13 +3897,19 @@ function setChallengesTab(name) {
     }
 }
 
-/** 1re visite de l'onglet Défis : une bulle montre le sous-onglet « Entraînement » ; le bouton (ou un tap sur
-    l'onglet) y emmène, et l'explication de l'entraînement prend la suite. */
+/** 1re visite de l'onglet Défis : objectif du jour, défi du jour et sprint, puis le sous-onglet « Entraînement » ;
+    le dernier bouton (ou un tap sur l'onglet) y emmène, et l'explication de l'entraînement prend la suite. */
 function showChallengesTip() {
     const d = state.data;
     if (d.tipChallenges || $('challengesScreen').hidden || !$('tour').hidden || !d.onboarded) return;
     if (d.tipTraining2 || challengesTab === 'training') { d.tipChallenges = true; saveData(); return; }   // déjà découvert
     tourSteps = [{
+        target: () => document.querySelector('.goal-card'),
+        text: '🎯 Ton objectif du jour : choisis ton rythme. Une fois atteint, reviens ici récupérer tes pièces !'
+    }, {
+        target: () => $('dailyCard'),
+        text: '📅 Le défi du jour : 10 questions, les mêmes pour tout le monde, un seul essai. Compare ton score avec tes amis ! Et ⚡ le sprint : un maximum de bonnes réponses en 60 secondes.'
+    }, {
         target: () => document.querySelector('.challenges-tab[data-sub="training"]'),
         text: '🎯 Nouveau : l’entraînement par thème ! Touche ici pour le découvrir.'
     }];
@@ -4974,12 +4980,15 @@ function placeTour() {
     bubble.style.top = `${fitsBelow ? below : Math.max(8, r.top - margin - 14 - bubble.offsetHeight)}px`;
 }
 
+let tourSkipped = false;   // « Passer » : on n'enchaîne pas sur la suite (ex. : l'entraînement)
 function endTour() {
+    const skipped = tourSkipped;
+    tourSkipped = false;
     $('tour').hidden = true;
     state.data[tourFlag] = true;
     saveData();
     if (tourFlag === 'tipChallenges') {   // la bulle de l'onglet Défis mène à l'Entraînement (et à son explication)
-        if (challengesTab !== 'training') setChallengesTab('training');
+        if (!skipped && challengesTab !== 'training') setChallengesTab('training');
         return;
     }
     if (tourFlag === 'tipChest') {
@@ -5654,8 +5663,9 @@ function bindEvents() {
     });
 
     $('tourNext').addEventListener('click', () => { tourStep++; showTourStep(); });
-    $('tourSkip').addEventListener('click', endTour);
+    $('tourSkip').addEventListener('click', () => { tourSkipped = true; endTour(); });
     window.addEventListener('resize', () => { if (!$('tour').hidden) placeTour(); });
+    window.addEventListener('scroll', () => { if (!$('tour').hidden) placeTour(); }, { passive: true });   // fin du défilement : la lumière suit
 
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
