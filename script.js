@@ -1182,6 +1182,12 @@ function cardRevealFx(rarity) {
     if (CARD_CONFETTI[rarity]) launchConfetti(CARD_CONFETTI[rarity]);
 }
 
+/** La carte devient brillante (3e exemplaire) : pluie d'étincelles irisées et son de victoire. */
+function shinyFx() {
+    launchConfetti(['#ffffff', '#ffd6f5', '#bdefff', '#fff3b0', '#e0c3ff']);
+    playSound('win');
+}
+
 /** Une seule carte en grand : charge, puis se retourne. */
 function revealCard(chest) {
     const { card, isNew, coins, shiny } = chest.results[chest.step];
@@ -1197,6 +1203,7 @@ function revealCard(chest) {
         flip.classList.remove('is-charging');
         flip.classList.add('is-flipped');
         cardRevealFx(card.rarity);
+        if (shiny) shinyFx();
         $('chestNote').textContent = isNew ? (card.rarity === 'master' ? '🏆 Carte Maître !' : '✨ Nouvelle carte !')
             : shiny ? `✨ 3e exemplaire : elle devient brillante ! +${coins} 🪙`
             : `Déjà dans ta collection : +${coins} 🪙`;
@@ -1232,7 +1239,8 @@ function showChestSummary(chest) {
     let i = 0;
     const done = () => {
         chest.finish = null;
-        if (CARD_CONFETTI[best]) launchConfetti(CARD_CONFETTI[best]);
+        if (shinies) shinyFx();
+        else if (CARD_CONFETTI[best]) launchConfetti(CARD_CONFETTI[best]);
         $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${shinies ? ` · ${plural(shinies, 'brillante', 'brillantes')}` : ''}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
     };
     const step = () => {
