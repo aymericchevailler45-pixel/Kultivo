@@ -278,6 +278,26 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Une question « dure » doit demander un détail précis, pas le personnage célèbre.
 - Tester dans le navigateur reste à faire côté utilisateur (la répartition a été vérifiée par simulation).
 
+## À FAIRE TOUT DE SUITE (validé le 2026-10-19, « je te compacte et tu me fais ça ») : 💧 GOUTTES
+Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 gouttes** (on arrose son cerveau ; refusés :
+« énergie », « cerveaux »). Ce n'est pas du plagiat (mécanique de jeu commune). Règles VALIDÉES :
+- 5 gouttes au maximum, compteur 💧 3/5 dans la barre du haut (à côté des pièces) ; tap → « Prochaine goutte dans … ».
+- Chaque niveau du PARCOURS (questions, paires, frises, défis de niveau) coûte 1 goutte AU LANCEMENT, réussi ou raté
+  (choix de l'utilisateur). Il faut au moins 1 goutte pour lancer un niveau.
+- Recharge automatique : +1 goutte par HEURE (plein en 5 h) ; calcul à partir d'un horodatage (marche appli fermée).
+- Gratuits (ne coûtent rien) : révisions (« ↻ à revoir »), entraînement, défi du jour, sprint, test de placement.
+- Récupérer en pratiquant : +1 goutte par session de révision OU d'entraînement terminée avec AU MOINS LA MOITIÉ de
+  bonnes réponses (anti-triche) ; rien si moins (message « Encore un effort : 5 bonnes réponses pour gagner une
+  goutte 💧 ») ; rien si on quitte avant la fin ; 3 gouttes par jour au maximum de cette façon.
+- Boutique : « Recharge complète » 150 🪙.
+- Plus de gouttes : toucher un niveau ouvre une fenêtre « 💧 Plus de gouttes ! Prochaine goutte dans 1 h 12 » avec
+  boutons [🎯 S'entraîner (+1 💧)] [🔁 Réviser (+1 💧)] [Recharger · 150 🪙].
+- Les cœurs restent tels quels dans les leçons (gouttes = nombre de niveaux ; cœurs = erreurs dans un niveau).
+- Bulle d'explication la 1re fois (même système `startTip`) ; à mentionner dans le tutoriel du début si possible.
+- Sauvegarde : nouvelles clés via `normalizeData` (ex. `drops`, `dropsAt`, `dropsEarnedDay`) ; les joueurs existants
+  commencent avec le plein. Penser au service worker si nouveaux fichiers (aucun prévu).
+- Tester dans Edge via `shot.ps1` (PowerShell), puis commit + push + vérification en ligne (règles habituelles).
+
 ## Prochaines étapes (proposées le 2026-10-17)
 1. Entraînement par thème — FAIT le 2026-10-18 (1re version) : sous-onglet « 🎯 Entraînement » dans Défis
    (`setChallengesTab`, `renderTraining`), 15 cases de thème, `pickTrainingCards`, `trainingProgress`,
