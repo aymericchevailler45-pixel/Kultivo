@@ -12,7 +12,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - `levels.js` : répartit automatiquement les questions dans les niveaux (voir plus bas).
 - `order.js` : `ORDER_FAMILIES` (16 familles, ~225 cartes, dont « Vitesses » `[texte, valeur de tri, valeur affichée, d]`)
   pour les niveaux Ordre. Jamais deux valeurs identiques dans une famille.
-- `cards.js` : `CARDS` (150 cartes, 10 par thème : 4 communes, 3 rares, 1 épique, 1 légendaire, 1 Maître)
+- `cards.js` : `CARDS` (150 cartes, 10 par thème : 3 communes, 3 rares, 2 épiques, 1 légendaire, 1 Maître)
   et `CARD_RARITIES` (chances de tirage, pièces pour un doublon). Image = emoji Twemoji (dossier `emoji/`, + `sw.js`).
 - `pairs.js` : `PAIR_FAMILIES` (14 familles, ~285 paires `[gauche, droite, d]`) pour les niveaux Paires.
 - ATTENTION GitHub Pages : Cache-Control max-age=600 (copie de 10 min sur le CDN). Pour vérifier une mise en
@@ -309,6 +309,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      sur la case du thème et dans `confirmTraining`.
    - Cartes « dorées » → CARTES BRILLANTES ✨ (3 exemplaires) : la couleur de rareté reste (le doré = légendaire,
      ne pas brouiller), reflet holographique animé + petite étoile ✨ dans le coin, « Rare · Brillante » en grand.
+   - 2026-10-19 (suite) : cartes à 3 exemplaires = « à réveiller » (`shinyPending`, pastille ✨ sur Profil et
+     sous-onglet Cartes) ; un tap dans la collection lance l'animation (`revealShiny`) puis `shinyCards[id]` = brillante.
+     Compteur « 1/3 », « 2/3 » en bas à droite des cartes. Raretés par thème : 3 communes, 3 rares, 2 épiques,
+     1 légendaire, 1 Maître (poids 58 / 28 / 11 / 3). Série en danger à l'ouverture (`checkStreakDanger`, 1 fois/jour,
+     série ≥ 2) : assez de gels → message ; sinon fenêtre « Acheter · X 🪙 » des gels manquants (max 5 jours).
+     Le gel reste automatique (utilisé à la fin de la 1re leçon après les jours manqués, `bumpStreak`).
    - Ligue des amis : compteur de semaines gagnées (1re place) dans les Records + badges à 1, 5 et 10 victoires.
      Pièces selon la place finalement OUI (demandé le 2026-10-19) : 🥇 50, 🥈 25, 🥉 10 (`PODIUM_COINS`).
    - Médailles d'entraînement par thème : 🥉 1/3, 🥈 2/3, 🥇 toutes les questions maîtrisées (sur la case du thème,

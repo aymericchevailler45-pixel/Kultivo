@@ -327,6 +327,8 @@ function defaultData() {
         tipTraining2: false,             // explication de l'entraînement en 3 bulles (2026-10-18)
         trainChests: {},                 // entraînement : thème -> dernier palier dont le coffre a été donné
         trainMedals: {},                 // entraînement : thème -> médaille gagnée (1 bronze, 2 argent, 3 or)
+        shinyCards: {},                  // cartes rendues brillantes (touchées dans la collection après le 3e exemplaire)
+        streakWarnDay: '',               // jour où l'alerte « série en danger » a été montrée
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -345,7 +347,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -583,6 +585,44 @@ function bumpStreak() {
     data.activeDays[data.lastDay] = data.activeDays[data.lastDay] || 0;
     data.best.streak = Math.max(data.best.streak, data.streak);
     saveData();
+}
+
+/** À l'ouverture de l'appli, après un ou plusieurs jours sans jouer : la série sera-t-elle sauvée ?
+    Assez de gels → simple message ; pas assez (et rattrapable) → proposition d'acheter les gels manquants.
+    Une seule fois par jour. */
+async function checkStreakDanger() {
+    const data = state.data;
+    if (!data.onboarded || data.streak < 2 || data.streakWarnDay === todayKey() || !$('tour').hidden) return;
+    const missed = missedDays();
+    if (missed <= 0 || missed === Infinity) return;
+    const item = SHOP.find(i => i.id === 'freeze');
+    const max = item.max || 5;
+    if (missed > max) return;   // trop de jours manqués : impossible à rattraper
+    data.streakWarnDay = todayKey();
+    saveData();
+    const days = plural(data.streak, 'jour', 'jours');
+    if (data.inv.freeze >= missed) {
+        showToast(`🧊 Ta série de ${days} sera protégée par ${plural(missed, 'gel', 'gels')} quand tu finiras une leçon.`);
+        return;
+    }
+    const need = missed - data.inv.freeze;
+    const price = need * item.price;
+    const enough = data.coins >= price;
+    const ok = await askConfirm({
+        title: '🔥 Ta série est en danger !',
+        text: `Tu as manqué ${plural(missed, 'jour', 'jours')}. Il te manque ${plural(need, 'gel', 'gels')} de série pour sauver ta série de ${days}.\n`
+            + (enough ? `Tu as ${data.coins} 🪙 : il t’en restera ${data.coins - price}. Termine ensuite une leçon pour la garder.`
+                      : `Il faut ${price} 🪙, tu en as ${data.coins}. Gagne des pièces en jouant, puis achète un gel à la boutique avant ta prochaine leçon.`),
+        yes: enough ? `Acheter · ${price} 🪙` : 'Compris',
+        no: enough ? 'Tant pis' : 'Fermer'
+    });
+    if (!ok || !enough || data.coins < price) return;
+    data.coins -= price;
+    data.inv.freeze += need;
+    data.totals.purchases = (data.totals.purchases || 0) + 1;
+    saveData();
+    renderHeader();
+    showToast(`🧊 ${plural(need, 'gel acheté', 'gels achetés')} : finis une leçon pour sauver ta série !`);
 }
 
 /* ---------- Calendrier de la série ---------- */
@@ -956,10 +996,12 @@ function updateNavNotifications() {
     
     const profileBtn = document.querySelector('.nav-btn[data-screen="profile"]');
     const badgesTab = document.querySelector('.profile-tab[data-tab="badges"]');
-    for (const target of [profileBtn, badgesTab]) {
-        if (unclaimedBadges > 0) target.setAttribute('data-notif', unclaimedBadges);
-        else target.removeAttribute('data-notif');
-    }
+    const cardsTab = document.querySelector('.profile-tab[data-tab="cards"]');
+    const shinies = pendingShinyCount();   // cartes à 3/3 à rendre brillantes
+    const setNotif = (target, n) => n > 0 ? target.setAttribute('data-notif', n) : target.removeAttribute('data-notif');
+    setNotif(profileBtn, unclaimedBadges + shinies);
+    setNotif(badgesTab, unclaimedBadges);
+    setNotif(cardsTab, shinies);
     
     // 2. Vérifier si l'objectif du jour est en attente de récupération (pour l'onglet Défis)
     let unclaimedGoals = 0;
@@ -1157,7 +1199,10 @@ const CARD_CHARGE_MS = { common: 250, rare: 550, epic: 900, legendary: 1300, mas
 const CARD_CONFETTI = { epic: ['#8b5cf6', '#c9b6ff', '#ffffff'], legendary: ['#ffc800', '#ffb300', '#fff3b0', '#ff9600'],
                         master: ['#58cc02', '#89e219', '#d7ffb8', '#ffffff'] };
 const SHINY_AT = 3;   // 3 exemplaires d'une carte : elle devient brillante ✨ (sa couleur de rareté ne change pas)
-const isShiny = card => card.rarity !== 'master' && (state.data.cards[card.id] || 0) >= SHINY_AT;
+const isShiny = card => card.rarity !== 'master' && (state.data.cards[card.id] || 0) >= SHINY_AT && !!state.data.shinyCards[card.id];
+/** 3e exemplaire reçu mais pas encore « réveillé » : on le signale (pastille), un tap dans la collection lance l'animation. */
+const shinyPending = card => card.rarity !== 'master' && (state.data.cards[card.id] || 0) >= SHINY_AT && !state.data.shinyCards[card.id];
+const pendingShinyCount = () => CARDS.filter(shinyPending).length;
 
 /** Carte retournable : dos (logo) + face. */
 function cardFlip(card, big, shiny = false) {
@@ -1204,8 +1249,10 @@ function revealCard(chest) {
         flip.classList.add('is-flipped');
         cardRevealFx(card.rarity);
         if (shiny) shinyFx();
+        const copies = state.data.cards[card.id] || 0;
         $('chestNote').textContent = isNew ? (card.rarity === 'master' ? '🏆 Carte Maître !' : '✨ Nouvelle carte !')
-            : shiny ? `✨ 3e exemplaire : elle devient brillante ! +${coins} 🪙`
+            : shiny ? `✨ 3/3 ! Va dans Profil → Cartes pour la rendre brillante. +${coins} 🪙`
+            : copies < SHINY_AT ? `Déjà dans ta collection (${copies}/${SHINY_AT}) : +${coins} 🪙`
             : `Déjà dans ta collection : +${coins} 🪙`;
     };
     chest.timer = setTimeout(() => chest.finish && chest.finish(), CARD_CHARGE_MS[card.rarity]);
@@ -1220,7 +1267,7 @@ function showChestSummary(chest) {
         const flip = cardFlip(card, false, isShiny(card));
         if (isNew || shiny) {
             const tag = el('span', 'kcard-new');
-            tag.textContent = card.rarity === 'master' ? 'Maître' : isNew ? 'Nouvelle' : 'Brillante';
+            tag.textContent = card.rarity === 'master' ? 'Maître' : isNew ? 'Nouvelle' : '3/3 ✨';
             flip.append(tag);
         }
         grid.append(flip);
@@ -1241,7 +1288,7 @@ function showChestSummary(chest) {
         chest.finish = null;
         if (shinies) shinyFx();
         else if (CARD_CONFETTI[best]) launchConfetti(CARD_CONFETTI[best]);
-        $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${shinies ? ` · ${plural(shinies, 'brillante', 'brillantes')}` : ''}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
+        $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${shinies ? ` · ${shinies} à 3/3 (va dans tes cartes)` : ''}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
     };
     const step = () => {
         flips[i].classList.add('is-flipped');
@@ -1346,6 +1393,37 @@ function openBadgeView(badge, onBack = null) {
     $('chestModal').hidden = false;
 }
 
+/** 3e exemplaire : la carte se charge (elle tremble et brille), puis prend son apparence brillante. */
+function revealShiny(card) {
+    state.chest = null;
+    chestBack = null;
+    $('chestTitle').textContent = '✨ 3 exemplaires !';
+    const stage = $('chestStage');
+    const face = cardFace(card, true, false);
+    face.classList.add('is-awakening');
+    stage.replaceChildren(face);
+    $('chestNote').textContent = 'Ta carte se transforme…';
+    $('chestBtn').textContent = 'Super !';
+    $('chestModal').hidden = false;
+    let done = false;
+    const finish = () => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        state.chest = null;   // le prochain tap sur le bouton ferme la fenêtre
+        state.data.shinyCards[card.id] = Date.now();
+        saveData();
+        stage.replaceChildren(cardFace(card, true, true));
+        shinyFx();
+        $('chestNote').textContent = '✨ Ta carte est maintenant brillante !';
+        renderCollection();
+        updateNavNotifications();
+    };
+    const timer = setTimeout(finish, 1400);
+    face.addEventListener('click', finish);
+    state.chest = { results: [], step: 0, finish };   // un tap sur le bouton pendant l'animation la termine
+}
+
 /** Carte Maître pas encore gagnée : comment l'obtenir. */
 function openLockedMaster(card) {
     state.chest = null;
@@ -1385,7 +1463,20 @@ function renderCollection() {
                 btn.type = 'button';
                 btn.append(cardFace(card, false, isShiny(card)));   // 3 exemplaires : brillante ; doublons = pièces
                 btn.setAttribute('aria-label', `${card.name}, ${CARD_RARITIES[card.rarity].name}`);
-                btn.addEventListener('click', () => openCardView(card));
+                if (shinyPending(card)) {
+                    btn.classList.add('is-pending');
+                    const dot = el('span', 'kcard-ready');
+                    dot.textContent = '✨';
+                    btn.append(dot);
+                    btn.addEventListener('click', () => revealShiny(card));
+                } else {
+                    if (card.rarity !== 'master' && count < SHINY_AT) {
+                        const copies = el('span', 'kcard-copies');
+                        copies.textContent = `${count}/${SHINY_AT}`;
+                        btn.append(copies);
+                    }
+                    btn.addEventListener('click', () => openCardView(card));
+                }
                 row.append(btn);
             } else if (card.rarity === 'master') {
                 // Carte Maître : verrouillée, on explique comment la gagner
@@ -5703,6 +5794,7 @@ function init() {
     // Tout premier lancement : parcours d'accueil (niveau, objectif, puis test de placement ou niveau 1)
     const d = state.data;
     if (!d.onboarded && canTakePlacement() && Object.keys(d.stats).length === 0) startOnboarding();
+    else setTimeout(checkStreakDanger, 1500);   // série en danger après un jour manqué ?
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -1,15 +1,15 @@
 /* ============================================================
    KULTIVO — cartes à collectionner (gagnées dans les coffres du parcours)
-   10 cartes par thème : 4 communes, 3 rares, 1 épique, 1 légendaire (tirées dans les coffres)
+   10 cartes par thème : 3 communes, 3 rares, 2 épiques, 1 légendaire (tirées dans les coffres)
    + 1 carte « Maître » (rareté master), gagnée seulement au palier 5 de l'entraînement du thème.
    [id, thème, emoji (affiché en image Twemoji, dossier emoji/), nom, rareté, texte]
    Pour ajouter une carte : un id jamais utilisé, et télécharger l'emoji dans emoji/ (+ sw.js).
    ============================================================ */
 
 const CARD_RARITIES = {
-    common:    { name: 'Commune',    weight: 60, dupCoins: 5 },
+    common:    { name: 'Commune',    weight: 58, dupCoins: 5 },
     rare:      { name: 'Rare',       weight: 28, dupCoins: 10 },
-    epic:      { name: 'Épique',     weight: 9,  dupCoins: 25 },
+    epic:      { name: 'Épique',     weight: 11, dupCoins: 25 },
     legendary: { name: 'Légendaire', weight: 3,  dupCoins: 50 },
     master:    { name: 'Maître',     weight: 0,  dupCoins: 50 }   // jamais tirée au hasard : palier 5 de l'entraînement
 };
@@ -23,7 +23,7 @@ const CARDS = [
     ['hi5', 'Histoire', '👑', 'Couronne impériale', 'rare', 'La couronne du Saint-Empire, conservée à Vienne, a plus de mille ans.'],
     ['hi6', 'Histoire', '📜', 'Déclaration des droits de l’homme', 'epic', '26 août 1789 : « Les hommes naissent et demeurent libres et égaux en droits. »'],
     ['hi7', 'Histoire', '🧵', 'Tapisserie de Bayeux', 'legendary', 'Près de 70 mètres de broderie racontent la conquête de l’Angleterre, en 1066.'],
-    ['hi8', 'Histoire', '🗝️', 'Clé de la Bastille', 'common', 'La Fayette l’a offerte à George Washington : elle est toujours chez lui, à Mount Vernon.'],
+    ['hi8', 'Histoire', '🗝️', 'Clé de la Bastille', 'epic', 'La Fayette l’a offerte à George Washington : elle est toujours chez lui, à Mount Vernon.'],
     ['hi9', 'Histoire', '🚢', 'Le Titanic', 'rare', 'Son épave, retrouvée en 1985, repose à près de 3 800 m de fond.'],
     ['hiM', 'Histoire', '⚜️', 'Fleur de lys', 'master', 'L’emblème des rois de France, brodé d’or sur fond bleu.'],
 
@@ -35,7 +35,7 @@ const CARDS = [
     ['sc5', 'Sciences', '🧬', 'Double hélice', 'rare', 'La forme de l’ADN est décrite en 1953, grâce aux clichés de Rosalind Franklin.'],
     ['sc6', 'Sciences', '🍎', 'Pomme de Newton', 'epic', 'Sa chute aurait inspiré à Newton la loi de la gravitation.'],
     ['sc7', 'Sciences', '☢️', 'Carnets de Marie Curie', 'legendary', 'Toujours radioactifs, ils se consultent avec des gants et une décharge signée.'],
-    ['sc8', 'Sciences', '🧪', 'Fiole de Lavoisier', 'common', 'En 1783, Lavoisier montre que l’eau est faite d’hydrogène et d’oxygène.'],
+    ['sc8', 'Sciences', '🧪', 'Fiole de Lavoisier', 'epic', 'En 1783, Lavoisier montre que l’eau est faite d’hydrogène et d’oxygène.'],
     ['sc9', 'Sciences', '🦕', 'Diplodocus du Muséum', 'rare', 'Une copie du squelette « Dippy » est exposée au Muséum de Paris depuis 1908.'],
     ['scM', 'Sciences', '🚀', 'Fusée Saturn V', 'master', '110 m de haut : elle a emmené les premiers hommes vers la Lune en 1969.'],
 
@@ -47,7 +47,7 @@ const CARDS = [
     ['ge5', 'Géographie', '🏜️', 'Sahara', 'rare', 'Le plus grand désert chaud du monde, presque aussi vaste que les États-Unis.'],
     ['ge6', 'Géographie', '🌐', 'Globe de Behaim', 'epic', 'Fabriqué en 1492, c’est le plus vieux globe terrestre conservé… sans l’Amérique.'],
     ['ge7', 'Géographie', '🌊', 'Fosse des Mariannes', 'legendary', 'Près de 11 000 m de fond : l’Everest y disparaîtrait entièrement.'],
-    ['ge8', 'Géographie', '🏝️', 'Atoll des Maldives', 'common', 'Les Maldives comptent près de 1 200 îles, presque toutes au ras de l’eau.'],
+    ['ge8', 'Géographie', '🏝️', 'Atoll des Maldives', 'epic', 'Les Maldives comptent près de 1 200 îles, presque toutes au ras de l’eau.'],
     ['ge9', 'Géographie', '🧊', 'Iceberg', 'rare', 'Environ 90 % de son volume reste caché sous l’eau.'],
     ['geM', 'Géographie', '🌍', 'La Bille bleue', 'master', 'La célèbre photo de la Terre entière, prise par l’équipage d’Apollo 17 en 1972.'],
 
@@ -59,12 +59,12 @@ const CARDS = [
     ['te5', 'Technologie', '🤖', 'Robot', 'rare', 'Le mot vient d’une pièce de théâtre tchèque de 1920.'],
     ['te6', 'Technologie', '💡', 'Ampoule d’Edison', 'epic', 'En 1879, son filament de carbone brille plus de 13 heures d’affilée.'],
     ['te7', 'Technologie', '🧮', 'Pascaline', 'legendary', 'La machine à calculer inventée par Blaise Pascal à 19 ans, en 1642.'],
-    ['te8', 'Technologie', '🖱️', 'Souris d’Engelbart', 'common', 'La toute première souris, présentée en 1968, était un boîtier en bois.'],
+    ['te8', 'Technologie', '🖱️', 'Souris d’Engelbart', 'epic', 'La toute première souris, présentée en 1968, était un boîtier en bois.'],
     ['te9', 'Technologie', '📱', 'Premier iPhone', 'rare', 'Présenté par Steve Jobs en janvier 2007.'],
     ['teM', 'Technologie', '🛰️', 'Spoutnik', 'master', 'Le premier satellite artificiel, lancé par l’URSS le 4 octobre 1957.'],
 
     // Musique
-    ['mu1', 'Musique', '🎸', 'Guitare électrique', 'common', 'La célèbre Fender Stratocaster sort en 1954.'],
+    ['mu1', 'Musique', '🎸', 'Guitare électrique', 'epic', 'La célèbre Fender Stratocaster sort en 1954.'],
     ['mu2', 'Musique', '🎷', 'Saxophone', 'common', 'Inventé par le Belge Adolphe Sax, vers 1840.'],
     ['mu3', 'Musique', '🎹', 'Piano', 'common', 'Son vrai nom, « pianoforte », veut dire qu’il joue doux et fort.'],
     ['mu4', 'Musique', '🎺', 'Trompette de Louis Armstrong', 'rare', '« Satchmo » a fait connaître le jazz dans le monde entier.'],
@@ -83,7 +83,7 @@ const CARDS = [
     ['li5', 'Littérature', '🤺', 'Les Trois Mousquetaires', 'rare', 'Ils sont en fait quatre, avec d’Artagnan.'],
     ['li6', 'Littérature', '💍', 'Anneau unique', 'epic', '« Un anneau pour les gouverner tous » : le cœur du Seigneur des anneaux.'],
     ['li7', 'Littérature', '📖', 'Bible de Gutenberg', 'legendary', 'Premier grand livre imprimé en Europe, vers 1455 ; il en reste moins de 50.'],
-    ['li8', 'Littérature', '✒️', 'Plume de Victor Hugo', 'common', 'En exil à Guernesey, il écrivait souvent debout, devant un pupitre.'],
+    ['li8', 'Littérature', '✒️', 'Plume de Victor Hugo', 'epic', 'En exil à Guernesey, il écrivait souvent debout, devant un pupitre.'],
     ['li9', 'Littérature', '🛏️', 'Chambre de Proust', 'rare', 'Il écrivait la nuit, au lit, dans une chambre tapissée de liège contre le bruit.'],
     ['liM', 'Littérature', '📚', 'Collection de la Pléiade', 'master', 'Ses livres sont imprimés sur du papier bible, très fin, pour tenir des milliers de pages.'],
 
@@ -95,7 +95,7 @@ const CARDS = [
     ['je5', 'Jeux', '🕹️', 'Pong', 'rare', 'Sorti en 1972, c’est l’un des premiers jeux vidéo à succès.'],
     ['je6', 'Jeux', '🎮', 'Game Boy', 'epic', 'Sortie en 1989, une Game Boy a survécu à un bombardement et marche encore.'],
     ['je7', 'Jeux', '♟️', 'Échecs de Lewis', 'legendary', 'Des pièces sculptées dans l’ivoire de morse au XIIe siècle, trouvées en Écosse.'],
-    ['je8', 'Jeux', '🀄', 'Tuile de mah-jong', 'common', 'Un jeu complet compte 144 tuiles.'],
+    ['je8', 'Jeux', '🀄', 'Tuile de mah-jong', 'epic', 'Un jeu complet compte 144 tuiles.'],
     ['je9', 'Jeux', '🎳', 'Partie parfaite', 'rare', 'Au bowling, 12 strikes d’affilée donnent le score parfait de 300.'],
     ['jeM', 'Jeux', '👾', 'Space Invader', 'master', 'Le jeu de 1978 aurait provoqué une pénurie de pièces de 100 yens au Japon.'],
 
@@ -107,14 +107,14 @@ const CARDS = [
     ['ci5', 'Cinéma', '🦈', 'Requin des Dents de la mer', 'rare', 'Le requin mécanique tombait si souvent en panne que Spielberg l’a peu montré.'],
     ['ci6', 'Cinéma', '👠', 'Souliers de rubis', 'epic', 'Ceux du Magicien d’Oz (1939) ; une paire volée a été retrouvée en 2018.'],
     ['ci7', 'Cinéma', '🚂', 'L’Arrivée d’un train', 'legendary', 'Le film des frères Lumière ; la légende dit que le public s’est enfui.'],
-    ['ci8', 'Cinéma', '🎥', 'Cinématographe', 'common', 'L’appareil des frères Lumière servait à la fois de caméra et de projecteur.'],
+    ['ci8', 'Cinéma', '🎥', 'Cinématographe', 'epic', 'L’appareil des frères Lumière servait à la fois de caméra et de projecteur.'],
     ['ci9', 'Cinéma', '🕷️', 'Spider-Man', 'rare', 'Créé en 1962 par Stan Lee et Steve Ditko.'],
     ['ciM', 'Cinéma', '⭐', 'Étoile du Walk of Fame', 'master', 'Plus de 2 700 étoiles sont incrustées dans les trottoirs d’Hollywood.'],
 
     // Gastronomie
     ['ga1', 'Gastronomie', '🥐', 'Croissant', 'common', 'Il viendrait d’une viennoiserie autrichienne, le kipferl.'],
     ['ga2', 'Gastronomie', '🥖', 'Baguette', 'common', 'Son savoir-faire est inscrit au patrimoine de l’UNESCO depuis 2022.'],
-    ['ga3', 'Gastronomie', '🍫', 'Chocolat aztèque', 'common', 'Les Aztèques le buvaient amer et épicé.'],
+    ['ga3', 'Gastronomie', '🍫', 'Chocolat aztèque', 'epic', 'Les Aztèques le buvaient amer et épicé.'],
     ['ga4', 'Gastronomie', '🧀', 'Roquefort', 'rare', 'Premier fromage français protégé par une appellation, en 1925.'],
     ['ga5', 'Gastronomie', '🍾', 'Champagne', 'rare', 'Dom Pérignon n’a pas inventé les bulles, mais il a perfectionné le vin.'],
     ['ga6', 'Gastronomie', '🍄', 'Truffe noire', 'epic', 'Le « diamant noir » du Périgord peut dépasser 1 000 € le kilo.'],
@@ -126,7 +126,7 @@ const CARDS = [
     // Sport
     ['sp1', 'Sport', '⚽', 'Ballon de football', 'common', 'Un ballon officiel pèse entre 410 et 450 grammes.'],
     ['sp2', 'Sport', '🎾', 'Balle de tennis', 'common', 'Le jeu de paume, ancêtre du tennis, est né en France.'],
-    ['sp3', 'Sport', '🚴', 'Vélo du Tour', 'common', 'Le Tour de France est né en 1903.'],
+    ['sp3', 'Sport', '🚴', 'Vélo du Tour', 'epic', 'Le Tour de France est né en 1903.'],
     ['sp4', 'Sport', '🥊', 'Gants de Mohamed Ali', 'rare', '« Vole comme un papillon, pique comme une abeille. »'],
     ['sp5', 'Sport', '👕', 'Maillot jaune', 'rare', 'Jaune comme le papier de L’Auto, le journal qui organisait le Tour.'],
     ['sp6', 'Sport', '🏅', 'Médaille d’or', 'epic', 'Une médaille d’or olympique est surtout en argent, recouverte d’or.'],
@@ -136,7 +136,7 @@ const CARDS = [
     ['spM', 'Sport', '🔥', 'Flamme olympique', 'master', 'Elle est allumée à Olympie, avec un miroir qui concentre les rayons du soleil.'],
 
     // Arts
-    ['ar1', 'Arts', '🎨', 'Palette impressionniste', 'common', 'Les tubes de peinture ont permis aux impressionnistes de peindre dehors.'],
+    ['ar1', 'Arts', '🎨', 'Palette impressionniste', 'epic', 'Les tubes de peinture ont permis aux impressionnistes de peindre dehors.'],
     ['ar2', 'Arts', '🖌️', 'Pinceau', 'common', 'Les meilleurs pinceaux d’aquarelle sont en poils de martre.'],
     ['ar3', 'Arts', '🩰', 'Chaussons de danse', 'common', 'Les danseuses montent sur les pointes au début du XIXe siècle.'],
     ['ar4', 'Arts', '🌻', 'Tournesols de Van Gogh', 'rare', 'Il en a peint plusieurs versions pour décorer sa maison d’Arles.'],
@@ -149,7 +149,7 @@ const CARDS = [
 
     // Langue française
     ['lf1', 'Langue française', '✍️', 'Accent circonflexe', 'common', 'Il remplace souvent un S disparu : forêt (forest), hôpital (hospital).'],
-    ['lf2', 'Langue française', '📝', 'Dictée de Mérimée', 'common', 'Écrite vers 1857 pour la cour de Napoléon III, pleine de pièges.'],
+    ['lf2', 'Langue française', '📝', 'Dictée de Mérimée', 'epic', 'Écrite vers 1857 pour la cour de Napoléon III, pleine de pièges.'],
     ['lf3', 'Langue française', '📗', 'Dictionnaire', 'common', 'Chaque année, de nouveaux mots y entrent.'],
     ['lf4', 'Langue française', '🗡️', 'Épée d’académicien', 'rare', 'Chaque membre de l’Académie française reçoit une épée faite pour lui.'],
     ['lf5', 'Langue française', '⚖️', 'Ordonnance de Villers-Cotterêts', 'rare', 'En 1539, François Ier impose le français dans les actes officiels.'],
@@ -161,7 +161,7 @@ const CARDS = [
 
     // Mythologie
     ['my1', 'Mythologie', '🦉', 'Chouette d’Athéna', 'common', 'Symbole de sagesse, elle figurait sur les pièces d’Athènes.'],
-    ['my2', 'Mythologie', '🐍', 'Tête de Méduse', 'common', 'Son regard changeait en pierre quiconque la regardait.'],
+    ['my2', 'Mythologie', '🐍', 'Tête de Méduse', 'epic', 'Son regard changeait en pierre quiconque la regardait.'],
     ['my3', 'Mythologie', '🍏', 'Pomme de discorde', 'common', '« À la plus belle » : cette pomme d’or a déclenché la guerre de Troie.'],
     ['my4', 'Mythologie', '🐎', 'Cheval de Troie', 'rare', 'Les Grecs cachés à l’intérieur ont pris la ville par la ruse.'],
     ['my5', 'Mythologie', '🏺', 'Boîte de Pandore', 'rare', 'C’était en fait une jarre ; au fond, il ne resta que l’Espérance.'],
@@ -173,7 +173,7 @@ const CARDS = [
 
     // Drapeaux
     ['dr1', 'Drapeaux', '🏳️', 'Drapeau blanc', 'common', 'Signe de trêve ou de reddition depuis des siècles.'],
-    ['dr2', 'Drapeaux', '🏁', 'Drapeau à damier', 'common', 'Il salue le vainqueur des courses automobiles.'],
+    ['dr2', 'Drapeaux', '🏁', 'Drapeau à damier', 'epic', 'Il salue le vainqueur des courses automobiles.'],
     ['dr3', 'Drapeaux', '🇨🇭', 'Drapeau suisse', 'common', 'L’un des deux seuls drapeaux nationaux carrés, avec celui du Vatican.'],
     ['dr4', 'Drapeaux', '🇳🇵', 'Drapeau du Népal', 'rare', 'Le seul drapeau national qui n’est pas un rectangle.'],
     ['dr5', 'Drapeaux', '🇩🇰', 'Dannebrog', 'rare', 'Le drapeau du Danemark serait le plus ancien encore utilisé.'],
@@ -191,7 +191,7 @@ const CARDS = [
     ['mo5', 'Monuments', '🏯', 'Château d’Himeji', 'rare', 'Le « Héron blanc » a échappé aux guerres et aux bombardements.'],
     ['mo6', 'Monuments', '🗿', 'Moaï', 'epic', 'L’île de Pâques en compte près de 900 ; certains ont un corps enterré.'],
     ['mo7', 'Monuments', '🧱', 'Grande Muraille', 'legendary', 'Plus de 20 000 km de murs… et pourtant invisible à l’œil nu depuis l’espace.'],
-    ['mo8', 'Monuments', '⛲', 'Fontaine de Trevi', 'common', 'Environ 3 000 € de pièces y sont jetés chaque jour, puis donnés à une œuvre caritative.'],
+    ['mo8', 'Monuments', '⛲', 'Fontaine de Trevi', 'epic', 'Environ 3 000 € de pièces y sont jetés chaque jour, puis donnés à une œuvre caritative.'],
     ['mo9', 'Monuments', '⛩️', 'Torii de Miyajima', 'rare', 'Ce grand portail rouge semble flotter sur la mer à marée haute.'],
     ['moM', 'Monuments', '🏰', 'Château de Neuschwanstein', 'master', 'Le château de Louis II de Bavière aurait inspiré celui de La Belle au bois dormant.']
 ].map(([id, theme, icon, name, rarity, text]) => ({ id, theme, icon, name, rarity, text }));

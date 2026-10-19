@@ -1861,6 +1861,44 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     pointer-events: none;
 }
 .kcard-sparkle { position: absolute; top: 1px; right: 3px; z-index: 1; font-size: 0.75rem; line-height: 1; }
+.kcard-copies {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-weight: 900;
+    line-height: 1.4;
+}
+.kcard-ready {
+    position: absolute;
+    top: -7px;
+    right: -6px;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--red, #ff4b4b);
+    font-size: 0.7rem;
+    animation: readyPulse 1.2s ease-in-out infinite;
+}
+.kcard-btn.is-pending .kcard { box-shadow: 0 0 0 2px #fff, 0 0 12px 3px color-mix(in srgb, var(--r) 70%, #ff8be0); }
+@keyframes readyPulse { 50% { transform: scale(1.18); } }
+/* Réveil de la carte brillante : elle tremble et s'illumine, de plus en plus fort */
+.kcard.is-awakening { animation: awaken 1.4s ease-in forwards; }
+@keyframes awaken {
+    0%   { transform: none; filter: none; }
+    30%  { transform: rotate(-2deg) scale(1.02); }
+    50%  { transform: rotate(2deg) scale(1.04); filter: brightness(1.15); }
+    70%  { transform: rotate(-3deg) scale(1.06); filter: brightness(1.3) saturate(1.3); }
+    90%  { transform: rotate(3deg) scale(1.08); filter: brightness(1.6) saturate(1.5); }
+    100% { transform: scale(1.1); filter: brightness(2.2); }
+}
 .kcard.is-big .kcard-sparkle { top: 8px; right: 10px; font-size: 1.4rem; }
 @keyframes cardShine { from { background-position: 160% 0; } to { background-position: -110% 0; } }
 .kcard-art .emoji-img { width: 2.2rem; height: 2.2rem; }
@@ -1897,7 +1935,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     to   { transform: none; opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .chest-node.is-ready, .chest-gift, .kcard.is-big, .kcard.is-shiny::after { animation: none; }
+    .chest-node.is-ready, .chest-gift, .kcard.is-big, .kcard.is-shiny::after, .kcard-ready, .kcard.is-awakening { animation: none; }
 }
 
 /* Collection (profil) */
