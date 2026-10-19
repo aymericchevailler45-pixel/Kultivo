@@ -296,6 +296,12 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
 - Bulle d'explication la 1re fois (même système `startTip`) ; à mentionner dans le tutoriel du début si possible.
 - Sauvegarde : nouvelles clés via `normalizeData` (ex. `drops`, `dropsAt`, `dropsEarnedDay`) ; les joueurs existants
   commencent avec le plein. Penser au service worker si nouveaux fichiers (aucun prévu).
+- BARRE DU HAUT (validé) : 🪙 pièces · 💧 gouttes · 🔥 série — les 💧 REMPLACENT le compteur ⭐ XP (l'XP reste dans le
+  Profil, la fin de leçon, l'objectif du jour, le Classement). Tap sur 💧 → « Prochaine goutte dans 47 min » (ou fenêtre).
+  Mettre à jour la bulle du tutoriel « En haut : tes pièces 🪙, ton XP ⭐ et ta série 🔥 » (→ gouttes).
+- ÉCONOMIE (validé le 2026-10-19, à faire avec les gouttes) : `COIN_RATE` 10 → 5 (1 🪙 pour 5 XP : ~8 🪙 par niveau)
+  et `COIN_BADGE` 5 → 25. Le reste ne bouge pas (objectif du jour, podium, prix de la boutique). Calcul : un
+  « Régulier » passe de ~45 à ~60 🪙/jour, un « Intense » de ~85 à ~110 🪙/jour.
 - Tester dans Edge via `shot.ps1` (PowerShell), puis commit + push + vérification en ligne (règles habituelles).
 
 ## Prochaines étapes (proposées le 2026-10-17)
