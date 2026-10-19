@@ -311,6 +311,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      sur la case du thème et dans `confirmTraining`.
    - Cartes « dorées » → CARTES BRILLANTES ✨ (3 exemplaires) : la couleur de rareté reste (le doré = légendaire,
      ne pas brouiller), reflet holographique animé + petite étoile ✨ dans le coin, « Rare · Brillante » en grand.
+   - Ligue des amis : compteur de semaines gagnées (1re place) dans le Profil (« 🏆 3 fois 1er ») + badges à
+     1, 5 et 10 victoires. PAS de pièces selon la place (refusé). Données : `podium` (lundi -> place) suffit
+     (compter les valeurs === 1). Le coffre reste selon le nombre d'amis battus.
    PROCHAINE SÉANCE (« on fera demain ») : badges par thème + coffres de palier, puis cartes dorées,
    bouton « Revoir le tutoriel », lot de questions du parcours (faits vérifiés en ligne), mode « Qui suis-je ? ».
    PLAN d'origine :
