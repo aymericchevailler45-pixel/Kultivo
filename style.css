@@ -1022,9 +1022,9 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .drops-earn { margin: 10px 0 2px; font-weight: 800; color: var(--blue-ink); }
 #dropsText { margin: 6px 0 0; font-size: 0.92rem; }
 /* Fenêtre de départ : ce que coûte le niveau */
-.modal-cost {
+.modal-content p.modal-cost {   /* (sinon la règle des paragraphes de fenêtre retire le centrage) */
     margin: 10px auto 14px; padding: 8px 14px; width: fit-content; border-radius: 999px;
-    background: rgba(24, 153, 214, 0.14); color: var(--blue-ink); font-weight: 800;
+    background: rgba(24, 153, 214, 0.14); color: var(--blue-ink); font-size: 1rem; font-weight: 800;
 }
 
 /* Icônes des onglets : seulement dans la barre du bas (téléphone, tablette) */
