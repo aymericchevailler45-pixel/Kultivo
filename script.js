@@ -326,6 +326,9 @@ function defaultData() {
         tipTraining: false,              // explication des paliers déjà vue (ancienne version, 1 bulle)
         tipTraining2: false,             // explication de l'entraînement en 3 bulles (2026-10-18)
         tipChallenges: false,            // 1re visite de l'onglet Défis : bulle qui mène à l'Entraînement
+        tipProfile: false,               // 1re visite du Profil : badges, cartes, compte
+        tipLeague: false,                // 1re visite du Classement (connecté, avec pseudo) : amis, semaine, lundi
+        tipLeagueIntro: false,           // 1re visite du Classement sans compte ni pseudo
         trainChests: {},                 // entraînement : thème -> dernier palier dont le coffre a été donné
         trainMedals: {},                 // entraînement : thème -> médaille gagnée (1 bronze, 2 argent, 3 or)
         shinyCards: {},                  // cartes rendues brillantes (touchées dans la collection après le 3e exemplaire)
@@ -975,6 +978,8 @@ function showScreen(name) {
     $('studyScreen').hidden = name !== 'study';
     $('onboardScreen').hidden = name !== 'onboard';
     if (name === 'challenges' && !state.data.tipChallenges) setTimeout(showChallengesTip, 500);
+    if (name === 'profile' && !state.data.tipProfile) setTimeout(showProfileTip, 500);
+    if (name === 'league' && !state.data.tipLeague) setTimeout(showLeagueTip, 900);
     $('topbar').hidden = !MAIN_SCREENS.includes(name);
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -3922,6 +3927,60 @@ function showChallengesTip() {
     tourStep = 0;
     $('tour').hidden = false;
     showTourStep();
+}
+
+/** Lance une petite visite : seulement les étapes dont l'élément est affiché. Renvoie false si aucune. */
+function startTip(flag, steps, lastLabel = 'Compris !') {
+    const visible = t => t && t.offsetParent !== null && t.getBoundingClientRect().height > 0;
+    const list = steps.filter(step => visible(step.target()));
+    if (!list.length) return false;
+    tourSteps = list;
+    tourFlag = flag;
+    tourLastLabel = lastLabel;
+    tourStep = 0;
+    $('tour').hidden = false;
+    showTourStep();
+    return true;
+}
+const tipAllowed = screen => state.data.onboarded && $('tour').hidden && $('chestModal').hidden && !$(screen).hidden;
+const firstVisible = (...selectors) => selectors.map(sel => document.querySelector(sel)).find(t => t && t.offsetParent !== null);
+
+/** 1re visite du Profil : badges, cartes, et le compte (seulement si on n'en a pas encore). */
+function showProfileTip() {
+    if (state.data.tipProfile || !tipAllowed('profileScreen')) return;
+    const steps = [{
+        target: () => firstVisible('.profile-tab[data-tab="badges"]', '.card-badges'),
+        text: '🎖️ Tes badges : quand l’un d’eux a une pastille, touche-le pour récupérer ta récompense.'
+    }, {
+        target: () => firstVisible('.profile-tab[data-tab="cards"]', '.card-collection'),
+        text: '🃏 Tes cartes, gagnées dans les coffres. Chaque doublon te rapproche d’une carte brillante (1/3, 2/3…) : à 3, touche-la pour la transformer ✨. 🔒 La carte Maître se gagne au palier 5 de l’entraînement.'
+    }];
+    if (!cloudUser) steps.push({
+        target: () => $('cloudBtn'),
+        text: '☁️ Crée un compte pour sauvegarder ta progression en ligne et jouer avec tes amis.'
+    });
+    startTip('tipProfile', steps);
+}
+
+/** 1re visite du Classement : amis, semaine, lundi. Sans compte ni pseudo : une seule bulle (la vraie visite
+    viendra quand le classement sera disponible). */
+function showLeagueTip() {
+    const d = state.data;
+    if (d.tipLeague || !tipAllowed('leagueScreen')) return;
+    if (document.querySelector('.league-rank')) {
+        startTip('tipLeague', [{
+            target: () => document.querySelector('.league-friends'),
+            text: '👥 Ajoute tes amis avec leur pseudo, ou envoie-leur ton lien d’invitation.'
+        }, {
+            target: () => document.querySelector('.league-rank'),
+            text: '🏆 Chaque semaine, celui qui gagne le plus d’XP l’emporte. Le lundi : un coffre de cartes selon le nombre d’amis battus, et des pièces pour le podium (🥇 50, 🥈 25, 🥉 10).'
+        }]);
+    } else if (!d.tipLeagueIntro && !(cloudUser && league?.pseudo)) {
+        startTip('tipLeagueIntro', [{
+            target: () => document.querySelector('.league-intro'),
+            text: '🥇 Le classement entre amis : crée un compte et choisis un pseudo pour défier tes amis chaque semaine.'
+        }]);
+    }
 }
 
 function showTrainingTip() {

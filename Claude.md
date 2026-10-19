@@ -299,6 +299,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    1re visite : 3 bulles (`showTrainingTip`, drapeau `tipTraining2` ; l'ancien `tipTraining` = 1 bulle, gardé).
    1re visite de l'onglet Défis : 4 bulles (objectif du jour, défi du jour, sprint, « 🎯 Entraînement ») (`showChallengesTip`, `tipChallenges`) ;
    « Voir l'entraînement » (ou un tap sur l'onglet) y mène, puis les 3 bulles de l'entraînement suivent.
+   1re visite du Profil (`showProfileTip`, `tipProfile`) : badges, cartes (1/3, brillantes, Maître), compte (si pas connecté).
+   1re visite du Classement (`showLeagueTip`) : connecté avec pseudo → amis + semaine/lundi (`tipLeague`) ;
+   sinon une bulle sur la carte d'accueil (`tipLeagueIntro`). Outil commun : `startTip` (étapes visibles seulement).
    Captures d'écran : Edge headless ne marche plus via Bash, mais OK via PowerShell (`shot.ps1` du scratchpad).
    FAIT LE 2026-10-19 (voir ci-dessous ; `trainChests`, `trainMedals`, `trainChestBoxes`, `claimPendingTrainChests`,
    `masterCard`, `TRAIN_MEDALS`, `SHINY_AT`/`isShiny`, `openLockedMaster`, `PODIUM_COINS`, `leagueWins`, badges league1/5/10) :
