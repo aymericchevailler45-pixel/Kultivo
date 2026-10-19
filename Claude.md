@@ -301,6 +301,16 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    Reste à faire : badges bronze/argent/or par thème (50 / 100 / 150 maîtrisées).
    IDÉE DE L'UTILISATEUR (2026-10-18, à faire) : faire gagner un COFFRE de cartes à chaque palier réussi
    (via `openCardBoxes`, à montrer sur l'écran « Palier X débloqué ! » d'`endTraining`). Prévu avec les badges.
+   DÉCIDÉ LE 2026-10-19 (à faire) :
+   - Coffre de palier : 2 cartes DU THÈME entraîné à chaque palier gagné (60 coffres max).
+   - Collection à 10 cartes par thème (150) : +1 commune, +1 rare par thème (images dans emoji/), +1 carte
+     « Maître » exclusive par thème, gagnée seulement au palier 5 de l'entraînement (jamais tirée au hasard).
+     Affichage : 2 lignes de 5 par thème (mesuré : 10 sur une ligne = ~24 px, trop petit ; 5 = ~53 px).
+   - Carte Maître expliquée aux deux endroits : emplacement verrouillé 🔒 en silhouette dans la Collection
+     (tap → « Atteins le palier 5 en <thème>, dans Défis → Entraînement ») + « 🏆 Palier 5 : carte Maître »
+     sur la case du thème et dans `confirmTraining`.
+   - Cartes « dorées » → CARTES BRILLANTES ✨ (3 exemplaires) : la couleur de rareté reste (le doré = légendaire,
+     ne pas brouiller), reflet holographique animé + petite étoile ✨ dans le coin, « Rare · Brillante » en grand.
    PROCHAINE SÉANCE (« on fera demain ») : badges par thème + coffres de palier, puis cartes dorées,
    bouton « Revoir le tutoriel », lot de questions du parcours (faits vérifiés en ligne), mode « Qui suis-je ? ».
    PLAN d'origine :
