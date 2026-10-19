@@ -251,6 +251,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `profiles` / `scores` : pour effacer, supprimer le compte (cascade).
 
 ## levels.js (important)
+- DEPUIS LE 2026-10-19 : 170 niveaux, répartis PAR LOTS (`LEVEL_LOTS`) pour ne jamais changer les niveaux déjà publiés :
+  lot 1 = ids < 3000 → niveaux 1-150 (répartition d'origine, vérifiée identique) ; lot 2 = ids 3000-3999 → niveaux 151-170
+  (98 questions, d 4 à 4,9, 7 par niveau, `hardFrom` 0). Nouveau lot = nouvelle ligne dans `LEVEL_LOTS` + nouveaux ids,
+  et des noms en plus dans `NAMES`. Paires / frises : difficulté plafonnée à celle du niveau 150 (`pairTarget`).
+  Avant d'écrire des questions : `free_subjects.py` (sujets déjà utilisés, parcours + entraînement) puis `check_lot2.py`
+  (doublons, mot de la réponse dans la question) dans le scratchpad. Beaucoup de sujets « durs mais connus » sont DÉJÀ pris.
+  Supabase : limite de la case niveau à 170 dans `supabase/table-joueurs.sql` (2 lignes à relancer).
 - Lit `QUESTIONS`, écrase `q.niveau` et `LEVEL_NAMES`. Le champ `niveau` du fichier questions n'est qu'un secours.
 - 150 niveaux = 105 de questions (6 ou 7 chacun) + 15 Paires (x3) + 15 Ordre (x6) + 15 défis (x0).
   Quand on ajoute beaucoup de questions, on ajoute un bloc de 10 niveaux (demande de l'utilisateur).

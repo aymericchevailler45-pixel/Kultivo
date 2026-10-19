@@ -42,11 +42,21 @@ const AUTO_LEVEL_NAMES = true;   // false = garder les noms de niveaux de questi
    questions + 15 niveaux Paires + 15 niveaux Ordre + 15 défis, le dernier
    niveau étant un défi).
    null = automatique : environ 5 questions par niveau. */
-const TOTAL_LEVELS = 150;
+const TOTAL_LEVELS = 170;
+
+/* Les niveaux déjà publiés ne doivent JAMAIS changer (sinon la progression des joueurs ne correspond plus) :
+   chaque lot de questions remplit ses propres niveaux. Lot 1 : ids < 3000 → niveaux 1 à 150 (répartition
+   d'origine, identique au calcul d'avant). Lot 2 (2026-10-19) : ids 3000 à 3999 → niveaux 151 à 170.
+   Pour un nouveau lot : ajouter une ligne ici (ids, niveaux), sans toucher aux lignes existantes. */
+const LEVEL_LOTS = [
+    { from: 0,    to: 2999, first: 1,   last: 150, hardFrom: 0.55 },
+    { from: 3000, to: 3999, first: 151, last: 170, hardFrom: 0 }
+];
 
 
 (function assignLevels() {
     if (!AUTO_LEVELS) return;
+    const allAssigned = [];
 
     const PER_LEVEL = 5;        // taille visée d'un niveau (si TOTAL_LEVELS = null)
     const EVERY = 10;           // un défi tous les 10 niveaux (doit être égal à CHALLENGE_EVERY de script.js)
@@ -55,7 +65,6 @@ const TOTAL_LEVELS = 150;
     const isSpecial = lvl => lvl % EVERY === 0 || lvl % EVERY === PAIRS_AT || lvl % EVERY === ORDER_AT;
     const JITTER = 0.08;        // flou de la progression (0 = tri strict par difficulté)
     const HARD = 4.5;           // à partir de cette difficulté, une question est « très pointue »
-    const HARD_FROM = 0.55;     // les questions très pointues commencent à 55 % du parcours
     const WINDOW = 18;          // nombre de questions voisines examinées pour équilibrer les thèmes
     const MAX_SAME_THEME = 2;   // au plus 2 questions du même thème par niveau (si possible)
     const POSITION_COST = 0.07; // coût de s'éloigner de l'ordre de difficulté pour équilibrer un thème
@@ -81,10 +90,16 @@ const TOTAL_LEVELS = 150;
         'Maîtrise totale', 'Grand voyage', 'Hors des sentiers', 'Tour du monde', 'Esprit vif',
         'Sans frontières', 'Énigmes en images', 'Cap au large', 'Tête bien faite', 'Les initiés',
         'Haute culture', 'Merveilles du monde', 'Grand tour', 'Pierres et légendes', 'Patrimoine',
-        'Les explorateurs', 'Vue d’ensemble', 'Grand chelem', 'Dernière ligne droite', 'Avant l’apothéose', 'L’ultime marche', 'Le dernier pas'
+        'Les explorateurs', 'Vue d’ensemble', 'Grand chelem', 'Dernière ligne droite', 'Avant l’apothéose', 'Hors catégorie', 'Sans filet',
+        // Lot 2 (niveaux 151 à 170)
+        'Nouvelle frontière', 'Terra incognita', 'Les audacieux', 'Grand oral', 'Esprit d’acier',
+        'Mémoire d’éléphant', 'Les irréductibles', 'Savoir rare', 'Têtes chercheuses', 'Haute précision',
+        'Les insatiables', 'Cerveau d’or', 'Au bout du monde', 'Cap sur l’infini'
     ];
 
-    const oldMax = Math.max(1, ...QUESTIONS.map(q => q.niveau || 1));
+function assignLot(QS, firstLevel, lastLotLevel, HARD_FROM) {
+
+    const oldMax = Math.max(1, ...QS.map(q => q.niveau || 1));
     const difficultyOf = q =>
         typeof q.d === 'number' ? q.d
         : 1 + 4 * ((q.niveau || 1) - 1) / Math.max(1, oldMax - 1);   // repli : d'après l'ancien niveau
@@ -92,22 +107,20 @@ const TOTAL_LEVELS = 150;
     // Valeur stable entre -1 et 1 pour une question : identique pour tout le monde, à chaque lancement.
     const noise = id => (Math.imul(id ^ 0x9e3779b9, 2654435761) >>> 0) / 4294967296 * 2 - 1;
 
-    const n = QUESTIONS.length;
+    const n = QS.length;
 
     // 1) Tri par difficulté (les questions très pointues sont mises à part), puis flou léger
     const byDifficulty = (a, b) => difficultyOf(a) - difficultyOf(b) || a.id - b.id;
-    let hardPool = QUESTIONS.filter(q => difficultyOf(q) >= HARD).sort(byDifficulty);
-    const ranked = QUESTIONS.filter(q => difficultyOf(q) < HARD).sort(byDifficulty);
+    let hardPool = QS.filter(q => difficultyOf(q) >= HARD).sort(byDifficulty);
+    const ranked = QS.filter(q => difficultyOf(q) < HARD).sort(byDifficulty);
     const keyed = ranked.map((q, i) => ({ q, key: i / Math.max(1, ranked.length - 1) + noise(q.id) * JITTER }));
     keyed.sort((a, b) => a.key - b.key || a.q.id - b.q.id);
     let pool = keyed.map(k => k.q);
 
     // 2) Nombre et taille des niveaux (5, ou 6 pour certains, répartis régulièrement)
     let specialCount = 0;
-    if (TOTAL_LEVELS) for (let lvl = 1; lvl <= TOTAL_LEVELS; lvl++) if (isSpecial(lvl)) specialCount++;
-    const levelCount = TOTAL_LEVELS
-        ? TOTAL_LEVELS - specialCount
-        : Math.ceil(n / PER_LEVEL);
+    for (let lvl = firstLevel; lvl <= lastLotLevel; lvl++) if (isSpecial(lvl)) specialCount++;
+    const levelCount = lastLotLevel - firstLevel + 1 - specialCount;
     const base = Math.floor(n / levelCount);
     const extra = n - base * levelCount;
     const sizeOf = i => base + Math.floor(((i + 1) * extra) / levelCount) - Math.floor((i * extra) / levelCount);
@@ -120,7 +133,7 @@ const TOTAL_LEVELS = 150;
 
     // 3) Équilibre des thèmes : chaque thème doit apparaître régulièrement tout au long du parcours
     const themeTotal = {};
-    QUESTIONS.forEach(q => { themeTotal[q.theme] = (themeTotal[q.theme] || 0) + 1; });
+    QS.forEach(q => { themeTotal[q.theme] = (themeTotal[q.theme] || 0) + 1; });
     const placed = {};
     let placedCount = 0;
     const deficit = theme => (themeTotal[theme] / n) * placedCount - (placed[theme] || 0);   // > 0 : thème en retard
@@ -163,7 +176,7 @@ const TOTAL_LEVELS = 150;
     }
 
     // 4) Remplissage niveau par niveau
-    let level = 0;
+    let level = firstLevel - 1;
     const assigned = [];
     for (let i = 0; i < levelCount; i++) {
         level++;
@@ -177,7 +190,11 @@ const TOTAL_LEVELS = 150;
     }
     // Sécurité : s'il reste des questions (cas très rares), on les ajoute au dernier niveau
     [...pool, ...hardPool].forEach(q => { q.niveau = assigned[assigned.length - 1]; });
+    allAssigned.push(...assigned);
+}
 
+function finish() {
+    const assigned = allAssigned;
     // 5) Noms des niveaux
     if (AUTO_LEVEL_NAMES) {
         Object.keys(LEVEL_NAMES).forEach(k => delete LEVEL_NAMES[k]);
@@ -187,4 +204,11 @@ const TOTAL_LEVELS = 150;
     for (let lvl = PAIRS_AT; lvl <= lastLevel; lvl += EVERY) LEVEL_NAMES[lvl] = 'Paires à associer';
     for (let lvl = ORDER_AT; lvl <= lastLevel; lvl += EVERY) LEVEL_NAMES[lvl] = 'Remets dans l’ordre';
     console.info('[levels.js] actif : ' + QUESTIONS.length + ' questions réparties sur ' + assigned.length + ' niveaux');
+}
+
+    LEVEL_LOTS.forEach(lot => {
+        const lotQuestions = QUESTIONS.filter(q => q.id >= lot.from && q.id <= lot.to);
+        if (lotQuestions.length) assignLot(lotQuestions, lot.first, lot.last, lot.hardFrom);
+    });
+    finish();
 })();

@@ -17,6 +17,9 @@ create table if not exists public.gifts (
   created_at timestamptz not null default now()
 );
 alter table public.gifts add column if not exists level int check (level between 1 and 150);
+-- Parcours de 170 niveaux (2026-10-19) : la limite passe à 170
+alter table public.gifts drop constraint if exists gifts_level_check;
+alter table public.gifts add constraint gifts_level_check check (level between 1 and 170);
 alter table public.gifts alter column coins set default 0;
 alter table public.gifts drop constraint if exists gifts_coins_check;
 alter table public.gifts add constraint gifts_coins_check
