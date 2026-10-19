@@ -32,6 +32,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Les mots génériques de tête (`GENERIC_WORDS` : musée, lac, traité, bataille…) peuvent être omis :
   « Orsay » vaut « le musée d'Orsay », sauf si la forme courte est déjà écrite dans la question.
   Inutile donc d'ajouter ces formes courtes dans `a` ; ajouter plutôt les noms de famille seuls, surnoms, etc.
+- Révisions et entraînement (2026-10-19) : une question ratée revient UNE fois en fin de partie ; ratée une 2e fois,
+  elle sort de la partie et est mise de côté jusqu'au lendemain (`stats[id].later`, `isLater`, exclue de `missedCards`
+  et des révisions de `pickTrainingCards`). Session « Réviser mes erreurs » : 10 questions max (`REVIEW_SESSION_SIZE`).
 - Révisions : questions ratées des niveaux PRÉCÉDENTS reviennent en priorité (tirage pondéré, 3 à 4 par leçon depuis le 2026-10-18 : 11 questions max, pour ne pas trop faire réviser), complétées par des
   questions DÉJÀ VUES et « dues » (jamais des questions jamais vues : sinon absurde après un placement),
   répétition espacée (`REVIEW_DAYS`) : une question bien connue revient de plus en plus rarement.

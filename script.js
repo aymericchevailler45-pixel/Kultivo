@@ -471,7 +471,14 @@ const state = {
 
 const cardsOfLevel = n => QUESTIONS.filter(q => q.niveau === n);
 const missCount = id => state.data.stats[id]?.miss || 0;
-const missedCards = () => QUESTIONS.filter(q => missCount(q.id) > 0);
+/** Ratée 2 fois dans la même révision / le même entraînement : mise de côté jusqu'au lendemain. */
+const isLater = id => (state.data.stats[id]?.later || '') > todayKey();
+function tomorrowKey() {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return dayKey(d);
+}
+const missedCards = () => QUESTIONS.filter(q => missCount(q.id) > 0 && !isLater(q.id));
 
 // Répétition espacée : après n réussites d'affilée, la question « dort » ce nombre de jours
 const REVIEW_DAYS = [0, 1, 3, 7, 14, 30];
@@ -3059,6 +3066,7 @@ function commit(ok) {
         state.done++;
         if (forced) renderHearts();   // « J'avais juste » : le cœur n'est plus menacé, il arrête de clignoter
     } else {
+        const again = state.failedIds.has(id);   // déjà ratée une fois pendant cette partie
         state.failedIds.add(id);
         recordResult(id, false);
         state.errors++;
@@ -3072,7 +3080,14 @@ function commit(ok) {
                 return;
             }
         }
-        state.queue.push(item); // la carte reviendra en fin de leçon
+        if (again && (mode === 'review' || mode === 'training')) {
+            // 2e oubli : inutile de la reposer tout de suite, elle reviendra demain
+            state.data.stats[id].later = tomorrowKey();
+            state.done++;
+            saveData();
+        } else {
+            state.queue.push(item); // la carte reviendra en fin de leçon
+        }
     }
 
     hideFeedback();
@@ -4040,8 +4055,8 @@ function pickTrainingCards(theme) {
     const take = (list, max) => { for (const q of list) { if (picked.length >= TRAIN_SESSION || max <= 0) break; if (!picked.includes(q)) { picked.push(q); max--; } } };
 
     // 1) Révisions de l'entraînement (2 au plus) : erreurs d'abord, puis questions arrivées à échéance
-    const missed = shuffle(open.filter(q => missCount(q.id) > 0)).sort((a, b) => missCount(b.id) - missCount(a.id));
-    const due = shuffle(open.filter(q => seen(q) && missCount(q.id) === 0 && isDue(q) && !isMastered(q.id)));
+    const missed = shuffle(open.filter(q => missCount(q.id) > 0 && !isLater(q.id))).sort((a, b) => missCount(b.id) - missCount(a.id));
+    const due = shuffle(open.filter(q => seen(q) && missCount(q.id) === 0 && isDue(q) && !isMastered(q.id) && !isLater(q.id)));
     take([...missed, ...due], TRAIN_MAX_REVIEWS);
     // 3) Nouveautés : palier en cours d'abord, puis paliers d'avant
     take(shuffle((tiers[cur - 1] || []).filter(q => !seen(q))), TRAIN_SESSION);
