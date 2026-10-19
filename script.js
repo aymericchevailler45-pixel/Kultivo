@@ -1776,16 +1776,6 @@ function renderShop() {
     grid.replaceChildren();
     const data = state.data;
 
-    const wallet = el('article', 'card card-wallet');
-    const title = el('h2');
-    title.textContent = '🪙 Tes pièces';
-    const big = el('p', 'card-big');
-    big.textContent = plural(data.coins, 'pièce', 'pièces');
-    const how = el('p', 'muted');
-    how.textContent = `1 🪙 tous les ${COIN_RATE} XP gagnés. À dépenser ici !`;
-    wallet.append(title, big, how);
-    grid.append(wallet);
-
     SHOP.forEach(item => {
         const owned = data.inv[item.id] || 0;
         const card = el('article', `card shop-card shop-${item.size}`);
@@ -1840,7 +1830,7 @@ function renderShop() {
     });
     actions.append(btn);
     chest.append(icon, name, desc, stock, actions);
-    wallet.after(chest);   // juste sous les pièces : bien visible
+    grid.prepend(chest);   // en haut de la boutique : bien visible
 }
 
 function buyItem(id, qty) {

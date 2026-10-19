@@ -172,7 +172,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Un tap pendant l'animation la termine (`chest.finish`). Plusieurs coffres : grille de dos qui se retournent en cascade.
   Explication unique (`tipChest`, même système que le tutoriel) quand un coffre attend : après un placement,
   « ton test t'a fait passer N coffres », bouton « Ouvrir les coffres » qui les ouvre. Tutoriel : étape coffre.
-- Boutique compacte sur téléphone (icône à gauche, boutons côte à côte) ; coffre de cartes juste sous les pièces.
+- Boutique compacte sur téléphone (icône à gauche, boutons côte à côte) ; bloc « Tes pièces » retiré le 2026-10-19 (inutile, le solde est en haut) : le coffre de cartes est en tête.
 
 - Classement entre amis (2026-10-17) : 5e onglet « 🥇 Classement » (`leagueScreen`, `renderLeague`), entre Défis
   et Boutique. Tables Supabase créées par `supabase/classement.sql` (à lancer une fois dans le SQL Editor) :
