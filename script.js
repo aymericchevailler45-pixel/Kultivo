@@ -325,6 +325,7 @@ function defaultData() {
         trainTierDay: {},                // entraînement : thème -> jour du dernier palier gagné (1 par jour)
         tipTraining: false,              // explication des paliers déjà vue (ancienne version, 1 bulle)
         tipTraining2: false,             // explication de l'entraînement en 3 bulles (2026-10-18)
+        tipChallenges: false,            // 1re visite de l'onglet Défis : bulle qui mène à l'Entraînement
         trainChests: {},                 // entraînement : thème -> dernier palier dont le coffre a été donné
         trainMedals: {},                 // entraînement : thème -> médaille gagnée (1 bronze, 2 argent, 3 or)
         shinyCards: {},                  // cartes rendues brillantes (touchées dans la collection après le 3e exemplaire)
@@ -973,6 +974,7 @@ function showScreen(name) {
     $('profileScreen').hidden = name !== 'profile';
     $('studyScreen').hidden = name !== 'study';
     $('onboardScreen').hidden = name !== 'onboard';
+    if (name === 'challenges' && !state.data.tipChallenges) setTimeout(showChallengesTip, 500);
     $('topbar').hidden = !MAIN_SCREENS.includes(name);
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -3875,6 +3877,11 @@ function endTraining() {
 /* Onglet Défis : deux sous-pages, « 🏆 Défis » et « 🎯 Entraînement » */
 let challengesTab = 'defis';
 function setChallengesTab(name) {
+    if (name === 'training' && tourFlag === 'tipChallenges' && !$('tour').hidden) {   // tap direct sur l'onglet
+        $('tour').hidden = true;
+        state.data.tipChallenges = true;
+        saveData();
+    }
     challengesTab = name;
     document.querySelectorAll('.challenges-tab').forEach(t => {
         const on = t.dataset.sub === name;
@@ -3888,6 +3895,23 @@ function setChallengesTab(name) {
         if (!state.data.tipTraining2) setTimeout(showTrainingTip, 400);
         else setTimeout(claimPendingTrainChests, 400);
     }
+}
+
+/** 1re visite de l'onglet Défis : une bulle montre le sous-onglet « Entraînement » ; le bouton (ou un tap sur
+    l'onglet) y emmène, et l'explication de l'entraînement prend la suite. */
+function showChallengesTip() {
+    const d = state.data;
+    if (d.tipChallenges || $('challengesScreen').hidden || !$('tour').hidden || !d.onboarded) return;
+    if (d.tipTraining2 || challengesTab === 'training') { d.tipChallenges = true; saveData(); return; }   // déjà découvert
+    tourSteps = [{
+        target: () => document.querySelector('.challenges-tab[data-sub="training"]'),
+        text: '🎯 Nouveau : l’entraînement par thème ! Touche ici pour le découvrir.'
+    }];
+    tourFlag = 'tipChallenges';
+    tourLastLabel = 'Voir l’entraînement';
+    tourStep = 0;
+    $('tour').hidden = false;
+    showTourStep();
 }
 
 function showTrainingTip() {
@@ -4954,6 +4978,10 @@ function endTour() {
     $('tour').hidden = true;
     state.data[tourFlag] = true;
     saveData();
+    if (tourFlag === 'tipChallenges') {   // la bulle de l'onglet Défis mène à l'Entraînement (et à son explication)
+        if (challengesTab !== 'training') setChallengesTab('training');
+        return;
+    }
     if (tourFlag === 'tipChest') {
         const list = readyChests();
         if (list.length) openChests(list);

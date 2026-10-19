@@ -297,6 +297,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    (vérif. JS sans navigateur : Edge headless ne répondait plus), annule si problème.
    Les paliers comptent maintenant 30 questions (2/3 = 20 à réussir) ; le palier déjà atteint est conservé.
    1re visite : 3 bulles (`showTrainingTip`, drapeau `tipTraining2` ; l'ancien `tipTraining` = 1 bulle, gardé).
+   1re visite de l'onglet Défis : une bulle montre « 🎯 Entraînement » (`showChallengesTip`, `tipChallenges`) ;
+   « Voir l'entraînement » (ou un tap sur l'onglet) y mène, puis les 3 bulles de l'entraînement suivent.
    Captures d'écran : Edge headless ne marche plus via Bash, mais OK via PowerShell (`shot.ps1` du scratchpad).
    FAIT LE 2026-10-19 (voir ci-dessous ; `trainChests`, `trainMedals`, `trainChestBoxes`, `claimPendingTrainChests`,
    `masterCard`, `TRAIN_MEDALS`, `SHINY_AT`/`isShiny`, `openLockedMaster`, `PODIUM_COINS`, `leagueWins`, badges league1/5/10) :
