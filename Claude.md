@@ -352,7 +352,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
    que celui déjà pris est grisé « déjà visible ».
 4. Plus de questions (bloc de 100 + 10 niveaux) ou nouveau thème.
 5. Bouton « Revoir le tutoriel » dans le Profil.
-6. Mode « Qui suis-je ? » (indices dévoilés un par un).
+6. Mode « Qui suis-je ? » (indices dévoilés un par un) — À GARDER EN TÊTE, PAS TOUT DE SUITE (2026-10-19).
+   Conception proposée et validée dans l'idée : 5 indices du plus vague au plus précis ; réponse tapée à tout moment
+   (même correction souple) ; « Indice suivant » ou mauvaise réponse = indice suivant ; XP 10/8/6/4/2 selon l'indice ;
+   pas de cœurs ; partie de 5 énigmes, grille « 1️⃣3️⃣❌2️⃣5️⃣ » ; bloc « 🕵️ Qui suis-je ? » dans l'onglet Défis.
+   Catégories : personnages/célébrités, pays/villes, monuments, œuvres, animaux/objets. ~150 énigmes (faits vérifiés
+   en ligne), d'abord 50 pour tester. Reste à choisir : libre seulement ou + énigme du jour ; badge « Détective ».
 7. Ligues façon Duolingo (quand il y aura assez de joueurs), connexion Google, Play Store (PWABuilder).
 
 ## Idées pour la suite (par ordre conseillé)
