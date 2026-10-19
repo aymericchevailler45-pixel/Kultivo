@@ -590,16 +590,19 @@ function bumpStreak() {
 /** À l'ouverture de l'appli, après un ou plusieurs jours sans jouer : la série sera-t-elle sauvée ?
     Assez de gels → simple message ; pas assez (et rattrapable) → proposition d'acheter les gels manquants.
     Une seule fois par jour. */
-async function checkStreakDanger() {
-    const data = state.data;
-    if (!data.onboarded || data.streak < 2 || data.streakWarnDay === todayKey() || !$('tour').hidden) return;
-    const missed = missedDays();
+async function checkStreakDanger(demo = null) {
+    // `demo` (lien « ?demo=gel » ou « ?demo=gel-ok ») : faux chiffres, rien n'est enregistré ni acheté
+    const data = demo ? { ...state.data, ...demo, inv: { ...state.data.inv, freeze: demo.freeze } } : state.data;
+    if (!demo && (!data.onboarded || data.streak < 2 || data.streakWarnDay === todayKey() || !$('tour').hidden)) return;
+    const missed = demo ? demo.missed : missedDays();
     if (missed <= 0 || missed === Infinity) return;
     const item = SHOP.find(i => i.id === 'freeze');
     const max = item.max || 5;
     if (missed > max) return;   // trop de jours manqués : impossible à rattraper
-    data.streakWarnDay = todayKey();
-    saveData();
+    if (!demo) {
+        data.streakWarnDay = todayKey();
+        saveData();
+    }
     const days = plural(data.streak, 'jour', 'jours');
     if (data.inv.freeze >= missed) {
         showToast(`🧊 Ta série de ${days} sera protégée par ${plural(missed, 'gel', 'gels')} quand tu finiras une leçon.`);
@@ -616,6 +619,7 @@ async function checkStreakDanger() {
         yes: enough ? `Acheter · ${price} 🪙` : 'Compris',
         no: enough ? 'Tant pis' : 'Fermer'
     });
+    if (demo) { if (ok && enough) showToast('🧪 Démo : rien n’a été acheté.'); return; }
     if (!ok || !enough || data.coins < price) return;
     data.coins -= price;
     data.inv.freeze += need;
@@ -5794,7 +5798,13 @@ function init() {
     // Tout premier lancement : parcours d'accueil (niveau, objectif, puis test de placement ou niveau 1)
     const d = state.data;
     if (!d.onboarded && canTakePlacement() && Object.keys(d.stats).length === 0) startOnboarding();
-    else setTimeout(checkStreakDanger, 1500);   // série en danger après un jour manqué ?
+    else {
+        // Démonstration du message « série en danger » sans attendre : ?demo=gel (gel manquant), ?demo=gel-ok (assez de gels)
+        const demo = new URLSearchParams(location.search).get('demo');
+        if (demo === 'gel') setTimeout(() => checkStreakDanger({ streak: 12, missed: 2, freeze: 1, coins: Math.max(state.data.coins, 250) }), 1500);
+        else if (demo === 'gel-ok') setTimeout(() => checkStreakDanger({ streak: 12, missed: 1, freeze: 2 }), 1500);
+        else setTimeout(checkStreakDanger, 1500);   // série en danger après un jour manqué ?
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);

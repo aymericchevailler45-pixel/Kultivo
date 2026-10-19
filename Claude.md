@@ -315,6 +315,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      1 légendaire, 1 Maître (poids 58 / 28 / 11 / 3). Série en danger à l'ouverture (`checkStreakDanger`, 1 fois/jour,
      série ≥ 2) : assez de gels → message ; sinon fenêtre « Acheter · X 🪙 » des gels manquants (max 5 jours).
      Le gel reste automatique (utilisé à la fin de la 1re leçon après les jours manqués, `bumpStreak`).
+     Démo sans attendre : lien `?demo=gel` (gel manquant) ou `?demo=gel-ok` (assez de gels) : faux chiffres, rien d'enregistré.
    - Ligue des amis : compteur de semaines gagnées (1re place) dans les Records + badges à 1, 5 et 10 victoires.
      Pièces selon la place finalement OUI (demandé le 2026-10-19) : 🥇 50, 🥈 25, 🥉 10 (`PODIUM_COINS`).
    - Médailles d'entraînement par thème : 🥉 1/3, 🥈 2/3, 🥇 toutes les questions maîtrisées (sur la case du thème,
