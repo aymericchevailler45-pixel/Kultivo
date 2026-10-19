@@ -280,6 +280,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 
 ## 💧 GOUTTES — FAIT le 2026-10-19 (`DROPS_MAX`, `DROP_MS`, `syncDrops`, `spendDrop` dans `startSession`, `earnPracticeDrop`,
 `openDropsModal` / `dropsModal`, `refillDrops`, `showDropsTip` / `tipDrops` ; sauvegarde `drops`, `dropsAt`, `dropsDay`, `dropsEarned`).
+Retouches du 2026-10-19 : niveaux DÉJÀ RÉUSSIS gratuits (demande de l'utilisateur) ; fenêtre de départ avec pastille
+« 💧 −1 goutte · il t'en restera X » (`modalCost`) et bouton « Commencer · −1 💧 » ; fenêtre des gouttes courte avec ligne
+« 🎁 … encore N fois aujourd'hui » (`dropsEarn`). Niveaux Ordre (frises) passés en ROSE (`--pink`) : l'orange se confondait
+avec le doré des niveaux finis.
 Pièces : reste d'XP gardé dans `coinRest` (avant, chaque réponse de 4 XP était arrondie à 0 pièce : on ne gagnait presque rien).
 Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 gouttes** (on arrose son cerveau ; refusés :
 « énergie », « cerveaux »). Ce n'est pas du plagiat (mécanique de jeu commune). Règles VALIDÉES :

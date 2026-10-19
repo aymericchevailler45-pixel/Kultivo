@@ -31,7 +31,10 @@
     --violet-tint: #ece4ff;
     --violet-ink: #5230a8;
     --blue-ink: #0b5f88;                   /* bleu lisible pour du texte (niveaux Paires) */
-    --orange-ink: #a85a00;                 /* orange lisible pour du texte (niveaux Ordre) */
+    --orange-ink: #a85a00;                 /* orange lisible pour du texte (série) */
+    --pink: #f0509b;                       /* niveaux Ordre (frises) : rose, pour ne pas confondre avec le doré des niveaux finis */
+    --pink-deep: #c22e74;
+    --pink-ink: #b0185a;
 
     --orange: #ff9600;
     --blue: #1899d6;
@@ -63,6 +66,7 @@
         --violet-ink: #c9b6ff;
         --blue-ink: #8fd3f5;
         --orange-ink: #ffc27a;
+        --pink-ink: #ff9ccb;
 
         --locked: #2a3452;
         --locked-deep: #1f2842;
@@ -677,10 +681,10 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     max-width: 640px;
     margin-inline: auto;
 }
-.tag-order { background: rgba(255, 150, 0, 0.16); border-color: transparent; color: var(--orange-ink); }
+.tag-order { background: rgba(240, 80, 155, 0.14); border-color: transparent; color: var(--pink-ink); }
 .order-board { display: flex; flex-direction: column; gap: 6px; }
-.order-end { color: var(--orange-ink); font-size: 0.8rem; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
-.order-slots { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0 0 0 14px; list-style: none; border-left: 3px dashed var(--orange); }
+.order-end { color: var(--pink-ink); font-size: 0.8rem; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
+.order-slots { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0 0 0 14px; list-style: none; border-left: 3px dashed var(--pink); }
 .order-slot { display: flex; align-items: center; gap: 10px; min-height: 44px; }
 .order-num {
     flex: none;
@@ -690,7 +694,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     height: 30px;
     margin-left: -31px;   /* la pastille se pose sur le trait de la frise */
     border-radius: 50%;
-    background: var(--orange);
+    background: var(--pink);
     color: #ffffff;
     font-size: 0.9rem;
     font-weight: 900;
@@ -712,7 +716,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     cursor: pointer;
 }
 .order-card:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
-.order-card.is-placed { border-color: var(--orange); box-shadow: 0 4px 0 var(--orange); }
+.order-card.is-placed { border-color: var(--pink); box-shadow: 0 4px 0 var(--pink); }
 /* Réserve : petites étiquettes côte à côte, sous la frise */
 .order-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding-top: 12px; border-top: 2px solid var(--line); }
 .order-pool .order-card { flex: 0 1 auto; min-height: 40px; padding: 8px 12px; text-align: center; font-size: 0.95rem; }
@@ -731,14 +735,14 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .order-slot.is-ok .order-num    { background: var(--green); }
 .order-slot.is-wrong .order-num { background: var(--red); }
 
-/* Niveau Ordre sur la carte : losange orange */
+/* Niveau Ordre sur la carte : losange rose */
 .node.is-order { width: 74px; height: 74px; margin: 6px; border-radius: 18px; transform: rotate(45deg); box-shadow: 4px 4px 0 var(--deep); }
 .node.is-order .node-icon { display: inline-block; transform: rotate(-45deg); }
 .node.is-order:active:not(:disabled) { transform: rotate(45deg) translate(4px, 4px); box-shadow: none; }
-.node.is-order.is-current { background: var(--orange); color: #ffffff; --deep: #c26f00; }
-.node.is-order.is-current::after { border-color: var(--orange); border-radius: 24px; }
-.node.is-order.is-locked { box-shadow: 4px 4px 0 var(--deep), inset 0 0 0 4px var(--orange); font-size: 1.8rem; }
-.stop.is-order-stop .stop-name { color: var(--orange-ink); }
+.node.is-order.is-current { background: var(--pink); color: #ffffff; --deep: var(--pink-deep); }
+.node.is-order.is-current::after { border-color: var(--pink); border-radius: 24px; }
+.node.is-order.is-locked { box-shadow: 4px 4px 0 var(--deep), inset 0 0 0 4px var(--pink); font-size: 1.8rem; }
+.stop.is-order-stop .stop-name { color: var(--pink-ink); }
 
 /* Niveau Paires sur la carte : carré arrondi, bleu (les défis sont de grands ronds violets) */
 .node.is-pairs { border-radius: 26px; }
@@ -1014,7 +1018,14 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .drops-row { display: flex; justify-content: center; gap: 6px; font-size: 1.9rem; margin: 6px 0 2px; }
 .drops-row .is-off { filter: grayscale(1); opacity: 0.3; }
 .drops-timer { font-weight: 800; color: var(--blue-ink); margin: 4px 0; }
-#dropsModal .btn-full + .btn-full { margin-top: 8px; }
+#dropsModal .btn-full { font-size: 1.05rem; padding: 14px; margin-top: 8px; }
+.drops-earn { margin: 10px 0 2px; font-weight: 800; color: var(--blue-ink); }
+#dropsText { margin: 6px 0 0; font-size: 0.92rem; }
+/* Fenêtre de départ : ce que coûte le niveau */
+.modal-cost {
+    margin: 10px auto 14px; padding: 8px 14px; width: fit-content; border-radius: 999px;
+    background: rgba(24, 153, 214, 0.14); color: var(--blue-ink); font-weight: 800;
+}
 
 /* Icônes des onglets : seulement dans la barre du bas (téléphone, tablette) */
 .nav-icon { display: none; }

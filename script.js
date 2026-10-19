@@ -1184,10 +1184,12 @@ function openDropsModal() {
         $('dropsTimer').textContent = n >= DROPS_MAX ? 'C’est le plein !' : `Prochaine goutte dans ${formatWait(nextDropMs())}`;
         const today = todayKey();
         const left = DROPS_PRACTICE_DAY - (d.dropsDay === today ? d.dropsEarned : 0);
-        $('dropsText').textContent = 'Chaque niveau du parcours coûte 1 goutte. Elles reviennent toutes seules (1 par heure), '
-            + `ou réussis une révision ou un entraînement pour en gagner une (encore ${Math.max(0, left)} aujourd’hui).`
-            + ' Le défi du jour et le sprint sont gratuits.';
+        $('dropsText').textContent = '1 goutte par nouveau niveau · +1 par heure';
         const practice = n < DROPS_MAX && left > 0;
+        $('dropsEarn').hidden = n >= DROPS_MAX;
+        $('dropsEarn').textContent = left > 0
+            ? `🎁 Réussis une révision ou un entraînement : +1 💧 (encore ${plural(left, 'fois', 'fois')} aujourd’hui)`
+            : `✅ Tes ${DROPS_PRACTICE_DAY} gouttes bonus du jour sont gagnées.`;
         $('dropsTrainBtn').hidden = !practice;
         $('dropsReviewBtn').hidden = !practice || missedCards().length === 0;
         $('dropsRefillBtn').hidden = n >= DROPS_MAX;
@@ -1233,7 +1235,7 @@ function showDropsTip() {
     if (d.tipDrops || d.drops >= DROPS_MAX || !d.tourDone || !tipAllowed('mapScreen')) return;
     startTip('tipDrops', [{
         target: () => $('dropChip'),
-        text: '💧 Tes gouttes : chaque niveau du parcours en coûte une. Elles se rechargent toutes seules (1 par heure), ou en réussissant une révision ou un entraînement. Touche-les pour voir le temps restant.'
+        text: '💧 Tes gouttes : chaque nouveau niveau du parcours en coûte une (refaire un niveau réussi est gratuit). Elles se rechargent toutes seules (1 par heure), ou en réussissant une révision ou un entraînement. Touche-les pour voir le temps restant.'
     }]);
 }
 
@@ -2201,7 +2203,8 @@ function openReviewModal() {
 
 function openStartModal(n) {
     syncDrops();
-    if (state.data.drops <= 0) { openDropsModal(); return; }   // plus de gouttes : comment en regagner
+    const free = !!state.data.done[n];   // niveau déjà réussi : le refaire est gratuit
+    if (!free && state.data.drops <= 0) { openDropsModal(); return; }   // plus de gouttes : comment en regagner
     const info = levelInfo(n);
     state.pendingMode = 'level';
     state.pendingLevel = n;
@@ -2215,7 +2218,12 @@ function openStartModal(n) {
         : info.order
         ? `Range les cartes dans le bon ordre (dates, tailles, distances…), sur ${plural(ORDER_ROUNDS, 'frise', 'frises')} à la suite. Une frise fausse coûte un cœur, et tu n’en as que ${CHALLENGE_HEARTS} !`
         : info.name;
-    $('modalStatsText').textContent = `${questionsLabel(info)} · 💧 1 goutte (il t’en reste ${state.data.drops})`;
+    $('modalStatsText').textContent = questionsLabel(info);
+    const left = state.data.drops - 1;
+    $('modalCost').textContent = free ? '💧 Déjà réussi : gratuit'
+        : `💧 −1 goutte · il t’en restera ${left}`;
+    $('modalCost').hidden = false;
+    $('startLevelBtn').textContent = free ? 'Commencer' : 'Commencer · −1 💧';
 
     showModal(info.challenge);
 }
@@ -2307,6 +2315,7 @@ function showModal(violet) {
 
 function closeStartModal() {
     $('startModal').hidden = true;
+    $('modalCost').hidden = true;
     $('startLevelBtn').textContent = 'Commencer';
     $('modalSecondaryBtn').hidden = true;
     state.pendingLevel = null;
@@ -2402,7 +2411,7 @@ function startSession(requestedMode, level = 0) {
     }
     if (!items.length) return;
     // Niveau du parcours : 1 goutte au lancement, réussi ou raté
-    if (requestedMode === 'level' && !spendDrop()) { openDropsModal(); return; }
+    if (requestedMode === 'level' && !state.data.done[level] && !spendDrop()) { openDropsModal(); return; }   // déjà réussi : gratuit
 
     const hasHearts = mode === 'level' || mode === 'challenge' || pairsMode || orderMode;
     // Défis et niveaux Ordre : 2 cœurs (une frise fausse coûte un cœur : on peut en rater une seule)
@@ -5200,7 +5209,7 @@ const TOUR_STEPS = [
     { target: () => document.querySelector('.node.is-pairs:not(.is-done)'),
       text: 'Les carrés bleus 🔗 sont des niveaux spéciaux\u00a0: des paires à associer (pays et capitales, films et réalisateurs…).' },
     { target: () => document.querySelector('.node.is-order:not(.is-done)'),
-      text: 'Les losanges orange ⏳ aussi\u00a0: des cartes à remettre dans l’ordre (dates, tailles, distances…).' },
+      text: 'Les losanges roses ⏳ aussi\u00a0: des cartes à remettre dans l’ordre (dates, tailles, distances…).' },
     { target: () => document.querySelector('.node.is-challenge:not(.is-done)'),
       text: 'Et tous les 10 niveaux, un défi 🏆 qui mélange les questions des niveaux précédents.' },
     { target: () => document.querySelector('.chest-node:not(.is-open)'),
