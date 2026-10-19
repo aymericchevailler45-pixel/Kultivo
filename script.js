@@ -3768,7 +3768,7 @@ function endTraining() {
     // Coffre du palier gagné (2 cartes du thème ; au palier 5, la carte Maître en plus)
     const boxes = trainChestBoxes(theme);
     if (boxes.length) {
-        setTimeout(() => openCardBoxes(boxes, tier >= TRAIN_TIERS ? `🏆 Coffre du Maître · ${theme}` : `🎁 Coffre du palier ${tier}`), 900);
+        setTimeout(() => openCardBoxes(boxes, tier >= TRAIN_TIERS ? `🏆 Coffre du Maître · ${theme}` : `🎁 Coffre du palier ${tier} · cartes ${theme}`), 900);
     }
 }
 
@@ -3797,7 +3797,7 @@ function showTrainingTip() {
         text: '🎯 Ici, des questions à part, différentes du parcours, pour t’entraîner sur le thème de ton choix.'
     }, {
         target: () => document.querySelector('.train-tile'),
-        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un par jour au maximum) : 🎁 un coffre de cartes à chaque palier, et 🏆 la carte Maître au palier 5 !'
+        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un par jour au maximum) : 🎁 un coffre de cartes du thème à chaque palier, et 🏆 la carte Maître au palier 5 !'
     }, {
         target: () => document.querySelector('.train-tile'),
         text: '↻ Tes erreurs reviennent dans les sessions suivantes, jusqu’à ce que tu les saches.'
