@@ -38,8 +38,12 @@ const XP_DAILY_DONE = 10;        // avant: 20 | bonus : défi du jour terminé
 const XP_SPRINT_CORRECT = 2;     // avant: 5  | par bonne réponse en sprint
 
 // Pièces 🪙 : on en gagne en gagnant de l'XP (l'XP, lui, ne baisse jamais)
-const COIN_RATE = 10;             // 1 pièce pour 10 XP gagnés
-const COIN_BADGE = 5;           // bonus : nouveau badge
+const COIN_RATE = 5;              // avant: 10 | 1 pièce pour 5 XP gagnés (le reste est gardé pour la suite)
+const COIN_BADGE = 25;           // avant: 5  | bonus : nouveau badge
+const DROPS_MAX = 5;             // gouttes 💧 : 1 par niveau du parcours
+const DROP_MS = 60 * 60 * 1000;  // +1 goutte par heure
+const DROPS_PRACTICE_DAY = 3;    // gouttes gagnées par jour au plus en révisant / s'entraînant
+const DROPS_REFILL_PRICE = 150;  // boutique : recharge complète
 
 const DAILY_SIZE = 10;           // questions du défi du jour
 const SPRINT_SECONDS = 60;       // durée du sprint
@@ -334,6 +338,12 @@ function defaultData() {
         shinyCards: {},                  // cartes rendues brillantes (touchées dans la collection après le 3e exemplaire)
         themeComplete: {},               // collection : thème -> date où ses 10 cartes ont été réunies (fête montrée)
         streakWarnDay: '',               // jour où l'alerte « série en danger » a été montrée
+        drops: DROPS_MAX,                // gouttes 💧 (1 par niveau du parcours)
+        dropsAt: 0,                      // début de la recharge en cours (horodatage, 0 = plein)
+        dropsDay: '',                    // jour des gouttes gagnées en révisant / s'entraînant
+        dropsEarned: 0,                  // … et combien ce jour-là (3 au plus)
+        tipDrops: false,                 // explication des gouttes déjà vue
+        coinRest: 0,                     // XP pas encore changés en pièces (moins de COIN_RATE)
         sound: true,                     // sons et vibrations
         onboarded: false,                // parcours d'accueil terminé
         activeDays: {},                  // jours joués : « AAAA-MM-JJ » -> XP gagnés ce jour-là
@@ -357,6 +367,11 @@ function normalizeData(data) {
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
     if (!Array.isArray(data.reports)) data.reports = [];
+    // Gouttes : les joueurs d'avant commencent avec le plein
+    if (typeof data.drops !== 'number' || !(data.drops >= 0)) data.drops = DROPS_MAX;
+    data.drops = Math.min(DROPS_MAX, Math.floor(data.drops));
+    if (typeof data.dropsAt !== 'number') data.dropsAt = 0;
+    if (typeof data.coinRest !== 'number' || !(data.coinRest >= 0)) data.coinRest = 0;
 
     if (Object.keys(data.badges).length > 0 && Object.keys(data.claimedBadges).length === 0) {
         for (const b in data.badges) data.claimedBadges[b] = true;
@@ -518,7 +533,10 @@ function addXp(amount) {
     data.dayXp.xp += amount;
     state.sessionXp += amount;
 
-    const coinGain = Math.round(amount / COIN_RATE);
+    // 1 pièce pour COIN_RATE XP : le reste est gardé (sinon 4 XP arrondis donnaient 0 pièce à chaque réponse)
+    data.coinRest += amount;
+    const coinGain = Math.floor(data.coinRest / COIN_RATE);
+    data.coinRest -= coinGain * COIN_RATE;
     data.coins += coinGain;
     state.sessionCoins += coinGain;
 
@@ -1055,8 +1073,9 @@ function updateNavNotifications() {
 
 
 function renderHeader() {
-    $('streakDisplay').textContent = currentStreak();$('xpDisplay').textContent = state.data.xp;
+    $('streakDisplay').textContent = currentStreak();
     $('coinDisplay').textContent = state.data.coins;
+    renderDrops();
     
     const n = missedCards().length;
     const btn = $('reviewBtn');
@@ -1069,6 +1088,153 @@ function renderHeader() {
 
     // NOUVEAU : Met à jour les pastilles rouges à chaque changement d'écran ou gain d'XP
     updateNavNotifications();
+}
+
+/* ---------- Gouttes 💧 ---------- */
+// Chaque niveau du parcours coûte 1 goutte au lancement (réussi ou raté). +1 par heure (calculé avec
+// l'heure de départ : marche appli fermée), +1 par révision / entraînement réussi à moitié (3 par jour).
+
+/** Ajoute les gouttes rechargées depuis la dernière fois. */
+function syncDrops() {
+    const d = state.data;
+    if (d.drops >= DROPS_MAX) { d.drops = DROPS_MAX; d.dropsAt = 0; return; }
+    const now = Date.now();
+    if (!d.dropsAt || d.dropsAt > now) d.dropsAt = now;   // pas d'heure (ou horloge reculée) : on repart de maintenant
+    const gained = Math.floor((now - d.dropsAt) / DROP_MS);
+    if (gained <= 0) return;
+    d.drops = Math.min(DROPS_MAX, d.drops + gained);
+    d.dropsAt = d.drops >= DROPS_MAX ? 0 : d.dropsAt + gained * DROP_MS;
+    saveData();
+}
+
+/** Temps avant la prochaine goutte, en millisecondes (0 si plein). */
+function nextDropMs() {
+    syncDrops();
+    const d = state.data;
+    return d.drops >= DROPS_MAX ? 0 : Math.max(0, d.dropsAt + DROP_MS - Date.now());
+}
+
+/** « 1 h 12 », « 47 min », « 30 s ». */
+function formatWait(ms) {
+    const min = Math.ceil(ms / 60000);
+    if (ms < 60000) return `${Math.max(1, Math.ceil(ms / 1000))} s`;
+    if (min < 60) return `${min} min`;
+    return `${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')}`;
+}
+
+function renderDrops() {
+    syncDrops();
+    const n = state.data.drops;
+    $('dropDisplay').textContent = n;
+    $('dropChip').classList.toggle('is-empty', n === 0);
+}
+
+/** Retire la goutte d'un niveau du parcours. Renvoie false s'il n'y en a plus. */
+function spendDrop() {
+    syncDrops();
+    const d = state.data;
+    if (d.drops <= 0) return false;
+    if (d.drops >= DROPS_MAX) d.dropsAt = Date.now();   // la recharge commence
+    d.drops--;
+    saveData();
+    renderDrops();
+    return true;
+}
+
+function addDrops(n) {
+    syncDrops();
+    const d = state.data;
+    d.drops = Math.min(DROPS_MAX, d.drops + n);
+    if (d.drops >= DROPS_MAX) d.dropsAt = 0;
+    saveData();
+    renderDrops();
+}
+
+/** Fin d'une révision ou d'un entraînement : +1 goutte si au moins la moitié de bonnes réponses du premier coup.
+    Renvoie la ligne à afficher sous le récap (ou ''). */
+function earnPracticeDrop() {
+    const d = state.data;
+    syncDrops();
+    if (d.drops >= DROPS_MAX) return '';
+    const today = todayKey();
+    if (d.dropsDay !== today) { d.dropsDay = today; d.dropsEarned = 0; }
+    if (d.dropsEarned >= DROPS_PRACTICE_DAY) return `💧 Déjà ${DROPS_PRACTICE_DAY} gouttes gagnées en t’entraînant aujourd’hui.`;
+    const need = Math.ceil(state.total / 2);
+    const right = state.total - state.failedIds.size;   // bonnes réponses du premier coup
+    if (right < need) return `Encore un effort : ${plural(need, 'bonne réponse', 'bonnes réponses')} pour gagner une goutte 💧`;
+    d.dropsEarned++;
+    addDrops(1);
+    return `+1 💧 (${d.drops}/${DROPS_MAX})`;
+}
+
+let dropsTimerId = null;
+/** Fenêtre des gouttes : nombre, temps avant la prochaine, et comment en regagner. */
+function openDropsModal() {
+    const d = state.data;
+    const draw = () => {
+        const n = (syncDrops(), d.drops);
+        const row = $('dropsRow');
+        row.replaceChildren();
+        for (let i = 0; i < DROPS_MAX; i++) {
+            const s = el('span', i < n ? '' : 'is-off');
+            s.textContent = '💧';
+            row.append(s);
+        }
+        $('dropsTitle').textContent = n === 0 ? '💧 Plus de gouttes !' : `💧 Tes gouttes : ${n}/${DROPS_MAX}`;
+        $('dropsTimer').textContent = n >= DROPS_MAX ? 'C’est le plein !' : `Prochaine goutte dans ${formatWait(nextDropMs())}`;
+        const today = todayKey();
+        const left = DROPS_PRACTICE_DAY - (d.dropsDay === today ? d.dropsEarned : 0);
+        $('dropsText').textContent = 'Chaque niveau du parcours coûte 1 goutte. Elles reviennent toutes seules (1 par heure), '
+            + `ou réussis une révision ou un entraînement pour en gagner une (encore ${Math.max(0, left)} aujourd’hui).`
+            + ' Le défi du jour et le sprint sont gratuits.';
+        const practice = n < DROPS_MAX && left > 0;
+        $('dropsTrainBtn').hidden = !practice;
+        $('dropsReviewBtn').hidden = !practice || missedCards().length === 0;
+        $('dropsRefillBtn').hidden = n >= DROPS_MAX;
+        $('dropsRefillBtn').textContent = `Recharger · ${DROPS_REFILL_PRICE} 🪙`;
+        $('dropsRefillBtn').disabled = d.coins < DROPS_REFILL_PRICE;
+    };
+    draw();
+    clearInterval(dropsTimerId);
+    dropsTimerId = setInterval(() => { if ($('dropsModal').hidden) clearInterval(dropsTimerId); else draw(); }, 1000);
+    $('dropsModal').hidden = false;
+}
+
+function closeDropsModal() {
+    $('dropsModal').hidden = true;
+    clearInterval(dropsTimerId);
+}
+
+/** Recharge complète (boutique ou fenêtre des gouttes). */
+function refillDrops() {
+    const d = state.data;
+    syncDrops();
+    if (d.drops >= DROPS_MAX || d.coins < DROPS_REFILL_PRICE) return false;
+    d.coins -= DROPS_REFILL_PRICE;
+    d.totals.purchases++;
+    addDrops(DROPS_MAX);
+    renderHeader();
+    showToast(`💧 Gouttes rechargées : ${DROPS_MAX}/${DROPS_MAX} !`);
+    checkBadges();
+    return true;
+}
+
+/** Quitte la fin de leçon si besoin, puis va à l'entraînement ou lance les révisions. */
+function dropsGo(where) {
+    closeDropsModal();
+    if (!$('studyScreen').hidden) returnToMap();
+    if (where === 'review') openReviewModal();
+    else { showScreen('challenges'); setChallengesTab('training'); }
+}
+
+/** 1re fois qu'une goutte est dépensée : petite explication sur le compteur. */
+function showDropsTip() {
+    const d = state.data;
+    if (d.tipDrops || d.drops >= DROPS_MAX || !d.tourDone || !tipAllowed('mapScreen')) return;
+    startTip('tipDrops', [{
+        target: () => $('dropChip'),
+        text: '💧 Tes gouttes : chaque niveau du parcours en coûte une. Elles se rechargent toutes seules (1 par heure), ou en réussissant une révision ou un entraînement. Touche-les pour voir le temps restant.'
+    }]);
 }
 
 function renderMap() {
@@ -1978,6 +2144,27 @@ function renderShop() {
     actions.append(btn);
     chest.append(icon, name, desc, stock, actions);
     grid.prepend(chest);   // en haut de la boutique : bien visible
+
+    // Recharge complète des gouttes, juste après le coffre
+    syncDrops();
+    const refill = el('article', 'card shop-card shop-drops');
+    const rIcon = el('div', 'shop-icon');
+    rIcon.textContent = '💧';
+    const rName = el('h2');
+    rName.textContent = 'Recharge complète';
+    const rDesc = el('p');
+    rDesc.textContent = `Toutes tes gouttes d’un coup (${DROPS_MAX}), pour enchaîner les niveaux.`;
+    const rStock = el('p', 'muted');
+    rStock.textContent = `Tes gouttes : ${data.drops}/${DROPS_MAX}`;
+    const rActions = el('div', 'card-actions');
+    const rBtn = el('button', 'btn btn-green');
+    rBtn.type = 'button';
+    rBtn.textContent = data.drops >= DROPS_MAX ? 'C’est le plein' : `Recharger · ${DROPS_REFILL_PRICE} 🪙`;
+    rBtn.disabled = data.drops >= DROPS_MAX || data.coins < DROPS_REFILL_PRICE;
+    rBtn.addEventListener('click', () => { if (refillDrops()) renderShop(); });
+    rActions.append(rBtn);
+    refill.append(rIcon, rName, rDesc, rStock, rActions);
+    chest.after(refill);
 }
 
 function buyItem(id, qty) {
@@ -2013,6 +2200,8 @@ function openReviewModal() {
 /* ---------- Popup de démarrage ---------- */
 
 function openStartModal(n) {
+    syncDrops();
+    if (state.data.drops <= 0) { openDropsModal(); return; }   // plus de gouttes : comment en regagner
     const info = levelInfo(n);
     state.pendingMode = 'level';
     state.pendingLevel = n;
@@ -2026,7 +2215,7 @@ function openStartModal(n) {
         : info.order
         ? `Range les cartes dans le bon ordre (dates, tailles, distances…), sur ${plural(ORDER_ROUNDS, 'frise', 'frises')} à la suite. Une frise fausse coûte un cœur, et tu n’en as que ${CHALLENGE_HEARTS} !`
         : info.name;
-    $('modalStatsText').textContent = questionsLabel(info);
+    $('modalStatsText').textContent = `${questionsLabel(info)} · 💧 1 goutte (il t’en reste ${state.data.drops})`;
 
     showModal(info.challenge);
 }
@@ -2212,6 +2401,8 @@ function startSession(requestedMode, level = 0) {
             .map(q => ({ q, review: true }));
     }
     if (!items.length) return;
+    // Niveau du parcours : 1 goutte au lancement, réussi ou raté
+    if (requestedMode === 'level' && !spendDrop()) { openDropsModal(); return; }
 
     const hasHearts = mode === 'level' || mode === 'challenge' || pairsMode || orderMode;
     // Défis et niveaux Ordre : 2 cœurs (une frise fausse coûte un cœur : on peut en rater une seule)
@@ -2559,6 +2750,7 @@ function returnToMap() {
     hideFeedback();
     renderHeader();
     showScreen(state.returnTo);
+    if (state.returnTo === 'map') setTimeout(showDropsTip, 900);   // 1re goutte dépensée : explication
 }
 
 /* ---------- Minuteur du sprint ---------- */
@@ -2981,12 +3173,13 @@ function endSession(win) {
     } else if (mode === 'review') {
         state.data.totals.reviews++;
         addXp(XP_REVIEW_WIN);
+        const dropLine = earnPracticeDrop();
         setEnd({
             emoji: '💪',
             title: 'Révision terminée',
             text: `${plural(state.total, 'question revue', 'questions revues')}.`,
             stats: [statXp(), statAccuracy(), statTime()],
-            extra: rewardSummary(),
+            extra: [rewardSummary(), dropLine].filter(Boolean).join('\n'),
             primary: 'Continuer',
             onPrimary: returnToMap
         });
@@ -3903,12 +4096,13 @@ function endTraining() {
         text += `\n${m.icon} Médaille d’${m.name} en ${theme} !`;
         saveData();
     }
+    const dropLine = earnPracticeDrop();
     setEnd({
         emoji: up ? '🏅' : '🎯',
         title: up ? `🎉 Palier ${tier} débloqué !` : `Entraînement · ${theme}`,
         text,
         stats: [statXp(), statAccuracy(), statTime()],
-        extra: rewardSummary(),
+        extra: [rewardSummary(), dropLine].filter(Boolean).join('\n'),
         primary: up ? `Commencer le palier ${tier}` : 'Encore 10 questions',
         primaryClass: 'btn-green',
         onPrimary: () => startTraining(theme),
@@ -5012,7 +5206,7 @@ const TOUR_STEPS = [
     { target: () => document.querySelector('.chest-node:not(.is-open)'),
       text: 'Tous les 5 niveaux, un coffre 🎁 : il contient des cartes à collectionner (dans ton Profil).' },
     { target: () => document.querySelector('.chips'),
-      text: 'En haut\u00a0: tes pièces 🪙 (pour la boutique), ton XP ⭐ et ta série 🔥 de jours d’affilée.' },
+      text: 'En haut\u00a0: tes pièces 🪙 (pour la boutique), tes gouttes 💧 (chaque niveau en coûte une, elles se rechargent toutes seules) et ta série 🔥 de jours d’affilée.' },
     { target: () => document.querySelector('.nav-btn[data-screen="challenges"]'),
       text: 'Défis\u00a0: ton objectif du jour, le défi du jour et le sprint de 60 secondes.' },
     { target: () => document.querySelector('.nav-btn[data-screen="shop"]'),
@@ -5697,7 +5891,13 @@ function bindEvents() {
     });
 
     $('coinChip').addEventListener('click', () => showScreen('shop'));
-    $('xpChip').addEventListener('click', () => showScreen('profile'));
+    $('dropChip').addEventListener('click', openDropsModal);
+    $('closeDropsBtn').addEventListener('click', closeDropsModal);
+    $('dropsModal').addEventListener('click', e => { if (e.target === $('dropsModal')) closeDropsModal(); });
+    $('dropsTrainBtn').addEventListener('click', () => dropsGo('training'));
+    $('dropsReviewBtn').addEventListener('click', () => dropsGo('review'));
+    $('dropsRefillBtn').addEventListener('click', () => { if (refillDrops()) closeDropsModal(); });
+    setInterval(renderDrops, 30000);   // les gouttes se rechargent même sans rien toucher
     $('streakChip').addEventListener('click', openStreakModal);
     $('closeStreakBtn').addEventListener('click', () => { $('streakModal').hidden = true; });
     $('streakModal').addEventListener('click', e => {
@@ -5949,6 +6149,7 @@ function closeTopOverlay() {
         return true;
     }
     if (open('chestModal')) { closeChest(); return true; }
+    if (open('dropsModal')) { closeDropsModal(); return true; }
     if (open('avatarModal')) { closeAvatarModal(); return true; }
     if (open('titlesModal')) { $('titlesModal').hidden = true; return true; }
     if (open('friendModal')) { $('friendModal').hidden = true; return true; }

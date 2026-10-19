@@ -34,15 +34,16 @@
 
         <div class="chips">
             <button type="button" id="reviewBtn" class="chip chip-review" hidden title="Réviser les questions ratées"></button>
-            <!-- Compteurs cliquables : pièces → Boutique, XP → Profil, série → calendrier -->
+            <!-- Compteurs cliquables : pièces → Boutique, gouttes → fenêtre des gouttes, série → calendrier -->
             <button type="button" id="coinChip" class="chip chip-coins" title="Pièces : ouvrir la boutique">
                 <span aria-hidden="true">🪙</span>
                 <b id="coinDisplay">0</b>
                 <span class="sr-only">pièces</span>
             </button>
-            <button type="button" id="xpChip" class="chip chip-xp" title="XP : voir mon profil">
-                <span aria-hidden="true">⭐</span>
-                <b id="xpDisplay">0</b><span class="chip-unit"> XP</span>
+            <button type="button" id="dropChip" class="chip chip-drops" title="Gouttes : 1 par niveau du parcours">
+                <span aria-hidden="true">💧</span>
+                <b id="dropDisplay">5</b><span class="chip-unit">/5</span>
+                <span class="sr-only">gouttes</span>
             </button>
             <button type="button" id="streakChip" class="chip chip-streak" title="Série : voir mon calendrier">
                 <span aria-hidden="true">🔥</span>
@@ -466,6 +467,20 @@
     </div>
 
     <!-- QUESTION OUI / NON DU JEU (remplace la fenêtre grise du navigateur) : askConfirm() -->
+    <!-- GOUTTES 💧 : 1 par niveau du parcours, +1 par heure, ou en s'entraînant / révisant -->
+    <div id="dropsModal" class="modal-overlay" hidden>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="dropsTitle">
+            <button type="button" id="closeDropsBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="dropsTitle">💧 Tes gouttes</h2>
+            <div class="drops-row" id="dropsRow" aria-hidden="true"></div>
+            <p id="dropsTimer" class="drops-timer"></p>
+            <p id="dropsText" class="muted"></p>
+            <button type="button" id="dropsTrainBtn" class="btn btn-green btn-full">🎯 S’entraîner (+1 💧)</button>
+            <button type="button" id="dropsReviewBtn" class="btn btn-green btn-full">🔁 Réviser (+1 💧)</button>
+            <button type="button" id="dropsRefillBtn" class="btn btn-violet btn-full">Recharger · 150 🪙</button>
+        </div>
+    </div>
+
     <div id="askModal" class="modal-overlay" hidden>
         <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="askTitle" aria-describedby="askText">
             <h2 id="askTitle"></h2>

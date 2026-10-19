@@ -154,8 +154,8 @@ body {
 }
 
 .chip-streak { color: var(--orange); }
-.chip-coins, .chip-xp, .chip-streak { cursor: pointer; }
-.chip-coins:hover, .chip-xp:hover, .chip-streak:hover { border-color: var(--muted); }
+.chip-coins, .chip-xp, .chip-drops, .chip-streak { cursor: pointer; }
+.chip-coins:hover, .chip-xp:hover, .chip-drops:hover, .chip-streak:hover { border-color: var(--muted); }
 
 /* Calendrier de la série */
 .streak-sheet { max-width: 400px; text-align: center; }
@@ -1007,6 +1007,14 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 }
 
 .chip-xp { color: var(--gold-deep); }
+.chip-drops { color: var(--blue-ink); }
+.chip-drops.is-empty { color: var(--muted); }
+
+/* Fenêtre des gouttes */
+.drops-row { display: flex; justify-content: center; gap: 6px; font-size: 1.9rem; margin: 6px 0 2px; }
+.drops-row .is-off { filter: grayscale(1); opacity: 0.3; }
+.drops-timer { font-weight: 800; color: var(--blue-ink); margin: 4px 0; }
+#dropsModal .btn-full + .btn-full { margin-top: 8px; }
 
 /* Icônes des onglets : seulement dans la barre du bas (téléphone, tablette) */
 .nav-icon { display: none; }
@@ -2096,7 +2104,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     .shop-card .card-actions { grid-column: 1 / -1; flex-direction: row; margin-top: 8px; }
     .shop-card .card-actions .btn { flex: 1; padding: 10px 8px; font-size: 0.92rem; box-shadow: 0 3px 0 var(--btn-deep); }
 }
-@media (min-width: 800px) { .shop-grid > .shop-chest { grid-column: span 12; } }
+@media (min-width: 800px) { .shop-grid > .shop-chest, .shop-grid > .shop-drops { grid-column: span 12; } }
 .chest-stage { overflow: hidden; padding: 10px 0 14px; }
 
 /* ============================================================

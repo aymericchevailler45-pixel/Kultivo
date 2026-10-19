@@ -56,11 +56,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   familles avec erreurs tirées plus souvent (`buildOrderRounds`, `weightedPick`).
 - Objectifs du jour (2026-10-16, demandé par l'utilisateur) : 60 / 150 / 250 XP (≈ 1, 2-3, 4-5 niveaux),
   récompenses 10 / 25 / 50 🪙. Anciens objectifs convertis dans `normalizeData` (`OLD_GOALS`).
-- Compteurs du haut cliquables : 🪙 → Boutique, ⭐ → Profil, 🔥 → calendrier de série (`streakModal`).
+- Compteurs du haut cliquables : 🪙 → Boutique, 💧 → fenêtre des gouttes (`dropsModal`), 🔥 → calendrier de série (`streakModal`).
   Balayage gauche/droite dans le calendrier = mois suivant/précédent.
   Jours joués dans `activeDays` (rempli par `addXp` / `bumpStreak`), gels utilisés dans `frozenDays`.
   Historique d'avant le calendrier reconstitué une fois (`backfillActiveDays` : série, objectifs, défis du jour).
-- XP : sert aux titres, aux pièces (1 🪙 / 10 XP), à l'objectif du jour et aux badges ; servira au classement (Supabase).
+- XP : sert aux titres, aux pièces (1 🪙 / 5 XP depuis le 2026-10-19), à l'objectif du jour et aux badges ; servira au classement (Supabase).
 - Navigation : en haut sur ordinateur, barre fixe EN BAS avec icônes sur téléphone/tablette (≤ 900 px).
   Le flou de la barre du haut est retiré sur mobile (sinon la barre du bas ne se colle pas à l'écran).
 - Balayage gauche/droite sur téléphone pour passer d'un onglet à l'autre (pas depuis les bords : geste retour).
@@ -278,7 +278,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Une question « dure » doit demander un détail précis, pas le personnage célèbre.
 - Tester dans le navigateur reste à faire côté utilisateur (la répartition a été vérifiée par simulation).
 
-## À FAIRE TOUT DE SUITE (validé le 2026-10-19, « je te compacte et tu me fais ça ») : 💧 GOUTTES
+## 💧 GOUTTES — FAIT le 2026-10-19 (`DROPS_MAX`, `DROP_MS`, `syncDrops`, `spendDrop` dans `startSession`, `earnPracticeDrop`,
+`openDropsModal` / `dropsModal`, `refillDrops`, `showDropsTip` / `tipDrops` ; sauvegarde `drops`, `dropsAt`, `dropsDay`, `dropsEarned`).
+Pièces : reste d'XP gardé dans `coinRest` (avant, chaque réponse de 4 XP était arrondie à 0 pièce : on ne gagnait presque rien).
 Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 gouttes** (on arrose son cerveau ; refusés :
 « énergie », « cerveaux »). Ce n'est pas du plagiat (mécanique de jeu commune). Règles VALIDÉES :
 - 5 gouttes au maximum, compteur 💧 3/5 dans la barre du haut (à côté des pièces) ; tap → « Prochaine goutte dans … ».
