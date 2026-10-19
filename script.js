@@ -605,7 +605,13 @@ async function checkStreakDanger(demo = null) {
     }
     const days = plural(data.streak, 'jour', 'jours');
     if (data.inv.freeze >= missed) {
-        showToast(`🧊 Ta série de ${days} sera protégée par ${plural(missed, 'gel', 'gels')} quand tu finiras une leçon.`);
+        await askConfirm({
+            title: '🧊 Ta série est protégée',
+            text: `Tu as manqué ${plural(missed, 'jour', 'jours')}. ${plural(missed, 'gel de série sera utilisé', 'gels de série seront utilisés')} quand tu finiras une leçon : ta série de ${days} continue !
+Il te restera ${plural(data.inv.freeze - missed, 'gel', 'gels')}.`,
+            yes: 'Super !',
+            no: null
+        });
         return;
     }
     const need = missed - data.inv.freeze;
@@ -3620,7 +3626,8 @@ function askConfirm({ title, text = '', yes = 'Oui', no = 'Annuler', danger = fa
     $('askYes').textContent = yes;
     $('askYes').classList.toggle('btn-red', danger);
     $('askYes').classList.toggle('btn-green', !danger);
-    $('askNo').textContent = no;
+    $('askNo').textContent = no || '';
+    $('askNo').hidden = !no;   // no: null → un seul bouton (simple information)
     $('askModal').hidden = false;
     return new Promise(resolve => {
         const done = answer => {
