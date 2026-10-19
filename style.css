@@ -2272,6 +2272,21 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     cursor: pointer;
 }
 .daily-friends-title { color: var(--muted); font-size: 0.85rem; font-weight: 800; }
+.daily-review-btn { margin-bottom: 4px; }
+/* Revoir le défi du jour */
+.review-title { margin: 0 0 4px; font-size: 1.25rem; }
+.review-note { margin: 0 0 12px; font-size: 0.85rem; }
+.review-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.review-item { padding: 10px 12px; border: 2px solid var(--line); border-left-width: 6px; border-radius: 12px; }
+.review-item.is-ok { border-left-color: var(--green, #58cc02); }
+.review-item.is-ko { border-left-color: var(--red); }
+.review-q { font-size: 0.9rem; font-weight: 800; color: var(--ink); }
+.review-media { display: flex; gap: 4px; margin-top: 6px; }
+.review-media img { height: 44px; width: auto; max-width: 100%; border-radius: 4px; }
+.review-media .emoji-img { height: 32px; }
+.review-a { margin-top: 4px; font-size: 0.85rem; font-weight: 800; color: var(--green-ink, #2b7a0b); }
+.review-me { margin-top: 2px; font-size: 0.8rem; font-weight: 700; color: var(--red-ink); }
+.review-friends { margin-top: 4px; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
 .daily-friends-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .daily-friends-list li {
     display: grid;

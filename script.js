@@ -1603,6 +1603,7 @@ function renderChallenges() {
     $('dailyDesc').hidden = !!result;   // terminé : l'encadré du résultat suffit
     $('dailyCard').classList.toggle('card-violet', !result);   // cadre violet = « à faire aujourd'hui »
     $('dailyBtn').hidden = !!result;
+    $('dailyReviewBtn').hidden = !result;
     renderDailyFriends(result);
 
     // Sprint : record et dernière partie dans deux encadrés
@@ -2194,6 +2195,7 @@ function startSession(requestedMode, level = 0) {
         errors: 0,
         correct: 0,
         grid: [],
+        answers: [],             // défi du jour : réponses tapées (pour les revoir ensuite)
         hearts: heartsMax,
         heartsMax,
         failedIds: new Set(),
@@ -2785,7 +2787,10 @@ function commit(ok) {
             state.correct++;
             addXp(mode === 'daily' ? XP_DAILY_CORRECT : XP_SPRINT_CORRECT);
         }
-        if (mode === 'daily') state.grid.push(ok ? '🟩' : '🟥');
+        if (mode === 'daily') {
+            state.grid.push(ok ? '🟩' : '🟥');
+            state.answers.push(($('userInput').value || '').trim().slice(0, 60));
+        }
         state.done++;
         hideFeedback();
         if (state.queue.length === 0) endSession(true);
@@ -2951,7 +2956,7 @@ function endSession(win) {
     } else if (mode === 'daily') {
         const day = todayKey();
         const seconds = Math.round((Date.now() - state.startedAt) / 1000);
-        state.data.daily[day] = { score: state.correct, seconds, grid: state.grid.join('') };
+        state.data.daily[day] = { score: state.correct, seconds, grid: state.grid.join(''), answers: state.answers };
         addXp(XP_DAILY_DONE);
         leaguePushScore();   // score du jour visible tout de suite par les amis
         setEnd({
@@ -4269,7 +4274,8 @@ function profileSummary() {
         sprint: d.best.sprint || 0,
         badges: Object.keys(d.badges).filter(id => d.badges[id]),
         cards: Object.keys(d.cards).filter(id => d.cards[id]),
-        shiny: Object.keys(d.shinyCards || {}).filter(id => (d.cards[id] || 0) >= SHINY_AT)   // cartes brillantes
+        shiny: Object.keys(d.shinyCards || {}).filter(id => (d.cards[id] || 0) >= SHINY_AT),   // cartes brillantes
+        daily: d.daily[todayKey()] ? { day: todayKey(), grid: d.daily[todayKey()].grid } : null   // défi du jour, question par question
     };
 }
 
@@ -4373,6 +4379,69 @@ function refreshLeagueView() {
 }
 
 /** Défi du jour : mon score et celui de mes amis aujourd'hui (le meilleur score, puis le plus rapide). */
+/** Défi du jour terminé : les 10 questions, la bonne réponse, la mienne, et qui de mes amis a juste ou faux. */
+function openDailyReview() {
+    const today = todayKey();
+    const mine = state.data.daily[today];
+    if (!mine) return;
+    const myGrid = [...(mine.grid || '')];
+    const hasLeague = cloudUser && league?.userId === cloudUser.id && league.pseudo;
+    const friends = hasLeague ? league.friends
+        .map(f => ({ pseudo: f.pseudo, grid: f.summary?.daily?.day === today ? [...f.summary.daily.grid] : null }))
+        .filter(f => f.grid) : [];
+    const body = $('friendBody');
+    body.replaceChildren();
+    const h = el('h2', 'review-title');
+    h.textContent = `📅 Défi du jour · ${mine.score}/${DAILY_SIZE}`;
+    body.append(h);
+    const note = el('p', 'muted review-note');
+    note.textContent = friends.length
+        ? `Comparé avec ${plural(friends.length, 'ami qui a joué', 'amis qui ont joué')} aujourd’hui.`
+        : hasLeague ? 'Aucun ami n’a encore joué aujourd’hui : reviens plus tard pour comparer !'
+        : 'Ajoute des amis dans le Classement pour comparer vos réponses.';
+    body.append(note);
+    const list = el('ol', 'review-list');
+    dailyQuestions(today).forEach((q, i) => {
+        const ok = myGrid[i] === '🟩';
+        const li = el('li', `review-item ${ok ? 'is-ok' : 'is-ko'}`);
+        const head = el('div', 'review-q');
+        head.textContent = `${i + 1}. ${ok ? '✅' : '❌'} ${q.q}`;
+        const ans = el('div', 'review-a');
+        ans.textContent = `Réponse : ${q.a[0]}`;
+        li.append(head);
+        // Drapeau, rébus ou photo : sans l'image, la question n'a pas de sens
+        if (q.flag || q.rebus || q.photo) {
+            const media = el('div', 'review-media');
+            if (q.flag) media.append(flagImg(q.flag));
+            else if (q.rebus) media.append(...q.rebus.map(emojiImg));
+            else {
+                const img = el('img');
+                img.src = q.photo;
+                img.alt = '';
+                img.loading = 'lazy';
+                media.append(img);
+            }
+            li.append(media);
+        }
+        li.append(ans);
+        const typed = mine.answers?.[i];
+        if (!ok && mine.answers) {
+            const me = el('div', 'review-me');
+            me.textContent = typed ? `Toi : ${typed}` : 'Toi : pas de réponse';
+            li.append(me);
+        }
+        if (friends.length) {
+            const fr = el('div', 'review-friends');
+            fr.textContent = '👥 ' + friends.map(f => `${f.pseudo} ${f.grid[i] === '🟩' ? '✅' : '❌'}`).join(' · ');
+            li.append(fr);
+        }
+        list.append(li);
+    });
+    body.append(list);
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
+}
+
 function renderDailyFriends(result) {
     const box = $('dailyFriends');
     box.replaceChildren();
@@ -5730,6 +5799,7 @@ function bindEvents() {
 
     $('tourNext').addEventListener('click', () => { tourStep++; showTourStep(); });
     $('tourSkip').addEventListener('click', () => { tourSkipped = true; endTour(); });
+    $('dailyReviewBtn').addEventListener('click', openDailyReview);
     window.addEventListener('resize', () => { if (!$('tour').hidden) placeTour(); });
     window.addEventListener('scroll', () => { if (!$('tour').hidden) placeTour(); }, { passive: true });   // fin du défilement : la lumière suit
 
