@@ -1373,13 +1373,14 @@ function cardFace(card, big = false, shiny = false) {
 }
 
 /** Carte de la collection en grand (même fenêtre que le coffre). */
-function openCardView(card, onBack = null) {
+function openCardView(card, onBack = null, friendShiny = false) {
     state.chest = null;
     chestBack = onBack;
     $('chestTitle').textContent = `🃏 ${card.theme}`;
-    $('chestStage').replaceChildren(cardFace(card, true, !onBack && isShiny(card)));
+    $('chestStage').replaceChildren(cardFace(card, true, onBack ? friendShiny : isShiny(card)));
     const count = onBack ? 0 : (state.data.cards[card.id] || 0);
-    $('chestNote').textContent = card.rarity === 'master' ? (onBack ? '' : '🏆 Gagnée au palier 5 de l’entraînement.')
+    $('chestNote').textContent = onBack ? (friendShiny ? '✨ Carte brillante' : '')
+        : card.rarity === 'master' ? '🏆 Gagnée au palier 5 de l’entraînement.'
         : !count ? '' : count >= SHINY_AT ? `✨ Carte brillante (${count} exemplaires)`
         : `${count} / ${SHINY_AT} exemplaires : à ${SHINY_AT}, elle devient brillante ✨`;
     $('chestBtn').textContent = onBack ? '← Retour' : 'Fermer';
@@ -4208,7 +4209,8 @@ function profileSummary() {
         rate: d.totals.tries > 0 ? Math.round((d.totals.right / d.totals.tries) * 100) : null,
         sprint: d.best.sprint || 0,
         badges: Object.keys(d.badges).filter(id => d.badges[id]),
-        cards: Object.keys(d.cards).filter(id => d.cards[id])
+        cards: Object.keys(d.cards).filter(id => d.cards[id]),
+        shiny: Object.keys(d.shinyCards || {}).filter(id => (d.cards[id] || 0) >= SHINY_AT)   // cartes brillantes
     };
 }
 
@@ -4274,13 +4276,15 @@ function openFriendProfile(f) {
         const ch = el('h3', 'friend-section');
         ch.textContent = `🃏 Cartes · ${cards.length}/${CARDS.length}`;
         const cl = el('div', 'friend-cards');
+        const shiny = s.shiny || [];   // ancien résumé : pas d'info sur les cartes brillantes
         cards.forEach(card => {
             const btn = el('button', 'kcard-btn');
             btn.type = 'button';
-            btn.append(cardFace(card));
+            const isShinyCard = shiny.includes(card.id);
+            btn.append(cardFace(card, false, isShinyCard));
             btn.addEventListener('click', () => {
                 $('friendModal').hidden = true;
-                openCardView(card, () => { $('friendModal').hidden = false; });
+                openCardView(card, () => { $('friendModal').hidden = false; }, isShinyCard);
             });
             cl.append(btn);
         });
