@@ -1150,6 +1150,15 @@ function addDrops(n) {
     renderDrops();
 }
 
+/** Avant une révision / un entraînement : la goutte à gagner (rien si plein ou 3 déjà gagnées aujourd'hui). */
+function dropBonusText() {
+    const d = state.data;
+    syncDrops();
+    const earned = d.dropsDay === todayKey() ? d.dropsEarned : 0;
+    if (d.drops >= DROPS_MAX || earned >= DROPS_PRACTICE_DAY) return '';
+    return '💧 +1 goutte si tu en réussis la moitié';
+}
+
 /** Fin d'une révision ou d'un entraînement : +1 goutte si au moins la moitié de bonnes réponses du premier coup.
     Renvoie la ligne à afficher sous le récap (ou ''). */
 function earnPracticeDrop() {
@@ -2196,6 +2205,9 @@ function openReviewModal() {
     $('modalTitle').textContent = '🔁 Révisions';
     $('modalDesc').textContent = 'Prêt à rattraper tes erreurs ?';
     $('modalStatsText').textContent = plural(count, 'question', 'questions');
+    const bonus = dropBonusText();
+    $('modalCost').textContent = bonus;
+    $('modalCost').hidden = !bonus;
     showModal(false); // Le bouton de confirmation sera vert
 }
 
@@ -4053,17 +4065,17 @@ function trainingLeftText(pr) {
 /** Avant de commencer : rappel du palier et de ce qu'il reste pour le suivant. */
 async function confirmTraining(theme, icon) {
     const pr = trainingProgress(theme);
-    const lines = [`Palier ${pr.tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`];
+    // Court : le palier, ce qu'il reste pour le suivant, et la goutte à gagner
+    const lines = [`Palier ${pr.tier}/${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`];
     if (pr.tier < TRAIN_TIERS) {
-        lines.push(!pr.ready ? `Pour passer au palier ${pr.tier + 1} : ${trainingLeftText(pr)}.`
-            : pr.blockedToday ? `🌙 Palier ${pr.tier + 1} demain : un seul palier par jour.`
-            : `Palier ${pr.tier + 1} débloqué à la fin de ta prochaine session !`);
+        lines.push(!pr.ready ? `Palier ${pr.tier + 1} : ${trainingLeftText(pr)}`
+            : pr.blockedToday ? `🌙 Palier ${pr.tier + 1} demain`
+            : `🎉 Palier ${pr.tier + 1} à la fin de cette session !`);
     } else {
-        lines.push('Palier maximum : continue pour tout maîtriser !');
+        lines.push('🏆 Palier maximum');
     }
-    lines.push('10 questions · sans cœurs · 2 XP par bonne réponse');
-    const master = masterCard(theme);
-    if (!(master && state.data.cards[master.id])) lines.push('🎁 Chaque palier gagné : 2 cartes du thème · 🏆 palier 5 : la carte Maître');
+    const bonus = dropBonusText();
+    if (bonus) lines.push(bonus);
     const ok = await askConfirm({ title: `${icon} ${theme}`, text: lines.join('\n'), yes: 'Commencer', no: 'Plus tard' });
     if (ok) startTraining(theme);
 }
