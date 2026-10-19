@@ -313,6 +313,23 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
   « Régulier » passe de ~45 à ~60 🪙/jour, un « Intense » de ~85 à ~110 🪙/jour.
 - Tester dans Edge via `shot.ps1` (PowerShell), puis commit + push + vérification en ligne (règles habituelles).
 
+## AVANT DE PUBLIER (Play Store) — gardé en tête le 2026-10-19, rien de fait (l'utilisateur teste d'abord)
+Failles de triche repérées (ordre conseillé) :
+1. 🔴 « J'avais juste » (`forceBtn`, `forced` dans `commit`) : illimité dans niveaux / révisions / entraînement → jamais de
+   cœur perdu, et la question compte comme réussie (`recordResult` appelé car seul `firstTry && !assisted` est testé) :
+   paliers, médailles, carte Maître, goutte de pratique gagnés sans savoir. Proposé : 3 par partie max, garde le cœur
+   mais ne compte pas comme réussite (maîtrise, paliers, goutte). Défi du jour / sprint déjà protégés (`strict`).
+2. 🟠 Classement : scores envoyés par le jeu ; `check_score_jump` ne freine que `week_xp`. `prev_week_xp` (qui décide du
+   podium du lundi) et `daily_score` peuvent être mis au max via l'API. → règles SQL en plus.
+3. 🟠 Horloge du téléphone : avancer la date = gouttes pleines, défi du jour de DEMAIN jouable en avance (même pour tous),
+   série gonflée. → heure de Supabase au lancement.
+4. 🟢 Sauvegarde locale modifiable (pièces, cartes) : ne touche que le tricheur ; impossible à bloquer sans serveur.
+Play Store (PWABuilder, aucun changement de code) : compte développeur 25 $ ; compte PERSONNEL récent → test fermé
+12 testeurs Android pendant 14 jours d'affilée (à trouver par l'utilisateur : proches, ou groupes d'échange de tests ;
+compte organisation dispensé mais SIRET + D-U-N-S). À faire dans le jeu avant : bouton « Supprimer mon compte » (exigé
+par Google, dans l'appli + page web), page « Politique de confidentialité », assetlinks.json à la racine du domaine
+(dépôt `aymericchevailler45-pixel.github.io`), fiche (captures, textes, questionnaire « sécurité des données »).
+
 ## Prochaines étapes (proposées le 2026-10-17)
 1. Entraînement par thème — FAIT le 2026-10-18 (1re version) : sous-onglet « 🎯 Entraînement » dans Défis
    (`setChallengesTab`, `renderTraining`), 15 cases de thème, `pickTrainingCards`, `trainingProgress`,
