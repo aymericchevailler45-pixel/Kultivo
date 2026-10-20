@@ -3,6 +3,14 @@
 Quiz de culture générale façon Duolingo, 100 % navigateur (HTML/CSS/JS), sans serveur.
 Propriétaire : francophone. Répondre en français, expliquer simplement, pas de jargon inutile.
 
+## REMISE À ZÉRO GÉNÉRALE (2026-10-20, demande de l'utilisateur : « tout tout effacer »)
+- Code : `RESET_EPOCH` (script.js) + `resetEpoch` dans chaque sauvegarde. À l'ouverture, une sauvegarde de l'appareil sans
+  la bonne marque est effacée avec le compte connecté, le cache du classement et les clés v1 (`wipeBeforeReset`) ; une
+  sauvegarde en ligne sans la marque est ignorée et remplacée (`cloudSync`, `cloudPush`). Nouvelle remise à zéro = changer la date.
+- Supabase : `supabase/remise-a-zero.sql` (à lancer par l'utilisateur) efface tous les comptes (auth.users) et toutes les
+  tables (gifts, friendships, scores, saves, profiles ; reports gardé sauf choix contraire).
+- Les anciens ids de comptes notés plus bas (compte de l'utilisateur bef7f100…, comptes de test) n'existent plus après ça.
+
 ## Fichiers
 - `index.html` : 4 onglets (Parcours, Défis, Boutique, Profil) + écran de leçon + popups.
   Ordre de chargement OBLIGATOIRE : `questions.js` → `pairs.js` → `order.js` → `levels.js` → `script.js`.

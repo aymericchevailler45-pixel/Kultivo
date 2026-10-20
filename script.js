@@ -15,6 +15,9 @@ const REVIEW_MIN = 3;            // cartes de révision ajoutées à chaque nive
 const REVIEW_MAX = 4;            // maximum : +1 place par tranche de 3 questions ratées (11 questions au plus par niveau)
 const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs »
 const STORAGE_KEY = 'cultureG_v2';
+// Remise à zéro de TOUS les joueurs (2026-10-20, demande de l'utilisateur avant les tests depuis zéro) : une sauvegarde
+// (de l'appareil ou en ligne) sans cette marque est effacée / ignorée. Changer la date = nouvelle remise à zéro générale.
+const RESET_EPOCH = '2026-10-20';
 
 // Supabase (base de données en ligne). La clé « anon » est PUBLIQUE par conception : la sécurité vient
 // des règles de la base (les joueurs peuvent seulement AJOUTER un signalement, jamais lire les autres).
@@ -308,6 +311,7 @@ function judge(input, rawAnswers, question = '') {
 
 function defaultData() {
     return {
+        resetEpoch: RESET_EPOCH,         // remise à zéro générale dont date cette sauvegarde
         unlocked: 1, done: {}, streak: 0, lastDay: null, stats: {},
         xp: 0,
         dayXp: { day: null, xp: 0 },     // XP gagnés aujourd'hui
@@ -416,7 +420,23 @@ function migrateV1() {
     return data;
 }
 
+/** Sauvegarde d'avant la dernière remise à zéro générale : on efface tout sur l'appareil (progression, compte
+    connecté, classement en cache, anciennes clés v1). Noms écrits en clair : appelé avant leur déclaration. */
+function wipeBeforeReset() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const old = raw ? JSON.parse(raw) : null;
+        const legacy = localStorage.getItem('cultureG_unlockedLevel') !== null;
+        if ((old && old.resetEpoch !== RESET_EPOCH) || (!old && legacy)) {
+            ['cultureG_v2', 'kultivo_cloud', 'kultivo_league', 'kultivo_auth', 'kultivo_invite',
+             'cultureG_unlockedLevel', 'cultureG_streak', 'cultureG_lastReview', 'cultureG_data']
+                .forEach(k => localStorage.removeItem(k));
+        }
+    } catch (err) { /* stockage illisible : loadData repartira de zéro */ }
+}
+
 function loadData() {
+    wipeBeforeReset();
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         const data = raw ? { ...defaultData(), ...JSON.parse(raw) } : migrateV1();
@@ -3695,7 +3715,7 @@ async function cloudPush(force = false) {
             const { data: remote, error: readError } = await c.from('saves')
                 .select('data, xp, updated_at').eq('user_id', cloudUser.id).maybeSingle();
             if (readError) return;   // on réessaiera plus tard, sans risque d'écraser quoi que ce soit
-            if (remote && (remote.xp || 0) > (state.data.xp || 0)) {
+            if (remote && remote.data?.resetEpoch === RESET_EPOCH && (remote.xp || 0) > (state.data.xp || 0)) {
                 if (isEmptyProgress(state.data)) applyRemote(remote);
                 else if ($('cloudConflictModal').hidden) openCloudConflict(remote);
                 return;
@@ -3746,6 +3766,7 @@ async function cloudSync(justLoggedIn) {
         if (error) return;
         const meta = cloudMeta();
         if (!remote) { await cloudPush(); return; }                       // compte tout neuf
+        if (remote.data?.resetEpoch !== RESET_EPOCH) { await cloudPush(true); return; }   // d'avant la remise à zéro : remplacée
         const remoteNewer = !meta.updatedAt || new Date(remote.updated_at) > new Date(meta.updatedAt);
         if (!remoteNewer) { if (meta.dirty) await cloudPush(); return; }   // l'appareil est à jour
         // Le compte a avancé ailleurs (autre appareil) ou c'est une première connexion sur cet appareil
