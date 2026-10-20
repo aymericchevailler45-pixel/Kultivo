@@ -436,6 +436,10 @@ par Google, dans l'appli + page web), page « Politique de confidentialité », 
    Google Play payant, fichier assetlinks, politique de confidentialité), puis éventuellement Capacitor (~95 % du code
    gardé) pour notifications de rappel / Google Play Jeux. Connexion « avec Google » via Supabase à ajouter alors.
 - Sauvegarde en ligne (FAITE le 2026-10-17) : table `saves` (user_id, data jsonb, xp, updated_at), RLS « chacun
+  la sienne ». SUPABASE (mail du 2026-10-20) : à partir du 30/10/2026, une NOUVELLE table du schéma public n'est plus
+  accessible par l'API sans GRANT explicite. Tables existantes non touchées. Toute future table : ajouter dans son
+  fichier SQL `grant … on public.<table> to authenticated;` (et `to anon` seulement si besoin, ex. INSERT pour reports ;
+  jamais de SELECT pour anon sur une table privée) ; les règles RLS restent nécessaires en plus.
   la sienne ». Comptes e-mail + mot de passe, « Confirm email » désactivé (quota d'e-mails Supabase gratuit).
   Bibliothèque `vendor/supabase.min.js` (v2.45.4, locale pour marcher hors ligne). Carte « ☁️ Sauvegarde en
   ligne » : bouton « ☁️ Mon compte » (ou « ☁️ Sauvegarder » sans compte) à côté de « 🔊 Son activé »,
