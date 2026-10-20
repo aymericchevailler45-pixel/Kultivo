@@ -160,8 +160,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   derniers donnés tout de suite (`PLACEMENT_CHESTS_NOW`), les autres marqués 'placement' dans `chests` et leurs cartes
   dues dans `chestBonus`, ajoutées (+3 max, `CHEST_BONUS_MAX`) aux coffres du parcours APRÈS le départ (idée de l'utilisateur :
   même total qu'un joueur normal, sans inonder la collection), 2 bonnes sur 3 pour passer, arrêt à la 1re étape ratée.
-  Valide les niveaux sautés (`done`), enregistre `placement: { day, start }`. Pas d'XP, pas de stats,
-  et les niveaux sautés ne comptent pas pour les badges.
+  Valide les niveaux sautés (`done`), enregistre `placement: { day, start }`. Pas de stats. Depuis le 2026-10-20 (pour ne
+  pas léser le joueur placé) : +40 XP par niveau sauté (`PLACEMENT_XP_PER_LEVEL`) au TOTAL seulement (pas dans `activeDays`
+  → classement de la semaine juste), pièces correspondantes dues dans `coinBonus`, versées +10 par niveau réussi
+  (`COIN_BONUS_PER_LEVEL`, sans le dire), et les niveaux sautés comptent pour les badges.
 
 - Coffres et collection (2026-10-17, idée de l'utilisateur) : un coffre 🎁 sur le parcours après chaque niveau
   multiple de 5 (`CHEST_EVERY`, `chestStop`) : gris tant que le niveau n'est pas fini, doré quand il est à ouvrir,

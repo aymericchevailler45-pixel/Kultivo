@@ -107,6 +107,8 @@ const GOAL_CARDS = 1;                          // carte offerte avec la récompe
 const PLACEMENT_MAX_STEPS = 8;   // départ au niveau 81 au mieux (sur 170)
 const PLACEMENT_CHESTS_NOW = 3;   // coffres sautés donnés tout de suite ; les autres = cartes bonus dans les coffres suivants
 const CHEST_BONUS_MAX = 3;        // cartes bonus ajoutées au plus par coffre du parcours
+const PLACEMENT_XP_PER_LEVEL = 40; // XP données par niveau sauté (≈ un niveau joué), au total seulement (pas dans la semaine)
+const COIN_BONUS_PER_LEVEL = 10;   // pièces dues après un placement, versées au plus par niveau réussi
 const PLACEMENT_STEPS = Math.min(PLACEMENT_MAX_STEPS, Math.floor((MAX_LEVEL - 1) / CHALLENGE_EVERY));
 const PLACEMENT_PER_STEP = 3;   // questions au plus par étape
 const PLACEMENT_PASS = 2;       // bonnes réponses pour valider une étape
@@ -357,6 +359,7 @@ function defaultData() {
         tipChest: false,                 // explication du 1er coffre à ouvrir déjà vue
         tipReviews: false,               // explication de « + X révisions » déjà vue
         chestBonus: 0,                   // cartes encore dues pour les coffres sautés par le placement
+        coinBonus: 0,                    // pièces encore dues pour les niveaux sautés par le placement
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -376,6 +379,7 @@ function normalizeData(data) {
     if (typeof data.dropsAt !== 'number') data.dropsAt = 0;
     if (typeof data.coinRest !== 'number' || !(data.coinRest >= 0)) data.coinRest = 0;
     if (typeof data.chestBonus !== 'number' || !(data.chestBonus >= 0)) data.chestBonus = 0;
+    if (typeof data.coinBonus !== 'number' || !(data.coinBonus >= 0)) data.coinBonus = 0;
 
     if (Object.keys(data.badges).length > 0 && Object.keys(data.claimedBadges).length === 0) {
         for (const b in data.badges) data.claimedBadges[b] = true;
@@ -817,9 +821,8 @@ function themeStats() {
 
 function badgeStats() {
     const d = state.data;
-    // Les niveaux validés par le test de placement ne comptent pas pour les badges
-    const placedBefore = d.placement ? d.placement.start : 1;
-    const doneLevels = Object.keys(d.done).map(Number).filter(n => d.done[n] && n >= placedBefore);
+    // Les niveaux validés par le test de placement comptent aussi (depuis le 2026-10-20 : sinon le joueur placé est lésé)
+    const doneLevels = Object.keys(d.done).map(Number).filter(n => d.done[n]);
     const daily = Object.values(d.daily);
     return {
         levelsDone: doneLevels.filter(n => !isChallenge(n)).length,
@@ -2332,6 +2335,12 @@ function applyPlacement(start) {
     for (let n = 1; n < start; n++) d.done[n] = true;
     d.unlocked = Math.max(d.unlocked, Math.min(start, MAX_LEVEL));
     d.placement = { day: todayKey(), start };
+    // XP des niveaux sautés : au total (titre, badges), pas dans les jours joués (classement de la semaine juste) ;
+    // les pièces correspondantes arrivent petit à petit, à chaque niveau réussi (sinon tout dépensé le 1er jour)
+    const xpGift = (start - 1) * PLACEMENT_XP_PER_LEVEL;
+    d.xp += xpGift;
+    d.coinBonus += Math.round(xpGift / COIN_RATE);
+    state.placementXp = xpGift;
     // Coffres sautés : les derniers tout de suite, les autres en cartes bonus dans les prochains coffres du parcours
     // (sinon des dizaines de cartes d'un coup ; et sans rien, il aurait moins de cartes qu'un joueur arrivé là normalement)
     const skipped = [];
@@ -3268,7 +3277,7 @@ function endSession(win) {
             emoji: start > 1 ? '🧭' : '🌱',
             title: 'Test terminé',
             text: start > 1
-                ? `Tu commences au niveau ${start} ! Les niveaux 1 à ${start - 1} sont validés : tu peux les rejouer quand tu veux.`
+                ? `Tu commences au niveau ${start} ! Les niveaux 1 à ${start - 1} sont validés (+${state.placementXp} XP) : tu peux les rejouer quand tu veux.`
                 : 'Tu commences au niveau 1 : tout le parcours t’attend !',
             primary: 'C’est parti',
             onPrimary: returnToMap
@@ -3303,6 +3312,13 @@ function endSession(win) {
             state.data.totals.flawless++;
         }
         if (challenge) addXp(XP_CHALLENGE_WIN);
+        // Après un placement : une part des pièces des niveaux sautés (sans le dire, comme les cartes des coffres)
+        const owed = Math.min(COIN_BONUS_PER_LEVEL, state.data.coinBonus);
+        if (owed > 0) {
+            state.data.coinBonus -= owed;
+            state.data.coins += owed;
+            state.sessionCoins += owed;
+        }
 
         state.data.done[state.level] = true;
         state.data.unlocked = Math.max(state.data.unlocked, Math.min(state.level + 1, MAX_LEVEL));
