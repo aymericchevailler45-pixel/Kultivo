@@ -152,7 +152,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Récap de fin de leçon animé : tuiles XP / Précision / Temps (défi du jour : Score ; sprint : Bonnes / Record)
   qui apparaissent l'une après l'autre avec chiffres qui défilent (`renderEndStats`, `countUp`).
 - Test de placement (mode `placement`) : lancé depuis l'accueil (remplace l'ancienne popup de bienvenue) et via un bouton SOUS le niveau 1 (la carte se lit de bas en haut) tant qu'aucun niveau n'est terminé.
-  6 étapes au plus (`PLACEMENT_MAX_STEPS`, départ au niveau 61 max sur 150 ; à réajuster si le parcours grandit), 2 bonnes sur 3 pour passer, arrêt à la 1re étape ratée.
+  8 étapes au plus depuis le 2026-10-20 (`PLACEMENT_MAX_STEPS`, départ au niveau 81 max sur 170). Coffres sautés : les 3
+  derniers donnés tout de suite (`PLACEMENT_CHESTS_NOW`), les autres marqués 'placement' dans `chests` et leurs cartes
+  dues dans `chestBonus`, ajoutées (+3 max, `CHEST_BONUS_MAX`) aux coffres du parcours APRÈS le départ (idée de l'utilisateur :
+  même total qu'un joueur normal, sans inonder la collection), 2 bonnes sur 3 pour passer, arrêt à la 1re étape ratée.
   Valide les niveaux sautés (`done`), enregistre `placement: { day, start }`. Pas d'XP, pas de stats,
   et les niveaux sautés ne comptent pas pour les badges.
 

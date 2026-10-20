@@ -103,8 +103,10 @@ const SHOP_CHEST = { price: 150, size: 3 };   // coffre de la boutique : 3 carte
 const GOAL_CARDS = 1;                          // carte offerte avec la récompense de l'objectif du jour
 
 // Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
-// Limité à 6 étapes (départ au niveau 61 au mieux, sur 150) pour garder du jeu à faire.
-const PLACEMENT_MAX_STEPS = 6;
+// Limité à 8 étapes (départ au niveau 81 au mieux, sur 170) pour garder du jeu à faire.
+const PLACEMENT_MAX_STEPS = 8;   // départ au niveau 81 au mieux (sur 170)
+const PLACEMENT_CHESTS_NOW = 3;   // coffres sautés donnés tout de suite ; les autres = cartes bonus dans les coffres suivants
+const CHEST_BONUS_MAX = 3;        // cartes bonus ajoutées au plus par coffre du parcours
 const PLACEMENT_STEPS = Math.min(PLACEMENT_MAX_STEPS, Math.floor((MAX_LEVEL - 1) / CHALLENGE_EVERY));
 const PLACEMENT_PER_STEP = 3;   // questions au plus par étape
 const PLACEMENT_PASS = 2;       // bonnes réponses pour valider une étape
@@ -354,6 +356,7 @@ function defaultData() {
         tipReview: false,                // explication du bouton « ↻ à revoir » déjà vue
         tipChest: false,                 // explication du 1er coffre à ouvrir déjà vue
         tipReviews: false,               // explication de « + X révisions » déjà vue
+        chestBonus: 0,                   // cartes encore dues pour les coffres sautés par le placement
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -372,6 +375,7 @@ function normalizeData(data) {
     data.drops = Math.min(DROPS_MAX, Math.floor(data.drops));
     if (typeof data.dropsAt !== 'number') data.dropsAt = 0;
     if (typeof data.coinRest !== 'number' || !(data.coinRest >= 0)) data.coinRest = 0;
+    if (typeof data.chestBonus !== 'number' || !(data.chestBonus >= 0)) data.chestBonus = 0;
 
     if (Object.keys(data.badges).length > 0 && Object.keys(data.claimedBadges).length === 0) {
         for (const b in data.badges) data.claimedBadges[b] = true;
@@ -1358,10 +1362,18 @@ function drawCard(minRarity, exclude, theme = null) {
 /** Ouvre les coffres des niveaux donnés : les cartes sont gagnées (et enregistrées) tout de suite.
     Un seul coffre : cartes montrées une à une. Plusieurs : toutes les cartes d'un coup, en grille. */
 function openChests(levels) {
-    for (const n of levels) state.data.chests[n] = Date.now();
-    const boxes = levels.map(n => ({ size: chestSize(n), rare: n % CHALLENGE_EVERY === 0 }));
-    const title = levels.length > 1 ? `🎁 ${levels.length} coffres !`
-        : levels[0] % CHALLENGE_EVERY === 0 ? '🎁 Gros coffre !' : '🎁 Coffre';
+    const d = state.data;
+    for (const n of levels) d.chests[n] = Date.now();
+    let bonus = 0;   // après un placement : les cartes des coffres sautés arrivent petit à petit
+    const boxes = levels.map(n => {
+        const extra = n >= (d.placement?.start || 0) ? Math.min(CHEST_BONUS_MAX, d.chestBonus) : 0;   // seulement les coffres après le départ
+        d.chestBonus -= extra;
+        bonus += extra;
+        return { size: chestSize(n) + extra, rare: n % CHALLENGE_EVERY === 0 };
+    });
+    const title = (levels.length > 1 ? `🎁 ${levels.length} coffres !`
+        : levels[0] % CHALLENGE_EVERY === 0 ? '🎁 Gros coffre !' : '🎁 Coffre')
+        + (bonus ? ` (+${bonus} cartes bonus)` : '');
     openCardBoxes(boxes, title);
 }
 
@@ -2321,6 +2333,14 @@ function applyPlacement(start) {
     for (let n = 1; n < start; n++) d.done[n] = true;
     d.unlocked = Math.max(d.unlocked, Math.min(start, MAX_LEVEL));
     d.placement = { day: todayKey(), start };
+    // Coffres sautés : les derniers tout de suite, les autres en cartes bonus dans les prochains coffres du parcours
+    // (sinon des dizaines de cartes d'un coup ; et sans rien, il aurait moins de cartes qu'un joueur arrivé là normalement)
+    const skipped = [];
+    for (let n = CHEST_EVERY; n < start; n += CHEST_EVERY) if (!d.chests[n]) skipped.push(n);
+    for (const n of skipped.slice(0, Math.max(0, skipped.length - PLACEMENT_CHESTS_NOW))) {
+        d.chests[n] = 'placement';
+        d.chestBonus += chestSize(n);
+    }
 }
 
 function showModal(violet) {
@@ -5329,7 +5349,7 @@ function maybeShowChestTip() {
     const data = state.data;
     if (chestTipPending || data.tipChest) return;
     // Joueur qui a déjà ouvert des coffres : il connaît, pas besoin d'explication
-    if (Object.keys(data.chests).length > 0) { data.tipChest = true; saveData(); return; }
+    if (Object.values(data.chests).some(v => v !== 'placement')) { data.tipChest = true; saveData(); return; }
     chestTipPending = true;
     setTimeout(() => {
         chestTipPending = false;
@@ -5338,7 +5358,9 @@ function maybeShowChestTip() {
             && (!data.onboarded || data.tourDone) && !data.tipChest;
         if (!ready) return;
         const text = n > 1 && data.placement
-            ? `🎁 Ton test de placement t’a fait passer ${n} coffres ! Ils t’attendent tous : ouvre-les d’un coup.`
+            ? (data.chestBonus > 0
+                ? `🎁 Ton test t’a fait passer des coffres ! ${n} t’attendent ici, et tes prochains coffres auront des cartes en plus (${data.chestBonus} au total).`
+                : `🎁 Ton test de placement t’a fait passer ${n} coffres ! Ils t’attendent tous : ouvre-les d’un coup.`)
             : n > 1
                 ? `🎁 ${n} coffres t’attendent ! Ouvre-les tous d’un coup.`
                 : '🎁 Un coffre t’attend ! Il contient des cartes à collectionner.';
