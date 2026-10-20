@@ -21,7 +21,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - `manifest.json`, `sw.js`, `icons/` : application installable (PWA). `display: fullscreen` ESSAYÉ le 2026-10-20 → ANNULÉ : avec la navigation à
   3 boutons, Chrome rétrécit l'écran quand la barre revient (balayage ou clavier) au lieu de la superposer → saut à chaque
   question. Une appli web ne peut pas superposer les boutons (seul un vrai jeu Android le peut). Ne pas retenter ;
-  la barre blanche en bas (navigation à 3 boutons) est à accepter. Service worker « réseau d'abord »
+  la barre blanche en bas (navigation à 3 boutons) est à accepter. Avec Capacitor (vraie appli Android, voir Play Store) : mode immersif
+  natif possible (boutons superposés) → à faire à ce moment-là. Service worker « réseau d'abord »
   (cache `kultivo-v1`) : avec internet, toujours la dernière version. Tout nouveau fichier du jeu → l'ajouter à `FILES` dans `sw.js`.
   Logo (choisi le 2026-10-16, version « A2 ») : cerveau Twemoji rose + K vert cerclé de blanc sur fond vert.
   `icons/logo.svg` (arrondi, utilisé dans le jeu) ; PNG carrés pour le téléphone : rendu 512 px avec Edge en mode
