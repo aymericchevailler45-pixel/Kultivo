@@ -18,7 +18,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - ATTENTION GitHub Pages : Cache-Control max-age=600 (copie de 10 min sur le CDN). Pour vérifier une mise en
   ligne, tester l'URL SANS paramètre (le « ?n= » contourne le CDN et ment). Depuis kultivo-v6, le service worker
   ajoute ?v=<horodatage> aux fichiers html/js/css/json → le téléphone a toujours la dernière version.
-- `manifest.json`, `sw.js`, `icons/` : application installable (PWA). Service worker « réseau d'abord »
+- `manifest.json`, `sw.js`, `icons/` : application installable (PWA). Depuis le 2026-10-20 : `display: fullscreen` (demande de
+  l'utilisateur : avec la navigation à 3 boutons, une barre blanche restait en bas ; en plein écran, barres du système
+  cachées, glisser depuis le bord les fait revenir). Il faut RÉINSTALLER l'appli pour que ça s'applique. À surveiller :
+  le clavier (si l'affichage des questions se dérègle, revenir à `standalone`). L'heure et la batterie sont cachées aussi. Service worker « réseau d'abord »
   (cache `kultivo-v1`) : avec internet, toujours la dernière version. Tout nouveau fichier du jeu → l'ajouter à `FILES` dans `sw.js`.
   Logo (choisi le 2026-10-16, version « A2 ») : cerveau Twemoji rose + K vert cerclé de blanc sur fond vert.
   `icons/logo.svg` (arrondi, utilisé dans le jeu) ; PNG carrés pour le téléphone : rendu 512 px avec Edge en mode
