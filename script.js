@@ -1364,16 +1364,15 @@ function drawCard(minRarity, exclude, theme = null) {
 function openChests(levels) {
     const d = state.data;
     for (const n of levels) d.chests[n] = Date.now();
-    let bonus = 0;   // après un placement : les cartes des coffres sautés arrivent petit à petit
+    // Après un placement : les cartes des coffres sautés arrivent petit à petit, dans les coffres suivants
     const boxes = levels.map(n => {
         const extra = n >= (d.placement?.start || 0) ? Math.min(CHEST_BONUS_MAX, d.chestBonus) : 0;   // seulement les coffres après le départ
         d.chestBonus -= extra;
-        bonus += extra;
         return { size: chestSize(n) + extra, rare: n % CHALLENGE_EVERY === 0 };
     });
     const title = (levels.length > 1 ? `🎁 ${levels.length} coffres !`
         : levels[0] % CHALLENGE_EVERY === 0 ? '🎁 Gros coffre !' : '🎁 Coffre')
-        + (bonus ? ` (+${bonus} cartes bonus)` : '');
+;   // cartes bonus du placement : ajoutées sans le dire (le joueur ne sait pas ce qu'ont les autres)
     openCardBoxes(boxes, title);
 }
 
@@ -5358,9 +5357,7 @@ function maybeShowChestTip() {
             && (!data.onboarded || data.tourDone) && !data.tipChest;
         if (!ready) return;
         const text = n > 1 && data.placement
-            ? (data.chestBonus > 0
-                ? `🎁 Ton test t’a fait passer des coffres ! ${n} t’attendent ici, et tes prochains coffres auront des cartes en plus (${data.chestBonus} au total).`
-                : `🎁 Ton test de placement t’a fait passer ${n} coffres ! Ils t’attendent tous : ouvre-les d’un coup.`)
+            ? `🎁 Ton test de placement t’a rapporté ${n} coffres ! Ouvre-les tous d’un coup.`
             : n > 1
                 ? `🎁 ${n} coffres t’attendent ! Ouvre-les tous d’un coup.`
                 : '🎁 Un coffre t’attend ! Il contient des cartes à collectionner.';
