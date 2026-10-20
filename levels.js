@@ -44,13 +44,13 @@ const AUTO_LEVEL_NAMES = true;   // false = garder les noms de niveaux de questi
    null = automatique : environ 5 questions par niveau. */
 const TOTAL_LEVELS = 170;
 
-/* Les niveaux déjà publiés ne doivent JAMAIS changer (sinon la progression des joueurs ne correspond plus) :
-   chaque lot de questions remplit ses propres niveaux. Lot 1 : ids < 3000 → niveaux 1 à 150 (répartition
-   d'origine, identique au calcul d'avant). Lot 2 (2026-10-19) : ids 3000 à 3999 → niveaux 151 à 170.
-   Pour un nouveau lot : ajouter une ligne ici (ids, niveaux), sans toucher aux lignes existantes. */
+/* Lots de questions : chaque lot remplit ses propres niveaux, pour qu'un ajout futur ne change JAMAIS les niveaux
+   déjà joués. 2026-10-20 : sauvegardes remises à zéro → tout le parcours (170 niveaux) refait d'un seul lot, avec une
+   seule courbe. Pour un nouveau lot plus tard : ajouter une ligne (ids, niveaux), sans toucher aux lignes existantes.
+   hardFrom : où arrivent les questions très pointues (part des niveaux) ; hardCurve > 1 : elles arrivent doucement,
+   puis de plus en plus souvent. */
 const LEVEL_LOTS = [
-    { from: 0,    to: 2999, first: 1,   last: 150, hardFrom: 0.55 },
-    { from: 3000, to: 3999, first: 151, last: 170, hardFrom: 0 }
+    { from: 0, to: 3999, first: 1, last: 170, hardFrom: 0.25, hardCurve: 2 }
 ];
 
 
@@ -90,14 +90,14 @@ const LEVEL_LOTS = [
         'Maîtrise totale', 'Grand voyage', 'Hors des sentiers', 'Tour du monde', 'Esprit vif',
         'Sans frontières', 'Énigmes en images', 'Cap au large', 'Tête bien faite', 'Les initiés',
         'Haute culture', 'Merveilles du monde', 'Grand tour', 'Pierres et légendes', 'Patrimoine',
-        'Les explorateurs', 'Vue d’ensemble', 'Grand chelem', 'Dernière ligne droite', 'Avant l’apothéose', 'Hors catégorie', 'Sans filet',
+        'Les explorateurs', 'Vue d’ensemble', 'Grand chelem', 'Hors catégorie', 'Sans filet',
         // Lot 2 (niveaux 151 à 170)
         'Nouvelle frontière', 'Terra incognita', 'Les audacieux', 'Grand oral', 'Esprit d’acier',
         'Mémoire d’éléphant', 'Les irréductibles', 'Savoir rare', 'Têtes chercheuses', 'Haute précision',
-        'Les insatiables', 'Cerveau d’or', 'Au bout du monde', 'Cap sur l’infini'
+        'Cerveau d’or', 'Dernière ligne droite', 'Avant l’apothéose', 'Le dernier pas'
     ];
 
-function assignLot(QS, firstLevel, lastLotLevel, HARD_FROM) {
+function assignLot(QS, firstLevel, lastLotLevel, HARD_FROM, HARD_CURVE = 1) {
 
     const oldMax = Math.max(1, ...QS.map(q => q.niveau || 1));
     const difficultyOf = q =>
@@ -125,10 +125,11 @@ function assignLot(QS, firstLevel, lastLotLevel, HARD_FROM) {
     const extra = n - base * levelCount;
     const sizeOf = i => base + Math.floor(((i + 1) * extra) / levelCount) - Math.floor((i * extra) / levelCount);
 
-    // Questions très pointues par niveau : 0 au début, puis environ 1 par niveau jusqu'à la fin
+    // Questions très pointues : 0 au début, puis de plus en plus (courbe HARD_CURVE) jusqu'à la fin
     const firstHard = Math.floor(levelCount * HARD_FROM);
     const hardTotal = hardPool.length;
-    const hardCum = i => i < firstHard ? 0 : Math.round(hardTotal * (i - firstHard + 1) / (levelCount - firstHard));
+    const hardCum = i => i < firstHard ? 0
+        : Math.round(hardTotal * Math.pow((i - firstHard + 1) / (levelCount - firstHard), HARD_CURVE));
     const hardSlots = i => hardCum(i) - (i > 0 ? hardCum(i - 1) : 0);
 
     // 3) Équilibre des thèmes : chaque thème doit apparaître régulièrement tout au long du parcours
@@ -208,7 +209,7 @@ function finish() {
 
     LEVEL_LOTS.forEach(lot => {
         const lotQuestions = QUESTIONS.filter(q => q.id >= lot.from && q.id <= lot.to);
-        if (lotQuestions.length) assignLot(lotQuestions, lot.first, lot.last, lot.hardFrom);
+        if (lotQuestions.length) assignLot(lotQuestions, lot.first, lot.last, lot.hardFrom, lot.hardCurve);
     });
     finish();
 })();

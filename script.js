@@ -2482,8 +2482,7 @@ function startSession(requestedMode, level = 0) {
 /* ---------- Niveaux Paires ---------- */
 
 /** Difficulté visée par un niveau Paires : environ 1,1 au niveau 3, 4,4 au niveau 113. */
-// Plafond au niveau 150 (difficulté d'origine) : au-delà, pas assez de paires / frises encore plus dures
-const pairTarget = level => 1 + 3.5 * Math.min(level, 150) / 150;
+const pairTarget = level => 1 + 3.5 * level / MAX_LEVEL;   // 4,5 au dernier niveau
 
 /** Choisit 3 familles (de thèmes différents si possible) ayant assez de paires du bon niveau. */
 function buildPairGrids(level) {

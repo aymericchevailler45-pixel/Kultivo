@@ -251,10 +251,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `profiles` / `scores` : pour effacer, supprimer le compte (cascade).
 
 ## levels.js (important)
-- DEPUIS LE 2026-10-19 : 170 niveaux, répartis PAR LOTS (`LEVEL_LOTS`) pour ne jamais changer les niveaux déjà publiés :
-  lot 1 = ids < 3000 → niveaux 1-150 (répartition d'origine, vérifiée identique) ; lot 2 = ids 3000-3999 → niveaux 151-170
-  (98 questions, d 4 à 4,9, 7 par niveau, `hardFrom` 0). Nouveau lot = nouvelle ligne dans `LEVEL_LOTS` + nouveaux ids,
-  et des noms en plus dans `NAMES`. Paires / frises : difficulté plafonnée à celle du niveau 150 (`pairTarget`).
+- DEPUIS LE 2026-10-20 : 170 niveaux. L'utilisateur va remettre les sauvegardes à zéro → tout le parcours refait d'UN
+  seul lot (`LEVEL_LOTS` : ids 0-3999 → niveaux 1-170) avec une seule courbe : moyenne 1,3 → 4,5, +0,2 environ tous les
+  10 niveaux. Questions très pointues (d ≥ 4,5) progressives (`hardFrom` 0,25, `hardCurve` 2) : 1 de temps en temps
+  vers le niveau 45, puis 1, 2, et 3 par niveau à la fin (avant : 0 jusqu'au 80 puis d'un coup, marche de +0,5).
+  Les 98 questions du lot 2 (ids 3000-3097) ont été renotées (certaines trop bien notées : Shazam, Doom, K2…).
+  RÈGLE POUR LA SUITE : une fois de vrais joueurs, NE PLUS remélanger : nouveau lot = nouvelle ligne dans `LEVEL_LOTS`
+  (nouveaux ids, niveaux ajoutés à la fin), + noms dans `NAMES`. Paires / frises : `pairTarget` jusqu'à 4,5 au dernier niveau.
   Avant d'écrire des questions : `free_subjects.py` (sujets déjà utilisés, parcours + entraînement) puis `check_lot2.py`
   (doublons, mot de la réponse dans la question) dans le scratchpad. Beaucoup de sujets « durs mais connus » sont DÉJÀ pris.
   Supabase : limite de la case niveau à 170 dans `supabase/table-joueurs.sql` (2 lignes à relancer).
