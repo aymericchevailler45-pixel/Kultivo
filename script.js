@@ -31,7 +31,10 @@ let cloudBusy = false;
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxZnFkaHN2cGtjemFpZmdvc2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNjE2NTUsImV4cCI6MjEwNzczNzY1NX0.EGJvwXjBlSQKP2N-xTNdebuSD33IevVYe6cE7NpOZMk';
 
 // XP gagnés
-const XP_FIRST_TRY = 4;          // avant: 10 | bonne réponse du premier coup
+const XP_FIRST_TRY = 4;          // avant: 10 | bonne réponse du premier coup (question facile, d < 2,5)
+/* Plus d'XP pour les questions difficiles (2026-10-23) : les niveaux avancés font plus d'erreurs ; sans ça, un joueur
+   loin dans le parcours gagnait moins d'XP qu'un débutant → injuste pour la ligue des amis de la semaine. */
+const xpFirstTry = q => (q.d > 3.5 ? 6 : q.d >= 2.5 ? 5 : XP_FIRST_TRY);
 const XP_RETRY = 1;              // avant: 5  | bonne réponse après une erreur
 const XP_FLAWLESS = 10;          // avant: 20 | bonus : leçon sans aucune erreur
 const XP_CHALLENGE_WIN = 20;     // avant: 50 | bonus : niveau défi réussi
@@ -3601,7 +3604,7 @@ function commit(ok) {
         // Seule une réussite du premier coup, sans indice, réduit le compteur d'erreurs
         if (firstTry && !assisted) recordResult(id, true);
         const clean = firstTry && !forced && !assisted;
-        addXp(mode === 'training' || mode === 'event' ? (clean ? XP_TRAINING : XP_RETRY) : (clean ? XP_FIRST_TRY : XP_RETRY));
+        addXp(mode === 'training' || mode === 'event' ? (clean ? XP_TRAINING : XP_RETRY) : (clean ? xpFirstTry(item.q) : XP_RETRY));
         missionEvent('correct');
         missionEvent('theme', 1, item.q.theme);
         state.done++;

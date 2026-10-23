@@ -89,6 +89,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Balayage gauche/droite dans le calendrier = mois suivant/précédent.
   Jours joués dans `activeDays` (rempli par `addXp` / `bumpStreak`), gels utilisés dans `frozenDays`.
   Historique d'avant le calendrier reconstitué une fois (`backfillActiveDays` : série, objectifs, défis du jour).
+- XP par bonne réponse du 1er coup selon la difficulté (2026-10-23, `xpFirstTry`) : d < 2,5 → 4, 2,5-3,5 → 5, > 3,5 → 6
+  (sinon les joueurs avancés gagnaient moins d'XP → ligue de la semaine injuste ; estimé : ~3,6 XP par question à tous les niveaux).
+  Défi du jour, sprint, duel : inchangés (mêmes questions pour tous).
 - XP : sert aux titres, aux pièces (1 🪙 / 5 XP depuis le 2026-10-19), à l'objectif du jour et aux badges ; servira au classement (Supabase).
 - Navigation : en haut sur ordinateur, barre fixe EN BAS avec icônes sur téléphone/tablette (≤ 900 px).
   Le flou de la barre du haut est retiré sur mobile (sinon la barre du bas ne se colle pas à l'écran).
