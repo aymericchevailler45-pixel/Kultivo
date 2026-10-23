@@ -4328,23 +4328,15 @@ function openDuelReview(row) {
     body.replaceChildren();
     const h = el('h2', 'review-title');
     const [s1, s2] = mine ? [row.c_score, row.o_score] : [row.o_score, row.c_score];
-    h.textContent = `⚔️ ${pseudo} · ${s1} – ${s2 ?? '?'}`;
+    h.textContent = `⚔️ Toi ${s1}/${DUEL_SIZE} · ${pseudo} ${s2 ?? '?'}/${DUEL_SIZE}`;
     const note = el('p', 'muted review-note');
     note.textContent = hisGrid.length ? 'Tes réponses et celles de ton ami, question par question.' : `${pseudo} n’a pas encore joué.`;
     body.append(h, note);
-    if (f) {
-        const actions = el('div', 'duel-sheet-actions');
-        const again = el('button', 'btn btn-violet btn-small');
-        again.type = 'button';
-        again.textContent = '⚔️ Revanche';
-        again.addEventListener('click', () => challengeFriend(f));
-        const prof = el('button', 'btn btn-ghost btn-small');
-        prof.type = 'button';
-        prof.textContent = '👤 Son profil';
-        prof.addEventListener('click', () => openFriendProfile(f));
-        actions.append(again, prof);
-        body.append(actions);
-    }
+    const back = el('button', 'duel-back');
+    back.type = 'button';
+    back.textContent = `← Tous les duels contre ${pseudo}`;
+    back.addEventListener('click', () => openDuelHistory(mine ? row.opponent : row.challenger));
+    body.prepend(back);
     const list = el('ol', 'review-list');
     duelQuestions(row.seed).forEach((q, i) => {
         const ok = myGrid[i] === '🟩';
@@ -4375,6 +4367,61 @@ function openDuelReview(row) {
         list.append(li);
     });
     body.append(list);
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
+}
+
+/** Duels terminés contre un ami (du plus récent au plus ancien), avec le résultat vu de mon côté. */
+function duelsWith(otherId) {
+    const me = cloudUser.id;
+    return duelsList().filter(r => r.o_score !== null && (r.challenger === otherId || r.opponent === otherId)).map(r => {
+        const mine = r.challenger === me;
+        const [s1, t1, s2, t2] = mine ? [r.c_score, r.c_seconds, r.o_score, r.o_seconds] : [r.o_score, r.o_seconds, r.c_score, r.c_seconds];
+        return { row: r, s1, s2, res: duelCompare(s1, t1, s2, t2) };
+    });
+}
+const duelTally = games => ({ w: games.filter(g => g.res > 0).length, l: games.filter(g => g.res < 0).length, t: games.filter(g => g.res === 0).length });
+const tallyText = ({ w, l, t }) => `${w} V · ${l} D${t ? ` · ${t} N` : ''}`;
+const duelLine = g => `${g.res > 0 ? '🏆' : g.res < 0 ? '😅' : '🤝'} ${g.s1}/${DUEL_SIZE} contre ${g.s2}/${DUEL_SIZE}`;
+
+/** Historique avec un ami : bilan, revanche, et chaque duel (tap = revoir ses questions). */
+function openDuelHistory(otherId) {
+    const f = duelFriend(otherId);
+    const pseudo = f?.pseudo || 'Ton ami';
+    const games = duelsWith(otherId);
+    const tally = duelTally(games);
+    const body = $('friendBody');
+    body.replaceChildren();
+    const head = el('div', 'friend-head');
+    const h = el('h2');
+    h.textContent = `⚔️ Toi contre ${pseudo}`;
+    const sub = el('p', 'friend-title');
+    sub.textContent = `${plural(tally.w, 'victoire', 'victoires')} · ${plural(tally.l, 'défaite', 'défaites')}${tally.t ? ` · ${plural(tally.t, 'égalité', 'égalités')}` : ''}`;
+    head.append(avatarEl(pseudo, f?.look, 'is-big'), h, sub);
+    body.append(head);
+    if (f) {
+        const again = el('button', 'btn btn-violet btn-full');
+        again.type = 'button';
+        again.textContent = '⚔️ Revanche';
+        again.addEventListener('click', () => challengeFriend(f));
+        body.append(again);
+    }
+    const ul = el('ul', 'league-people duel-history');
+    games.forEach(g => {
+        const li = el('li', 'friend-row duel-row');
+        const name = el('span', 'friend-name');
+        const b = el('b');
+        b.textContent = duelLine(g);
+        const i = el('span', 'friend-info');
+        i.textContent = new Date(g.row.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) + ' · revoir les questions';
+        name.append(b, i);
+        const go = el('span', 'friend-go');
+        go.textContent = '›';
+        li.append(name, go);
+        li.addEventListener('click', () => openDuelReview(g.row));
+        ul.append(li);
+    });
+    body.append(ul);
     $('friendModal').hidden = false;
     $('friendModal').querySelector('.modal-content').scrollTop = 0;
 }
@@ -4413,15 +4460,6 @@ function renderDuelsCard(grid) {
         b.addEventListener('click', e => { e.stopPropagation(); playDuel(r); });
         return b;
     };
-    const scorePill = (s1, s2, res) => {
-        const wrap = el('span', 'duel-right');
-        const pill = el('span', `duel-score ${res > 0 ? 'is-win' : res < 0 ? 'is-loss' : 'is-tie'}`);
-        pill.textContent = `${s1}–${s2}`;
-        const go = el('span', 'friend-go');
-        go.textContent = '›';
-        wrap.append(pill, go);
-        return wrap;
-    };
     // À jouer, puis en attente, puis les 5 derniers résultats
     list.filter(r => r.opponent === me && r.o_score === null && !duelExpired(r)).forEach(r => {
         add(r.challenger, `⚔️ te défie · ${duelHoursLeft(r)} h`, 'is-todo', { onRow: () => playDuel(r), right: playBtn(r) });
@@ -4429,17 +4467,20 @@ function renderDuelsCard(grid) {
     list.filter(r => r.challenger === me && r.o_score === null && !duelExpired(r)).forEach(r => {
         add(r.opponent, `⏳ doit jouer · toi ${r.c_score}/${DUEL_SIZE}`, 'is-wait');
     });
-    list.filter(r => r.o_score !== null || duelExpired(r)).slice(0, 5).forEach(r => {
-        const mine = r.challenger === me;
-        const otherId = mine ? r.opponent : r.challenger;
-        if (r.o_score === null) {
-            add(otherId, mine ? '⌛ n’a pas joué à temps' : '⌛ duel expiré', 'is-old');
-            return;
-        }
-        const [s1, t1, s2, t2] = mine ? [r.c_score, r.c_seconds, r.o_score, r.o_seconds] : [r.o_score, r.o_seconds, r.c_score, r.c_seconds];
-        const res = duelCompare(s1, t1, s2, t2);
-        add(otherId, res > 0 ? '🏆 Victoire' : res < 0 ? '😅 Défaite' : '🤝 Égalité', 'is-old',
-            { onRow: () => openDuelReview(r), right: scorePill(s1, s2, res) });
+    // Duels terminés : une ligne par ami, avec le bilan (pastille) et le dernier duel en clair
+    const others = [...new Set(list.filter(r => r.o_score !== null).map(r => (r.challenger === me ? r.opponent : r.challenger)))];
+    others.slice(0, 6).forEach(otherId => {
+        const games = duelsWith(otherId);
+        const tally = duelTally(games);
+        const pill = el('span', 'duel-right');
+        const t = el('span', `duel-score ${tally.w > tally.l ? 'is-win' : tally.w < tally.l ? 'is-loss' : 'is-tie'}`);
+        t.textContent = tallyText(tally);
+        t.title = 'Bilan de vos duels';
+        const go = el('span', 'friend-go');
+        go.textContent = '›';
+        pill.append(t, go);
+        const g = games[0];
+        add(otherId, `Dernier ${g.res > 0 ? '🏆' : g.res < 0 ? '😅' : '🤝'} ${g.s1}/${DUEL_SIZE} – ${g.s2}/${DUEL_SIZE}`, 'is-old', { onRow: () => openDuelHistory(otherId), right: pill });
     });
     if (!ul.children.length) {
         const p = el('p', 'muted');
@@ -5733,7 +5774,7 @@ async function leagueFetch() {
             fresh.friends.filter(f => waiting.has(f.id)).forEach(f => showToast(`✓ ${f.pseudo} a accepté ta demande !`));
         }
         // Duels (table de supabase/duels.sql ; si elle n'existe pas encore : liste vide, sans erreur)
-        const { data: duels, error: duelErr } = await c.from('duels').select('*').order('created_at', { ascending: false }).limit(30);
+        const { data: duels, error: duelErr } = await c.from('duels').select('*').order('created_at', { ascending: false }).limit(100);
         fresh.duels = duelErr ? (before?.duels || []) : (duels || []);
         league = { ...fresh, at: Date.now() };
         handleDuelNews(before);
