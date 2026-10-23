@@ -2968,6 +2968,9 @@ function startSession(requestedMode, level = 0) {
         correct: 0,
         grid: [],
         answers: [],             // défi du jour : réponses tapées (pour les revoir ensuite)
+        statsAnswers: [],        // statistiques anonymes : 1re réponse à chaque question
+        statsSeen: new Set(),
+        statsLevelSent: false,
         hearts: heartsMax,
         heartsMax,
         failedIds: new Set(),
@@ -3547,6 +3550,7 @@ function commit(ok) {
     const item = state.queue.shift();
     const id = item.q.id;
     const mode = state.mode;
+    noteStatsAnswer(id, ok);
 
     // Test de placement : ne touche ni aux statistiques, ni à l'XP
     if (mode === 'placement') {
@@ -3700,6 +3704,7 @@ function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryCl
 
 function endSession(win) {
     stopTimer();
+    queueStats(win ? 'won' : 'lost');
     state.phase = 'over';
     $('cardView').hidden = true;
     $('pairsView').hidden = true;
@@ -4165,6 +4170,57 @@ async function flushReports() {
     }
 }
 
+/* ---------- Statistiques anonymes (2026-10-23, supabase/statistiques.sql) ---------- */
+// Pour régler le jeu : quelles questions sont ratées par presque tous, quels niveaux sont abandonnés.
+// AUCUN compte ni pseudo envoyé : seulement « question n° X, réussie ou non au 1er essai » et « niveau N : réussi /
+// raté / abandonné ». File d'attente sur l'appareil (hors sauvegarde), envoyée dès qu'il y a internet.
+const STATS_KEY = 'kultivo_stats';
+const STATS_MODES = ['level', 'challenge', 'pairs', 'order', 'review', 'training', 'event', 'daily', 'sprint', 'duel'];
+const STATS_LEVEL_MODES = ['level', 'challenge', 'pairs', 'order'];
+let statsBusy = false;
+
+function readStatsQueue() {
+    try { return JSON.parse(localStorage.getItem(STATS_KEY) || '[]'); } catch (err) { return []; }
+}
+function writeStatsQueue(list) {
+    try { localStorage.setItem(STATS_KEY, JSON.stringify(list.slice(-50))); } catch (err) { /* tant pis */ }
+}
+
+/** 1re réponse à chaque question de la partie (les essais suivants ne comptent pas). */
+function noteStatsAnswer(id, ok) {
+    if (!STATS_MODES.includes(state.mode) || state.statsSeen.has(id)) return;
+    state.statsSeen.add(id);
+    state.statsAnswers.push({ q: id, ok: !!ok });
+}
+
+/** Fin (ou abandon) d'une partie : on met de côté ce qui n'a pas encore été envoyé. */
+function queueStats(outcome) {
+    if (!STATS_MODES.includes(state.mode)) return;
+    const answers = state.statsAnswers.splice(0, 60);
+    const level = STATS_LEVEL_MODES.includes(state.mode) && !state.statsLevelSent ? state.level : null;
+    if (level) state.statsLevelSent = true;   // un cœur de secours puis une victoire : le niveau n'est compté qu'une fois
+    if (!answers.length && !level) return;
+    writeStatsQueue([...readStatsQueue(), { a: answers, l: level, o: level ? outcome : null }]);
+    flushStats();
+}
+
+async function flushStats() {
+    const c = cloudClient();
+    if (statsBusy || !c || !navigator.onLine) return;
+    statsBusy = true;
+    try {
+        let list = readStatsQueue();
+        while (list.length) {
+            const x = list[0];
+            const { error } = await c.rpc('record_stats', { p_answers: x.a, p_level: x.l, p_outcome: x.o });
+            if (error) break;   // fonction pas encore créée (SQL à lancer) ou réseau : on réessaiera
+            list = list.slice(1);
+            writeStatsQueue(list);
+        }
+    } catch (err) { /* hors ligne */ }
+    statsBusy = false;
+}
+
 /* ---------- Sauvegarde en ligne (Supabase, table « saves ») ---------- */
 
 function cloudMeta() {
@@ -4290,6 +4346,8 @@ async function cloudInit() {
     cloudSync(false).finally(claimGifts);   // cadeaux après la synchronisation (sinon elle pourrait les écraser)
     if (cloudUser) leagueLoad();   // demandes d'amis (pastille) et coffre du podium
     window.addEventListener('online', () => cloudSync(false));
+    window.addEventListener('online', flushStats);
+    setTimeout(flushStats, 4000);
     // L'appli passe en arrière-plan : on envoie tout de suite ce qui n'est pas encore en ligne
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden' && cloudMeta().dirty) cloudPush();
@@ -6638,6 +6696,7 @@ function bindEvents() {
 
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
+        if (state.phase !== 'over') queueStats('quit');
         closeQuitModal();
         returnToMap();
     });

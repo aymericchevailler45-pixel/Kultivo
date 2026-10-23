@@ -363,8 +363,12 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    (visible seulement pendant l'événement ou une fois gagné). Tout le jeu teinté (`body.event-halloween main`), liseré orange.
    Bulles 1re visite : onglet de l'événement (`showEventTip`, drapeau `ev.tip`) puis sa carte (`showEventPageTip`). Démo hors dates : lien `?demo=halloween`.
    Autres événements proposés : Noël, Saint-Valentin, Coupe du monde / JO, Eurovision, fête de la musique, rentrée. 3. Rappels de série : PAS en appli web, à faire avec Capacitor (vraie appli). 4. Duel entre
-   amis (10 mêmes questions, table Supabase `duels` → GRANT obligatoire, voir règle Supabase). 8. Statistiques anonymes
-   (questions ratées / réussies par tous, niveaux abandonnés) pour régler le parcours.
+   amis (10 mêmes questions, table Supabase `duels` → GRANT obligatoire, voir règle Supabase). 8. Statistiques anonymes — FAIT le 2026-10-23 : `supabase/statistiques.sql` (À LANCER par l'utilisateur) = tables
+   `question_stats` / `level_stats` (RLS sans règle), fonction `record_stats(p_answers, p_level, p_outcome)` (seule voie
+   d'écriture, GRANT execute anon/authenticated), vues lisibles dans Supabase : `questions_les_plus_ratees`,
+   `questions_reussies_par_tous` (≥ 5 vues), `niveaux` (% réussite / abandon). Jeu : `noteStatsAnswer` (1re réponse par
+   question), `queueStats` (fin / abandon ; niveau compté une seule fois), file `kultivo_stats` sur l'appareil, `flushStats`.
+   Aucun compte ni pseudo envoyé. À mentionner dans la politique de confidentialité (Play Store).
 Refusées / pas retenues pour l'instant : partage d'image du score, mode choix multiple, « En savoir plus », points faibles.
 
 ## AVANT DE PUBLIER (Play Store) — gardé en tête le 2026-10-19, rien de fait (l'utilisateur teste d'abord)
