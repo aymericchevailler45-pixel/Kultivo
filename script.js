@@ -422,6 +422,7 @@ function defaultData() {
         coinBonus: 0,                    // pièces encore dues pour les niveaux sautés par le placement
         missions: null,                  // missions de la semaine : { week, progress, claimed, chest }
         events: {},                      // événements : id -> { right (bonnes réponses), won (carte gagnée) }
+        duelsSeen: {},                   // duels dont le résultat a été vu (pièces données une seule fois)
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -430,7 +431,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -1484,7 +1485,7 @@ function updateNavNotifications() {
     else challengesBtn.removeAttribute('data-notif');
 
     // 3. Demandes d'amis reçues (onglet Classement)
-    const requests = cloudUser && league?.userId === cloudUser.id ? league.incoming.length : 0;
+    const requests = cloudUser && league?.userId === cloudUser.id ? league.incoming.length + duelsToPlay().length : 0;
     const leagueBtn = document.querySelector('.nav-btn[data-screen="league"]');
     if (requests > 0) leagueBtn.setAttribute('data-notif', requests);
     else leagueBtn.removeAttribute('data-notif');
@@ -2381,6 +2382,7 @@ function renderProfile() {
         ['🗺️ Niveaux terminés', `${doneCount} / ${MAX_LEVEL}`],
         ['🎯 Jours d’objectif atteint', String(Object.keys(data.goalDays).length)],
         ['🏆 Semaines 1er de la ligue', String(leagueWins())],
+        ['⚔️ Duels gagnés', String(data.totals.duelsWon || 0)],
         ['🎖️ Médailles d’entraînement', trainMedalsText()]
     ];
     const list = $('recordsList');
@@ -2928,6 +2930,9 @@ function startSession(requestedMode, level = 0) {
         items = pickChallengeCards(level).map(q => ({ q, review: false }));
     } else if (mode === 'training') {
         items = pickTrainingCards(state.trainTheme);
+    } else if (mode === 'duel') {
+        if (!state.duel) return;
+        items = duelQuestions(state.duel.seed).map(q => ({ q, review: false }));
     } else if (mode === 'event') {
         const ev = currentEvent();
         if (!ev) return;
@@ -2953,7 +2958,7 @@ function startSession(requestedMode, level = 0) {
     const heartsMax = mode === 'challenge' || orderMode ? CHALLENGE_HEARTS : HEARTS_MAX;
     Object.assign(state, {
         mode, level,
-        returnTo: ['daily', 'sprint', 'training', 'event'].includes(mode) ? 'challenges' : 'map',
+        returnTo: mode === 'duel' ? 'league' : ['daily', 'sprint', 'training', 'event'].includes(mode) ? 'challenges' : 'map',
         queue: pairsMode || orderMode ? [] : items,
         total: pairsMode ? items.reduce((sum, g) => sum + g.pairs.length, 0) : items.length,
         orderRounds: orderMode ? items : [],
@@ -3400,9 +3405,10 @@ function showCard() {
     $('reviewTag').hidden = !item.review;
 
     const tag = $('challengeTag');
-    tag.hidden = !['challenge', 'daily', 'sprint', 'placement', 'event'].includes(state.mode);
+    tag.hidden = !['challenge', 'daily', 'sprint', 'placement', 'event', 'duel'].includes(state.mode);
     const ev = state.mode === 'event' ? EVENTS.find(e => e.id === state.eventId) : null;
     tag.textContent = ev ? `${ev.icon} ${ev.name}`
+                    : state.mode === 'duel' ? `⚔️ Duel · ${state.done + 1}/${state.total}`
                     : state.mode === 'daily' ? `Défi du jour · ${state.done + 1}/${state.total}`
                     : state.mode === 'sprint' ? 'Sprint'
                     : state.mode === 'placement' ? `Placement · étape ${state.placeStep + 1}/${PLACEMENT_STEPS}`
@@ -3445,7 +3451,7 @@ function showCard() {
     $('hintList').replaceChildren();
     $('hintList').hidden = true;
     $('hintPanel').hidden = true;
-    $('hintBtn').hidden = ['daily', 'sprint', 'placement'].includes(state.mode);
+    $('hintBtn').hidden = ['daily', 'sprint', 'placement', 'duel'].includes(state.mode);
 
     const input = $('userInput');
     input.value = '';
@@ -3530,7 +3536,7 @@ function showFeedback(verdict, skipped) {
     cont.classList.toggle('btn-red', !ok);
 
     // Défi du jour et sprint : pas de « J'avais juste », pour que les scores restent comparables
-    const strict = state.mode === 'daily' || state.mode === 'sprint';
+    const strict = state.mode === 'daily' || state.mode === 'sprint' || state.mode === 'duel';
     $('forceBtn').hidden = ok || skipped || strict;
 
     box.classList.add('show');
@@ -3560,7 +3566,7 @@ function commit(ok) {
     }
 
     // Défi du jour et sprint : chaque question n'est posée qu'une fois, sans seconde chance
-    if (mode === 'daily' || mode === 'sprint') {
+    if (mode === 'daily' || mode === 'sprint' || mode === 'duel') {
         recordResult(id, ok);
         if (ok) {
             state.correct++;
@@ -3568,6 +3574,7 @@ function commit(ok) {
             missionEvent('correct');
             missionEvent('theme', 1, item.q.theme);
         }
+        if (mode === 'duel') state.grid.push(ok ? '🟩' : '🟥');
         if (mode === 'daily') {
             state.grid.push(ok ? '🟩' : '🟥');
             state.answers.push(($('userInput').value || '').trim().slice(0, 60));
@@ -3741,6 +3748,9 @@ function endSession(win) {
     } else if (mode === 'event') {
         celebrate = false;
         endEvent();
+    } else if (mode === 'duel') {
+        celebrate = false;
+        endDuel();
     } else if (mode === 'review') {
         state.data.totals.reviews++;
         addXp(XP_REVIEW_WIN);
@@ -4168,6 +4178,183 @@ async function flushReports() {
     } finally {
         flushingReports = false;
     }
+}
+
+/* ---------- Duels entre amis (2026-10-23, supabase/duels.sql) ---------- */
+// Le lanceur joue 10 questions (tirées avec une graine), son score est enregistré ; l'ami a 48 h pour jouer les
+// mêmes. Le plus de bonnes réponses gagne (égalité : le plus rapide). Gagnant : +20 🪙. Gratuit en gouttes.
+
+const DUEL_SIZE = 10;
+const DUEL_COINS = 20;
+const DUEL_HOURS = 48;
+
+/** Les 10 questions d'un duel : les mêmes pour les deux joueurs (difficulté moyenne). */
+function duelQuestions(seed) {
+    const pool = QUESTIONS.filter(q => q.d >= 1.5 && q.d <= 3.5).sort((a, b) => a.id - b.id);
+    return seededShuffle(pool, `duel-${seed}`).slice(0, DUEL_SIZE);
+}
+
+/** > 0 : le premier gagne ; < 0 : le second ; 0 : égalité parfaite. */
+const duelCompare = (s1, t1, s2, t2) => (s1 - s2) || (t2 - t1);
+const duelExpired = row => row.o_score === null && Date.now() - new Date(row.created_at).getTime() > DUEL_HOURS * 3600000;
+const duelHoursLeft = row => Math.max(1, Math.ceil((DUEL_HOURS * 3600000 - (Date.now() - new Date(row.created_at).getTime())) / 3600000));
+const duelFriend = id => league?.friends?.find(f => f.id === id) || null;
+const duelsList = () => (league?.duels || []);
+/** Duels reçus à jouer (pastille de l'onglet Classement). */
+const duelsToPlay = () => cloudUser ? duelsList().filter(r => r.opponent === cloudUser.id && r.o_score === null && !duelExpired(r)) : [];
+
+async function challengeFriend(f) {
+    if (!cloudUser || !navigator.onLine) { showToast('📶 Il faut internet et un compte pour lancer un duel.'); return; }
+    if (duelsList().some(r => r.challenger === cloudUser.id && r.opponent === f.id && r.o_score === null && !duelExpired(r))) {
+        showToast(`⚔️ Un duel attend déjà ${f.pseudo}.`);
+        return;
+    }
+    const ok = await askConfirm({
+        title: `⚔️ Défier ${f.pseudo} ?`,
+        text: `${DUEL_SIZE} questions, un seul essai chacune, sans cœurs ni gouttes. Ensuite, ${f.pseudo} aura ${DUEL_HOURS} h pour jouer les mêmes et faire mieux que toi.`,
+        yes: 'C’est parti'
+    });
+    if (!ok) return;
+    $('friendModal').hidden = true;
+    state.duel = { role: 'challenger', seed: Math.random().toString(36).slice(2, 12), friend: { id: f.id, pseudo: f.pseudo } };
+    startSession('duel');
+}
+
+async function playDuel(row) {
+    const f = duelFriend(row.challenger);
+    const pseudo = f?.pseudo || 'Ton ami';
+    if (!navigator.onLine) { showToast('📶 Il faut internet pour jouer un duel.'); return; }
+    const ok = await askConfirm({
+        title: `⚔️ Duel de ${pseudo}`,
+        text: `${DUEL_SIZE} questions, un seul essai chacune. Son score reste caché jusqu’à la fin : à toi de faire mieux !`,
+        yes: 'Jouer'
+    });
+    if (!ok) return;
+    state.duel = { role: 'opponent', seed: row.seed, row, friend: { id: row.challenger, pseudo } };
+    startSession('duel');
+}
+
+/** Fin d'un duel : on enregistre le score (lanceur) ou on répond et on compare (ami). */
+async function endDuel() {
+    const du = state.duel;
+    const score = state.correct;
+    const seconds = Math.round((Date.now() - state.startedAt) / 1000);
+    const grid = state.grid.join('');
+    setEnd({
+        emoji: '⚔️',
+        title: 'Duel terminé',
+        text: `${score}/${DUEL_SIZE} · envoi…`,
+        stats: [{ icon: '✅', label: 'Score', value: score, format: v => `${v}/${DUEL_SIZE}`, tone: 'violet' }, statXp(), statTime()],
+        extra: rewardSummary(),
+        primary: 'Voir mes duels',
+        primaryClass: 'btn-violet',
+        onPrimary: returnToMap
+    });
+    const c = cloudClient();
+    try {
+        if (du.role === 'challenger') {
+            const { error } = await c.from('duels').insert({ challenger: cloudUser.id, opponent: du.friend.id, seed: du.seed,
+                c_score: score, c_seconds: seconds, c_grid: grid });
+            $('endText').textContent = error
+                ? '😕 Le duel n’a pas pu être envoyé. Réessaie plus tard.'
+                : `${grid}\nDuel envoyé à ${du.friend.pseudo} ! Il a ${DUEL_HOURS} h pour battre ton ${score}/${DUEL_SIZE}.`;
+        } else {
+            const row = du.row;
+            const { error } = await c.from('duels').update({ o_score: score, o_seconds: seconds, o_grid: grid }).eq('id', row.id);
+            if (error) {
+                $('endText').textContent = '😕 Ton score n’a pas pu être envoyé (duel expiré ?).';
+            } else {
+                const res = duelCompare(score, seconds, row.c_score, row.c_seconds);
+                const d = state.data;
+                d.duelsSeen[row.id] = 1;
+                if (res > 0) { d.coins += DUEL_COINS; d.totals.duelsWon = (d.totals.duelsWon || 0) + 1; launchConfetti(); }
+                saveData();
+                renderHeader();
+                $('endEmoji').textContent = res > 0 ? '🏆' : res < 0 ? '😅' : '🤝';
+                $('endTitle').textContent = res > 0 ? 'Duel gagné !' : res < 0 ? 'Duel perdu' : 'Égalité parfaite !';
+                $('endText').textContent = `Toi : ${score}/${DUEL_SIZE} en ${fmtTime(seconds)} · ${du.friend.pseudo} : ${row.c_score}/${DUEL_SIZE} en ${fmtTime(row.c_seconds)}`
+                    + (res > 0 ? `\n+${DUEL_COINS} 🪙` : '');
+            }
+        }
+    } catch (err) {
+        $('endText').textContent = '😕 Pas de connexion : le duel n’a pas pu être envoyé.';
+    }
+    lastLeagueLoad = 0;
+    leagueFetch();
+}
+
+/** Après chaque mise à jour du classement : duel reçu, résultat d'un duel lancé (pièces du gagnant). */
+function handleDuelNews(before) {
+    if (!cloudUser) return;
+    const me = cloudUser.id;
+    const d = state.data;
+    const known = new Set((before?.duels || []).map(r => r.id));
+    for (const r of duelsList()) {
+        if (r.opponent === me && r.o_score === null && !duelExpired(r) && before && !known.has(r.id)) {
+            showToast(`⚔️ ${duelFriend(r.challenger)?.pseudo || 'Un ami'} te défie en duel ! (onglet Classement)`);
+        }
+        if (r.challenger === me && r.o_score !== null && !d.duelsSeen[r.id]) {
+            d.duelsSeen[r.id] = 1;
+            const res = duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds);
+            const pseudo = duelFriend(r.opponent)?.pseudo || 'Ton ami';
+            if (res > 0) { d.coins += DUEL_COINS; d.totals.duelsWon = (d.totals.duelsWon || 0) + 1; renderHeader(); }
+            showToast(res > 0 ? `⚔️ ${pseudo} a joué ton duel : tu gagnes ${r.c_score}–${r.o_score} ! +${DUEL_COINS} 🪙`
+                : res < 0 ? `⚔️ ${pseudo} a gagné votre duel ${r.o_score}–${r.c_score}. Revanche ?`
+                : `⚔️ Égalité parfaite avec ${pseudo} !`);
+            saveData();
+        }
+    }
+}
+
+/** Carte « ⚔️ Duels » de l'onglet Classement. */
+function renderDuelsCard(grid) {
+    const me = cloudUser.id;
+    const box = el('article', 'card league-duels');
+    const h = el('h2');
+    h.textContent = '⚔️ Duels';
+    box.append(h);
+    const list = duelsList();
+    const rows = [];
+    const add = (text, btnText, onClick, cls = '') => {
+        const row = el('div', `duel-row ${cls}`);
+        const t = el('span', 'duel-text');
+        t.textContent = text;
+        row.append(t);
+        if (btnText) {
+            const b = el('button', `btn btn-small ${cls === 'is-todo' ? 'btn-violet' : 'btn-ghost'}`);
+            b.type = 'button';
+            b.textContent = btnText;
+            b.addEventListener('click', onClick);
+            row.append(b);
+        }
+        rows.push(row);
+    };
+    // À jouer, puis en attente, puis les 5 derniers résultats
+    list.filter(r => r.opponent === me && r.o_score === null && !duelExpired(r)).forEach(r => {
+        add(`${duelFriend(r.challenger)?.pseudo || '?'} te défie · encore ${duelHoursLeft(r)} h`, 'Jouer', () => playDuel(r), 'is-todo');
+    });
+    list.filter(r => r.challenger === me && r.o_score === null && !duelExpired(r)).forEach(r => {
+        add(`En attente de ${duelFriend(r.opponent)?.pseudo || '?'} · ton score : ${r.c_score}/${DUEL_SIZE}`, null, null, 'is-wait');
+    });
+    list.filter(r => r.o_score !== null || duelExpired(r)).slice(0, 5).forEach(r => {
+        const mine = r.challenger === me;
+        const otherId = mine ? r.opponent : r.challenger;
+        const f = duelFriend(otherId);
+        const pseudo = f?.pseudo || '?';
+        if (r.o_score === null) { add(`⌛ ${mine ? `${pseudo} n’a pas joué à temps` : `Duel de ${pseudo} expiré`}`, null, null, 'is-old'); return; }
+        const [s1, t1, s2, t2] = mine ? [r.c_score, r.c_seconds, r.o_score, r.o_seconds] : [r.o_score, r.o_seconds, r.c_score, r.c_seconds];
+        const res = duelCompare(s1, t1, s2, t2);
+        add(`${res > 0 ? '🏆 Victoire' : res < 0 ? '😅 Défaite' : '🤝 Égalité'} contre ${pseudo} · ${s1}–${s2}`,
+            f ? 'Revanche' : null, () => challengeFriend(f), 'is-old');
+    });
+    if (!rows.length) {
+        const p = el('p', 'muted');
+        p.textContent = league.friends.length
+            ? 'Défie un ami : touche-le dans la liste ci-dessous, puis « ⚔️ Défier en duel ».'
+            : 'Ajoute des amis pour les défier en duel !';
+        box.append(p);
+    } else box.append(...rows);
+    grid.append(box);
 }
 
 /* ---------- Statistiques anonymes (2026-10-23, supabase/statistiques.sql) ---------- */
@@ -5166,6 +5353,13 @@ function openFriendProfile(f) {
     sub.textContent = s ? `🎖️ ${s.title} · ${s.xp} XP` : 'Profil pas encore disponible';
     head.append(avatarEl(f.pseudo, f.look, 'is-big'), name, sub);
     body.append(head);
+    if (cloudUser && league?.pseudo && league.friends.some(x => x.id === f.id)) {
+        const duel = el('button', 'btn btn-violet btn-full friend-duel');
+        duel.type = 'button';
+        duel.textContent = `⚔️ Défier ${f.pseudo} en duel`;
+        duel.addEventListener('click', () => challengeFriend(f));
+        body.append(duel);
+    }
 
     if (!s) {
         const p = el('p', 'muted');
@@ -5444,7 +5638,11 @@ async function leagueFetch() {
             const waiting = had(before.outgoing);
             fresh.friends.filter(f => waiting.has(f.id)).forEach(f => showToast(`✓ ${f.pseudo} a accepté ta demande !`));
         }
+        // Duels (table de supabase/duels.sql ; si elle n'existe pas encore : liste vide, sans erreur)
+        const { data: duels, error: duelErr } = await c.from('duels').select('*').order('created_at', { ascending: false }).limit(30);
+        fresh.duels = duelErr ? (before?.duels || []) : (duels || []);
         league = { ...fresh, at: Date.now() };
+        handleDuelNews(before);
         saveLeagueCache();
         if (league.pseudo && Date.now() - lastScorePush > 120000) leaguePushScore();
     } catch (err) {
@@ -5781,6 +5979,8 @@ function renderLeague() {
         : `Tu es ${myIndex + 1}e · encore ${rows[myIndex - 1].xp - rows[myIndex].xp + 1} XP pour dépasser ${rows[myIndex - 1].pseudo} !`;
     para(rank, tip, 'league-tip');
     para(rank, '🎁 Lundi : un coffre si tu bats au moins un ami.', 'muted league-sub');
+
+    renderDuelsCard(grid);
 
     // 4) Amis : demandes reçues, ajout par pseudo, invitation, liste
     const friends = card('league-friends', '👥 Amis');

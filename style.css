@@ -2753,3 +2753,13 @@ body.event-halloween .decor-badge { filter: drop-shadow(0 4px 10px rgba(255, 122
 body.event-halloween .topbar { box-shadow: inset 0 -3px 0 #ff7a00; }
 body.event-halloween .nav-btn.is-active { box-shadow: inset 0 -3px 0 #ff7a00; }
 body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); }
+
+/* Duels entre amis */
+.league-duels h2 { margin-bottom: 6px; }
+.duel-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.duel-row:first-of-type { border-top: 0; }
+.duel-text { font-weight: 700; }
+.duel-row.is-todo .duel-text { color: var(--violet-ink); font-weight: 900; }
+.duel-row.is-wait .duel-text, .duel-row.is-old .duel-text { color: var(--muted); }
+.duel-row .btn { flex: none; }
+.friend-duel { margin: 4px 0 14px; }
