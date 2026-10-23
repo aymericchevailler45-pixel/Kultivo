@@ -369,7 +369,8 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    bouton « ⚔️ Défier » dans le profil d'un ami (`challengeFriend`), carte « ⚔️ Duels » dans Classement (lignes comme la
    liste d'amis : avatar + pseudo cliquables vers le profil, « 📋 Revoir » les questions = `openDuelReview`, réponses tapées
    gardées dans `duelAnswers`)
-   (`renderDuelsCard` : à jouer, en attente, 5 derniers résultats + Revanche), duels chargés avec le classement
+   (`renderDuelsCard` : UNE ligne par duel — avatar, pseudo, état, pastille de score verte/rouge, › ; duel terminé : tap =
+   détail avec Revanche et Son profil ; duel reçu : petit bouton Jouer. 2 lignes de boutons = refusé, trop de place), duels chargés avec le classement
    (`leagueFetch` → `league.duels`), `handleDuelNews` (messages, +20 🪙 au gagnant une seule fois via `duelsSeen`),
    pastille Classement = demandes d'amis + duels à jouer, record « ⚔️ Duels gagnés » (`totals.duelsWon`).
    Limite connue : un tricheur technique pourrait lire le score du lanceur avant de jouer (caché seulement dans le jeu). 8. Statistiques anonymes — FAIT le 2026-10-23 : `supabase/statistiques.sql` (À LANCER par l'utilisateur) = tables

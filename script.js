@@ -4328,10 +4328,23 @@ function openDuelReview(row) {
     body.replaceChildren();
     const h = el('h2', 'review-title');
     const [s1, s2] = mine ? [row.c_score, row.o_score] : [row.o_score, row.c_score];
-    h.textContent = `⚔️ Duel contre ${pseudo} · ${s1} – ${s2 ?? '?'}`;
+    h.textContent = `⚔️ ${pseudo} · ${s1} – ${s2 ?? '?'}`;
     const note = el('p', 'muted review-note');
     note.textContent = hisGrid.length ? 'Tes réponses et celles de ton ami, question par question.' : `${pseudo} n’a pas encore joué.`;
     body.append(h, note);
+    if (f) {
+        const actions = el('div', 'duel-sheet-actions');
+        const again = el('button', 'btn btn-violet btn-small');
+        again.type = 'button';
+        again.textContent = '⚔️ Revanche';
+        again.addEventListener('click', () => challengeFriend(f));
+        const prof = el('button', 'btn btn-ghost btn-small');
+        prof.type = 'button';
+        prof.textContent = '👤 Son profil';
+        prof.addEventListener('click', () => openFriendProfile(f));
+        actions.append(again, prof);
+        body.append(actions);
+    }
     const list = el('ol', 'review-list');
     duelQuestions(row.seed).forEach((q, i) => {
         const ok = myGrid[i] === '🟩';
@@ -4366,7 +4379,8 @@ function openDuelReview(row) {
     $('friendModal').querySelector('.modal-content').scrollTop = 0;
 }
 
-/** Carte « ⚔️ Duels » de l'onglet Classement : une ligne par duel, avec l'ami (tap = son profil). */
+/** Carte « ⚔️ Duels » de l'onglet Classement : une ligne compacte par duel (avatar, pseudo, état, score).
+    Duel terminé : tap = le détail (questions, revanche, profil). Duel reçu : bouton « Jouer ». */
 function renderDuelsCard(grid) {
     const me = cloudUser.id;
     const box = el('article', 'card league-duels');
@@ -4375,11 +4389,10 @@ function renderDuelsCard(grid) {
     box.append(h);
     const list = duelsList();
     const ul = el('ul', 'league-people duel-list');
-    const add = (otherId, info, cls, buttons) => {
+    const add = (otherId, info, cls, { onRow = null, right = null } = {}) => {
         const f = duelFriend(otherId);
-        const li = el('li', `friend-row duel-row ${cls}`);
         const pseudo = f?.pseudo || '?';
-        if (f) li.addEventListener('click', () => openFriendProfile(f));
+        const li = el('li', `friend-row duel-row ${cls}`);
         const name = el('span', 'friend-name');
         const b = el('b');
         b.textContent = pseudo;
@@ -4387,39 +4400,46 @@ function renderDuelsCard(grid) {
         i.textContent = info;
         name.append(b, i);
         li.append(avatarEl(pseudo, f?.look, 'is-small'), name);
-        if (buttons.length) {   // boutons groupés : ils passent à la ligne s'il n'y a pas la place (téléphone)
-            const actions = el('div', 'duel-actions');
-            buttons.forEach(([text, btnCls, onClick]) => {
-                const btn = el('button', `btn btn-small ${btnCls}`);
-                btn.type = 'button';
-                btn.textContent = text;
-                btn.addEventListener('click', e => { e.stopPropagation(); onClick(); });
-                actions.append(btn);
-            });
-            li.append(actions);
-        }
+        if (right) li.append(right);
+        const tap = onRow || (f ? () => openFriendProfile(f) : null);
+        if (tap) li.addEventListener('click', tap);
+        else li.classList.add('is-static');
         ul.append(li);
+    };
+    const playBtn = r => {
+        const b = el('button', 'btn btn-violet btn-small duel-play');
+        b.type = 'button';
+        b.textContent = 'Jouer';
+        b.addEventListener('click', e => { e.stopPropagation(); playDuel(r); });
+        return b;
+    };
+    const scorePill = (s1, s2, res) => {
+        const wrap = el('span', 'duel-right');
+        const pill = el('span', `duel-score ${res > 0 ? 'is-win' : res < 0 ? 'is-loss' : 'is-tie'}`);
+        pill.textContent = `${s1}–${s2}`;
+        const go = el('span', 'friend-go');
+        go.textContent = '›';
+        wrap.append(pill, go);
+        return wrap;
     };
     // À jouer, puis en attente, puis les 5 derniers résultats
     list.filter(r => r.opponent === me && r.o_score === null && !duelExpired(r)).forEach(r => {
-        add(r.challenger, `⚔️ te défie · encore ${duelHoursLeft(r)} h`, 'is-todo', [['Jouer', 'btn-violet', () => playDuel(r)]]);
+        add(r.challenger, `⚔️ te défie · ${duelHoursLeft(r)} h`, 'is-todo', { onRow: () => playDuel(r), right: playBtn(r) });
     });
     list.filter(r => r.challenger === me && r.o_score === null && !duelExpired(r)).forEach(r => {
-        add(r.opponent, `⏳ doit jouer · ton score : ${r.c_score}/${DUEL_SIZE}`, 'is-wait', []);
+        add(r.opponent, `⏳ doit jouer · toi ${r.c_score}/${DUEL_SIZE}`, 'is-wait');
     });
     list.filter(r => r.o_score !== null || duelExpired(r)).slice(0, 5).forEach(r => {
         const mine = r.challenger === me;
         const otherId = mine ? r.opponent : r.challenger;
-        const f = duelFriend(otherId);
         if (r.o_score === null) {
-            add(otherId, mine ? '⌛ n’a pas joué à temps' : '⌛ duel expiré', 'is-old', f ? [['Revanche', 'btn-ghost', () => challengeFriend(f)]] : []);
+            add(otherId, mine ? '⌛ n’a pas joué à temps' : '⌛ duel expiré', 'is-old');
             return;
         }
         const [s1, t1, s2, t2] = mine ? [r.c_score, r.c_seconds, r.o_score, r.o_seconds] : [r.o_score, r.o_seconds, r.c_score, r.c_seconds];
         const res = duelCompare(s1, t1, s2, t2);
-        const buttons = [['📋 Revoir', 'btn-ghost duel-review', () => openDuelReview(r)]];
-        if (f) buttons.push(['Revanche', 'btn-ghost', () => challengeFriend(f)]);
-        add(otherId, `${res > 0 ? '🏆 Victoire' : res < 0 ? '😅 Défaite' : '🤝 Égalité'} · ${s1}–${s2}`, 'is-old', buttons);
+        add(otherId, res > 0 ? '🏆 Victoire' : res < 0 ? '😅 Défaite' : '🤝 Égalité', 'is-old',
+            { onRow: () => openDuelReview(r), right: scorePill(s1, s2, res) });
     });
     if (!ul.children.length) {
         const p = el('p', 'muted');

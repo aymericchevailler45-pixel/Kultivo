@@ -2762,10 +2762,15 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 /* Duels entre amis */
 .league-duels h2 { margin-bottom: 6px; }
 .duel-list { list-style: none; margin: 0; padding: 0; }
-.league-people li.duel-row { flex-wrap: wrap; }
-.duel-row .friend-name { min-width: 9rem; }   /* le pseudo et le résultat restent lisibles */
-.duel-actions { display: flex; gap: 6px; margin-left: auto; }
-.duel-actions .btn { flex: none; padding: 8px 12px; }
+/* Une seule ligne par duel : avatar · pseudo et état · score (ou « Jouer ») · › */
+.league-people li.duel-row.is-static { cursor: default; }
+.league-people li.duel-row .duel-play { flex: none; width: auto; padding: 7px 16px; }
+.duel-right { display: flex; align-items: center; gap: 6px; flex: none; }
+.duel-score { padding: 3px 9px; border-radius: 999px; font-weight: 900; font-size: 0.9rem; white-space: nowrap; }
+.duel-score.is-win  { background: var(--green-tint); color: var(--green-deep); }
+.duel-score.is-loss { background: var(--red-tint); color: var(--red-ink); }
+.duel-score.is-tie  { background: var(--line); color: var(--muted); }
+.duel-sheet-actions { display: flex; gap: 8px; justify-content: center; margin: 0 0 12px; }
 .league-people li.duel-row.is-todo { border-color: var(--violet); background: var(--violet-tint); }
 .duel-row.is-todo .friend-info { color: var(--violet-ink); }
 .duel-review { min-width: 44px; }
