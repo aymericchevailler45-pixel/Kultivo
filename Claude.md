@@ -382,6 +382,12 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    « Citrouille 2026 » (rareté `event`, `EVENT_CARDS`, section « 🎉 Événements » de la collection, hors des 150) + badge
    (visible seulement pendant l'événement ou une fois gagné). Tout le jeu teinté (`body.event-halloween main`), liseré orange.
    Bulles 1re visite : onglet de l'événement (`showEventTip`, drapeau `ev.tip`) puis sa carte (`showEventPageTip`). Démo hors dates : lien `?demo=halloween`.
+   AJOUTS du 2026-10-23 (demandés par l'utilisateur) : objectif 45 (65 questions dont 10 rébus, ids 30055-30064) ;
+   dessins d'avatar gagnés en route (`ev.rewards` : 🎃 10, 🦇 20, 🧙 30, 💀 45 ; sauvegarde `avatarExtra` gardée pour toujours,
+   `avatarNew` = pastille sur l'avatar et l'onglet Profil ; annoncés sur l'écran de fin) ; citrouilles cachées (`placePumpkins`,
+   3 par jour, une par onglet tiré au sort, position fixe dans la marge, visibles sans défiler, +5 🪙, `ed.pumpkins`) ;
+   missions de la semaine de l'événement (`ev.missions`, seulement si `weekStart() === ev.start`) ; « 👥 Tes amis »
+   (`renderEventFriends` : 3 meilleurs + moi, « Voir tous (N) », d'après `summary.event`). Paires Halloween : pour plus tard.
    Autres événements proposés : Noël, Saint-Valentin, Coupe du monde / JO, Eurovision, fête de la musique, rentrée. 3. Rappels de série : PAS en appli web, à faire avec Capacitor (vraie appli). 4. Duel entre amis — FAIT le 2026-10-23 : `supabase/duels.sql` (À LANCER) = table `duels` (lanceur, ami, graine,
    scores / temps / grilles), RLS : voir ses duels, défier seulement un ami accepté, l'ami répond une fois en 48 h ;
    déclencheur `duels_guard` (l'ami ne change que ses cases). Jeu : mode `duel` (10 questions d 1,5 à 3,5 tirées avec la

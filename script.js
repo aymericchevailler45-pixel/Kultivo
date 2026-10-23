@@ -427,7 +427,9 @@ function defaultData() {
         chestBonus: 0,                   // cartes encore dues pour les coffres sautés par le placement
         coinBonus: 0,                    // pièces encore dues pour les niveaux sautés par le placement
         missions: null,                  // missions de la semaine : { week, progress, claimed, chest }
-        events: {},                      // événements : id -> { right (bonnes réponses), won (carte gagnée) }
+        events: {},                      // événements : id -> { found, won, pumpkins: { day, got } }
+        avatarExtra: [],                 // dessins d'avatar gagnés pendant les événements (gardés pour toujours)
+        avatarNew: false,                // un dessin vient d'être gagné : pastille sur l'avatar du Profil
         duelsSeen: {},                   // duels dont le résultat a été vu (pièces données une seule fois)
         duelAnswers: {},                 // duels : graine -> mes réponses tapées (pour les revoir)
         duelsViewed: {},                 // résultats de duels déjà regardés (sinon pastille)
@@ -444,6 +446,8 @@ function normalizeData(data) {
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
     if (!Array.isArray(data.reports)) data.reports = [];
+    if (!Array.isArray(data.avatarExtra)) data.avatarExtra = [];
+    data.avatarNew = data.avatarNew === true;
     // Gouttes : les joueurs d'avant commencent avec le plein
     if (typeof data.drops !== 'number' || !(data.drops >= 0)) data.drops = DROPS_MAX;
     data.drops = Math.min(DROPS_MAX, Math.floor(data.drops));
@@ -934,7 +938,7 @@ function badgeStats() {
 }
 
 const BADGES = [
-    { id: 'ev-halloween-2026', icon: '🎃', name: 'Halloween 2026', desc: 'Trouver 40 questions de la semaine d’Halloween 2026', event: 'halloween-2026',
+    { id: 'ev-halloween-2026', icon: '🎃', name: 'Halloween 2026', desc: 'Trouver 45 questions de la semaine d’Halloween 2026', event: 'halloween-2026',
       test: s => s.eventsWon.includes('halloween-2026') },
     { id: 'first',     icon: '🌱', name: 'Premiers pas',        desc: 'Terminer un niveau',                    test: s => s.levelsDone >= 1 },
     { id: 'right25',   icon: '👍', name: 'Bien parti',          desc: '25 bonnes réponses du premier coup',    test: s => s.right >= 25 },
@@ -1023,7 +1027,16 @@ function showToast(text) {
 
 const EVENTS = [{
     id: 'halloween-2026', bank: 'halloween', name: 'Halloween', title: 'Semaine d’Halloween', icon: '🎃',
-    start: '2026-10-26', end: '2026-11-02', goal: 40, cls: 'event-halloween', tip: 'tipEventHalloween2026',
+    start: '2026-10-26', end: '2026-11-02', goal: 45, cls: 'event-halloween', tip: 'tipEventHalloween2026',
+    // Dessins d'avatar gagnés en route (le dernier palier = l'objectif, avec la carte et le badge)
+    rewards: [{ at: 10, emoji: '🎃' }, { at: 20, emoji: '🦇' }, { at: 30, emoji: '🧙' }, { at: 45, emoji: '💀' }],
+    pumpkin: '🎃',
+    // Missions de la semaine de l'événement (à la place des missions habituelles)
+    missions: [
+        { id: 'evFound',  icon: '🎃', goal: 15, text: n => `Trouve ${n} nouvelles questions d’Halloween` },
+        { id: 'pumpkins', icon: '🎃', goal: 10, text: n => `Ramasse ${n} citrouilles cachées dans le jeu` },
+        { id: 'evPlay',   icon: '👻', goal: 5,  text: n => `Termine ${n} parties d’Halloween` }
+    ],
     decor: ['🎃', '👻', '🦇', '🕷️', '🕸️', '💀', '🧙', '🍬', '🌕', '⚰️'],
     card: { id: 'ev-halloween-2026', theme: 'Halloween 2026', icon: '🎃', name: 'Citrouille 2026', rarity: 'event',
             text: 'Gagnée pendant la semaine d’Halloween 2026.' }
@@ -1061,6 +1074,76 @@ function pickEventCards(ev) {
     const picked = [];
     for (const q of [...fresh, ...missed, ...rest]) if (picked.length < EVENT_SIZE && !picked.includes(q)) picked.push(q);
     return shuffle(picked).map(q => ({ q, review: seen(q) }));
+}
+
+/* Citrouilles cachées (2026-10-23) : 3 par jour pendant l'événement, chacune dans un onglet différent, toujours
+   visibles sans faire défiler (posées en position fixe dans la marge de l'écran). Un tap = +5 🪙. */
+const PUMPKINS_PER_DAY = 3;
+const PUMPKIN_COINS = 5;
+const PUMPKIN_SCREENS = ['mapScreen', 'challengesScreen', 'leagueScreen', 'shopScreen', 'profileScreen'];
+
+function pumpkinData(ev) {
+    const ed = eventData(ev);
+    if (!ed.pumpkins || ed.pumpkins.day !== todayKey()) ed.pumpkins = { day: todayKey(), got: {}, total: ed.pumpkins?.total || 0 };
+    return ed.pumpkins;
+}
+/** Les citrouilles du jour : { screen, side, y } (y = fraction de la hauteur libre). */
+function pumpkinSpots(ev) {
+    const seed = `pumpkins-${ev.id}-${todayKey()}`;
+    return seededShuffle(PUMPKIN_SCREENS, seed).slice(0, PUMPKINS_PER_DAY).map((screen, i) => {
+        const r = seededShuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], `${seed}-${i}`);
+        return { screen, side: r[0] % 2 ? 'left' : 'right', y: 0.15 + r[1] * 0.06 };
+    });
+}
+const pumpkinsLeft = ev => PUMPKINS_PER_DAY - Object.keys(pumpkinData(ev).got).length;
+
+/** Pose (ou retire) la citrouille de l'onglet affiché. Appelé régulièrement : simple et sans oubli. */
+function placePumpkins() {
+    const ev = currentEvent();
+    let pk = document.getElementById('pumpkin');
+    const spot = ev ? pumpkinSpots(ev).find(sp => !$(sp.screen).hidden && !pumpkinData(ev).got[sp.screen]) : null;
+    const covered = document.querySelector('.modal-overlay:not([hidden]), .tour:not([hidden]), .chest-overlay:not([hidden])') || $('topbar').hidden;
+    if (!spot || covered) { if (pk) pk.remove(); return; }
+    if (pk && pk.dataset.screen === spot.screen) return;
+    if (pk) pk.remove();
+    pk = el('button', `pumpkin is-${spot.side}`);
+    pk.id = 'pumpkin';
+    pk.type = 'button';
+    pk.dataset.screen = spot.screen;
+    pk.setAttribute('aria-label', 'Citrouille cachée');
+    pk.append(emojiImg(ev.pumpkin));
+    const top = $('topbar').getBoundingClientRect().bottom;
+    const nav = document.querySelector('.nav');
+    const navTop = nav && getComputedStyle(nav).position === 'fixed' && nav.getBoundingClientRect().top > window.innerHeight / 2
+        ? nav.getBoundingClientRect().top : window.innerHeight;
+    pk.style.top = `${Math.round(top + 70 + spot.y * Math.max(60, navTop - top - 190))}px`;
+    pk.addEventListener('click', e => {
+        e.stopPropagation();
+        const pd = pumpkinData(ev);
+        if (pd.got[spot.screen]) return;
+        pd.got[spot.screen] = 1;
+        pd.total = (pd.total || 0) + 1;
+        state.data.coins += PUMPKIN_COINS;
+        missionEvent('pumpkins');
+        saveData();
+        renderHeader();
+        updateNavNotifications();
+        playSound('win');
+        pk.classList.add('is-caught');
+        const left = pumpkinsLeft(ev);
+        showToast(`🎃 Citrouille trouvée ! +${PUMPKIN_COINS} 🪙${left ? ` · encore ${left} aujourd’hui` : ' · toutes trouvées pour aujourd’hui'}`);
+        setTimeout(() => pk.remove(), 600);
+        if (challengesTab === 'event' && !$('challengesScreen').hidden) renderEvent();
+    });
+    document.body.append(pk);
+}
+
+/** Dessins d'avatar de l'événement débloqués par `total` questions trouvées → les nouveaux. */
+function unlockEventAvatars(ev, total) {
+    const d = state.data;
+    const fresh = (ev.rewards || []).filter(r => total >= r.at && !d.avatarExtra.includes(r.emoji)).map(r => r.emoji);
+    if (fresh.length) { d.avatarExtra.push(...fresh); d.avatarNew = true; }
+    return fresh;
 }
 
 /** Décor, bandeau et sous-onglet selon l'événement en cours (appelé au lancement). */
@@ -1137,6 +1220,23 @@ function renderEvent() {
     meter.append(fill);
     const count = el('p', 'event-count');
     count.textContent = `${n} / ${ev.goal} questions trouvées (sur ${eventQuestions(ev).length})`;
+    // Paliers : dessins d'avatar à gagner (grisés tant qu'ils ne sont pas gagnés)
+    const steps = el('div', 'event-steps');
+    for (const r of ev.rewards || []) {
+        const got = state.data.avatarExtra.includes(r.emoji);
+        const st = el('div', `event-step${got ? ' is-got' : ''}`);
+        const lab = el('span');
+        lab.textContent = got ? '✓' : String(r.at);
+        st.append(emojiImg(r.emoji), lab);
+        steps.append(st);
+    }
+    const stepsText = el('p', 'event-steps-text');
+    stepsText.textContent = '🎨 Des dessins d’avatar à gagner en route, gardés pour toujours.';
+    const left = pumpkinsLeft(ev);
+    const pumpkins = el('p', 'event-pumpkins');
+    pumpkins.textContent = left
+        ? `🎃 Citrouilles du jour : ${PUMPKINS_PER_DAY - left}/${PUMPKINS_PER_DAY} · cachées dans les onglets du jeu (+${PUMPKIN_COINS} 🪙 chacune)`
+        : `🎃 Citrouilles du jour : ${PUMPKINS_PER_DAY}/${PUMPKINS_PER_DAY} · reviens demain !`;
     const reward = el('div', 'event-reward');
     const face = cardFace(ev.card, false, false);
     const rtext = el('p');
@@ -1150,8 +1250,62 @@ function renderEvent() {
     btn.textContent = ed.won ? 'Rejouer pour le plaisir' : 'Jouer';
     btn.addEventListener('click', () => startSession('event'));
     actions.append(btn);
-    card.append(h, p, meter, count, reward, actions);
+    card.append(h, p, meter, count, steps, stepsText, reward, pumpkins, actions);
     page.append(card);
+    const friends = renderEventFriends(ev, n);
+    if (friends) page.append(friends);
+}
+
+let eventFriendsOpen = false;
+/** Où en sont mes amis : les 3 meilleurs (+ moi si plus loin), « Voir tous » pour la liste complète. */
+function renderEventFriends(ev, mine) {
+    if (!cloudUser || !league?.pseudo || !league.friends?.length) return null;
+    const rows = league.friends
+        .filter(f => f.summary?.event?.id === ev.id && f.summary.event.found > 0)
+        .map(f => ({ f, found: Math.min(f.summary.event.found, ev.goal) }));
+    rows.push({ me: true, found: mine });
+    rows.sort((a, b) => b.found - a.found || (a.me ? -1 : b.me ? 1 : 0));
+    const card = el('article', 'card event-friends');
+    const h = el('h2');
+    h.textContent = '👥 Tes amis';
+    card.append(h);
+    if (rows.length === 1) {
+        const p = el('p', 'event-friends-empty');
+        p.textContent = 'Aucun ami n’a encore joué à l’événement.';
+        card.append(p);
+        return card;
+    }
+    const SHOW = 3;
+    let shown = rows.map((r, i) => ({ ...r, rank: i + 1 }));
+    const hidden = shown.length - SHOW;
+    if (!eventFriendsOpen && hidden > 0) {
+        const meRow = shown.find(r => r.me);
+        shown = shown.slice(0, SHOW);
+        if (meRow.rank > SHOW) shown.push(meRow);
+    }
+    const list = el('ol', 'event-friends-list');
+    for (const r of shown) {
+        const li = el('li', r.me ? 'is-me' : '');
+        const rank = el('span', 'event-rank');
+        rank.textContent = String(r.rank);
+        const name = el('span', 'event-friend-name');
+        name.textContent = r.me ? 'Toi' : r.f.pseudo;
+        const score = el('span', 'event-friend-score');
+        score.textContent = r.found >= ev.goal ? `${ev.goal}/${ev.goal} 🏆` : `${r.found}/${ev.goal}`;
+        const av = r.me ? avatarEl(myAvatarName(), state.data.avatar) : avatarEl(r.f.pseudo, r.f.look);
+        if (!r.me) li.addEventListener('click', () => openFriendProfile(r.f));
+        li.append(rank, av, name, score);
+        list.append(li);
+    }
+    card.append(list);
+    if (hidden > 0) {
+        const more = el('button', 'link-btn event-friends-more');
+        more.type = 'button';
+        more.textContent = eventFriendsOpen ? 'Voir moins' : `Voir tous (${rows.length}) ›`;
+        more.addEventListener('click', () => { eventFriendsOpen = !eventFriendsOpen; renderEvent(); });
+        card.append(more);
+    }
+    return card;
 }
 
 /** Fin d'une session de l'événement : progression, carte gagnée. */
@@ -1164,6 +1318,10 @@ function endEvent() {
     const total = Object.keys(ed.found).length;
     const won = !ed.won && total >= ev.goal;
     if (won) ed.won = true;
+    if (total > before) missionEvent('evFound', total - before);
+    missionEvent('evPlay');
+    const drawings = unlockEventAvatars(ev, total);
+    const drawingsText = drawings.length ? `🎨 Nouveau dessin d’avatar débloqué : ${drawings.join(' ')} ! (Profil → ton avatar)` : '';
     saveData();
     checkBadges();
     setEnd({
@@ -1172,7 +1330,7 @@ function endEvent() {
         text: won ? `Tu as gagné la carte « ${ev.card.name} » et le badge ${ev.name} 2026 !`
             : `${right.length} trouvées sur ${state.total}${total > before ? ` (+${total - before} nouvelles)` : ''} · ${Math.min(total, ev.goal)} / ${ev.goal} questions trouvées pour la carte`,
         stats: [statXp(), statAccuracy(), statTime()],
-        extra: rewardSummary(),
+        extra: [drawingsText, rewardSummary()].filter(Boolean).join('\n'),
         primary: 'Rejouer',
         primaryClass: 'btn-green',
         onPrimary: () => startSession('event'),
@@ -1207,6 +1365,8 @@ const MISSION_POOL = [
 /** Les 3 missions de la semaine en cours (et le thème de la mission « thème »). */
 function weekMissions() {
     const week = weekStart();
+    const ev = currentEvent();
+    if (ev?.missions && week === ev.start) return ev.missions.map(m => ({ ...m, theme: null }));
     const picked = seededShuffle(MISSION_POOL, `missions-${week}`).slice(0, 3);
     const themes = THEME_DECOR.map(t => t.theme).filter(t => t !== 'Drapeaux' && t !== 'Monuments');
     const theme = seededShuffle(themes, `missions-theme-${week}`)[0];
@@ -1476,7 +1636,8 @@ function updateNavNotifications() {
     const cardsTab = document.querySelector('.profile-tab[data-tab="cards"]');
     const shinies = pendingShinyCount();   // cartes à 3/3 à rendre brillantes
     const setNotif = (target, n) => n > 0 ? target.setAttribute('data-notif', n) : target.removeAttribute('data-notif');
-    setNotif(profileBtn, unclaimedBadges + shinies);
+    setNotif(profileBtn, unclaimedBadges + shinies + (data.avatarNew ? 1 : 0));
+    setNotif($('avatarBtn'), data.avatarNew ? 1 : 0);
     setNotif(badgesTab, unclaimedBadges);
     setNotif(cardsTab, shinies);
     
@@ -5402,6 +5563,7 @@ function openAvatarModal() {
     }
     renderAvatarModal();
     $('avatarModal').hidden = false;
+    if (state.data.avatarNew) { state.data.avatarNew = false; saveData(); updateNavNotifications(); }
 }
 
 function renderAvatarModal() {
@@ -5421,7 +5583,7 @@ function renderAvatarModal() {
     });
     const pics = $('avatarEmojis');
     pics.replaceChildren();
-    [null, ...AVATAR_EMOJIS].forEach(emoji => {
+    [null, ...AVATAR_EMOJIS, ...state.data.avatarExtra.filter(e => !AVATAR_EMOJIS.includes(e))].forEach(emoji => {
         const b = el('button', `avatar-pick${look.emoji === emoji ? ' is-active' : ''}`);
         b.type = 'button';
         if (emoji) b.append(emojiImg(emoji));
@@ -5575,6 +5737,7 @@ function profileSummary() {
         bestStreak: Math.max(d.best.streak, currentStreak()),
         levels: Object.values(d.done).filter(Boolean).length,
         unlocked: d.unlocked,   // niveau en cours (avatar sur le parcours des amis)
+        event: (ev => ev ? { id: ev.id, found: Object.keys(eventData(ev).found).length } : null)(currentEvent()),
         rate: d.totals.tries > 0 ? Math.round((d.totals.right / d.totals.tries) * 100) : null,
         sprint: d.best.sprint || 0,
         badges: Object.keys(d.badges).filter(id => d.badges[id]),
@@ -7295,6 +7458,7 @@ function init() {
     cloudInit();                                            // compte connecté ? synchronisation
     window.addEventListener('online', flushReports);        // dès que la connexion revient
     applyEventLook();
+    if (currentEvent()) setInterval(placePumpkins, 700);   // citrouilles cachées de l'événement
     buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
     buildDecor($('lessonDecor'), 8);
     checkThemeComplete(true);   // thèmes déjà complets : notés sans fête

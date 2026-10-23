@@ -2802,3 +2802,43 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .modal-content p.duel-news { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; font-weight: 800; color: var(--ink); }
 .modal-content p.duel-news.is-win { background: var(--green-tint); color: var(--green-deep); }
 .modal-content p.duel-news.is-loss { background: var(--line); }
+
+/* Halloween (2026-10-23) : paliers de dessins, citrouilles cachées, amis */
+.event-steps { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
+.event-step {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0;
+    border: 2px solid var(--line); border-radius: 14px; font-weight: 900; font-size: 0.85rem; color: var(--muted);
+}
+.event-step .emoji-img { width: 30px; height: 30px; filter: grayscale(1); opacity: 0.4; }
+.event-step.is-got { border-color: var(--r-event); color: var(--r-event); }
+.event-step.is-got .emoji-img { filter: none; opacity: 1; }
+.event-steps-text { margin: 6px 0 0; font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+.event-pumpkins { margin: 10px 0 0; padding: 8px 10px; border-radius: 12px; background: rgba(255, 122, 0, 0.12); font-weight: 800; font-size: 0.9rem; }
+.pumpkin {
+    position: fixed; z-index: 18; width: 30px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer;
+    animation: pumpkinWobble 2.4s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(255, 160, 0, 0.9));
+}
+.pumpkin.is-left { left: 1px; }
+.pumpkin.is-right { right: 1px; }
+.pumpkin .emoji-img { width: 100%; height: 100%; }
+.pumpkin.is-caught { animation: pumpkinCaught 0.6s ease-out forwards; pointer-events: none; }
+@keyframes pumpkinWobble { 0%, 100% { transform: rotate(-8deg) scale(1); } 50% { transform: rotate(8deg) scale(1.08); } }
+@keyframes pumpkinCaught { to { transform: translateY(-40px) scale(1.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pumpkin { animation: none; } }
+.event-friends h2 { margin-bottom: 4px; }
+.event-friends-empty { margin: 4px 0 0; color: var(--muted); font-weight: 700; }
+.event-friends-list { list-style: none; margin: 4px 0 0; padding: 0; }
+.event-friends-list li {
+    display: flex; align-items: center; gap: 10px; padding: 7px 2px; border-bottom: 2px solid var(--line); font-weight: 800; cursor: pointer;
+}
+.event-friends-list li:last-child { border-bottom: 0; }
+.event-friends-list li.is-me { cursor: default; color: var(--r-event); }
+.event-friends-list .league-avatar { width: 32px; height: 32px; font-size: 0.95rem; flex: none; }
+.event-rank { width: 18px; text-align: center; color: var(--muted); }
+.event-friend-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.event-friend-score { font-weight: 900; }
+.event-friends-more { display: block; margin: 8px auto 0; }
+.avatar-btn[data-notif]::after {
+    content: attr(data-notif); position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 6px;
+    border-radius: 10px; background: var(--red); color: #ffffff; font-size: 0.75rem; font-weight: 900; line-height: 20px; text-align: center;
+}
