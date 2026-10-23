@@ -226,7 +226,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   défi : bouton « Comparer avec mes amis ». Onglets Défis et Classement compacts sur téléphone.
 - Avatar personnalisable (2026-10-17) : bouton rond en haut du Profil (`avatarBtn`, crayon) → fenêtre « Mon
   avatar » (`avatarModal`) : 12 couleurs (`AVATAR_HUES`), initiale ou 24 dessins Twemoji déjà dans `emoji/`
-  (`AVATAR_EMOJIS`) ; depuis le 2026-10-23 : 24 couleurs (dont 6 FONCÉES = teinte finissant par 1, `hueLight`, sans changer Supabase)
+  (`AVATAR_EMOJIS`) ; depuis le 2026-10-23 : 24 couleurs en UN dégradé (une tous les 15° ; une ligne de foncées
+  essayée puis retirée car elle cassait l'enchaînement — `hueLight` garde leur affichage si déjà choisies)
   et 39 dessins (5 nouveaux emojis téléchargés). Sauvegarde `avatar: { hue, emoji }` ; envoyé aux amis via `profiles.avatar_hue/avatar_emoji`
   (`supabase/avatar.sql`, `pushAvatar`) ; `avatarEl(pseudo, look, cls)` partout (podium, liste).
 - Profil d'un ami (2026-10-17) : tap sur un ami (liste, podium, classement, liste du défi du jour) → `friendModal` (`openFriendProfile`) :
@@ -477,7 +478,8 @@ par Google, dans l'appli + page web), page « Politique de confidentialité », 
    Petits mots (le, de, des…) montrés en gris sans trait ; apostrophes/tirets gardés ; un indice plus faible
    que celui déjà pris est grisé « déjà visible ».
 4. Plus de questions (bloc de 100 + 10 niveaux) ou nouveau thème.
-5. Bouton « Revoir le tutoriel » dans le Profil.
+5. Bouton « Revoir le tutoriel » : ABANDONNÉ (décision du 2026-10-23). Pas de bulles d'explication pour les missions
+   et les duels non plus (jugés assez clairs).
 6. Mode « Qui suis-je ? » (indices dévoilés un par un) — À GARDER EN TÊTE, PAS TOUT DE SUITE (2026-10-19).
    Conception proposée et validée dans l'idée : 5 indices du plus vague au plus précis ; réponse tapée à tout moment
    (même correction souple) ; « Indice suivant » ou mauvaise réponse = indice suivant ; XP 10/8/6/4/2 selon l'indice ;

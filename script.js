@@ -5340,10 +5340,9 @@ function renderTraining() {
 
 /* ---------- Avatar : rond de couleur avec l'initiale du pseudo, ou un petit dessin ---------- */
 
-// 24 couleurs (4 lignes de 6) et 39 dessins (+ l'initiale = 8 lignes de 5) depuis le 2026-10-23.
-// Couleurs FONCÉES : teinte qui finit par 1 (26, 91…) ; rien à changer dans Supabase (avatar_hue reste 0-359).
-const AVATAR_HUES = [0, 25, 45, 65, 90, 115, 140, 155, 175, 200, 225, 260, 275, 290, 305, 320, 340, 350,
-                     26, 91, 141, 201, 226, 261];
+// 24 couleurs en un seul dégradé (une tous les 15°, 4 lignes de 6) et 39 dessins (+ l'initiale = 8 lignes de 5),
+// 2026-10-23 (une ligne de couleurs foncées cassait l'enchaînement : retirée du choix, mais toujours affichée si déjà choisie).
+const AVATAR_HUES = Array.from({ length: 24 }, (_, i) => i * 15);
 const hueLight = hue => (hue % 5 === 1 ? '32%' : '52%');   // foncée ou normale
 const AVATAR_EMOJIS = ['🦉', '🦈', '🦖', '🐋', '🐍', '🐎', '🍄', '🌻', '🎸', '🎷', '🎮', '🎲',
                        '🧩', '🔭', '🧲', '💡', '🤖', '⚽', '🏆', '🍿', '🥐', '🗿', '🌋', '🚂',
