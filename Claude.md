@@ -356,7 +356,8 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    réutilisables chaque année). Pendant l'événement (`currentEvent`) : décor du parcours et des leçons remplacé
    (`buildDecor`, `showEventFact`), fond teinté (`body.event-halloween`), bandeau fixe sous la barre du haut
    (`eventBanner`), 3e sous-onglet « 🎃 Halloween » dans Défis (`eventPage`, `renderEvent`), sessions de 10 questions
-   gratuites sans cœurs (mode `event`, `pickEventCards`, `endEvent`), 40 bonnes réponses du 1er coup (20 jugé trop facile) = carte
+   sans gouttes ni cœurs (mode `event`, `pickEventCards`, `endEvent`). RÈGLE (choix de l'utilisateur) : une question ratée
+   NE revient PAS dans la session (elle reviendra dans une prochaine) ; 40 questions DIFFÉRENTES trouvées (`events[id].found`) = carte
    « Citrouille 2026 » (rareté `event`, `EVENT_CARDS`, section « 🎉 Événements » de la collection, hors des 150) + badge
    (visible seulement pendant l'événement ou une fois gagné). Tout le jeu teinté (`body.event-halloween main`), liseré orange.
    Bulles 1re visite : onglet de l'événement (`showEventTip`, drapeau `ev.tip`) puis sa carte (`showEventPageTip`). Démo hors dates : lien `?demo=halloween`.

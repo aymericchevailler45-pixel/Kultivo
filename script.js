@@ -925,7 +925,7 @@ function badgeStats() {
 }
 
 const BADGES = [
-    { id: 'ev-halloween-2026', icon: '🎃', name: 'Halloween 2026', desc: '40 bonnes réponses pendant la semaine d’Halloween 2026', event: 'halloween-2026',
+    { id: 'ev-halloween-2026', icon: '🎃', name: 'Halloween 2026', desc: 'Trouver 40 questions de la semaine d’Halloween 2026', event: 'halloween-2026',
       test: s => s.eventsWon.includes('halloween-2026') },
     { id: 'first',     icon: '🌱', name: 'Premiers pas',        desc: 'Terminer un niveau',                    test: s => s.levelsDone >= 1 },
     { id: 'right25',   icon: '👍', name: 'Bien parti',          desc: '25 bonnes réponses du premier coup',    test: s => s.right >= 25 },
@@ -1031,7 +1031,9 @@ function currentEvent() {
 const eventQuestions = ev => (window.EVENT_BANKS && window.EVENT_BANKS[ev.bank]) || [];
 function eventData(ev) {
     const all = state.data.events;
-    return all[ev.id] || (all[ev.id] = { right: 0, won: false });
+    const ed = all[ev.id] || (all[ev.id] = { won: false });
+    ed.found = ed.found || {};   // questions différentes trouvées : id -> 1
+    return ed;
 }
 /** « 2 novembre » */
 function shortDate(key) {
@@ -1039,13 +1041,14 @@ function shortDate(key) {
     return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
 }
 
-/** 10 questions : jamais vues d'abord, puis les erreurs, puis les moins sues. */
+/** 10 questions : jamais vues d'abord, puis celles ratées (pas encore trouvées), puis les autres. */
 function pickEventCards(ev) {
     const bank = eventQuestions(ev);
+    const found = eventData(ev).found;
     const seen = q => !!state.data.stats[q.id];
-    const fresh = shuffle(bank.filter(q => !seen(q)));
-    const missed = shuffle(bank.filter(q => seen(q) && missCount(q.id) > 0 && !isLater(q.id)));
-    const rest = shuffle(bank.filter(q => seen(q) && missCount(q.id) === 0)).sort((a, b) => streakOf(a.id) - streakOf(b.id));
+    const fresh = shuffle(bank.filter(q => !seen(q) && !found[q.id]));
+    const missed = shuffle(bank.filter(q => seen(q) && !found[q.id]));
+    const rest = shuffle(bank.filter(q => found[q.id])).sort((a, b) => streakOf(a.id) - streakOf(b.id));
     const picked = [];
     for (const q of [...fresh, ...missed, ...rest]) if (picked.length < EVENT_SIZE && !picked.includes(q)) picked.push(q);
     return shuffle(picked).map(q => ({ q, review: seen(q) }));
@@ -1100,7 +1103,7 @@ function showEventPageTip() {
     if (!ev || d[`${ev.tip}Page`] || !tipAllowed('challengesScreen') || $('eventPage').hidden) return;
     startTip(`${ev.tip}Page`, [{
         target: () => document.querySelector('.event-card'),
-        text: `🎁 Seules les bonnes réponses du premier coup comptent : une question ratée puis retrouvée ne compte pas. À ${ev.goal}, tu gagnes la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Joue autant de sessions que tu veux !`
+        text: `🎁 Chaque question trouvée compte une fois. Une question ratée ne revient pas dans la session, mais dans une prochaine. Trouve ${ev.goal} questions différentes pour gagner la carte « ${ev.card.name} » et le badge ${ev.name} 2026 !`
     }]);
 }
 
@@ -1118,19 +1121,19 @@ function renderEvent() {
     h.textContent = `${ev.icon} ${ev.title}`;
     const p = el('p');
     p.textContent = `Des sessions de ${EVENT_SIZE} questions frissonnantes. Elles ne coûtent pas de gouttes 💧 et il n’y a pas de cœurs. Jusqu’au ${shortDate(ev.end)}.`;
-    const n = Math.min(ed.right, ev.goal);
+    const n = Math.min(Object.keys(ed.found).length, ev.goal);
     const meter = el('div', 'meter');
     const fill = el('div', 'meter-fill');
     fill.style.width = `${Math.round((n / ev.goal) * 100)}%`;
     meter.append(fill);
     const count = el('p', 'event-count');
-    count.textContent = `${n} / ${ev.goal} bonnes réponses du premier coup`;
+    count.textContent = `${n} / ${ev.goal} questions trouvées (sur ${eventQuestions(ev).length})`;
     const reward = el('div', 'event-reward');
     const face = cardFace(ev.card, false, false);
     const rtext = el('p');
     rtext.textContent = ed.won
         ? '✅ Carte gagnée ! Elle est dans ta collection, et le badge dans ton profil.'
-        : `🎁 ${ev.goal} bonnes réponses du premier coup : la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Seulement cette semaine !`;
+        : `🎁 Trouve ${ev.goal} questions différentes : la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Seulement cette semaine !`;
     reward.append(face, rtext);
     const actions = el('div', 'card-actions');
     const btn = el('button', 'btn btn-green');
@@ -1146,9 +1149,11 @@ function renderEvent() {
 function endEvent() {
     const ev = EVENTS.find(e => e.id === state.eventId) || currentEvent();
     const ed = eventData(ev);
-    const right = state.total - state.failedIds.size;   // bonnes réponses du premier coup
-    ed.right += right;
-    const won = !ed.won && ed.right >= ev.goal;
+    const right = (state.eventIds || []).filter(id => !state.failedIds.has(id));
+    const before = Object.keys(ed.found).length;
+    right.forEach(id => { ed.found[id] = 1; });
+    const total = Object.keys(ed.found).length;
+    const won = !ed.won && total >= ev.goal;
     if (won) ed.won = true;
     saveData();
     checkBadges();
@@ -1156,7 +1161,7 @@ function endEvent() {
         emoji: won ? '🏆' : ev.icon,
         title: won ? 'Carte gagnée !' : `${ev.icon} ${ev.name}`,
         text: won ? `Tu as gagné la carte « ${ev.card.name} » et le badge ${ev.name} 2026 !`
-            : `${right} bonnes réponses du premier coup sur ${state.total} · total : ${Math.min(ed.right, ev.goal)} / ${ev.goal} pour la carte`,
+            : `${right.length} trouvées sur ${state.total}${total > before ? ` (+${total - before} nouvelles)` : ''} · ${Math.min(total, ev.goal)} / ${ev.goal} questions trouvées pour la carte`,
         stats: [statXp(), statAccuracy(), statTime()],
         extra: rewardSummary(),
         primary: 'Rejouer',
@@ -2928,6 +2933,7 @@ function startSession(requestedMode, level = 0) {
         if (!ev) return;
         state.eventId = ev.id;
         items = pickEventCards(ev);
+        state.eventIds = items.map(it => it.q.id);
     } else if (mode === 'level') {
         const fresh = levelCards(level).map(q => ({ q, review: false }));
         const old = pickReviewCards(level).map(q => ({ q, review: true }));
@@ -3596,7 +3602,10 @@ function commit(ok) {
                 return;
             }
         }
-        if (again && (mode === 'review' || mode === 'training' || mode === 'event')) {
+        if (mode === 'event') {
+            // Événement : une question ratée ne revient pas dans la session (elle reviendra dans une prochaine)
+            state.done++;
+        } else if (again && (mode === 'review' || mode === 'training')) {
             // 2e oubli : inutile de la reposer tout de suite, elle reviendra demain
             state.data.stats[id].later = tomorrowKey();
             state.done++;
