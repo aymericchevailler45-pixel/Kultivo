@@ -2224,7 +2224,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     height: 56px;
     border: 4px solid var(--surface);
     border-radius: 50%;
-    background: hsl(var(--hue) 65% 52%);
+    background: hsl(var(--hue) 65% var(--light, 52%));
     color: #ffffff;
     font-size: 1.5rem;
     font-weight: 900;
@@ -2420,7 +2420,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     aspect-ratio: 1;
     border: 3px solid var(--surface);
     border-radius: 50%;
-    background: hsl(var(--hue) 65% 52%);
+    background: hsl(var(--hue) 65% var(--light, 52%));
     box-shadow: 0 0 0 2px var(--line);
     cursor: pointer;
 }

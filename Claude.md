@@ -226,7 +226,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   défi : bouton « Comparer avec mes amis ». Onglets Défis et Classement compacts sur téléphone.
 - Avatar personnalisable (2026-10-17) : bouton rond en haut du Profil (`avatarBtn`, crayon) → fenêtre « Mon
   avatar » (`avatarModal`) : 12 couleurs (`AVATAR_HUES`), initiale ou 24 dessins Twemoji déjà dans `emoji/`
-  (`AVATAR_EMOJIS`) ; depuis le 2026-10-23 : 18 couleurs et 39 dessins (5 nouveaux emojis téléchargés). Sauvegarde `avatar: { hue, emoji }` ; envoyé aux amis via `profiles.avatar_hue/avatar_emoji`
+  (`AVATAR_EMOJIS`) ; depuis le 2026-10-23 : 24 couleurs (dont 6 FONCÉES = teinte finissant par 1, `hueLight`, sans changer Supabase)
+  et 39 dessins (5 nouveaux emojis téléchargés). Sauvegarde `avatar: { hue, emoji }` ; envoyé aux amis via `profiles.avatar_hue/avatar_emoji`
   (`supabase/avatar.sql`, `pushAvatar`) ; `avatarEl(pseudo, look, cls)` partout (podium, liste).
 - Profil d'un ami (2026-10-17) : tap sur un ami (liste, podium, classement, liste du défi du jour) → `friendModal` (`openFriendProfile`) :
   titre, XP, série, réussite, niveaux, record de série, sprint, XP de la semaine, badges et cartes. Données :

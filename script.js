@@ -5340,8 +5340,11 @@ function renderTraining() {
 
 /* ---------- Avatar : rond de couleur avec l'initiale du pseudo, ou un petit dessin ---------- */
 
-// 18 couleurs (3 lignes de 6) et 39 dessins (+ l'initiale = 8 lignes de 5) depuis le 2026-10-23
-const AVATAR_HUES = [0, 25, 45, 65, 90, 115, 140, 155, 175, 200, 225, 260, 275, 290, 305, 320, 340, 350];
+// 24 couleurs (4 lignes de 6) et 39 dessins (+ l'initiale = 8 lignes de 5) depuis le 2026-10-23.
+// Couleurs FONCÉES : teinte qui finit par 1 (26, 91…) ; rien à changer dans Supabase (avatar_hue reste 0-359).
+const AVATAR_HUES = [0, 25, 45, 65, 90, 115, 140, 155, 175, 200, 225, 260, 275, 290, 305, 320, 340, 350,
+                     26, 91, 141, 201, 226, 261];
+const hueLight = hue => (hue % 5 === 1 ? '32%' : '52%');   // foncée ou normale
 const AVATAR_EMOJIS = ['🦉', '🦈', '🦖', '🐋', '🐍', '🐎', '🍄', '🌻', '🎸', '🎷', '🎮', '🎲',
                        '🧩', '🔭', '🧲', '💡', '🤖', '⚽', '🏆', '🍿', '🥐', '🗿', '🌋', '🚂',
                        '🐱', '🐶', '🦊', '🐼', '🦁', '🐸', '🐙', '🐧', '🦄', '👻', '👽', '🐢', '🚀', '🎨', '⭐'];
@@ -5358,6 +5361,7 @@ function avatarEl(pseudo, look, cls = '') {
         for (const ch of pseudo) hue = (hue * 31 + ch.codePointAt(0)) % 360;
     }
     a.style.setProperty('--hue', String(hue));
+    a.style.setProperty('--light', hueLight(hue));
     if (look?.emoji) a.append(emojiImg(look.emoji));
     else a.textContent = [...pseudo][0].toUpperCase();
     return a;
@@ -5382,6 +5386,7 @@ function renderAvatarModal() {
         const b = el('button', `avatar-swatch${look.hue === hue ? ' is-active' : ''}`);
         b.type = 'button';
         b.style.setProperty('--hue', String(hue));
+        b.style.setProperty('--light', hueLight(hue));
         b.setAttribute('aria-label', 'Choisir cette couleur');
         b.addEventListener('click', () => { look.hue = hue; renderAvatarModal(); });
         colors.append(b);
