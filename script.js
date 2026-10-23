@@ -423,6 +423,7 @@ function defaultData() {
         missions: null,                  // missions de la semaine : { week, progress, claimed, chest }
         events: {},                      // événements : id -> { right (bonnes réponses), won (carte gagnée) }
         duelsSeen: {},                   // duels dont le résultat a été vu (pièces données une seule fois)
+        duelAnswers: {},                 // duels : graine -> mes réponses tapées (pour les revoir)
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -431,7 +432,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -3574,7 +3575,10 @@ function commit(ok) {
             missionEvent('correct');
             missionEvent('theme', 1, item.q.theme);
         }
-        if (mode === 'duel') state.grid.push(ok ? '🟩' : '🟥');
+        if (mode === 'duel') {
+            state.grid.push(ok ? '🟩' : '🟥');
+            state.answers.push(($('userInput').value || '').trim().slice(0, 60));
+        }
         if (mode === 'daily') {
             state.grid.push(ok ? '🟩' : '🟥');
             state.answers.push(($('userInput').value || '').trim().slice(0, 60));
@@ -4240,6 +4244,11 @@ async function endDuel() {
     const score = state.correct;
     const seconds = Math.round((Date.now() - state.startedAt) / 1000);
     const grid = state.grid.join('');
+    // Mes réponses, pour « Revoir les questions » (20 derniers duels gardés)
+    const da = state.data.duelAnswers;
+    da[du.seed] = state.answers.slice(0, DUEL_SIZE);
+    Object.keys(da).slice(0, -20).forEach(k => delete da[k]);
+    saveData();
     setEnd({
         emoji: '⚔️',
         title: 'Duel terminé',
@@ -4306,7 +4315,58 @@ function handleDuelNews(before) {
     }
 }
 
-/** Carte « ⚔️ Duels » de l'onglet Classement. */
+/** Revoir les 10 questions d'un duel : bonne réponse, ma réponse si fausse, ✅/❌ de chacun. */
+function openDuelReview(row) {
+    const me = cloudUser.id;
+    const mine = row.challenger === me;
+    const f = duelFriend(mine ? row.opponent : row.challenger);
+    const pseudo = f?.pseudo || 'Ton ami';
+    const myGrid = [...((mine ? row.c_grid : row.o_grid) || '')];
+    const hisGrid = [...((mine ? row.o_grid : row.c_grid) || '')];
+    const typedAll = state.data.duelAnswers[row.seed] || null;
+    const body = $('friendBody');
+    body.replaceChildren();
+    const h = el('h2', 'review-title');
+    const [s1, s2] = mine ? [row.c_score, row.o_score] : [row.o_score, row.c_score];
+    h.textContent = `⚔️ Duel contre ${pseudo} · ${s1} – ${s2 ?? '?'}`;
+    const note = el('p', 'muted review-note');
+    note.textContent = hisGrid.length ? 'Tes réponses et celles de ton ami, question par question.' : `${pseudo} n’a pas encore joué.`;
+    body.append(h, note);
+    const list = el('ol', 'review-list');
+    duelQuestions(row.seed).forEach((q, i) => {
+        const ok = myGrid[i] === '🟩';
+        const li = el('li', `review-item ${ok ? 'is-ok' : 'is-ko'}`);
+        const head = el('div', 'review-q');
+        head.textContent = `${i + 1}. ${ok ? '✅' : '❌'} ${q.q}`;
+        li.append(head);
+        if (q.flag || q.rebus || q.photo) {
+            const media = el('div', 'review-media');
+            if (q.flag) media.append(flagImg(q.flag));
+            else if (q.rebus) media.append(...q.rebus.map(emojiImg));
+            else { const img = el('img'); img.src = q.photo; img.alt = ''; img.loading = 'lazy'; media.append(img); }
+            li.append(media);
+        }
+        const ans = el('div', 'review-a');
+        ans.textContent = `Réponse : ${q.a[0]}`;
+        li.append(ans);
+        if (!ok && typedAll) {
+            const t = el('div', 'review-me');
+            t.textContent = typedAll[i] ? `Toi : ${typedAll[i]}` : 'Toi : pas de réponse';
+            li.append(t);
+        }
+        if (hisGrid.length) {
+            const fr = el('div', 'review-friends');
+            fr.textContent = `${pseudo} ${hisGrid[i] === '🟩' ? '✅' : '❌'}`;
+            li.append(fr);
+        }
+        list.append(li);
+    });
+    body.append(list);
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
+}
+
+/** Carte « ⚔️ Duels » de l'onglet Classement : une ligne par duel, avec l'ami (tap = son profil). */
 function renderDuelsCard(grid) {
     const me = cloudUser.id;
     const box = el('article', 'card league-duels');
@@ -4314,46 +4374,56 @@ function renderDuelsCard(grid) {
     h.textContent = '⚔️ Duels';
     box.append(h);
     const list = duelsList();
-    const rows = [];
-    const add = (text, btnText, onClick, cls = '') => {
-        const row = el('div', `duel-row ${cls}`);
-        const t = el('span', 'duel-text');
-        t.textContent = text;
-        row.append(t);
-        if (btnText) {
-            const b = el('button', `btn btn-small ${cls === 'is-todo' ? 'btn-violet' : 'btn-ghost'}`);
-            b.type = 'button';
-            b.textContent = btnText;
-            b.addEventListener('click', onClick);
-            row.append(b);
-        }
-        rows.push(row);
+    const ul = el('ul', 'league-people duel-list');
+    const add = (otherId, info, cls, buttons) => {
+        const f = duelFriend(otherId);
+        const li = el('li', `friend-row duel-row ${cls}`);
+        const pseudo = f?.pseudo || '?';
+        if (f) li.addEventListener('click', () => openFriendProfile(f));
+        const name = el('span', 'friend-name');
+        const b = el('b');
+        b.textContent = pseudo;
+        const i = el('span', 'friend-info');
+        i.textContent = info;
+        name.append(b, i);
+        li.append(avatarEl(pseudo, f?.look, 'is-small'), name);
+        buttons.forEach(([text, btnCls, onClick]) => {
+            const btn = el('button', `btn btn-small ${btnCls}`);
+            btn.type = 'button';
+            btn.textContent = text;
+            btn.addEventListener('click', e => { e.stopPropagation(); onClick(); });
+            li.append(btn);
+        });
+        ul.append(li);
     };
     // À jouer, puis en attente, puis les 5 derniers résultats
     list.filter(r => r.opponent === me && r.o_score === null && !duelExpired(r)).forEach(r => {
-        add(`${duelFriend(r.challenger)?.pseudo || '?'} te défie · encore ${duelHoursLeft(r)} h`, 'Jouer', () => playDuel(r), 'is-todo');
+        add(r.challenger, `⚔️ te défie · encore ${duelHoursLeft(r)} h`, 'is-todo', [['Jouer', 'btn-violet', () => playDuel(r)]]);
     });
     list.filter(r => r.challenger === me && r.o_score === null && !duelExpired(r)).forEach(r => {
-        add(`En attente de ${duelFriend(r.opponent)?.pseudo || '?'} · ton score : ${r.c_score}/${DUEL_SIZE}`, null, null, 'is-wait');
+        add(r.opponent, `⏳ doit jouer · ton score : ${r.c_score}/${DUEL_SIZE}`, 'is-wait', []);
     });
     list.filter(r => r.o_score !== null || duelExpired(r)).slice(0, 5).forEach(r => {
         const mine = r.challenger === me;
         const otherId = mine ? r.opponent : r.challenger;
         const f = duelFriend(otherId);
-        const pseudo = f?.pseudo || '?';
-        if (r.o_score === null) { add(`⌛ ${mine ? `${pseudo} n’a pas joué à temps` : `Duel de ${pseudo} expiré`}`, null, null, 'is-old'); return; }
+        if (r.o_score === null) {
+            add(otherId, mine ? '⌛ n’a pas joué à temps' : '⌛ duel expiré', 'is-old', f ? [['Revanche', 'btn-ghost', () => challengeFriend(f)]] : []);
+            return;
+        }
         const [s1, t1, s2, t2] = mine ? [r.c_score, r.c_seconds, r.o_score, r.o_seconds] : [r.o_score, r.o_seconds, r.c_score, r.c_seconds];
         const res = duelCompare(s1, t1, s2, t2);
-        add(`${res > 0 ? '🏆 Victoire' : res < 0 ? '😅 Défaite' : '🤝 Égalité'} contre ${pseudo} · ${s1}–${s2}`,
-            f ? 'Revanche' : null, () => challengeFriend(f), 'is-old');
+        const buttons = [['📋 Revoir', 'btn-ghost duel-review', () => openDuelReview(r)]];
+        if (f) buttons.push(['Revanche', 'btn-ghost', () => challengeFriend(f)]);
+        add(otherId, `${res > 0 ? '🏆 Victoire' : res < 0 ? '😅 Défaite' : '🤝 Égalité'} · ${s1}–${s2}`, 'is-old', buttons);
     });
-    if (!rows.length) {
+    if (!ul.children.length) {
         const p = el('p', 'muted');
         p.textContent = league.friends.length
             ? 'Défie un ami : touche-le dans la liste ci-dessous, puis « ⚔️ Défier en duel ».'
             : 'Ajoute des amis pour les défier en duel !';
         box.append(p);
-    } else box.append(...rows);
+    } else box.append(ul);
     grid.append(box);
 }
 
