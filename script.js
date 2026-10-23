@@ -4200,8 +4200,17 @@ const duelPrize = res => (res > 0 ? DUEL_COINS : res < 0 ? DUEL_COINS_LOSE : DUE
 const DUEL_HOURS = 48;
 
 /** Les 10 questions d'un duel : les mêmes pour les deux joueurs (difficulté moyenne). */
+/* Duels « v2- » (2026-10-23) : parcours + entraînement (~2 100 questions au lieu de 511).
+   Liste FIGÉE (ids du parcours < 4000, entraînement x001-x150) pour que les deux joueurs aient les mêmes questions
+   même si on ajoute des questions entre-temps. Anciennes graines (sans « v2- ») : parcours seul, comme avant. */
 function duelQuestions(seed) {
-    const pool = QUESTIONS.filter(q => q.d >= 1.5 && q.d <= 3.5).sort((a, b) => a.id - b.id);
+    const ok = q => q.d >= 1.5 && q.d <= 3.5;
+    let pool = QUESTIONS.filter(ok);
+    if (seed.startsWith('v2-')) {
+        pool = pool.filter(q => q.id < 4000).concat((typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS)
+            .filter(q => ok(q) && q.id >= 10000 && q.id < 30000 && q.id % 1000 <= 150));
+    }
+    pool.sort((a, b) => a.id - b.id);
     return seededShuffle(pool, `duel-${seed}`).slice(0, DUEL_SIZE);
 }
 
@@ -4227,7 +4236,7 @@ async function challengeFriend(f) {
     });
     if (!ok) return;
     $('friendModal').hidden = true;
-    state.duel = { role: 'challenger', seed: Math.random().toString(36).slice(2, 12), friend: { id: f.id, pseudo: f.pseudo } };
+    state.duel = { role: 'challenger', seed: 'v2-' + Math.random().toString(36).slice(2, 12), friend: { id: f.id, pseudo: f.pseudo } };
     startSession('duel');
 }
 
