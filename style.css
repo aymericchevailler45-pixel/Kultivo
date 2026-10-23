@@ -2416,7 +2416,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .avatar-sheet { text-align: center; display: flex; flex-direction: column; max-height: calc(100dvh - 32px); overflow: hidden; }
 .avatar-preview { display: flex; justify-content: center; margin: 4px 0 10px; }
 .modal-content p.avatar-label { margin: 6px 0 6px; color: var(--muted); font-size: 0.85rem; font-weight: 800; text-align: left; }
-.avatar-colors { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; flex: none; }   /* 24 couleurs = 3 lignes de 8 */
+.avatar-colors { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; flex: none; }   /* 24 couleurs = 4 lignes de 6 (taille préférée) */
 .avatar-swatch {
     aspect-ratio: 1;
     border: 3px solid var(--surface);
