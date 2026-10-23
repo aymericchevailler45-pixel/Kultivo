@@ -925,7 +925,7 @@ function badgeStats() {
 }
 
 const BADGES = [
-    { id: 'ev-halloween-2026', icon: '🎃', name: 'Halloween 2026', desc: 'Gagner la carte de la semaine d’Halloween 2026', event: 'halloween-2026',
+    { id: 'ev-halloween-2026', icon: '🎃', name: 'Halloween 2026', desc: '40 bonnes réponses pendant la semaine d’Halloween 2026', event: 'halloween-2026',
       test: s => s.eventsWon.includes('halloween-2026') },
     { id: 'first',     icon: '🌱', name: 'Premiers pas',        desc: 'Terminer un niveau',                    test: s => s.levelsDone >= 1 },
     { id: 'right25',   icon: '👍', name: 'Bien parti',          desc: '25 bonnes réponses du premier coup',    test: s => s.right >= 25 },
@@ -1014,7 +1014,7 @@ function showToast(text) {
 
 const EVENTS = [{
     id: 'halloween-2026', bank: 'halloween', name: 'Halloween', title: 'Semaine d’Halloween', icon: '🎃',
-    start: '2026-10-26', end: '2026-11-02', goal: 20, cls: 'event-halloween',
+    start: '2026-10-26', end: '2026-11-02', goal: 40, cls: 'event-halloween', tip: 'tipEventHalloween2026',
     decor: ['🎃', '👻', '🦇', '🕷️', '🕸️', '💀', '🧙', '🍬', '🌕', '⚰️'],
     card: { id: 'ev-halloween-2026', theme: 'Halloween 2026', icon: '🎃', name: 'Citrouille 2026', rarity: 'event',
             text: 'Gagnée pendant la semaine d’Halloween 2026.' }
@@ -1080,6 +1080,28 @@ function showEventFact(badge) {
     const r = badge.getBoundingClientRect();
     const top = r.bottom + 10 + bubble.offsetHeight < window.innerHeight - 90 ? r.bottom + 10 : r.top - 10 - bubble.offsetHeight;
     bubble.style.top = `${Math.max(70, top)}px`;
+}
+
+/** 1re visite de Défis pendant l'événement : une bulle sur son onglet (« Voir l'événement » y mène),
+    puis une bulle sur sa carte (comment gagner la carte et le badge). */
+function showEventTip() {
+    const ev = currentEvent();
+    const d = state.data;
+    if (!ev || d[ev.tip] || !d.tipChallenges || !tipAllowed('challengesScreen')) return;
+    if (challengesTab === 'event') { showEventPageTip(); return; }
+    startTip(ev.tip, [{
+        target: () => $('eventTab'),
+        text: `${ev.icon} C’est la ${ev.title.charAt(0).toLowerCase()}${ev.title.slice(1)} ! Touche ici : des questions spéciales, gratuites, et une carte à gagner seulement jusqu’au ${shortDate(ev.end)}.`
+    }], 'Voir l’événement');
+}
+function showEventPageTip() {
+    const ev = currentEvent();
+    const d = state.data;
+    if (!ev || d[`${ev.tip}Page`] || !tipAllowed('challengesScreen') || $('eventPage').hidden) return;
+    startTip(`${ev.tip}Page`, [{
+        target: () => document.querySelector('.event-card'),
+        text: `🎁 Chaque bonne réponse du premier coup compte. À ${ev.goal}, tu gagnes la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Joue autant de sessions que tu veux !`
+    }]);
 }
 
 /** Sous-onglet de l'événement dans Défis. */
@@ -1400,6 +1422,7 @@ function showScreen(name) {
     $('studyScreen').hidden = name !== 'study';
     $('onboardScreen').hidden = name !== 'onboard';
     if (name === 'challenges' && !state.data.tipChallenges) setTimeout(showChallengesTip, 500);
+    if (name === 'challenges') setTimeout(showEventTip, 700);
     if (name === 'profile' && !state.data.tipProfile) setTimeout(showProfileTip, 500);
     if (name === 'league' && !state.data.tipLeague) setTimeout(showLeagueTip, 900);
     $('topbar').hidden = !MAIN_SCREENS.includes(name);
@@ -4684,7 +4707,7 @@ function setChallengesTab(name) {
     $('defisPage').hidden = name !== 'defis';
     $('trainingPage').hidden = name !== 'training';
     $('eventPage').hidden = name !== 'event';
-    if (name === 'event') renderEvent();
+    if (name === 'event') { renderEvent(); setTimeout(showEventPageTip, 400); }
     if (name === 'training') {
         renderTraining();
         if (!state.data.tipTraining2) setTimeout(showTrainingTip, 400);
@@ -5910,6 +5933,10 @@ function endTour() {
     saveData();
     if (tourFlag === 'tipChallenges') {   // la bulle de l'onglet Défis mène à l'Entraînement (et à son explication)
         if (!skipped && challengesTab !== 'training') setChallengesTab('training');
+        return;
+    }
+    if (EVENTS.some(e => e.tip === tourFlag)) {   // bulle de l'onglet de l'événement → on y va
+        if (!skipped) setChallengesTab('event');
         return;
     }
     if (tourFlag === 'tipChest') {

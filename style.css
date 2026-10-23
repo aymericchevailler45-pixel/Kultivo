@@ -2732,7 +2732,7 @@ input, textarea, [contenteditable] {
 .flip.rarity-event { --r: var(--r-event); }
 .card-theme-head.is-event { color: var(--r-event); }
 /* Parcours et leçons teintés aux couleurs de l'événement */
-body.event-halloween .map-screen,
+body.event-halloween main,
 body.event-halloween .lesson {
     background: linear-gradient(180deg, rgba(255, 122, 0, 0.16), rgba(139, 92, 246, 0.18) 55%, rgba(255, 122, 0, 0.14));
 }
@@ -2749,3 +2749,7 @@ body.event-halloween .decor-badge { filter: drop-shadow(0 4px 10px rgba(255, 122
 .event-reward { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
 .event-reward .kcard { flex: 0 0 74px; width: 74px; }
 .event-reward p { margin: 0; font-weight: 700; }
+/* Pendant l'événement : barre du haut et barre d'onglets aux couleurs du thème */
+body.event-halloween .topbar { box-shadow: inset 0 -3px 0 #ff7a00; }
+body.event-halloween .nav-btn.is-active { box-shadow: inset 0 -3px 0 #ff7a00; }
+body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); }

@@ -356,9 +356,10 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    réutilisables chaque année). Pendant l'événement (`currentEvent`) : décor du parcours et des leçons remplacé
    (`buildDecor`, `showEventFact`), fond teinté (`body.event-halloween`), bandeau fixe sous la barre du haut
    (`eventBanner`), 3e sous-onglet « 🎃 Halloween » dans Défis (`eventPage`, `renderEvent`), sessions de 10 questions
-   gratuites sans cœurs (mode `event`, `pickEventCards`, `endEvent`), 20 bonnes réponses du 1er coup = carte
+   gratuites sans cœurs (mode `event`, `pickEventCards`, `endEvent`), 40 bonnes réponses du 1er coup (20 jugé trop facile) = carte
    « Citrouille 2026 » (rareté `event`, `EVENT_CARDS`, section « 🎉 Événements » de la collection, hors des 150) + badge
-   (visible seulement pendant l'événement ou une fois gagné). Démo hors dates : lien `?demo=halloween`.
+   (visible seulement pendant l'événement ou une fois gagné). Tout le jeu teinté (`body.event-halloween main`), liseré orange.
+   Bulles 1re visite : onglet de l'événement (`showEventTip`, drapeau `ev.tip`) puis sa carte (`showEventPageTip`). Démo hors dates : lien `?demo=halloween`.
    Autres événements proposés : Noël, Saint-Valentin, Coupe du monde / JO, Eurovision, fête de la musique, rentrée. 3. Rappels de série : PAS en appli web, à faire avec Capacitor (vraie appli). 4. Duel entre
    amis (10 mêmes questions, table Supabase `duels` → GRANT obligatoire, voir règle Supabase). 8. Statistiques anonymes
    (questions ratées / réussies par tous, niveaux abandonnés) pour régler le parcours.
