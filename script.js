@@ -358,7 +358,10 @@ function judge(input, rawAnswers, question = '') {
         const distance = levenshtein(typed, ans);
         if (distance === 0) return 'exact';
         const tolerance = ans.length >= 9 ? 2 : ans.length >= 5 ? 1 : 0;
-        if (distance <= tolerance) typo = true;
+        // Faute de frappe tolérée sur les lettres, jamais sur les nombres (« Louis 17 » ≠ « Louis 16 »)
+        const numbersAns = ans.match(/\d+(?:\.\d+)?/g) || [];
+        const sameNumbers = numbersAns.join(' ') === (typed.match(/\d+(?:\.\d+)?/g) || []).join(' ');
+        if (distance <= tolerance && sameNumbers) typo = true;
     }
     return typo ? 'typo' : 'wrong';
 }
