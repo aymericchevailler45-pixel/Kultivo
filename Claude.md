@@ -396,6 +396,9 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    un bandeau « 🎉 … tu gagnes 8 à 5 ! +20 🪙 » ; celui qui répond les reçoit sur son écran de fin, pastilles (`duelsBadge`) = duels à jouer + résultats pas encore regardés
    (`duelsViewed`, effacés en ouvrant l'historique de l'ami) sur l'onglet Classement, le titre « Duels » et la ligne ;
    questions de duel PAS enregistrées dans `stats` (pas de révision), record « ⚔️ Duels gagnés » (`totals.duelsWon`).
+   Questions (2026-10-23) : graines « v2- » = parcours (ids < 4000) + entraînement (x001-x150), d 1,5-3,5, ~2 100 questions
+   (liste figée : en ajouter ailleurs ne change pas les duels en cours) ; anciennes graines = parcours seul.
+   Correction des réponses : une faute de frappe n'est jamais tolérée sur un nombre (« Louis 17 » ≠ « Louis XVI »).
    Limite connue : un tricheur technique pourrait lire le score du lanceur avant de jouer (caché seulement dans le jeu). 8. Statistiques anonymes — FAIT le 2026-10-23 : `supabase/statistiques.sql` (À LANCER par l'utilisateur) = tables
    `question_stats` / `level_stats` (RLS sans règle), fonction `record_stats(p_answers, p_level, p_outcome)` (seule voie
    d'écriture, GRANT execute anon/authenticated), vues lisibles dans Supabase : `questions_les_plus_ratees`,
