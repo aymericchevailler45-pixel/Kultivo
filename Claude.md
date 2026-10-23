@@ -373,8 +373,10 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    (`renderDuelsCard` : duels à jouer / en attente, puis UNE ligne PAR AMI : pastille = bilan « 2 V · 1 D » (vert / rouge /
    gris), 2e ligne = « Dernier : 🏆 7 à 0 » (court : « 7/10 – 0/10 » était coupé sur téléphone) ; « 7–0 » seul refusé car on croyait à un bilan ; tap = `openDuelHistory`
    (bilan, Revanche, liste des duels → `openDuelReview`, avec « ← Tous les duels » ; pas de bouton profil, jugé inutile)), duels chargés avec le classement
-   (`leagueFetch` → `league.duels`), `handleDuelNews` (messages, +20 🪙 au gagnant une seule fois via `duelsSeen`),
-   pastille Classement = demandes d'amis + duels à jouer, record « ⚔️ Duels gagnés » (`totals.duelsWon`).
+   (`leagueFetch` → `league.duels`), `handleDuelNews` (+20 🪙 au gagnant une seule fois via `duelsSeen`, SANS message :
+   l'utilisateur ne veut pas de pop-up), pastilles (`duelsBadge`) = duels à jouer + résultats pas encore regardés
+   (`duelsViewed`, effacés en ouvrant l'historique de l'ami) sur l'onglet Classement, le titre « Duels » et la ligne ;
+   questions de duel PAS enregistrées dans `stats` (pas de révision), record « ⚔️ Duels gagnés » (`totals.duelsWon`).
    Limite connue : un tricheur technique pourrait lire le score du lanceur avant de jouer (caché seulement dans le jeu). 8. Statistiques anonymes — FAIT le 2026-10-23 : `supabase/statistiques.sql` (À LANCER par l'utilisateur) = tables
    `question_stats` / `level_stats` (RLS sans règle), fonction `record_stats(p_answers, p_level, p_outcome)` (seule voie
    d'écriture, GRANT execute anon/authenticated), vues lisibles dans Supabase : `questions_les_plus_ratees`,

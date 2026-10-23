@@ -2787,3 +2787,12 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 }
 .duel-new:active { transform: translateY(3px); box-shadow: none; }
 .duel-go { font-size: 1.2rem; }
+
+/* Pastilles des duels (à jouer, nouveau résultat) : sur le titre de la carte et sur la ligne de l'ami */
+.league-duels h2[data-notif], .league-people li.duel-row[data-notif] { position: relative; }
+.league-duels h2[data-notif]::after, .league-people li.duel-row[data-notif]::after {
+    content: attr(data-notif); position: absolute; top: -8px; min-width: 20px; height: 20px; padding: 0 6px;
+    border-radius: 10px; background: var(--red); color: #ffffff; font-size: 0.75rem; font-weight: 900; line-height: 20px; text-align: center;
+}
+.league-duels h2[data-notif]::after { right: -26px; top: -4px; }
+.league-people li.duel-row[data-notif]::after { left: -6px; }
