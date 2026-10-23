@@ -4426,14 +4426,60 @@ function openDuelHistory(otherId) {
     $('friendModal').querySelector('.modal-content').scrollTop = 0;
 }
 
+/** « + » : liste des amis ; un tap = le défier (un duel déjà en attente avec lui est signalé). */
+function openDuelPicker() {
+    const me = cloudUser.id;
+    const body = $('friendBody');
+    body.replaceChildren();
+    const h = el('h2', 'review-title');
+    h.textContent = '⚔️ Qui veux-tu défier ?';
+    body.append(h);
+    if (!league.friends.length) {
+        const p = el('p', 'muted');
+        p.textContent = 'Ajoute d’abord des amis (carte « 👥 Amis », juste en dessous).';
+        body.append(p);
+    }
+    const ul = el('ul', 'league-people duel-history');
+    league.friends.forEach(f => {
+        const waiting = duelsList().some(r => r.challenger === me && r.opponent === f.id && r.o_score === null && !duelExpired(r));
+        const tally = duelTally(duelsWith(f.id));
+        const li = el('li', `friend-row duel-row${waiting ? ' is-static' : ''}`);
+        const name = el('span', 'friend-name');
+        const b = el('b');
+        b.textContent = f.pseudo;
+        const i = el('span', 'friend-info');
+        i.textContent = waiting ? '⏳ un duel l’attend déjà'
+            : tally.w + tally.l + tally.t ? `Bilan : ${tallyText(tally)}` : 'Pas encore de duel';
+        name.append(b, i);
+        li.append(avatarEl(f.pseudo, f.look, 'is-small'), name);
+        if (!waiting) {
+            const go = el('span', 'duel-go');
+            go.textContent = '⚔️';
+            li.append(go);
+            li.addEventListener('click', () => challengeFriend(f));
+        }
+        ul.append(li);
+    });
+    body.append(ul);
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
+}
+
 /** Carte « ⚔️ Duels » de l'onglet Classement : une ligne compacte par duel (avatar, pseudo, état, score).
     Duel terminé : tap = le détail (questions, revanche, profil). Duel reçu : bouton « Jouer ». */
 function renderDuelsCard(grid) {
     const me = cloudUser.id;
     const box = el('article', 'card league-duels');
+    const head = el('div', 'duel-head');
     const h = el('h2');
     h.textContent = '⚔️ Duels';
-    box.append(h);
+    const plus = el('button', 'duel-new');
+    plus.type = 'button';
+    plus.textContent = '+';
+    plus.setAttribute('aria-label', 'Nouveau duel : choisir un ami');
+    plus.addEventListener('click', openDuelPicker);
+    head.append(h, plus);
+    box.append(head);
     const list = duelsList();
     const ul = el('ul', 'league-people duel-list');
     const add = (otherId, info, cls, { onRow = null, right = null } = {}) => {
@@ -4485,7 +4531,7 @@ function renderDuelsCard(grid) {
     if (!ul.children.length) {
         const p = el('p', 'muted');
         p.textContent = league.friends.length
-            ? 'Défie un ami : touche-le dans la liste ci-dessous, puis « ⚔️ Défier en duel ».'
+            ? 'Touche « + » pour défier un ami en duel !'
             : 'Ajoute des amis pour les défier en duel !';
         box.append(p);
     } else box.append(ul);

@@ -366,7 +366,8 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    scores / temps / grilles), RLS : voir ses duels, défier seulement un ami accepté, l'ami répond une fois en 48 h ;
    déclencheur `duels_guard` (l'ami ne change que ses cases). Jeu : mode `duel` (10 questions d 1,5 à 3,5 tirées avec la
    graine, `duelQuestions` ; un seul essai comme le défi du jour ; sans cœurs ni gouttes ni indice ni « J'avais juste »),
-   bouton « ⚔️ Défier » dans le profil d'un ami (`challengeFriend`), carte « ⚔️ Duels » dans Classement (lignes comme la
+   bouton « ⚔️ Défier » dans le profil d'un ami (`challengeFriend`) et bouton « + » dans le titre de la carte (`openDuelPicker` :
+   liste des amis, bilan, « un duel l'attend déjà »), carte « ⚔️ Duels » dans Classement (lignes comme la
    liste d'amis : avatar + pseudo cliquables vers le profil, « 📋 Revoir » les questions = `openDuelReview`, réponses tapées
    gardées dans `duelAnswers`)
    (`renderDuelsCard` : duels à jouer / en attente, puis UNE ligne PAR AMI : pastille = bilan « 2 V · 1 D » (vert / rouge /
