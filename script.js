@@ -1091,7 +1091,7 @@ function showEventTip() {
     if (challengesTab === 'event') { showEventPageTip(); return; }
     startTip(ev.tip, [{
         target: () => $('eventTab'),
-        text: `${ev.icon} C’est la ${ev.title.charAt(0).toLowerCase()}${ev.title.slice(1)} ! Touche ici : des questions spéciales, gratuites, et une carte à gagner seulement jusqu’au ${shortDate(ev.end)}.`
+        text: `${ev.icon} C’est la ${ev.title.charAt(0).toLowerCase()}${ev.title.slice(1)} ! Touche ici : des questions spéciales, qui ne coûtent pas de gouttes 💧, et une carte à gagner jusqu’au ${shortDate(ev.end)}.`
     }], 'Voir l’événement');
 }
 function showEventPageTip() {
@@ -1100,7 +1100,7 @@ function showEventPageTip() {
     if (!ev || d[`${ev.tip}Page`] || !tipAllowed('challengesScreen') || $('eventPage').hidden) return;
     startTip(`${ev.tip}Page`, [{
         target: () => document.querySelector('.event-card'),
-        text: `🎁 Chaque bonne réponse du premier coup compte. À ${ev.goal}, tu gagnes la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Joue autant de sessions que tu veux !`
+        text: `🎁 Seules les bonnes réponses du premier coup comptent : une question ratée puis retrouvée ne compte pas. À ${ev.goal}, tu gagnes la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Joue autant de sessions que tu veux !`
     }]);
 }
 
@@ -1117,20 +1117,20 @@ function renderEvent() {
     const h = el('h2');
     h.textContent = `${ev.icon} ${ev.title}`;
     const p = el('p');
-    p.textContent = `Des sessions de ${EVENT_SIZE} questions frissonnantes, gratuites (ni gouttes ni cœurs). Jusqu’au ${shortDate(ev.end)}.`;
+    p.textContent = `Des sessions de ${EVENT_SIZE} questions frissonnantes. Elles ne coûtent pas de gouttes 💧 et il n’y a pas de cœurs. Jusqu’au ${shortDate(ev.end)}.`;
     const n = Math.min(ed.right, ev.goal);
     const meter = el('div', 'meter');
     const fill = el('div', 'meter-fill');
     fill.style.width = `${Math.round((n / ev.goal) * 100)}%`;
     meter.append(fill);
     const count = el('p', 'event-count');
-    count.textContent = `${n} / ${ev.goal} bonnes réponses`;
+    count.textContent = `${n} / ${ev.goal} bonnes réponses du premier coup`;
     const reward = el('div', 'event-reward');
     const face = cardFace(ev.card, false, false);
     const rtext = el('p');
     rtext.textContent = ed.won
         ? '✅ Carte gagnée ! Elle est dans ta collection, et le badge dans ton profil.'
-        : `🎁 À ${ev.goal} bonnes réponses : la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Seulement cette semaine !`;
+        : `🎁 ${ev.goal} bonnes réponses du premier coup : la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Seulement cette semaine !`;
     reward.append(face, rtext);
     const actions = el('div', 'card-actions');
     const btn = el('button', 'btn btn-green');
@@ -1156,7 +1156,7 @@ function endEvent() {
         emoji: won ? '🏆' : ev.icon,
         title: won ? 'Carte gagnée !' : `${ev.icon} ${ev.name}`,
         text: won ? `Tu as gagné la carte « ${ev.card.name} » et le badge ${ev.name} 2026 !`
-            : `${right}/${state.total} du premier coup · ${Math.min(ed.right, ev.goal)} / ${ev.goal} pour la carte`,
+            : `${right} bonnes réponses du premier coup sur ${state.total} · total : ${Math.min(ed.right, ev.goal)} / ${ev.goal} pour la carte`,
         stats: [statXp(), statAccuracy(), statTime()],
         extra: rewardSummary(),
         primary: 'Rejouer',
