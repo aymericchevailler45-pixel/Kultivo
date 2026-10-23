@@ -347,6 +347,13 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
   « Régulier » passe de ~45 à ~60 🪙/jour, un « Intense » de ~85 à ~110 🪙/jour.
 - Tester dans Edge via `shot.ps1` (PowerShell), puis commit + push + vérification en ligne (règles habituelles).
 
+## IDÉES RETENUES (2026-10-23, l'utilisateur veut le détail avant le code)
+1. Missions de la semaine (3 par semaine, récompenses pièces + coffre). 2. Événements à thème (Halloween, Noël, JO…,
+   carte / badge limités). 3. Rappels de série : PAS en appli web, à faire avec Capacitor (vraie appli). 4. Duel entre
+   amis (10 mêmes questions, table Supabase `duels` → GRANT obligatoire, voir règle Supabase). 8. Statistiques anonymes
+   (questions ratées / réussies par tous, niveaux abandonnés) pour régler le parcours.
+Refusées / pas retenues pour l'instant : partage d'image du score, mode choix multiple, « En savoir plus », points faibles.
+
 ## AVANT DE PUBLIER (Play Store) — gardé en tête le 2026-10-19, rien de fait (l'utilisateur teste d'abord)
 Failles de triche repérées (ordre conseillé) :
 1. 🔴 « J'avais juste » (`forceBtn`, `forced` dans `commit`) : illimité dans niveaux / révisions / entraînement → jamais de
