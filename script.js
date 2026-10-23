@@ -4190,7 +4190,10 @@ async function flushReports() {
 // mêmes. Le plus de bonnes réponses gagne (égalité : le plus rapide). Gagnant : +20 🪙. Gratuit en gouttes.
 
 const DUEL_SIZE = 10;
-const DUEL_COINS = 20;
+const DUEL_COINS = 20;        // gagnant
+const DUEL_COINS_LOSE = 5;    // perdant : petite récompense de participation (2026-10-23)
+const DUEL_COINS_TIE = 10;    // égalité parfaite : chacun
+const duelPrize = res => (res > 0 ? DUEL_COINS : res < 0 ? DUEL_COINS_LOSE : DUEL_COINS_TIE);
 const DUEL_HOURS = 48;
 
 /** Les 10 questions d'un duel : les mêmes pour les deux joueurs (difficulté moyenne). */
@@ -4278,13 +4281,14 @@ async function endDuel() {
                 const d = state.data;
                 d.duelsSeen[row.id] = 1;
                 d.duelsViewed[row.id] = 1;
-                if (res > 0) { d.coins += DUEL_COINS; d.totals.duelsWon = (d.totals.duelsWon || 0) + 1; launchConfetti(); }
+                d.coins += duelPrize(res);
+                if (res > 0) { d.totals.duelsWon = (d.totals.duelsWon || 0) + 1; launchConfetti(); }
                 saveData();
                 renderHeader();
                 $('endEmoji').textContent = res > 0 ? '🏆' : res < 0 ? '😅' : '🤝';
                 $('endTitle').textContent = res > 0 ? 'Duel gagné !' : res < 0 ? 'Duel perdu' : 'Égalité parfaite !';
                 $('endText').textContent = `Toi : ${score}/${DUEL_SIZE} en ${fmtTime(seconds)} · ${du.friend.pseudo} : ${row.c_score}/${DUEL_SIZE} en ${fmtTime(row.c_seconds)}`
-                    + (res > 0 ? `\n+${DUEL_COINS} 🪙` : '');
+                    + `\n+${duelPrize(res)} 🪙`;
             }
         }
     } catch (err) {
@@ -4309,10 +4313,9 @@ function markDuelsViewed(otherId) {
         d.duelsViewed[r.id] = 1;
         if (!d.duelsSeen[r.id]) {
             d.duelsSeen[r.id] = 1;
-            if (duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds) > 0) {
-                d.coins += DUEL_COINS;
-                d.totals.duelsWon = (d.totals.duelsWon || 0) + 1;
-            }
+            const res = duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds);
+            d.coins += duelPrize(res);
+            if (res > 0) d.totals.duelsWon = (d.totals.duelsWon || 0) + 1;
         }
     });
     if (news.length) {
@@ -4414,15 +4417,19 @@ function openDuelHistory(otherId) {
     body.append(head);
     if (news.length) {
         const won = news.filter(r => duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds) > 0);
+        const coins = news.reduce((sum, r) => sum + duelPrize(duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds)), 0);
         const last = news[0];
         const res = duelCompare(last.c_score, last.c_seconds, last.o_score, last.o_seconds);
         const banner = el('p', `duel-news ${won.length ? 'is-win' : 'is-loss'}`);
         const byTime = last.c_score === last.o_score
             ? ` au temps (${fmtTime(Math.min(last.c_seconds, last.o_seconds))} contre ${fmtTime(Math.max(last.c_seconds, last.o_seconds))})` : '';
-        banner.textContent = (res > 0 ? `🎉 ${pseudo} a joué ton duel : tu gagnes ${last.c_score} à ${last.o_score}${byTime} !`
+        const lost = news.length - won.length - news.filter(r => duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds) === 0).length;
+        banner.textContent = (news.length > 1
+            ? `⚔️ ${news.length} nouveaux résultats contre ${pseudo} : ${plural(won.length, 'victoire', 'victoires')}, ${plural(lost, 'défaite', 'défaites')}.`
+            : res > 0 ? `🎉 ${pseudo} a joué ton duel : tu gagnes ${last.c_score} à ${last.o_score}${byTime} !`
             : res < 0 ? `😅 ${pseudo} a joué ton duel et gagne ${last.o_score} à ${last.c_score}${byTime}.`
             : `🤝 ${pseudo} a joué ton duel : égalité parfaite !`)
-            + (won.length ? ` +${won.length * DUEL_COINS} 🪙` : '');
+            + ` +${coins} 🪙`;
         body.append(banner);
         if (won.length) playSound('win');
     }
@@ -4443,7 +4450,7 @@ function openDuelHistory(otherId) {
         i.textContent = new Date(g.row.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
             + ` · toi ${fmtTime(g.t1)}, ${pseudo} ${fmtTime(g.t2)}`
             + (g.s1 === g.s2 && g.res !== 0 ? ' (départagés au temps)' : '')
-            + (g.res > 0 ? ` · +${DUEL_COINS} 🪙` : '');
+            + ` · +${duelPrize(g.res)} 🪙`;
         name.append(b, i);
         const go = el('span', 'friend-go');
         go.textContent = '›';

@@ -377,8 +377,8 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    gris), 2e ligne = « Dernier : 🏆 7 à 0 » (court : « 7/10 – 0/10 » était coupé sur téléphone) ; « 7–0 » seul refusé car on croyait à un bilan ; tap = `openDuelHistory`
    (bilan, Revanche, liste des duels → `openDuelReview`, avec « ← Tous les duels » ; pas de bouton profil, jugé inutile)), duels chargés avec le classement
    (`leagueFetch` → `league.duels`), pas de message (l'utilisateur ne veut pas de pop-up) ; temps de chacun
-   affiché (historique, détail, fin de duel ; « départagés au temps » si même score, règle rappelée au lancement) ; les +20 🪙 d'un duel
-   gagné (lancé par moi) sont données en OUVRANT l'historique de l'ami (`markDuelsViewed`, une fois via `duelsSeen`), avec
+   affiché (historique, détail, fin de duel ; « départagés au temps » si même score, règle rappelée au lancement) ; pièces (`duelPrize`) : gagnant +20, perdant +5,
+   égalité parfaite +10 chacun (demandé le 2026-10-23) ; pour un duel lancé par moi, données en OUVRANT l'historique de l'ami (`markDuelsViewed`, une fois via `duelsSeen`), avec
    un bandeau « 🎉 … tu gagnes 8 à 5 ! +20 🪙 » ; celui qui répond les reçoit sur son écran de fin, pastilles (`duelsBadge`) = duels à jouer + résultats pas encore regardés
    (`duelsViewed`, effacés en ouvrant l'historique de l'ami) sur l'onglet Classement, le titre « Duels » et la ligne ;
    questions de duel PAS enregistrées dans `stats` (pas de révision), record « ⚔️ Duels gagnés » (`totals.duelsWon`).
