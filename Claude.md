@@ -352,7 +352,8 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    (`weekMissions`, graine = lundi), `missionEvent` appelé aux bonnes réponses / fins de partie, `missions` dans la
    sauvegarde, 30 🪙 chacune + coffre de 3 cartes ; ligne compacte `missionsRow` sous l'objectif + fenêtre `missionsModal`.
    Objectif du jour plus compact : les 3 choix de rythme cachés une fois la journée commencée. 2. Événements à thème — HALLOWEEN FAIT le 2026-10-23 (du 26/10 au 02/11/2026) : `EVENTS` (dates, décor, carte), questions
-   dans `evenements/halloween.js` (`EVENT_BANKS.halloween`, 55 questions ids 30000+, + `halloweenFacts` pour les décors ;
+   dans `evenements/halloween.js` (`EVENT_BANKS.halloween`, 55 questions ids 30000+, moyenne d 2,2 depuis le 2026-10-23 : 15 trop
+   dures remplacées par des faciles à la demande de l'utilisateur ; + `halloweenFacts` pour les décors ;
    réutilisables chaque année). Pendant l'événement (`currentEvent`) : décor du parcours et des leçons remplacé
    (`buildDecor`, `showEventFact`), fond teinté (`body.event-halloween`), bandeau fixe sous la barre du haut
    (`eventBanner`), 3e sous-onglet « 🎃 Halloween » dans Défis (`eventPage`, `renderEvent`), sessions de 10 questions
