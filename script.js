@@ -1350,6 +1350,7 @@ function renderMap() {
         const done = !!state.data.done[n];
 
         const li = el('li', `stop${info.challenge ? ' is-challenge-stop' : ''}${info.pairs ? ' is-pairs-stop' : ''}${info.order ? ' is-order-stop' : ''}`);
+        li.dataset.level = String(n);
         li.style.setProperty('--x', info.challenge ? '0px' : `${Math.round(Math.sin(n * 1.3) * 52)}px`);
 
         const status = locked ? 'is-locked' : done ? 'is-done' : 'is-current';
@@ -1363,7 +1364,12 @@ function renderMap() {
             span.textContent = icon;
             btn.append(span);
         } else {
-            btn.textContent = locked ? '🔒' : done ? '✓' : String(n);
+            btn.textContent = locked ? '🔒' : String(n);
+        }
+        if (done) {   // niveau terminé : son numéro reste lisible, la coche passe dans le coin
+            const check = el('span', 'node-check');
+            check.textContent = '✓';
+            btn.append(check);
         }
         btn.setAttribute('aria-label',
             `${info.challenge ? '' : `Niveau ${n}, `}${info.name}${locked ? ', verrouillé' : done ? ', terminé' : ''}`);
@@ -1390,10 +1396,42 @@ function renderMap() {
         if (n % CHEST_EVERY === 0) list.append(chestStop(n));
     }
 
+    renderMapFriends();
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
     setTimeout(updateToCurrentBtn, 50);
     if (!state.data.tipChest && readyChests().length) maybeShowChestTip();
     else if (!state.data.tipReviews && currentReviewsLabel()) maybeShowReviewsTip();
+}
+
+/** Avatars des amis à côté du niveau où ils en sont (d'après leur résumé : `unlocked`). Tap = leur profil.
+    Redessiné à chaque mise à jour du classement, sans redessiner toute la carte (sinon elle défilerait). */
+function renderMapFriends() {
+    document.querySelectorAll('.map-friends').forEach(b => b.remove());
+    if (!league?.friends?.length) return;
+    const byLevel = {};
+    for (const f of league.friends) {
+        const lvl = Math.min(MAX_LEVEL, f.summary?.unlocked || 0);
+        if (lvl > 0) (byLevel[lvl] = byLevel[lvl] || []).push(f);
+    }
+    for (const [lvl, friends] of Object.entries(byLevel)) {
+        const stop = document.querySelector(`.stop[data-level="${lvl}"]`);
+        if (!stop) continue;
+        const box = el('div', 'map-friends');
+        friends.slice(0, 3).forEach(f => {
+            const b = el('button', 'map-friend');
+            b.type = 'button';
+            b.setAttribute('aria-label', `${f.pseudo} est au niveau ${lvl}`);
+            b.append(avatarEl(f.pseudo, f.look, 'is-small'));
+            b.addEventListener('click', e => { e.stopPropagation(); openFriendProfile(f); });
+            box.append(b);
+        });
+        if (friends.length > 3) {
+            const more = el('span', 'map-friends-more');
+            more.textContent = `+${friends.length - 3}`;
+            box.append(more);
+        }
+        stop.append(box);
+    }
 }
 
 /* ---------- Coffres et collection de cartes ---------- */
@@ -4649,6 +4687,7 @@ function profileSummary() {
         streak: currentStreak(),
         bestStreak: Math.max(d.best.streak, currentStreak()),
         levels: Object.values(d.done).filter(Boolean).length,
+        unlocked: d.unlocked,   // niveau en cours (avatar sur le parcours des amis)
         rate: d.totals.tries > 0 ? Math.round((d.totals.right / d.totals.tries) * 100) : null,
         sprint: d.best.sprint || 0,
         badges: Object.keys(d.badges).filter(id => d.badges[id]),
@@ -4958,6 +4997,7 @@ async function leagueFetch() {
     }
     updateNavNotifications();
     refreshLeagueView();
+    renderMapFriends();
     if (!$('challengesScreen').hidden) renderDailyFriends(state.data.daily[todayKey()]);
     handleInvite();   // sans attendre : la fenêtre « ajouter en ami ? » peut rester ouverte
     checkPodium();

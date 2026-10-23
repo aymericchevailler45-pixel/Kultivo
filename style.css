@@ -330,6 +330,23 @@ body {
 
 .node.is-current { background: var(--green);  color: var(--on-green); --deep: var(--green-deep); }
 .node.is-done    { background: var(--gold);   color: var(--on-gold);  --deep: var(--gold-deep); }
+/* Niveau terminé : le numéro reste, petite coche dans le coin */
+.node-check {
+    position: absolute; top: -4px; right: -4px; width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--surface); color: var(--gold-deep);
+    font-size: 0.95rem; font-weight: 900; box-shadow: 0 0 0 3px var(--gold), 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+.node.is-order .node-check { transform: rotate(-45deg); }
+/* Amis sur le parcours : petits avatars à côté du niveau où ils en sont */
+.stop { position: relative; }
+.map-friends {
+    position: absolute; top: 18px; left: calc(50% + 54px); display: flex; align-items: center; z-index: 3;
+}
+.is-challenge-stop .map-friends { left: calc(50% + 64px); }
+.map-friend { padding: 0; border: 0; background: none; cursor: pointer; margin-left: -10px; border-radius: 50%; }
+.map-friend:first-child { margin-left: 0; }
+.map-friend .league-avatar.is-small { width: 36px; height: 36px; box-shadow: 0 0 0 3px var(--surface), 0 3px 8px rgba(0, 0, 0, 0.18); }
+.map-friends-more { margin-left: 4px; font-size: 0.8rem; font-weight: 900; color: var(--muted); }
 .node.is-locked  { background: var(--locked); color: var(--muted);    --deep: var(--locked-deep); cursor: not-allowed; font-size: 1.5rem; }
 
 /* Niveau défi : plus gros, violet */
