@@ -3,6 +3,20 @@
 Quiz de culture générale façon Duolingo, 100 % navigateur (HTML/CSS/JS), sans serveur.
 Propriétaire : francophone. Répondre en français, expliquer simplement, pas de jargon inutile.
 
+## OÙ ON EN EST (2026-10-23, avant compactage)
+- Fait récemment : gouttes 💧, 170 niveaux en une seule courbe, placement (8 étapes, cartes / XP / pièces rattrapés),
+  remise à zéro générale, correction des nombres (5e, Louis XIV, dix-sept, 42,195), amis sur le parcours, missions de la
+  semaine, événement Halloween (26/10 → 02/11, démo `?demo=halloween`), statistiques anonymes, duels entre amis
+  (SQL lancés par l'utilisateur : duels OK), avatar (24 couleurs en dégradé, 39 dessins).
+- Préférences de l'utilisateur (récentes) : pas de messages qui surgissent pour les nouvelles (pastilles rouges à la place) ;
+  pas trop de bulles d'explication ; textes très clairs, sans ambiguïté (ex. « 7 à 0 » / « 7/10 contre 0/10 ») ; vérifier
+  l'affichage à la largeur d'un téléphone (360 px) ; vérifier les faits en ligne ; questions d'événement accessibles (d ≈ 2,2).
+- Prochaines pistes : événement de Noël (fin novembre), « Qui suis-je ? », puis la liste « AVANT DE PUBLIER » (triche
+  « J'avais juste », protection classement / duels / heure, suppression de compte, politique de confidentialité, 12 testeurs).
+  Abandonné : « Revoir le tutoriel », plein écran en appli web.
+- Outils de test (scratchpad de la session) : `shot.ps1` (capture Edge, PowerShell), `dump.ps1`, `free_subjects.py`,
+  `check_lot2.py`, `duel_test.js`, `event_test.js`. Écrire les scripts avec l'outil d'écriture (les « heredoc » abîment les \).
+
 ## REMISE À ZÉRO GÉNÉRALE (2026-10-20, demande de l'utilisateur : « tout tout effacer »)
 - Code : `RESET_EPOCH` (script.js) + `resetEpoch` dans chaque sauvegarde. À l'ouverture, une sauvegarde de l'appareil sans
   la bonne marque est effacée avec le compte connecté, le cache du classement et les clés v1 (`wipeBeforeReset`) ; une
