@@ -1,0 +1,92 @@
+'use strict';
+
+/* ============================================================
+   KULTIVO — questions de l'événement Halloween (ids 30000+, séparées du parcours et de l'entraînement)
+   Réutilisables chaque année : ajouter quelques questions nouvelles pour l'édition suivante.
+   Même format que questions.js (theme = vrai thème du jeu, pour les missions « bonnes réponses en … »).
+   ============================================================ */
+
+const EVENT_BANKS = window.EVENT_BANKS || (window.EVENT_BANKS = {});
+
+EVENT_BANKS.halloween = [
+    // Origines et traditions
+    { id: 30000, theme: "Histoire", d: 2, q: "De quelle ancienne fête celte, célébrée le 31 octobre, Halloween est-il issu ?", a: ["Samhain", "Samain"], exp: "Elle marquait la fin des récoltes et le début de l’hiver : on pensait que les morts pouvaient revenir cette nuit-là." },
+    { id: 30001, theme: "Géographie", d: 2, q: "De quel pays Halloween est-il originaire ?", a: ["L’Irlande", "Irlande"], exp: "Les immigrés irlandais l’ont emporté aux États-Unis au XIXe siècle." },
+    { id: 30002, theme: "Gastronomie", d: 2.5, q: "Avant la citrouille, quel légume les Irlandais creusaient-ils pour en faire des lanternes ?", a: ["Le navet", "Navet", "Navets", "Rutabaga", "Betterave"], exp: "Arrivés en Amérique, ils l’ont remplacé par la citrouille, plus grosse et plus facile à creuser." },
+    { id: 30003, theme: "Langue française", d: 3, q: "Comment s’appelle en anglais la citrouille creusée et éclairée d’une bougie ?", a: ["Jack-o’-lantern", "Jack-o'-lantern", "Jack o lantern", "Jack-o-lantern"], exp: "D’après la légende de Jack, un forgeron rusé condamné à errer avec une braise dans un navet." },
+    { id: 30004, theme: "Histoire", d: 2.5, q: "Quelle grande fête mexicaine, début novembre, honore les défunts avec des autels fleuris ?", a: ["Le Jour des morts", "Jour des morts", "Día de los Muertos", "Dia de los muertos"], exp: "Elle est inscrite au patrimoine culturel immatériel de l’Unesco depuis 2008." },
+    { id: 30005, theme: "Arts", d: 3, q: "Quelle squelette élégante au grand chapeau fleuri est l’icône de cette fête mexicaine des défunts ?", a: ["La Catrina", "Catrina", "Calavera Catrina"], exp: "Dessinée vers 1910 par le graveur José Guadalupe Posada." },
+    { id: 30006, theme: "Gastronomie", d: 1.5, q: "Quel gros fruit orange est le symbole d’Halloween ?", a: ["La citrouille", "Citrouille", "Potiron", "Courge"], exp: "Elle est composée à environ 90 % d’eau." },
+    { id: 30007, theme: "Sciences", d: 3.5, q: "À quelle famille de plantes appartient la citrouille, comme le melon et le concombre ?", a: ["Les cucurbitacées", "Cucurbitacées", "Cucurbitacee"], exp: "La même famille que la courgette et la pastèque." },
+    { id: 30008, theme: "Histoire", d: 2.5, q: "Dans quelle ville du Massachusetts a eu lieu le célèbre procès des sorcières de 1692 ?", a: ["Salem"], exp: "Vingt personnes y ont été exécutées après des accusations de sorcellerie." },
+    { id: 30009, theme: "Histoire", d: 3, q: "Quel prince de Valachie du XVe siècle, surnommé « l’Empaleur », aurait inspiré Dracula ?", a: ["Vlad III", "Vlad Tepes", "Vlad Țepeș", "Vlad"], exp: "Il signait parfois « Dracula », « le fils du dragon »." },
+    { id: 30010, theme: "Histoire", d: 3.5, q: "Quelle comtesse hongroise, morte en 1614, fut accusée d’avoir tué des centaines de jeunes filles ?", a: ["Élisabeth Báthory", "Erzsébet Báthory", "Báthory", "Bathory"], exp: "Surnommée « la comtesse sanglante », elle a fini emmurée dans son château." },
+    { id: 30011, theme: "Histoire", d: 3, q: "Dans quelle région de Lozère une bête mystérieuse a-t-elle tué une centaine de personnes, de 1764 à 1767 ?", a: ["Le Gévaudan", "Gévaudan", "Gevaudan"], exp: "Loup géant, hybride ou plusieurs loups ? Le mystère n’a jamais été vraiment résolu." },
+    { id: 30012, theme: "Histoire", d: 3, q: "Quel surnom a reçu le tueur jamais identifié du quartier de Whitechapel, à Londres, en 1888 ?", a: ["Jack l’Éventreur", "Jack l'Eventreur", "Jack the Ripper", "L’Éventreur"], exp: "Des centaines de suspects ont été proposés depuis, sans preuve définitive." },
+    { id: 30013, theme: "Monuments", d: 2.5, q: "Quel ossuaire souterrain de Paris abrite les restes d’environ 6 millions de personnes ?", a: ["Les Catacombes", "Catacombes"], exp: "Les ossements des cimetières parisiens y ont été transférés à partir de la fin du XVIIIe siècle." },
+    { id: 30014, theme: "Monuments", d: 3.5, q: "Quel château de Transylvanie est souvent présenté comme le « château de Dracula » ?", a: ["Bran"], exp: "Vlad l’Empaleur n’y a sans doute jamais vécu, mais les touristes s’y pressent." },
+
+    // Littérature
+    { id: 30015, theme: "Littérature", d: 3, q: "Quel écrivain américain a créé le monstre Cthulhu ?", a: ["H. P. Lovecraft", "Lovecraft", "HP Lovecraft", "Howard Phillips Lovecraft"], exp: "« L’Appel de Cthulhu » est paru en 1928." },
+    { id: 30016, theme: "Littérature", d: 3, q: "Quel écrivain français a écrit « Le Fantôme de l’Opéra », paru en 1910 ?", a: ["Gaston Leroux", "Leroux"], exp: "Il est aussi le créateur du reporter-détective Rouletabille." },
+    { id: 30017, theme: "Littérature", d: 3, q: "Dans quel village américain galope le Cavalier sans tête de Washington Irving ?", a: ["Sleepy Hollow"], exp: "Tim Burton en a tiré un film en 1999, avec Johnny Depp." },
+    { id: 30018, theme: "Littérature", d: 3, q: "Quelle romancière américaine a écrit « Entretien avec un vampire » ?", a: ["Anne Rice", "Rice"], exp: "Adapté au cinéma en 1994 avec Tom Cruise et Brad Pitt." },
+    { id: 30019, theme: "Littérature", d: 2.5, q: "Dans le roman de Mary Shelley, Frankenstein est-il le nom du savant ou de sa créature ?", a: ["Le savant", "Savant", "Le scientifique", "Victor Frankenstein", "Le docteur"], exp: "Victor Frankenstein est le savant ; sa créature n’a pas de nom." },
+    { id: 30020, theme: "Littérature", d: 3, q: "Quel chasseur de vampires néerlandais affronte Dracula dans le roman de Bram Stoker ?", a: ["Van Helsing", "Abraham Van Helsing"], exp: "Un professeur et médecin d’Amsterdam." },
+    { id: 30021, theme: "Mythologie", d: 2.5, q: "Quelle créature d’argile d’une légende juive de Prague prend vie grâce à un mot sacré ?", a: ["Le Golem", "Golem"], exp: "On raconte que ses restes dorment encore dans le grenier de la vieille synagogue." },
+    { id: 30022, theme: "Littérature", d: 2, q: "Quelle série de livres pour la jeunesse de R. L. Stine porte le nom d’une réaction de la peau quand on a peur ?", a: ["Chair de poule"], exp: "« Goosebumps » en anglais : plus de 400 millions de livres vendus." },
+
+    // Cinéma et séries
+    { id: 30023, theme: "Cinéma", d: 2, q: "Dans quelle saga d’horreur le tueur porte-t-il le masque « Ghostface » ?", a: ["Scream"], exp: "Le masque s’inspire du tableau « Le Cri » d’Edvard Munch." },
+    { id: 30024, theme: "Cinéma", d: 2.5, q: "Comment s’appelle le tueur masqué de la saga « Halloween » de John Carpenter ?", a: ["Michael Myers", "Myers"], exp: "Son masque blanc était, au départ, un masque du capitaine Kirk de Star Trek peint en blanc." },
+    { id: 30025, theme: "Cinéma", d: 2.5, q: "Quel tueur au gant griffu attaque les adolescents dans leurs rêves ?", a: ["Freddy Krueger", "Freddy", "Krueger"], exp: "Le méchant de « Les Griffes de la nuit » (1984), de Wes Craven." },
+    { id: 30026, theme: "Cinéma", d: 2, q: "Comment s’appelle la poupée tueuse de la saga d’horreur « Jeu d’enfant » ?", a: ["Chucky"], exp: "L’âme d’un tueur en série est enfermée dans cette poupée rousse." },
+    { id: 30027, theme: "Cinéma", d: 2.5, q: "Dans quelle saga le tueur Jigsaw piège-t-il ses victimes dans des jeux cruels ?", a: ["Saw"], exp: "Le premier film, en 2004, a été tourné en 18 jours." },
+    { id: 30028, theme: "Cinéma", d: 3, q: "Quel film de 1999, présenté comme des images retrouvées, suit trois étudiants perdus dans une forêt du Maryland ?", a: ["Le Projet Blair Witch", "Blair Witch", "The Blair Witch Project"], exp: "Tourné pour environ 60 000 dollars, il en a rapporté près de 250 millions." },
+    { id: 30029, theme: "Cinéma", d: 3, q: "Quel film de 1973 de William Friedkin raconte la possession de la petite Regan ?", a: ["L’Exorciste", "Exorciste", "The Exorcist"], exp: "Le premier film d’horreur nommé à l’Oscar du meilleur film." },
+    { id: 30030, theme: "Cinéma", d: 3, q: "Quel film muet allemand de 1922, de Murnau, met en scène le vampire comte Orlok ?", a: ["Nosferatu"], exp: "Robert Eggers en a tourné une nouvelle version en 2024." },
+    { id: 30031, theme: "Cinéma", d: 3, q: "Dans « L’Étrange Noël de monsieur Jack », comment s’appelle la ville du héros ?", a: ["Halloween Town", "Halloween"], exp: "Jack Skellington, son roi, découvre la ville de Noël et veut s’emparer de la fête." },
+    { id: 30032, theme: "Cinéma", d: 2, q: "Comment s’appelle le gentil petit fantôme des dessins animés, adapté au cinéma en 1995 ?", a: ["Casper"], exp: "Apparu en dessin animé en 1945, il veut seulement se faire des amis." },
+    { id: 30033, theme: "Cinéma", d: 2.5, q: "Quel film Disney de 1993 met en scène les trois sœurs sorcières Sanderson ?", a: ["Hocus Pocus"], exp: "Une suite est sortie en 2022, avec les mêmes actrices." },
+    { id: 30034, theme: "Cinéma", d: 2.5, q: "Quelle fillette découvre une « autre mère » aux yeux en boutons, dans un film d’animation de 2009 ?", a: ["Coraline"], exp: "D’après le roman de Neil Gaiman, en animation image par image." },
+    { id: 30035, theme: "Cinéma", d: 2.5, q: "Dans quel film de M. Night Shyamalan un petit garçon dit-il « Je vois des gens qui sont morts » ?", a: ["Sixième Sens", "Le Sixième Sens", "The Sixth Sense"], exp: "Avec Bruce Willis, et une fin restée célèbre." },
+    { id: 30036, theme: "Cinéma", d: 3, q: "Comment s’appelle la poupée maléfique de l’univers « Conjuring », qui a eu son propre film en 2014 ?", a: ["Annabelle"], exp: "Une vraie poupée, de chiffon celle-là, est exposée dans le musée des Warren." },
+    { id: 30037, theme: "Cinéma", d: 2, q: "Quelles petites créatures ne doivent ni être mouillées ni nourries après minuit ?", a: ["Les Gremlins", "Gremlins", "Gremlin", "Mogwaï", "Mogwai"], exp: "Le gentil Gizmo, lui, est un mogwaï." },
+    { id: 30038, theme: "Cinéma", d: 2, q: "Dans quelle saga d’animation Dracula accueille-t-il des monstres en vacances ?", a: ["Hôtel Transylvanie", "Hotel Transylvanie", "Hotel Transylvania"], exp: "Quatre films, de 2012 à 2022." },
+    { id: 30039, theme: "Cinéma", d: 2, q: "Dans quel film Pixar Sulli et Bob font-ils peur aux enfants pour produire de l’énergie ?", a: ["Monstres et Cie", "Monstres et Compagnie", "Monstres & Cie", "Monsters Inc"], exp: "Les cris des enfants alimentent la ville de Monstropolis." },
+    { id: 30040, theme: "Cinéma", d: 2, q: "Quelle série met en scène Rick Grimes dans un monde envahi par les zombies ?", a: ["The Walking Dead", "Walking Dead"], exp: "Onze saisons, de 2010 à 2022, d’après la bande dessinée de Robert Kirkman." },
+    { id: 30041, theme: "Cinéma", d: 2.5, q: "Quelle héroïne de série des années 1990 est une « tueuse de vampires » ?", a: ["Buffy", "Buffy Summers"], exp: "« Buffy contre les vampires », avec Sarah Michelle Gellar." },
+    { id: 30042, theme: "Cinéma", d: 3.5, q: "Quel tueur porte un masque de peau humaine dans « Massacre à la tronçonneuse » ?", a: ["Leatherface"], exp: "Le film de Tobe Hooper (1974) s’inspire en partie du criminel Ed Gein." },
+
+    // Musique
+    { id: 30043, theme: "Musique", d: 3, q: "Quelle œuvre pour orgue de Bach, au début très célèbre, accompagne souvent les scènes de vampires ?", a: ["Toccata et fugue en ré mineur", "Toccata et fugue", "Toccata"], exp: "Ses premières notes sont devenues le son des films d’épouvante." },
+    { id: 30044, theme: "Musique", d: 3.5, q: "Quel acteur célèbre pour ses films d’horreur dit le monologue final de « Thriller » ?", a: ["Vincent Price", "Price"], exp: "Son rire glaçant clôt la chanson de Michael Jackson (1982)." },
+    { id: 30045, theme: "Musique", d: 3, q: "Quel chanteur américain au maquillage effrayant se produit sur scène avec un serpent ?", a: ["Alice Cooper", "Cooper"], exp: "Le roi du « shock rock », auteur de « Poison » (1989)." },
+
+    // Nature
+    { id: 30046, theme: "Sciences", d: 2.5, q: "Quelle araignée doit son nom au fait que la femelle dévore parfois le mâle ?", a: ["La veuve noire", "Veuve noire"], exp: "On la reconnaît au sablier rouge sous son abdomen." },
+    { id: 30047, theme: "Sciences", d: 3, q: "Sur quel continent vivent les chauves-souris vampires, qui se nourrissent de sang ?", a: ["L’Amérique", "Amérique", "Amérique du Sud", "Amérique latine", "Amérique centrale"], exp: "Du Mexique à l’Argentine. Elles partagent même leur repas avec les plus affamées." },
+    { id: 30048, theme: "Sciences", d: 2.5, q: "Comment s’appelle la grosse araignée velue souvent associée à Halloween, comme la tarentule ?", a: ["La mygale", "Mygale"], exp: "Malgré son air effrayant, sa morsure est rarement dangereuse pour l’homme." },
+    { id: 30049, theme: "Mythologie", d: 3, q: "Quelle fée du folklore irlandais pousse un cri qui annonce une mort prochaine ?", a: ["La banshee", "Banshee", "Bean sidhe"], exp: "Son nom vient de l’irlandais « bean sí », la femme des collines féeriques." },
+    { id: 30050, theme: "Mythologie", d: 3, q: "Comment s’appelle la célèbre légende de l’auto-stoppeuse fantôme qui disparaît dans la voiture ?", a: ["La Dame blanche", "Dame blanche"], exp: "On la raconte sur des dizaines de routes de France." },
+
+    // Jeux vidéo
+    { id: 30051, theme: "Jeux", d: 2.5, q: "Dans quel jeu vidéo surveille-t-on, la nuit, les animatroniques d’une pizzeria ?", a: ["Five Nights at Freddy’s", "Five Nights at Freddy's", "Five Nights at Freddys", "FNAF"], exp: "Un jeu indépendant de 2014, adapté au cinéma en 2023." },
+    { id: 30052, theme: "Jeux", d: 2, q: "Dans quel jeu Nintendo le frère de Mario aspire-t-il des fantômes avec un aspirateur ?", a: ["Luigi’s Mansion", "Luigi's Mansion", "Luigis Mansion"], exp: "Sorti en 2001 avec la GameCube." },
+    { id: 30053, theme: "Jeux", d: 3.5, q: "Quel jeu de 2020 fait de vous une équipe de chasseurs de fantômes, armés de détecteurs ?", a: ["Phasmophobia"], exp: "Son nom veut dire « peur des fantômes »." },
+    { id: 30054, theme: "Jeux", d: 2, q: "Dans quel jeu vidéo défend-on sa maison face aux morts-vivants, à l’aide de tournesols et de pois ?", a: ["Plants vs. Zombies", "Plants vs Zombies", "Plantes contre zombies", "PvZ"], exp: "Tournesols, pois et noix géantes contre les zombies, depuis 2009." }
+];
+
+/* Anecdotes des décors du parcours pendant l'événement (une par icône) */
+EVENT_BANKS.halloweenFacts = [
+    'Halloween vient de « All Hallows’ Eve » : la veille de la Toussaint.',
+    'Les plus grosses citrouilles du monde dépassent une tonne !',
+    'Les chauves-souris vampires partagent leur repas de sang avec leurs voisines affamées.',
+    'Bram Stoker, l’auteur de « Dracula », n’est jamais allé en Transylvanie.',
+    'Les araignées ne sont pas des insectes : elles ont huit pattes, pas six.',
+    'En Irlande, on mange à Halloween le barmbrack, un pain aux fruits secs où l’on cache une bague.',
+    'Au Royaume-Uni et au Japon, croiser un chat noir porte plutôt bonheur.',
+    'Une citrouille est composée à environ 90 % d’eau.',
+    'La sorcière sur son balai apparaît déjà dans des enluminures du XVe siècle.',
+    'Le masque de Michael Myers était, au départ, un masque du capitaine Kirk peint en blanc.'
+];

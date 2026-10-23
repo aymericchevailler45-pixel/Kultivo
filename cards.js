@@ -11,7 +11,8 @@ const CARD_RARITIES = {
     rare:      { name: 'Rare',       weight: 28, dupCoins: 10 },
     epic:      { name: 'Épique',     weight: 11, dupCoins: 25 },
     legendary: { name: 'Légendaire', weight: 3,  dupCoins: 50 },
-    master:    { name: 'Maître',     weight: 0,  dupCoins: 50 }   // jamais tirée au hasard : palier 5 de l'entraînement
+    master:    { name: 'Maître',     weight: 0,  dupCoins: 50 },  // jamais tirée au hasard : palier 5 de l'entraînement
+    event:     { name: 'Événement',  weight: 0,  dupCoins: 20 }   // jamais tirée : gagnée pendant un événement (Halloween…)
 };
 
 const CARDS = [

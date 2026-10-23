@@ -421,6 +421,7 @@ function defaultData() {
         chestBonus: 0,                   // cartes encore dues pour les coffres sautés par le placement
         coinBonus: 0,                    // pièces encore dues pour les niveaux sautés par le placement
         missions: null,                  // missions de la semaine : { week, progress, claimed, chest }
+        events: {},                      // événements : id -> { right (bonnes réponses), won (carte gagnée) }
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -429,7 +430,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -918,11 +919,14 @@ function badgeStats() {
         themeMastered: themeStats().some(t => t.total >= 5 && t.mastered === t.total),
         leagueWins: leagueWins(),
         themesComplete: completeThemes().length,
-        shinyTheme: shinyThemes().length > 0
+        shinyTheme: shinyThemes().length > 0,
+        eventsWon: Object.keys(d.events || {}).filter(id => d.events[id].won)
     };
 }
 
 const BADGES = [
+    { id: 'ev-halloween-2026', icon: '🎃', name: 'Halloween 2026', desc: 'Gagner la carte de la semaine d’Halloween 2026', event: 'halloween-2026',
+      test: s => s.eventsWon.includes('halloween-2026') },
     { id: 'first',     icon: '🌱', name: 'Premiers pas',        desc: 'Terminer un niveau',                    test: s => s.levelsDone >= 1 },
     { id: 'right25',   icon: '👍', name: 'Bien parti',          desc: '25 bonnes réponses du premier coup',    test: s => s.right >= 25 },
     { id: 'right100',  icon: '💯', name: 'Centenaire',          desc: '100 bonnes réponses du premier coup',   test: s => s.right >= 100 },
@@ -1002,6 +1006,147 @@ function showToast(text) {
     box.append(toast);
     toast.addEventListener('click', () => toast.remove());   // un tap le ferme
     setTimeout(() => toast.remove(), 2500);
+}
+
+/* ---------- Événements à thème (2026-10-23 : Halloween) ---------- */
+// Pendant l'événement : parcours décoré, bandeau, sous-onglet dans Défis, sessions de 10 questions gratuites
+// (evenements/<banque>.js), carte et badge à gagner seulement cette semaine-là. Démo : lien ?demo=<banque>.
+
+const EVENTS = [{
+    id: 'halloween-2026', bank: 'halloween', name: 'Halloween', title: 'Semaine d’Halloween', icon: '🎃',
+    start: '2026-10-26', end: '2026-11-02', goal: 20, cls: 'event-halloween',
+    decor: ['🎃', '👻', '🦇', '🕷️', '🕸️', '💀', '🧙', '🍬', '🌕', '⚰️'],
+    card: { id: 'ev-halloween-2026', theme: 'Halloween 2026', icon: '🎃', name: 'Citrouille 2026', rarity: 'event',
+            text: 'Gagnée pendant la semaine d’Halloween 2026.' }
+}];
+const EVENT_CARDS = EVENTS.map(e => e.card);
+const EVENT_SIZE = 10;   // questions par session
+
+function currentEvent() {
+    let demo = null;
+    try { demo = new URLSearchParams(location.search).get('demo'); } catch (err) { /* sans adresse */ }
+    const today = todayKey();
+    return EVENTS.find(e => demo === e.bank || (today >= e.start && today <= e.end)) || null;
+}
+const eventQuestions = ev => (window.EVENT_BANKS && window.EVENT_BANKS[ev.bank]) || [];
+function eventData(ev) {
+    const all = state.data.events;
+    return all[ev.id] || (all[ev.id] = { right: 0, won: false });
+}
+/** « 2 novembre » */
+function shortDate(key) {
+    const [y, m, d] = key.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+}
+
+/** 10 questions : jamais vues d'abord, puis les erreurs, puis les moins sues. */
+function pickEventCards(ev) {
+    const bank = eventQuestions(ev);
+    const seen = q => !!state.data.stats[q.id];
+    const fresh = shuffle(bank.filter(q => !seen(q)));
+    const missed = shuffle(bank.filter(q => seen(q) && missCount(q.id) > 0 && !isLater(q.id)));
+    const rest = shuffle(bank.filter(q => seen(q) && missCount(q.id) === 0)).sort((a, b) => streakOf(a.id) - streakOf(b.id));
+    const picked = [];
+    for (const q of [...fresh, ...missed, ...rest]) if (picked.length < EVENT_SIZE && !picked.includes(q)) picked.push(q);
+    return shuffle(picked).map(q => ({ q, review: seen(q) }));
+}
+
+/** Décor, bandeau et sous-onglet selon l'événement en cours (appelé au lancement). */
+function applyEventLook() {
+    const ev = currentEvent();
+    EVENTS.forEach(e => document.body.classList.toggle(e.cls, !!ev && ev.id === e.id));
+    $('eventTab').hidden = !ev;
+    if (ev) $('eventTab').textContent = `${ev.icon} ${ev.name}`;
+}
+
+function updateEventBanner() {
+    const ev = currentEvent();
+    const banner = $('eventBanner');
+    banner.hidden = !ev || $('mapScreen').hidden;
+    if (banner.hidden) return;
+    banner.textContent = `${ev.icon} ${ev.title} · jusqu’au ${shortDate(ev.end)} · Jouer ›`;
+    banner.style.top = `${Math.round($('topbar').getBoundingClientRect().bottom) + 8}px`;
+}
+
+/** Anecdote d'une icône du décor de l'événement. */
+function showEventFact(badge) {
+    const ev = currentEvent();
+    const facts = ev && window.EVENT_BANKS ? window.EVENT_BANKS[`${ev.bank}Facts`] || [] : [];
+    if (!facts.length) return;
+    $('factTitle').textContent = `${ev.icon} ${ev.name}`;
+    $('factText').textContent = facts[Number(badge.dataset.fact || 0) % facts.length].replace(/ ([»:!?])/g, ' $1');
+    const bubble = $('factBubble');
+    bubble.hidden = false;
+    const r = badge.getBoundingClientRect();
+    const top = r.bottom + 10 + bubble.offsetHeight < window.innerHeight - 90 ? r.bottom + 10 : r.top - 10 - bubble.offsetHeight;
+    bubble.style.top = `${Math.max(70, top)}px`;
+}
+
+/** Sous-onglet de l'événement dans Défis. */
+function renderEvent() {
+    const page = $('eventPage');
+    page.replaceChildren();
+    const ev = currentEvent();
+    if (!ev) return;
+    const ed = eventData(ev);
+    // Carte gagnée mais pas reçue (appli fermée pendant l'animation de fin) : on la donne maintenant
+    if (ed.won && !state.data.cards[ev.card.id]) setTimeout(() => openCardBoxes([{ fixed: [ev.card] }], `${ev.icon} Carte ${ev.name} !`), 300);
+    const card = el('article', 'card event-card');
+    const h = el('h2');
+    h.textContent = `${ev.icon} ${ev.title}`;
+    const p = el('p');
+    p.textContent = `Des sessions de ${EVENT_SIZE} questions frissonnantes, gratuites (ni gouttes ni cœurs). Jusqu’au ${shortDate(ev.end)}.`;
+    const n = Math.min(ed.right, ev.goal);
+    const meter = el('div', 'meter');
+    const fill = el('div', 'meter-fill');
+    fill.style.width = `${Math.round((n / ev.goal) * 100)}%`;
+    meter.append(fill);
+    const count = el('p', 'event-count');
+    count.textContent = `${n} / ${ev.goal} bonnes réponses`;
+    const reward = el('div', 'event-reward');
+    const face = cardFace(ev.card, false, false);
+    const rtext = el('p');
+    rtext.textContent = ed.won
+        ? '✅ Carte gagnée ! Elle est dans ta collection, et le badge dans ton profil.'
+        : `🎁 À ${ev.goal} bonnes réponses : la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Seulement cette semaine !`;
+    reward.append(face, rtext);
+    const actions = el('div', 'card-actions');
+    const btn = el('button', 'btn btn-green');
+    btn.type = 'button';
+    btn.textContent = ed.won ? 'Rejouer pour le plaisir' : 'Jouer';
+    btn.addEventListener('click', () => startSession('event'));
+    actions.append(btn);
+    card.append(h, p, meter, count, reward, actions);
+    page.append(card);
+}
+
+/** Fin d'une session de l'événement : progression, carte gagnée. */
+function endEvent() {
+    const ev = EVENTS.find(e => e.id === state.eventId) || currentEvent();
+    const ed = eventData(ev);
+    const right = state.total - state.failedIds.size;   // bonnes réponses du premier coup
+    ed.right += right;
+    const won = !ed.won && ed.right >= ev.goal;
+    if (won) ed.won = true;
+    saveData();
+    checkBadges();
+    setEnd({
+        emoji: won ? '🏆' : ev.icon,
+        title: won ? 'Carte gagnée !' : `${ev.icon} ${ev.name}`,
+        text: won ? `Tu as gagné la carte « ${ev.card.name} » et le badge ${ev.name} 2026 !`
+            : `${right}/${state.total} du premier coup · ${Math.min(ed.right, ev.goal)} / ${ev.goal} pour la carte`,
+        stats: [statXp(), statAccuracy(), statTime()],
+        extra: rewardSummary(),
+        primary: 'Rejouer',
+        primaryClass: 'btn-green',
+        onPrimary: () => startSession('event'),
+        secondary: 'Retour',
+        onSecondary: () => { returnToMap(); setChallengesTab('event'); }
+    });
+    if (won) {
+        launchConfetti(CARD_CONFETTI.event);
+        setTimeout(() => openCardBoxes([{ fixed: [ev.card] }], `${ev.icon} Carte ${ev.name} !`), 900);
+    }
 }
 
 /* ---------- Missions de la semaine (2026-10-23) ---------- */
@@ -1221,10 +1366,17 @@ function buildDecor(container, count) {
     const seen = {};   // combien d'icônes de chaque thème déjà posées → anecdote suivante du thème
     for (let i = 0; i < count; i++) {
         const badge = el('span', `decor-badge ${i % 2 === 0 ? 'left' : 'right'} float-${(i % 3) + 1}`);
-        const entry = THEME_DECOR[(i * 7 + 3) % THEME_DECOR.length];
-        badge.textContent = entry.icon;
-        badge.dataset.theme = entry.theme;
-        badge.dataset.fact = String(seen[entry.theme] = (seen[entry.theme] ?? -1) + 1);
+        const ev = currentEvent();
+        if (ev) {   // événement en cours : tout le décor à son thème, avec ses anecdotes
+            badge.textContent = ev.decor[(i * 7 + 3) % ev.decor.length];
+            badge.dataset.event = ev.id;
+            badge.dataset.fact = String(i);
+        } else {
+            const entry = THEME_DECOR[(i * 7 + 3) % THEME_DECOR.length];
+            badge.textContent = entry.icon;
+            badge.dataset.theme = entry.theme;
+            badge.dataset.fact = String(seen[entry.theme] = (seen[entry.theme] ?? -1) + 1);
+        }
         // position dans la zone latérale (0,15 à 0,85), pseudo-aléatoire mais stable
         const k = 0.15 + 0.7 * (0.5 + 0.5 * Math.sin(i * 2.399));
         badge.style.setProperty('--k', k.toFixed(2));
@@ -1251,6 +1403,7 @@ function showScreen(name) {
     if (name === 'profile' && !state.data.tipProfile) setTimeout(showProfileTip, 500);
     if (name === 'league' && !state.data.tipLeague) setTimeout(showLeagueTip, 900);
     $('topbar').hidden = !MAIN_SCREENS.includes(name);
+    updateEventBanner();
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
         const active = btn.dataset.screen === name;
@@ -1689,7 +1842,8 @@ function openCardBoxes(boxes, title) {
    Un tap (sur la carte ou le bouton) pendant l'animation la termine tout de suite. */
 const CARD_CHARGE_MS = { common: 250, rare: 550, epic: 900, legendary: 1300, master: 1300 };
 const CARD_CONFETTI = { epic: ['#8b5cf6', '#c9b6ff', '#ffffff'], legendary: ['#ffc800', '#ffb300', '#fff3b0', '#ff9600'],
-                        master: ['#58cc02', '#89e219', '#d7ffb8', '#ffffff'] };
+                        master: ['#58cc02', '#89e219', '#d7ffb8', '#ffffff'],
+                        event: ['#ff7a00', '#ffb347', '#8b5cf6', '#2b1d3d'] };
 const SHINY_AT = 3;   // 3 exemplaires d'une carte : elle devient brillante ✨ (sa couleur de rareté ne change pas)
 const isShiny = card => card.rarity !== 'master' && (state.data.cards[card.id] || 0) >= SHINY_AT && !!state.data.shinyCards[card.id];
 /** 3e exemplaire reçu mais pas encore « réveillé » : on le signale (pastille), un tap dans la collection lance l'animation. */
@@ -1887,6 +2041,7 @@ function openCardView(card, onBack = null, friendShiny = false) {
     const count = onBack ? 0 : (state.data.cards[card.id] || 0);
     $('chestNote').textContent = onBack ? (friendShiny ? '✨ Carte brillante' : '')
         : card.rarity === 'master' ? '🏆 Gagnée au palier 5 de l’entraînement.'
+        : card.rarity === 'event' ? '🎉 Carte d’événement : on ne pouvait la gagner que cette semaine-là.'
         : !count ? '' : count >= SHINY_AT ? `✨ Carte brillante (${count} exemplaires)`
         : `${count} / ${SHINY_AT} exemplaires : à ${SHINY_AT}, elle devient brillante ✨`;
     $('chestBtn').textContent = onBack ? '← Retour' : 'Fermer';
@@ -2014,6 +2169,32 @@ function renderCollection() {
                 box.textContent = '?';
                 box.title = `Carte ${CARD_RARITIES[card.rarity].name.toLowerCase()} pas encore trouvée`;
                 row.append(box);
+            }
+        }
+        grid.append(head, row);
+    }
+    // Cartes d'événement : à part (elles ne comptent pas dans les 150), seulement si on en a une ou si l'événement est en cours
+    const ev = currentEvent();
+    const shown = EVENT_CARDS.filter(c => state.data.cards[c.id] || (ev && ev.card.id === c.id));
+    if (shown.length) {
+        const head = el('div', 'card-theme-head is-event');
+        head.textContent = '🎉 Événements';
+        const row = el('div', 'card-row');
+        for (const card of shown) {
+            if (state.data.cards[card.id]) {
+                const btn = el('button', 'kcard-btn');
+                btn.type = 'button';
+                btn.append(cardFace(card, false, false));
+                btn.addEventListener('click', () => openCardView(card));
+                row.append(btn);
+            } else {
+                const btn = el('button', 'kcard-btn');
+                btn.type = 'button';
+                const box = el('div', 'kcard is-missing is-locked rarity-event');
+                box.textContent = '🔒';
+                btn.append(box);
+                btn.addEventListener('click', () => { showScreen('challenges'); setChallengesTab('event'); });
+                row.append(btn);
             }
         }
         grid.append(head, row);
@@ -2216,7 +2397,8 @@ function renderProfile() {
     let earned = 0;
     // Ordre d'affichage : à récupérer, puis obtenus, puis verrouillés
     const rank = b => !data.badges[b.id] ? 2 : data.claimedBadges[b.id] ? 1 : 0;
-    [...BADGES].sort((a, b) => rank(a) - rank(b)).forEach(b => {
+    const visible = BADGES.filter(b => !b.event || data.badges[b.id] || currentEvent()?.id === b.event);
+    [...visible].sort((a, b) => rank(a) - rank(b)).forEach(b => {
         const has = !!data.badges[b.id];
         const claimed = !!data.claimedBadges[b.id]; // NOUVEAU
         if (has) earned++;
@@ -2262,7 +2444,7 @@ function renderProfile() {
 
         grid.append(card);
     });
-    $('badgeCount').textContent = `(${earned}/${BADGES.length})`;
+    $('badgeCount').textContent = `(${earned}/${visible.length})`;
 }
 
 /* ---------- Boutique et indices ---------- */
@@ -2718,6 +2900,11 @@ function startSession(requestedMode, level = 0) {
         items = pickChallengeCards(level).map(q => ({ q, review: false }));
     } else if (mode === 'training') {
         items = pickTrainingCards(state.trainTheme);
+    } else if (mode === 'event') {
+        const ev = currentEvent();
+        if (!ev) return;
+        state.eventId = ev.id;
+        items = pickEventCards(ev);
     } else if (mode === 'level') {
         const fresh = levelCards(level).map(q => ({ q, review: false }));
         const old = pickReviewCards(level).map(q => ({ q, review: true }));
@@ -2737,7 +2924,7 @@ function startSession(requestedMode, level = 0) {
     const heartsMax = mode === 'challenge' || orderMode ? CHALLENGE_HEARTS : HEARTS_MAX;
     Object.assign(state, {
         mode, level,
-        returnTo: mode === 'daily' || mode === 'sprint' || mode === 'training' ? 'challenges' : 'map',
+        returnTo: ['daily', 'sprint', 'training', 'event'].includes(mode) ? 'challenges' : 'map',
         queue: pairsMode || orderMode ? [] : items,
         total: pairsMode ? items.reduce((sum, g) => sum + g.pairs.length, 0) : items.length,
         orderRounds: orderMode ? items : [],
@@ -3181,8 +3368,10 @@ function showCard() {
     $('reviewTag').hidden = !item.review;
 
     const tag = $('challengeTag');
-    tag.hidden = !['challenge', 'daily', 'sprint', 'placement'].includes(state.mode);
-    tag.textContent = state.mode === 'daily' ? `Défi du jour · ${state.done + 1}/${state.total}`
+    tag.hidden = !['challenge', 'daily', 'sprint', 'placement', 'event'].includes(state.mode);
+    const ev = state.mode === 'event' ? EVENTS.find(e => e.id === state.eventId) : null;
+    tag.textContent = ev ? `${ev.icon} ${ev.name}`
+                    : state.mode === 'daily' ? `Défi du jour · ${state.done + 1}/${state.total}`
                     : state.mode === 'sprint' ? 'Sprint'
                     : state.mode === 'placement' ? `Placement · étape ${state.placeStep + 1}/${PLACEMENT_STEPS}`
                     : 'Défi';
@@ -3364,7 +3553,7 @@ function commit(ok) {
         // Seule une réussite du premier coup, sans indice, réduit le compteur d'erreurs
         if (firstTry && !assisted) recordResult(id, true);
         const clean = firstTry && !forced && !assisted;
-        addXp(mode === 'training' ? (clean ? XP_TRAINING : XP_RETRY) : (clean ? XP_FIRST_TRY : XP_RETRY));
+        addXp(mode === 'training' || mode === 'event' ? (clean ? XP_TRAINING : XP_RETRY) : (clean ? XP_FIRST_TRY : XP_RETRY));
         missionEvent('correct');
         missionEvent('theme', 1, item.q.theme);
         state.done++;
@@ -3384,7 +3573,7 @@ function commit(ok) {
                 return;
             }
         }
-        if (again && (mode === 'review' || mode === 'training')) {
+        if (again && (mode === 'review' || mode === 'training' || mode === 'event')) {
             // 2e oubli : inutile de la reposer tout de suite, elle reviendra demain
             state.data.stats[id].later = tomorrowKey();
             state.done++;
@@ -3512,6 +3701,9 @@ function endSession(win) {
     if (mode === 'training') {
         celebrate = false;
         endTraining();
+    } else if (mode === 'event') {
+        celebrate = false;
+        endEvent();
     } else if (mode === 'review') {
         state.data.totals.reviews++;
         addXp(XP_REVIEW_WIN);
@@ -4482,6 +4674,7 @@ function setChallengesTab(name) {
         state.data.tipChallenges = true;
         saveData();
     }
+    if (name === 'event' && !currentEvent()) name = 'defis';   // événement terminé
     challengesTab = name;
     document.querySelectorAll('.challenges-tab').forEach(t => {
         const on = t.dataset.sub === name;
@@ -4490,6 +4683,8 @@ function setChallengesTab(name) {
     });
     $('defisPage').hidden = name !== 'defis';
     $('trainingPage').hidden = name !== 'training';
+    $('eventPage').hidden = name !== 'event';
+    if (name === 'event') renderEvent();
     if (name === 'training') {
         renderTraining();
         if (!state.data.tipTraining2) setTimeout(showTrainingTip, 400);
@@ -6252,6 +6447,8 @@ function bindEvents() {
 
     $('coinChip').addEventListener('click', () => showScreen('shop'));
     $('dropChip').addEventListener('click', openDropsModal);
+    $('eventBanner').addEventListener('click', () => { showScreen('challenges'); setChallengesTab('event'); });
+    window.addEventListener('resize', updateEventBanner);
     $('missionsRow').addEventListener('click', openMissionsModal);
     $('closeMissionsBtn').addEventListener('click', () => { $('missionsModal').hidden = true; });
     $('missionsModal').addEventListener('click', e => { if (e.target === $('missionsModal')) $('missionsModal').hidden = true; });
@@ -6359,7 +6556,7 @@ function bindEvents() {
     // Petits décors du parcours : un tap = une anecdote sur le thème ; un tap n'importe où la referme
     $('mapDecor').addEventListener('click', e => {
         const badge = e.target.closest('.decor-badge');
-        if (badge) showFact(badge.dataset.theme, badge);
+        if (badge) badge.dataset.event ? showEventFact(badge) : showFact(badge.dataset.theme, badge);
     });
     document.addEventListener('pointerdown', e => {
         if (!$('factBubble').hidden && !e.target.closest('.decor-badge')) $('factBubble').hidden = true;
@@ -6560,6 +6757,7 @@ function init() {
     flushReports();                                         // signalements restés en attente
     cloudInit();                                            // compte connecté ? synchronisation
     window.addEventListener('online', flushReports);        // dès que la connexion revient
+    applyEventLook();
     buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
     buildDecor($('lessonDecor'), 8);
     checkThemeComplete(true);   // thèmes déjà complets : notés sans fête

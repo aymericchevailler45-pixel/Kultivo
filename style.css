@@ -1794,6 +1794,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     --r-epic: #8b5cf6;
     --r-legendary: #ffb300;
     --r-master: #46a302;   /* carte Maître (palier 5 de l'entraînement) : vert Kultivo */
+    --r-event: #ff7a00;    /* carte d'événement (Halloween…) */
 }
 
 /* Coffre sur le parcours (entre deux niveaux) */
@@ -2724,3 +2725,27 @@ input, textarea, [contenteditable] {
 .modal-content p.mission-claimed { margin: 0; color: var(--green-deep); font-size: 0.9rem; }
 .mission-chest { padding: 12px; border: 2px dashed var(--line); border-radius: 14px; color: var(--muted); font-weight: 700; text-align: center; }
 .mission-chest.is-open { border-style: solid; }
+
+/* ===== Événements (Halloween 2026) ===== */
+.kcard.rarity-event { --r: var(--r-event); background: linear-gradient(160deg, color-mix(in srgb, var(--r-event) 22%, #8b5cf6 8%), var(--surface) 65%); }
+.kcard.rarity-event .kcard-meta { color: var(--r-event); }
+.flip.rarity-event { --r: var(--r-event); }
+.card-theme-head.is-event { color: var(--r-event); }
+/* Parcours et leçons teintés aux couleurs de l'événement */
+body.event-halloween .map-screen,
+body.event-halloween .lesson {
+    background: linear-gradient(180deg, rgba(255, 122, 0, 0.16), rgba(139, 92, 246, 0.18) 55%, rgba(255, 122, 0, 0.14));
+}
+body.event-halloween .decor-badge { filter: drop-shadow(0 4px 10px rgba(255, 122, 0, 0.35)); }
+.event-banner {
+    position: fixed; left: 50%; transform: translateX(-50%); z-index: 20; max-width: calc(100% - 32px);
+    padding: 8px 16px; border: 0; border-radius: 999px; background: #2b1d3d; color: #ffb347;
+    font: inherit; font-size: 0.9rem; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    box-shadow: 0 4px 0 #160e22, 0 6px 16px rgba(0, 0, 0, 0.2); cursor: pointer;
+}
+.event-card { border-color: var(--r-event); }
+.event-card h2 { color: var(--r-event); }
+.event-count { margin: 6px 0 0; font-weight: 900; }
+.event-reward { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.event-reward .kcard { flex: 0 0 74px; width: 74px; }
+.event-reward p { margin: 0; font-weight: 700; }

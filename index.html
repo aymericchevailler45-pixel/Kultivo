@@ -57,6 +57,7 @@
         <!-- ÉCRAN 1 : PARCOURS (carte des niveaux) -->
         <section id="mapScreen" class="map-screen" aria-label="Carte des niveaux">
             <div class="map-decorations" id="mapDecor" aria-hidden="true"></div>
+            <button type="button" id="eventBanner" class="event-banner" hidden></button>
             <ol id="mapPath" class="map-path"></ol>
             <!-- Sous le niveau 1 (la carte se lit de bas en haut) -->
             <button type="button" id="toCurrentBtn" class="to-current" hidden>📍 Mon niveau</button>
@@ -70,11 +71,13 @@
             <div class="challenges-tabs" role="tablist" aria-label="Défis ou entraînement">
                 <button type="button" class="challenges-tab is-active" data-sub="defis" role="tab" aria-selected="true">🏆 Défis</button>
                 <button type="button" class="challenges-tab" data-sub="training" role="tab" aria-selected="false">🎯 Entraînement</button>
+                <button type="button" class="challenges-tab" data-sub="event" role="tab" aria-selected="false" id="eventTab" hidden>🎃 Halloween</button>
             </div>
             <div class="page-grid train-page" id="trainingPage" hidden>
                 <p class="train-sub">10 questions par session · sans cœurs · 2 XP par bonne réponse</p>
                 <div class="train-grid" id="trainingGrid"></div>
             </div>
+            <div class="page-grid event-page" id="eventPage" hidden></div>
             <div class="page-grid challenges-grid" id="defisPage">
                 <article class="card goal-card">
                     <div class="goal-main">
@@ -576,6 +579,7 @@
     <script src="cards.js"></script>
     <script src="levels.js"></script>
     <script src="vendor/supabase.min.js"></script>
+    <script src="evenements/halloween.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

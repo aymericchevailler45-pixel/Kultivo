@@ -351,8 +351,15 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
 1. Missions de la semaine — FAIT le 2026-10-23 : `MISSION_POOL` (11 types), 3 par semaine mêmes pour tous
    (`weekMissions`, graine = lundi), `missionEvent` appelé aux bonnes réponses / fins de partie, `missions` dans la
    sauvegarde, 30 🪙 chacune + coffre de 3 cartes ; ligne compacte `missionsRow` sous l'objectif + fenêtre `missionsModal`.
-   Objectif du jour plus compact : les 3 choix de rythme cachés une fois la journée commencée. 2. Événements à thème (Halloween, Noël, JO…,
-   carte / badge limités). 3. Rappels de série : PAS en appli web, à faire avec Capacitor (vraie appli). 4. Duel entre
+   Objectif du jour plus compact : les 3 choix de rythme cachés une fois la journée commencée. 2. Événements à thème — HALLOWEEN FAIT le 2026-10-23 (du 26/10 au 02/11/2026) : `EVENTS` (dates, décor, carte), questions
+   dans `evenements/halloween.js` (`EVENT_BANKS.halloween`, 55 questions ids 30000+, + `halloweenFacts` pour les décors ;
+   réutilisables chaque année). Pendant l'événement (`currentEvent`) : décor du parcours et des leçons remplacé
+   (`buildDecor`, `showEventFact`), fond teinté (`body.event-halloween`), bandeau fixe sous la barre du haut
+   (`eventBanner`), 3e sous-onglet « 🎃 Halloween » dans Défis (`eventPage`, `renderEvent`), sessions de 10 questions
+   gratuites sans cœurs (mode `event`, `pickEventCards`, `endEvent`), 20 bonnes réponses du 1er coup = carte
+   « Citrouille 2026 » (rareté `event`, `EVENT_CARDS`, section « 🎉 Événements » de la collection, hors des 150) + badge
+   (visible seulement pendant l'événement ou une fois gagné). Démo hors dates : lien `?demo=halloween`.
+   Autres événements proposés : Noël, Saint-Valentin, Coupe du monde / JO, Eurovision, fête de la musique, rentrée. 3. Rappels de série : PAS en appli web, à faire avec Capacitor (vraie appli). 4. Duel entre
    amis (10 mêmes questions, table Supabase `duels` → GRANT obligatoire, voir règle Supabase). 8. Statistiques anonymes
    (questions ratées / réussies par tous, niveaux abandonnés) pour régler le parcours.
 Refusées / pas retenues pour l'instant : partage d'image du score, mode choix multiple, « En savoir plus », points faibles.
