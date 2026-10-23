@@ -2796,3 +2796,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 }
 .league-duels h2[data-notif]::after { right: -26px; top: -4px; }
 .league-people li.duel-row[data-notif]::after { left: -6px; }
+
+.modal-content p.duel-news { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; font-weight: 800; color: var(--ink); }
+.modal-content p.duel-news.is-win { background: var(--green-tint); color: var(--green-deep); }
+.modal-content p.duel-news.is-loss { background: var(--line); }

@@ -4295,32 +4295,33 @@ async function endDuel() {
 }
 
 /** Après chaque mise à jour du classement : duel reçu, résultat d'un duel lancé (pièces du gagnant). */
-function handleDuelNews() {
-    if (!cloudUser) return;
-    const me = cloudUser.id;
-    const d = state.data;
-    for (const r of duelsList()) {
-        // Résultat d'un duel que j'ai lancé : pièces au gagnant (une seule fois), sans message (pastille à la place)
-        if (r.challenger === me && r.o_score !== null && !d.duelsSeen[r.id]) {
-            d.duelsSeen[r.id] = 1;
-            if (duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds) > 0) {
-                d.coins += DUEL_COINS;
-                d.totals.duelsWon = (d.totals.duelsWon || 0) + 1;
-                renderHeader();
-            }
-            saveData();
-        }
-    }
-}
 
 /** Nouveau résultat pas encore regardé (pastille) : un duel lancé par moi, que l'ami vient de jouer. */
 const duelUnviewed = r => r.challenger === cloudUser?.id && r.o_score !== null && !state.data.duelsViewed[r.id];
 const duelsNewResults = () => cloudUser ? duelsList().filter(duelUnviewed) : [];
 const duelsBadge = () => duelsToPlay().length + duelsNewResults().length;
+/** Nouveaux résultats regardés : la pastille disparaît, et les pièces des duels gagnés sont données maintenant
+    (une seule fois, `duelsSeen`). Renvoie les nouveautés, pour les annoncer en haut de l'historique. */
 function markDuelsViewed(otherId) {
-    let changed = false;
-    duelsList().filter(r => duelUnviewed(r) && r.opponent === otherId).forEach(r => { state.data.duelsViewed[r.id] = 1; changed = true; });
-    if (changed) { saveData(); updateNavNotifications(); if (!$('leagueScreen').hidden) renderLeague(); }
+    const d = state.data;
+    const news = duelsList().filter(r => duelUnviewed(r) && r.opponent === otherId);
+    news.forEach(r => {
+        d.duelsViewed[r.id] = 1;
+        if (!d.duelsSeen[r.id]) {
+            d.duelsSeen[r.id] = 1;
+            if (duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds) > 0) {
+                d.coins += DUEL_COINS;
+                d.totals.duelsWon = (d.totals.duelsWon || 0) + 1;
+            }
+        }
+    });
+    if (news.length) {
+        saveData();
+        renderHeader();
+        updateNavNotifications();
+        if (!$('leagueScreen').hidden) renderLeague();
+    }
+    return news;
 }
 
 /** Revoir les 10 questions d'un duel : bonne réponse, ma réponse si fausse, ✅/❌ de chacun. */
@@ -4398,7 +4399,7 @@ function openDuelHistory(otherId) {
     const pseudo = f?.pseudo || 'Ton ami';
     const games = duelsWith(otherId);
     const tally = duelTally(games);
-    markDuelsViewed(otherId);   // nouveaux résultats vus : la pastille disparaît
+    const news = markDuelsViewed(otherId);   // nouveaux résultats vus : pastille effacée, pièces données
     const body = $('friendBody');
     body.replaceChildren();
     const head = el('div', 'friend-head');
@@ -4408,6 +4409,18 @@ function openDuelHistory(otherId) {
     sub.textContent = `${plural(tally.w, 'victoire', 'victoires')} · ${plural(tally.l, 'défaite', 'défaites')}${tally.t ? ` · ${plural(tally.t, 'égalité', 'égalités')}` : ''}`;
     head.append(avatarEl(pseudo, f?.look, 'is-big'), h, sub);
     body.append(head);
+    if (news.length) {
+        const won = news.filter(r => duelCompare(r.c_score, r.c_seconds, r.o_score, r.o_seconds) > 0);
+        const last = news[0];
+        const res = duelCompare(last.c_score, last.c_seconds, last.o_score, last.o_seconds);
+        const banner = el('p', `duel-news ${won.length ? 'is-win' : 'is-loss'}`);
+        banner.textContent = (res > 0 ? `🎉 ${pseudo} a joué ton duel : tu gagnes ${last.c_score} à ${last.o_score} !`
+            : res < 0 ? `😅 ${pseudo} a joué ton duel et gagne ${last.o_score} à ${last.c_score}.`
+            : `🤝 ${pseudo} a joué ton duel : égalité parfaite !`)
+            + (won.length ? ` +${won.length * DUEL_COINS} 🪙` : '');
+        body.append(banner);
+        if (won.length) playSound('win');
+    }
     if (f) {
         const again = el('button', 'btn btn-violet btn-full');
         again.type = 'button';
@@ -4422,7 +4435,8 @@ function openDuelHistory(otherId) {
         const b = el('b');
         b.textContent = duelLine(g);
         const i = el('span', 'friend-info');
-        i.textContent = new Date(g.row.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) + ' · revoir les questions';
+        i.textContent = new Date(g.row.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+            + (g.res > 0 ? ` · +${DUEL_COINS} 🪙` : '') + ' · revoir les questions';
         name.append(b, i);
         const go = el('span', 'friend-go');
         go.textContent = '›';
@@ -5836,7 +5850,6 @@ async function leagueFetch() {
         const { data: duels, error: duelErr } = await c.from('duels').select('*').order('created_at', { ascending: false }).limit(100);
         fresh.duels = duelErr ? (before?.duels || []) : (duels || []);
         league = { ...fresh, at: Date.now() };
-        handleDuelNews();
         saveLeagueCache();
         if (league.pseudo && Date.now() - lastScorePush > 120000) leaguePushScore();
     } catch (err) {
