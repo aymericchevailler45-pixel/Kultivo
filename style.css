@@ -2774,7 +2774,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .duel-score.is-tie  { background: var(--line); color: var(--muted); }
 .duel-back { display: block; margin: 0 0 8px; padding: 4px 0; border: 0; background: none; color: var(--violet-ink); font: inherit; font-weight: 800; cursor: pointer; text-align: left; }
 .duel-history { list-style: none; margin: 14px 0 0; padding: 0; text-align: left; }
-.duel-history .friend-name b { white-space: normal; }
+.duel-history .friend-name b, .duel-history .friend-info { white-space: normal; }
 .league-people li.duel-row.is-todo { border-color: var(--violet); background: var(--violet-tint); }
 .duel-row.is-todo .friend-info { color: var(--violet-ink); }
 .duel-review { min-width: 44px; }

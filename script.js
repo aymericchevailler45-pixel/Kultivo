@@ -4216,7 +4216,7 @@ async function challengeFriend(f) {
     }
     const ok = await askConfirm({
         title: `⚔️ Défier ${f.pseudo} ?`,
-        text: `${DUEL_SIZE} questions, un seul essai chacune, sans cœurs ni gouttes. Ensuite, ${f.pseudo} aura ${DUEL_HOURS} h pour jouer les mêmes et faire mieux que toi.`,
+        text: `${DUEL_SIZE} questions, un seul essai chacune, sans cœurs ni gouttes. Ensuite, ${f.pseudo} aura ${DUEL_HOURS} h pour jouer les mêmes et faire mieux que toi. À égalité de bonnes réponses, le plus rapide gagne.`,
         yes: 'C’est parti'
     });
     if (!ok) return;
@@ -4231,7 +4231,7 @@ async function playDuel(row) {
     if (!navigator.onLine) { showToast('📶 Il faut internet pour jouer un duel.'); return; }
     const ok = await askConfirm({
         title: `⚔️ Duel de ${pseudo}`,
-        text: `${DUEL_SIZE} questions, un seul essai chacune. Son score reste caché jusqu’à la fin : à toi de faire mieux !`,
+        text: `${DUEL_SIZE} questions, un seul essai chacune. Son score reste caché jusqu’à la fin : à toi de faire mieux ! À égalité de bonnes réponses, le plus rapide gagne.`,
         yes: 'Jouer'
     });
     if (!ok) return;
@@ -4267,7 +4267,7 @@ async function endDuel() {
                 c_score: score, c_seconds: seconds, c_grid: grid });
             $('endText').textContent = error
                 ? '😕 Le duel n’a pas pu être envoyé. Réessaie plus tard.'
-                : `${grid}\nDuel envoyé à ${du.friend.pseudo} ! Il a ${DUEL_HOURS} h pour battre ton ${score}/${DUEL_SIZE}.`;
+                : `${grid}\nDuel envoyé à ${du.friend.pseudo} ! Il a ${DUEL_HOURS} h pour battre ton ${score}/${DUEL_SIZE} en ${fmtTime(seconds)}.`;
         } else {
             const row = du.row;
             const { error } = await c.from('duels').update({ o_score: score, o_seconds: seconds, o_grid: grid }).eq('id', row.id);
@@ -4339,7 +4339,10 @@ function openDuelReview(row) {
     const [s1, s2] = mine ? [row.c_score, row.o_score] : [row.o_score, row.c_score];
     h.textContent = `⚔️ Toi ${s1}/${DUEL_SIZE} · ${pseudo} ${s2 ?? '?'}/${DUEL_SIZE}`;
     const note = el('p', 'muted review-note');
-    note.textContent = hisGrid.length ? 'Tes réponses et celles de ton ami, question par question.' : `${pseudo} n’a pas encore joué.`;
+    const [t1, t2] = mine ? [row.c_seconds, row.o_seconds] : [row.o_seconds, row.c_seconds];
+    note.textContent = hisGrid.length
+        ? `⏱ Toi ${fmtTime(t1)} · ${pseudo} ${fmtTime(t2)}${s1 === s2 ? ' : même score, le plus rapide gagne' : ''}.`
+        : `${pseudo} n’a pas encore joué.`;
     body.append(h, note);
     const back = el('button', 'duel-back');
     back.type = 'button';
@@ -4386,7 +4389,7 @@ function duelsWith(otherId) {
     return duelsList().filter(r => r.o_score !== null && (r.challenger === otherId || r.opponent === otherId)).map(r => {
         const mine = r.challenger === me;
         const [s1, t1, s2, t2] = mine ? [r.c_score, r.c_seconds, r.o_score, r.o_seconds] : [r.o_score, r.o_seconds, r.c_score, r.c_seconds];
-        return { row: r, s1, s2, res: duelCompare(s1, t1, s2, t2) };
+        return { row: r, s1, s2, t1, t2, res: duelCompare(s1, t1, s2, t2) };
     });
 }
 const duelTally = games => ({ w: games.filter(g => g.res > 0).length, l: games.filter(g => g.res < 0).length, t: games.filter(g => g.res === 0).length });
@@ -4414,8 +4417,10 @@ function openDuelHistory(otherId) {
         const last = news[0];
         const res = duelCompare(last.c_score, last.c_seconds, last.o_score, last.o_seconds);
         const banner = el('p', `duel-news ${won.length ? 'is-win' : 'is-loss'}`);
-        banner.textContent = (res > 0 ? `🎉 ${pseudo} a joué ton duel : tu gagnes ${last.c_score} à ${last.o_score} !`
-            : res < 0 ? `😅 ${pseudo} a joué ton duel et gagne ${last.o_score} à ${last.c_score}.`
+        const byTime = last.c_score === last.o_score
+            ? ` au temps (${fmtTime(Math.min(last.c_seconds, last.o_seconds))} contre ${fmtTime(Math.max(last.c_seconds, last.o_seconds))})` : '';
+        banner.textContent = (res > 0 ? `🎉 ${pseudo} a joué ton duel : tu gagnes ${last.c_score} à ${last.o_score}${byTime} !`
+            : res < 0 ? `😅 ${pseudo} a joué ton duel et gagne ${last.o_score} à ${last.c_score}${byTime}.`
             : `🤝 ${pseudo} a joué ton duel : égalité parfaite !`)
             + (won.length ? ` +${won.length * DUEL_COINS} 🪙` : '');
         body.append(banner);
@@ -4436,7 +4441,9 @@ function openDuelHistory(otherId) {
         b.textContent = duelLine(g);
         const i = el('span', 'friend-info');
         i.textContent = new Date(g.row.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
-            + (g.res > 0 ? ` · +${DUEL_COINS} 🪙` : '') + ' · revoir les questions';
+            + ` · toi ${fmtTime(g.t1)}, ${pseudo} ${fmtTime(g.t2)}`
+            + (g.s1 === g.s2 && g.res !== 0 ? ' (départagés au temps)' : '')
+            + (g.res > 0 ? ` · +${DUEL_COINS} 🪙` : '');
         name.append(b, i);
         const go = el('span', 'friend-go');
         go.textContent = '›';
