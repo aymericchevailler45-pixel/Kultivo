@@ -5340,9 +5340,11 @@ function renderTraining() {
 
 /* ---------- Avatar : rond de couleur avec l'initiale du pseudo, ou un petit dessin ---------- */
 
-const AVATAR_HUES = [0, 25, 45, 90, 140, 175, 200, 225, 260, 290, 320, 340];
+// 18 couleurs (3 lignes de 6) et 39 dessins (+ l'initiale = 8 lignes de 5) depuis le 2026-10-23
+const AVATAR_HUES = [0, 25, 45, 65, 90, 115, 140, 155, 175, 200, 225, 260, 275, 290, 305, 320, 340, 350];
 const AVATAR_EMOJIS = ['🦉', '🦈', '🦖', '🐋', '🐍', '🐎', '🍄', '🌻', '🎸', '🎷', '🎮', '🎲',
-                       '🧩', '🔭', '🧲', '💡', '🤖', '⚽', '🏆', '🍿', '🥐', '🗿', '🌋', '🚂'];
+                       '🧩', '🔭', '🧲', '💡', '🤖', '⚽', '🏆', '🍿', '🥐', '🗿', '🌋', '🚂',
+                       '🐱', '🐶', '🦊', '🐼', '🦁', '🐸', '🐙', '🐧', '🦄', '👻', '👽', '🐢', '🚀', '🎨', '⭐'];
 
 /** Nom utilisé pour l'initiale : le pseudo, sinon « Moi ». */
 const myAvatarName = () => (cloudUser && league?.userId === cloudUser.id && league.pseudo) || 'Moi';
