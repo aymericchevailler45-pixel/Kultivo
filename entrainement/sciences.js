@@ -64,7 +64,7 @@ TRAINING_QUESTIONS.push(
 /* Lots 2 et 3 (2026-10-18) : questions modernes et classiques */
 TRAINING_QUESTIONS.push(
     // Lot 2
-    { id: 11051, theme: "Sciences", d: 1.0, q: "Quel est le plus grand animal terrestre ?", a: ["L’éléphant", "Éléphant", "Elephant", "L’éléphant d’Afrique"], exp: "Un éléphant d’Afrique peut peser plus de 6 tonnes." },
+    { id: 11051, theme: "Sciences", d: 1.0, q: "Quel est le plus lourd animal terrestre ?", a: ["L’éléphant", "Éléphant", "Elephant", "L’éléphant d’Afrique"], exp: "Un éléphant d’Afrique peut peser plus de 6 tonnes. Le plus haut, lui, est la girafe." },
     { id: 11052, theme: "Sciences", d: 1.0, q: "Quel est l’animal terrestre le plus rapide ?", a: ["Le guépard", "Guépard", "Guepard"], exp: "Plus de 100 km/h en pointe, mais sur quelques centaines de mètres seulement." },
     { id: 11053, theme: "Sciences", d: 1.2, q: "Quel animal de la savane a le plus long cou ?", a: ["La girafe", "Girafe"], exp: "Elle a pourtant sept vertèbres cervicales, comme nous." },
     { id: 11054, theme: "Sciences", d: 1.2, q: "Quel reptile change de couleur et bouge ses yeux indépendamment ?", a: ["Le caméléon", "Caméléon", "Cameleon"], exp: "Sa langue peut être plus longue que son corps." },

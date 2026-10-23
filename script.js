@@ -214,21 +214,77 @@ function seededShuffle(array, seedText) {
 
 const ARTICLES = new Set(['le', 'la', 'les', 'l', 'un', 'une', 'des', 'du', 'de', 'd']);
 
-// Nombres écrits en lettres → chiffres, pour que « Les 3 Mousquetaires » = « Les Trois Mousquetaires »
-// (« un » et « une » sont exclus : ce sont surtout des articles)
-const NUMBER_WORDS = { deux: '2', trois: '3', quatre: '4', cinq: '5', six: '6', sept: '7', huit: '8',
-                       neuf: '9', dix: '10', onze: '11', douze: '12', vingt: '20', cent: '100', mille: '1000' };
+// Nombres composés (« dix-sept », « quatre-vingt-neuf », « mille sept cent… »), ordinaux (« cinquième » = « 5e »)
+// et chiffres romains (« Louis XIV » = « Louis 14 ») : ajoutés le 2026-10-23 (« le 5e élément » était refusé).
+const NUM_VALUES = { zero: 0, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10,
+    onze: 11, douze: 12, treize: 13, quatorze: 14, quinze: 15, seize: 16, vingt: 20, vingts: 20, trente: 30,
+    quarante: 40, cinquante: 50, soixante: 60, cent: 100, cents: 100, mille: 1000 };
+const ORDINAL_WORDS = { premier: 1, premiere: 1, second: 2, seconde: 2, deuxieme: 2, troisieme: 3, quatrieme: 4,
+    cinquieme: 5, sixieme: 6, septieme: 7, huitieme: 8, neuvieme: 9, dixieme: 10, onzieme: 11, douzieme: 12,
+    treizieme: 13, quatorzieme: 14, quinzieme: 15, seizieme: 16, vingtieme: 20, trentieme: 30, centieme: 100 };
+const ROMAN = { i: 1, v: 5, x: 10, l: 50, c: 100 };
+const ROMAN_STEPS = [[100, 'c'], [90, 'xc'], [50, 'l'], [40, 'xl'], [10, 'x'], [9, 'ix'], [5, 'v'], [4, 'iv'], [1, 'i']];
+
+/** « xiv » → 14 si c'est un chiffre romain écrit correctement (sinon null). Lettre seule : V et X uniquement
+    (« l », « i », « c » seuls sont trop souvent des lettres ordinaires). */
+function romanValue(w) {
+    if (!/^[ivxlc]+$/.test(w) || (w.length === 1 && w !== 'v' && w !== 'x')) return null;
+    let n = 0;
+    for (let i = 0; i < w.length; i++) {
+        const v = ROMAN[w[i]], next = ROMAN[w[i + 1]] || 0;
+        n += v < next ? -v : v;
+    }
+    let rest = n, back = '';
+    for (const [val, sym] of ROMAN_STEPS) while (rest >= val) { back += sym; rest -= val; }
+    return back === w ? n : null;
+}
+
+/** Nombres écrits en lettres (même composés) → chiffres. « un / une » seulement après « et » (« vingt et un ») :
+    seuls, ce sont surtout des articles. */
+function wordsToNumbers(words) {
+    const out = [];
+    for (let i = 0; i < words.length; i++) {
+        if (!(words[i] in NUM_VALUES)) { out.push(words[i]); continue; }
+        let total = 0, current = 0, last = 0, j = i;
+        for (; j < words.length; j++) {
+            let w = words[j];
+            if (w === 'et' && ['un', 'une', 'onze'].includes(words[j + 1])) continue;
+            if (w === 'une') w = 'un';
+            const v = w === 'un' ? (words[j - 1] === 'et' ? 1 : undefined) : NUM_VALUES[w];
+            if (v === undefined) break;
+            if (v === 1000) { total += (current || 1) * 1000; current = 0; }
+            else if (v === 100) current = (current || 1) * 100;
+            else if (v === 20 && last === 4) current += 76;   // quatre-vingt(s)
+            else current += v;
+            last = v;
+        }
+        if (words[j - 1] === 'et') j--;   // « … et » sans nombre après : on rend le « et »
+        out.push(String(total + current));
+        i = j - 1;
+    }
+    return out;
+}
 
 function normalize(str) {
-    return str
+    const words = str
         .toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
         .replace(/œ/g, 'oe').replace(/æ/g, 'ae')
+        .replace(/(\d),(\d)/g, '$1.$2')              // 42,195 = 42.195
         .replace(/[’'\-–—]/g, ' ')
-        .replace(/[^\p{L}\p{N}\s]/gu, '')
+        .replace(/[^\p{L}\p{N}.\s]/gu, '')
+        .replace(/\.(?!\d)|(?<!\d)\./g, '')          // un point ne reste que dans un nombre décimal
         .replace(/\s+/g, ' ')
         .trim()
-        .split(' ').map(w => NUMBER_WORDS[w] || w).join(' ');
+        .split(' ')
+        .map(w => {
+            const ord = w.match(/^(\d+)(e|eme|ieme|er|ere|re|nd|nde)$/);   // 5e, 5ème, 1er, 2nd…
+            if (ord) return `${Number(ord[1])}e`;
+            if (w in ORDINAL_WORDS) return `${ORDINAL_WORDS[w]}e`;
+            const r = romanValue(w);
+            return r === null ? w : String(r);
+        });
+    return wordsToNumbers(words).join(' ');
 }
 
 function stripArticles(str) {
@@ -278,7 +334,7 @@ function answerWithoutGeneric(ans) {
 function judge(input, rawAnswers, question = '') {
     const typed = stripArticles(normalize(input));
     if (!typed) return 'wrong';
-    const numbersTyped = normalize(input).match(/\d+/g) || [];
+    const numbersTyped = normalize(input).match(/\d+(?:\.\d+)?/g) || [];
     const questionWords = new Set(stripArticles(normalize(question)).split(' '));
     let typo = false;
 
@@ -294,7 +350,7 @@ function judge(input, rawAnswers, question = '') {
 
     for (const ans of answers) {
         // Réponse numérique (une date) : exacte uniquement, jamais approximative
-        if (/^\d+$/.test(ans)) {
+        if (/^\d+(\.\d+)?$/.test(ans)) {   // nombre (date, distance…) : exact uniquement
             if (numbersTyped.includes(ans)) return 'exact';
             continue;
         }

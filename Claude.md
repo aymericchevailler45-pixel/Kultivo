@@ -139,7 +139,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `facts.js` (THEME_FACTS, 10 par thème = 150) : chaque icône a la sienne (`data-fact`). Décors en z-index 2
   (sinon le parcours, pleine largeur, prenait les taps). L'utilisateur veut « presque 1 anecdote par icône ». Bouton flottant
   « 📍 Mon niveau » (⬆/⬇) quand le niveau en cours est hors écran. Drapeaux zoomables (loupe) comme les photos.
-  Correction : nombres en lettres = chiffres (`NUMBER_WORDS` dans `normalize`, sauf « un/une »).
+  Correction : nombres en lettres = chiffres, depuis le 2026-10-23 aussi les nombres composés (« dix-sept »,
+  « quatre-vingt-neuf », « mille sept cent… », `wordsToNumbers`), les ordinaux (« cinquième » = « 5e » = « 5ème »,
+  `ORDINAL_WORDS`), les chiffres romains (« Louis XIV » = « Louis 14 », `romanValue` ; lettre seule : V et X seulement)
+  et les décimales (« 42,195 » = « 42.195 ») ; « un / une » seuls restent des articles. Nombre attendu = exact.
+  Signalements traités le 2026-10-23 (capture de la table reports envoyée par l'utilisateur).
 - Boutons secondaires (`.btn-ghost`) : contour fin gris partout ; dans le bandeau de correction, contour couleur du bandeau.
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.
