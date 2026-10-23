@@ -2412,10 +2412,11 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .avatar-edit::after { content: '✏️'; position: absolute; inset: 0; font-size: 0.65rem; line-height: 18px; text-align: center; }
 .league-avatar .emoji-img { width: 62%; height: 62%; }
 .league-avatar.is-big { width: 96px; height: 96px; font-size: 2.6rem; }
-.avatar-sheet { text-align: center; }
+/* Fenêtre de l'avatar : toujours dans l'écran, seule la grille des dessins défile (bouton « C'est bon » visible) */
+.avatar-sheet { text-align: center; display: flex; flex-direction: column; max-height: calc(100dvh - 32px); overflow: hidden; }
 .avatar-preview { display: flex; justify-content: center; margin: 4px 0 10px; }
 .modal-content p.avatar-label { margin: 6px 0 6px; color: var(--muted); font-size: 0.85rem; font-weight: 800; text-align: left; }
-.avatar-colors { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.avatar-colors { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; flex: none; }   /* 24 couleurs = 3 lignes de 8 */
 .avatar-swatch {
     aspect-ratio: 1;
     border: 3px solid var(--surface);
@@ -2425,7 +2426,8 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     cursor: pointer;
 }
 .avatar-swatch.is-active { box-shadow: 0 0 0 3px var(--ink); }
-.avatar-emojis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-height: 34dvh; overflow-y: auto; margin-bottom: 14px; padding: 2px; }
+.avatar-emojis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; flex: 1 1 auto; min-height: 110px; overflow-y: auto; margin-bottom: 14px; padding: 2px; }
+.avatar-sheet #avatarDone { flex: none; }
 .avatar-pick {
     display: flex;
     align-items: center;

@@ -227,7 +227,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Avatar personnalisable (2026-10-17) : bouton rond en haut du Profil (`avatarBtn`, crayon) → fenêtre « Mon
   avatar » (`avatarModal`) : 12 couleurs (`AVATAR_HUES`), initiale ou 24 dessins Twemoji déjà dans `emoji/`
   (`AVATAR_EMOJIS`) ; depuis le 2026-10-23 : 24 couleurs en UN dégradé (une tous les 15° ; une ligne de foncées
-  essayée puis retirée car elle cassait l'enchaînement — `hueLight` garde leur affichage si déjà choisies)
+  essayée puis retirée car elle cassait l'enchaînement — `hueLight` garde leur affichage si déjà choisies) ; 3 lignes de 8.
+  Fenêtre `avatarModal` toujours dans l'écran : seule la grille des dessins défile, « C'est bon » toujours visible
   et 39 dessins (5 nouveaux emojis téléchargés). Sauvegarde `avatar: { hue, emoji }` ; envoyé aux amis via `profiles.avatar_hue/avatar_emoji`
   (`supabase/avatar.sql`, `pushAvatar`) ; `avatarEl(pseudo, look, cls)` partout (podium, liste).
 - Profil d'un ami (2026-10-17) : tap sur un ami (liste, podium, classement, liste du défi du jour) → `friendModal` (`openFriendProfile`) :
