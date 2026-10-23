@@ -348,7 +348,10 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
 - Tester dans Edge via `shot.ps1` (PowerShell), puis commit + push + vérification en ligne (règles habituelles).
 
 ## IDÉES RETENUES (2026-10-23, l'utilisateur veut le détail avant le code)
-1. Missions de la semaine (3 par semaine, récompenses pièces + coffre). 2. Événements à thème (Halloween, Noël, JO…,
+1. Missions de la semaine — FAIT le 2026-10-23 : `MISSION_POOL` (11 types), 3 par semaine mêmes pour tous
+   (`weekMissions`, graine = lundi), `missionEvent` appelé aux bonnes réponses / fins de partie, `missions` dans la
+   sauvegarde, 30 🪙 chacune + coffre de 3 cartes ; ligne compacte `missionsRow` sous l'objectif + fenêtre `missionsModal`.
+   Objectif du jour plus compact : les 3 choix de rythme cachés une fois la journée commencée. 2. Événements à thème (Halloween, Noël, JO…,
    carte / badge limités). 3. Rappels de série : PAS en appli web, à faire avec Capacitor (vraie appli). 4. Duel entre
    amis (10 mêmes questions, table Supabase `duels` → GRANT obligatoire, voir règle Supabase). 8. Statistiques anonymes
    (questions ratées / réussies par tous, niveaux abandonnés) pour régler le parcours.

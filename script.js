@@ -420,6 +420,7 @@ function defaultData() {
         tipReviews: false,               // explication de « + X révisions » déjà vue
         chestBonus: 0,                   // cartes encore dues pour les coffres sautés par le placement
         coinBonus: 0,                    // pièces encore dues pour les niveaux sautés par le placement
+        missions: null,                  // missions de la semaine : { week, progress, claimed, chest }
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -1003,6 +1004,158 @@ function showToast(text) {
     setTimeout(() => toast.remove(), 2500);
 }
 
+/* ---------- Missions de la semaine (2026-10-23) ---------- */
+// 3 missions par semaine, les mêmes pour tout le monde (tirage avec la date du lundi comme graine).
+// 30 🪙 par mission réussie, et un coffre de 3 cartes (dont une rare) quand les 3 sont récupérées.
+
+const MISSION_COINS = 30;
+const MISSION_POOL = [
+    { id: 'levels',   icon: '🗺️', goal: 5,  text: n => `Réussis ${n} niveaux du parcours` },
+    { id: 'flawless', icon: '✨', goal: 2,  text: n => `Réussis ${n} niveaux sans faute` },
+    { id: 'order',    icon: '⏳', goal: 2,  text: n => `Réussis ${n} niveaux de frises` },
+    { id: 'pairs',    icon: '🔗', goal: 2,  text: n => `Réussis ${n} niveaux de paires` },
+    { id: 'daily',    icon: '📅', goal: 4,  text: n => `Joue ${n} défis du jour` },
+    { id: 'correct',  icon: '✅', goal: 60, text: n => `Donne ${n} bonnes réponses` },
+    { id: 'theme',    icon: '🎓', goal: 12, text: (n, theme) => `Donne ${n} bonnes réponses en ${theme}` },
+    { id: 'training', icon: '🎯', goal: 3,  text: n => `Termine ${n} entraînements` },
+    { id: 'reviews',  icon: '🔁', goal: 3,  text: n => `Termine ${n} révisions` },
+    { id: 'sprint',   icon: '⚡', goal: 12, text: n => `Fais ${n} bonnes réponses en un seul sprint`, max: true },
+    { id: 'days',     icon: '🔥', goal: 5,  text: n => `Joue ${n} jours différents cette semaine` }
+];
+
+/** Les 3 missions de la semaine en cours (et le thème de la mission « thème »). */
+function weekMissions() {
+    const week = weekStart();
+    const picked = seededShuffle(MISSION_POOL, `missions-${week}`).slice(0, 3);
+    const themes = THEME_DECOR.map(t => t.theme).filter(t => t !== 'Drapeaux' && t !== 'Monuments');
+    const theme = seededShuffle(themes, `missions-theme-${week}`)[0];
+    return picked.map(m => ({ ...m, theme: m.id === 'theme' ? theme : null,
+        icon: m.id === 'theme' ? (THEME_DECOR.find(t => t.theme === theme) || {}).icon || m.icon : m.icon }));
+}
+
+/** Progression de la semaine (remise à zéro chaque lundi). */
+function missionData() {
+    const d = state.data;
+    const week = weekStart();
+    if (!d.missions || d.missions.week !== week) d.missions = { week, progress: {}, claimed: {}, chest: false };
+    return d.missions;
+}
+
+function missionProgress(m) {
+    if (m.id === 'days') {
+        const week = weekStart();
+        let n = 0;
+        for (let i = 0; i < 7; i++) if (state.data.activeDays[shiftDays(week, i)]) n++;
+        return Math.min(m.goal, n);
+    }
+    return Math.min(m.goal, missionData().progress[m.id] || 0);
+}
+
+/** Quelque chose qui compte pour une mission vient d'arriver (sauvegardé avec le reste de la partie). */
+function missionEvent(type, amount = 1, theme = null) {
+    const md = missionData();
+    for (const m of weekMissions()) {
+        if (m.id !== type || (m.theme && m.theme !== theme)) continue;
+        const before = missionProgress(m);
+        if (before >= m.goal) continue;
+        md.progress[m.id] = m.max ? Math.max(md.progress[m.id] || 0, amount) : (md.progress[m.id] || 0) + amount;
+        if (missionProgress(m) >= m.goal) (state.missionsJustDone = state.missionsJustDone || []).push(m);
+    }
+}
+
+/** Récompenses à prendre (missions finies non récupérées, + le coffre des 3). */
+function missionsToClaim() {
+    const md = missionData();
+    const list = weekMissions();
+    const ready = list.filter(m => missionProgress(m) >= m.goal && !md.claimed[m.id]).length;
+    const chest = list.every(m => md.claimed[m.id]) && !md.chest ? 1 : 0;
+    return ready + chest;
+}
+
+/** Ligne compacte sous l'objectif du jour : 🗓️ Missions de la semaine ●●○ 2/3 › */
+function renderMissionsRow() {
+    const row = $('missionsRow');
+    const list = weekMissions();
+    const done = list.filter(m => missionProgress(m) >= m.goal).length;
+    const dots = list.map(m => missionProgress(m) >= m.goal ? '●' : '○').join('');
+    const label = el('span', 'missions-label');
+    label.textContent = '🗓️ Missions de la semaine';
+    const right = el('span', 'missions-dots');
+    right.textContent = `${dots} ${done}/${list.length} ›`;
+    row.replaceChildren(label, right);
+    const n = missionsToClaim();
+    if (n > 0) row.setAttribute('data-notif', n);
+    else row.removeAttribute('data-notif');
+}
+
+/** Fenêtre des missions : progression, récompenses, coffre des 3. */
+function openMissionsModal() {
+    const body = $('missionsList');
+    body.replaceChildren();
+    const md = missionData();
+    const list = weekMissions();
+    for (const m of list) {
+        const p = missionProgress(m);
+        const item = el('div', `mission${p >= m.goal ? ' is-done' : ''}`);
+        const top = el('div', 'mission-top');
+        const name = el('span', 'mission-name');
+        name.textContent = `${m.icon} ${m.text(m.goal, m.theme)}`;
+        const count = el('span', 'mission-count');
+        count.textContent = `${p}/${m.goal}`;
+        top.append(name, count);
+        const bar = el('div', 'meter');
+        const fill = el('div', 'meter-fill');
+        fill.style.width = `${Math.round((p / m.goal) * 100)}%`;
+        bar.append(fill);
+        item.append(top, bar);
+        if (p >= m.goal) {
+            if (md.claimed[m.id]) {
+                const ok = el('p', 'mission-claimed');
+                ok.textContent = `✓ +${MISSION_COINS} 🪙 récupérées`;
+                item.append(ok);
+            } else {
+                const btn = el('button', 'btn btn-green btn-small');
+                btn.type = 'button';
+                btn.textContent = `🎁 Récupérer +${MISSION_COINS} 🪙`;
+                btn.addEventListener('click', () => {
+                    md.claimed[m.id] = true;
+                    state.data.coins += MISSION_COINS;
+                    saveData();
+                    renderHeader();
+                    renderMissionsRow();
+                    openMissionsModal();
+                    playSound('win');
+                });
+                item.append(btn);
+            }
+        }
+        body.append(item);
+    }
+    const all = list.every(m => md.claimed[m.id]);
+    const chest = el('div', `mission-chest${md.chest ? ' is-open' : ''}`);
+    if (md.chest) chest.textContent = '🎁 Coffre de la semaine ouvert. Nouvelles missions lundi !';
+    else if (all) {
+        const btn = el('button', 'btn btn-violet btn-full');
+        btn.type = 'button';
+        btn.textContent = '🎁 Ouvrir le coffre de la semaine';
+        btn.addEventListener('click', () => {
+            md.chest = true;
+            saveData();
+            $('missionsModal').hidden = true;
+            renderMissionsRow();
+            updateNavNotifications();
+            openCardBoxes([{ size: 3, rare: true }], '🗓️ Coffre des missions');
+        });
+        chest.append(btn);
+    } else {
+        chest.textContent = '🎁 Les 3 missions réussies : un coffre de 3 cartes en plus.';
+    }
+    body.append(chest);
+    const days = 7 - ((new Date().getDay() + 6) % 7);   // jours restants, lundi compris
+    $('missionsWhen').textContent = days <= 1 ? 'Nouvelles missions demain.' : `Nouvelles missions dans ${days} jours (lundi).`;
+    $('missionsModal').hidden = false;
+}
+
 /* ---------- Défi du jour ---------- */
 
 /** Les mêmes 10 questions pour tout le monde un jour donné (graine = la date). */
@@ -1144,6 +1297,7 @@ function updateNavNotifications() {
         unclaimedGoals = 1;
     }
     
+    unclaimedGoals += missionsToClaim();
     const challengesBtn = document.querySelector('.nav-btn[data-screen="challenges"]');
     if (unclaimedGoals > 0) challengesBtn.setAttribute('data-notif', unclaimedGoals);
     else challengesBtn.removeAttribute('data-notif');
@@ -1934,9 +2088,13 @@ function renderChallenges() {
         });
         choices.append(btn);
     });
+    // Rythme déjà fixé pour la journée : on n'affiche plus les 3 choix (la carte prend moins de place)
+    choices.hidden = locked;
+    document.querySelector('.goal-title').hidden = locked;
     $('goalNote').textContent = locked
-        ? '🔒 Modifiable demain (tu as déjà joué aujourd’hui).'
+        ? `Rythme « ${currentChoice.label} » · modifiable demain`
         : 'Modifiable tant que tu n’as pas joué aujourd’hui.';
+    renderMissionsRow();
 
     // Défi du jour
     const result = data.daily[today];
@@ -3185,6 +3343,8 @@ function commit(ok) {
         if (ok) {
             state.correct++;
             addXp(mode === 'daily' ? XP_DAILY_CORRECT : XP_SPRINT_CORRECT);
+            missionEvent('correct');
+            missionEvent('theme', 1, item.q.theme);
         }
         if (mode === 'daily') {
             state.grid.push(ok ? '🟩' : '🟥');
@@ -3205,6 +3365,8 @@ function commit(ok) {
         if (firstTry && !assisted) recordResult(id, true);
         const clean = firstTry && !forced && !assisted;
         addXp(mode === 'training' ? (clean ? XP_TRAINING : XP_RETRY) : (clean ? XP_FIRST_TRY : XP_RETRY));
+        missionEvent('correct');
+        missionEvent('theme', 1, item.q.theme);
         state.done++;
         if (forced) renderHearts();   // « J'avais juste » : le cœur n'est plus menacé, il arrête de clignoter
     } else {
@@ -3304,7 +3466,9 @@ function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryCl
     state.canRescue = false;
     $('endTitle').textContent = title;
     $('endText').textContent = text;
-    $('endExtra').textContent = extra;
+    const missions = (state.missionsJustDone || []).map(m => `🗓️ Mission réussie : ${m.text(m.goal, m.theme)} !`);
+    state.missionsJustDone = [];
+    $('endExtra').textContent = [extra, ...missions].filter(Boolean).join('\n');
     $('endPrimary').textContent = primary;
     $('endPrimary').className = `btn ${primaryClass || (secondary ? 'btn-red' : 'btn-green')}`;
     $('endSecondary').hidden = !secondary;
@@ -3351,6 +3515,7 @@ function endSession(win) {
     } else if (mode === 'review') {
         state.data.totals.reviews++;
         addXp(XP_REVIEW_WIN);
+        missionEvent('reviews');
         const dropLine = earnPracticeDrop();
         setEnd({
             emoji: '💪',
@@ -3366,6 +3531,7 @@ function endSession(win) {
         const seconds = Math.round((Date.now() - state.startedAt) / 1000);
         state.data.daily[day] = { score: state.correct, seconds, grid: state.grid.join(''), answers: state.answers };
         addXp(XP_DAILY_DONE);
+        missionEvent('daily');
         leaguePushScore();   // score du jour visible tout de suite par les amis
         setEnd({
             emoji: state.correct >= DAILY_SIZE ? '🎯' : '📅',
@@ -3402,6 +3568,7 @@ function endSession(win) {
         celebrate = record;
         state.data.best.lastSprint = state.correct;
         state.data.best.lastSprintRecord = record;
+        missionEvent('sprint', state.correct);
         setEnd({
             emoji: record ? '🏅' : '⚡',
             title: 'Sprint terminé',
@@ -3426,6 +3593,10 @@ function endSession(win) {
             state.data.totals.flawless++;
         }
         if (challenge) addXp(XP_CHALLENGE_WIN);
+        missionEvent('levels');
+        if (state.errors === 0) missionEvent('flawless');
+        if (mode === 'order') missionEvent('order');
+        if (mode === 'pairs') missionEvent('pairs');
         // Après un placement : une part des pièces des niveaux sautés (sans le dire, comme les cartes des coffres)
         const owed = Math.min(COIN_BONUS_PER_LEVEL, state.data.coinBonus);
         if (owed > 0) {
@@ -4255,6 +4426,7 @@ function startTraining(theme) {
 function endTraining() {
     const theme = state.trainTheme;
     state.data.totals.trainings = (state.data.totals.trainings || 0) + 1;
+    missionEvent('training');
     const before = state.trainTierBefore;
     const tier = updateTrainingTier(theme);
     const pr = trainingProgress(theme);
@@ -6080,6 +6252,9 @@ function bindEvents() {
 
     $('coinChip').addEventListener('click', () => showScreen('shop'));
     $('dropChip').addEventListener('click', openDropsModal);
+    $('missionsRow').addEventListener('click', openMissionsModal);
+    $('closeMissionsBtn').addEventListener('click', () => { $('missionsModal').hidden = true; });
+    $('missionsModal').addEventListener('click', e => { if (e.target === $('missionsModal')) $('missionsModal').hidden = true; });
     $('closeDropsBtn').addEventListener('click', closeDropsModal);
     $('dropsModal').addEventListener('click', e => { if (e.target === $('dropsModal')) closeDropsModal(); });
     $('dropsTrainBtn').addEventListener('click', () => dropsGo('training'));
@@ -6338,6 +6513,7 @@ function closeTopOverlay() {
     }
     if (open('chestModal')) { closeChest(); return true; }
     if (open('dropsModal')) { closeDropsModal(); return true; }
+    if (open('missionsModal')) { $('missionsModal').hidden = true; return true; }
     if (open('avatarModal')) { closeAvatarModal(); return true; }
     if (open('titlesModal')) { $('titlesModal').hidden = true; return true; }
     if (open('friendModal')) { $('friendModal').hidden = true; return true; }

@@ -92,6 +92,7 @@
                         <p class="goal-note" id="goalNote"></p>
                     </div>
                 </article>
+                <button type="button" id="missionsRow" class="missions-row"></button>
 
                 <article class="card card-violet" id="dailyCard">
                     <h2>📅 Défi du jour</h2>
@@ -480,6 +481,16 @@
             <button type="button" id="dropsTrainBtn" class="btn btn-green btn-full">🎯 S’entraîner (+1 💧)</button>
             <button type="button" id="dropsReviewBtn" class="btn btn-green btn-full">🔁 Réviser (+1 💧)</button>
             <button type="button" id="dropsRefillBtn" class="btn btn-violet btn-full">Recharger · 150 🪙</button>
+        </div>
+    </div>
+
+    <!-- MISSIONS DE LA SEMAINE -->
+    <div id="missionsModal" class="modal-overlay" hidden>
+        <div class="modal-content missions-sheet" role="dialog" aria-modal="true" aria-labelledby="missionsTitle">
+            <button type="button" id="closeMissionsBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="missionsTitle">🗓️ Missions de la semaine</h2>
+            <p id="missionsWhen" class="muted"></p>
+            <div id="missionsList" class="missions-list"></div>
         </div>
     </div>
 
