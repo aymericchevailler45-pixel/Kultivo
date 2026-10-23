@@ -4387,13 +4387,17 @@ function renderDuelsCard(grid) {
         i.textContent = info;
         name.append(b, i);
         li.append(avatarEl(pseudo, f?.look, 'is-small'), name);
-        buttons.forEach(([text, btnCls, onClick]) => {
-            const btn = el('button', `btn btn-small ${btnCls}`);
-            btn.type = 'button';
-            btn.textContent = text;
-            btn.addEventListener('click', e => { e.stopPropagation(); onClick(); });
-            li.append(btn);
-        });
+        if (buttons.length) {   // boutons groupés : ils passent à la ligne s'il n'y a pas la place (téléphone)
+            const actions = el('div', 'duel-actions');
+            buttons.forEach(([text, btnCls, onClick]) => {
+                const btn = el('button', `btn btn-small ${btnCls}`);
+                btn.type = 'button';
+                btn.textContent = text;
+                btn.addEventListener('click', e => { e.stopPropagation(); onClick(); });
+                actions.append(btn);
+            });
+            li.append(actions);
+        }
         ul.append(li);
     };
     // À jouer, puis en attente, puis les 5 derniers résultats

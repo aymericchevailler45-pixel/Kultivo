@@ -2762,7 +2762,10 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 /* Duels entre amis */
 .league-duels h2 { margin-bottom: 6px; }
 .duel-list { list-style: none; margin: 0; padding: 0; }
-.league-people li.duel-row .btn { flex: none; padding: 8px 12px; }
+.league-people li.duel-row { flex-wrap: wrap; }
+.duel-row .friend-name { min-width: 9rem; }   /* le pseudo et le résultat restent lisibles */
+.duel-actions { display: flex; gap: 6px; margin-left: auto; }
+.duel-actions .btn { flex: none; padding: 8px 12px; }
 .league-people li.duel-row.is-todo { border-color: var(--violet); background: var(--violet-tint); }
 .duel-row.is-todo .friend-info { color: var(--violet-ink); }
 .duel-review { min-width: 44px; }
