@@ -4526,7 +4526,7 @@ function renderDuelsCard(grid) {
         go.textContent = '›';
         pill.append(t, go);
         const g = games[0];
-        add(otherId, `Dernier ${g.res > 0 ? '🏆' : g.res < 0 ? '😅' : '🤝'} ${g.s1}/${DUEL_SIZE} – ${g.s2}/${DUEL_SIZE}`, 'is-old', { onRow: () => openDuelHistory(otherId), right: pill });
+        add(otherId, `Dernier : ${g.res > 0 ? '🏆' : g.res < 0 ? '😅' : '🤝'} ${g.s1} à ${g.s2}`, 'is-old', { onRow: () => openDuelHistory(otherId), right: pill });
     });
     if (!ul.children.length) {
         const p = el('p', 'muted');

@@ -371,7 +371,7 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    liste d'amis : avatar + pseudo cliquables vers le profil, « 📋 Revoir » les questions = `openDuelReview`, réponses tapées
    gardées dans `duelAnswers`)
    (`renderDuelsCard` : duels à jouer / en attente, puis UNE ligne PAR AMI : pastille = bilan « 2 V · 1 D » (vert / rouge /
-   gris), 2e ligne = « Dernier 🏆 7/10 – 0/10 » ; « 7–0 » seul refusé car on croyait à un bilan ; tap = `openDuelHistory`
+   gris), 2e ligne = « Dernier : 🏆 7 à 0 » (court : « 7/10 – 0/10 » était coupé sur téléphone) ; « 7–0 » seul refusé car on croyait à un bilan ; tap = `openDuelHistory`
    (bilan, Revanche, liste des duels → `openDuelReview`, avec « ← Tous les duels » ; pas de bouton profil, jugé inutile)), duels chargés avec le classement
    (`leagueFetch` → `league.duels`), `handleDuelNews` (messages, +20 🪙 au gagnant une seule fois via `duelsSeen`),
    pastille Classement = demandes d'amis + duels à jouer, record « ⚔️ Duels gagnés » (`totals.duelsWon`).
