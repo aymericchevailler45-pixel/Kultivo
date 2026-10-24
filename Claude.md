@@ -14,6 +14,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Prochaines pistes : événement de Noël (fin novembre), « Qui suis-je ? », puis la liste « AVANT DE PUBLIER » (triche
   « J'avais juste », protection classement / duels / heure, suppression de compte, politique de confidentialité, 12 testeurs).
   Abandonné : « Revoir le tutoriel », plein écran en appli web.
+- À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :
+  1. Rajouter des cartes à la collection.
+  2. Revoir le système d'XP et de pièces (déjà fait le 24/10 : XP 4/5/6 selon la difficulté ; la ligue reste « à l'effort »,
+     entraînement sans plafond, choix de l'utilisateur).
+  3. Entraînement : plus de questions APRÈS Halloween (pas pour lundi), par lots de ~50 par thème vérifiés un par un,
+     + paliers bonus 6 à 10 (« Maître ✦ »…, 30 questions chacun, coffre de 2 cartes du thème, badge « Grand Maître » au 10) ;
+     médailles calculées sur les 150 premières ; défi du jour / sprint / duels gardent leur liste figée (x001-x150).
+     Drapeaux et Monuments limités (pays déjà presque tous pris, photos libres à trouver).
 - Outils de test (scratchpad de la session) : `shot.ps1` (capture Edge, PowerShell), `dump.ps1`, `free_subjects.py`,
   `check_lot2.py`, `duel_test.js`, `event_test.js`. Écrire les scripts avec l'outil d'écriture (les « heredoc » abîment les \).
 
