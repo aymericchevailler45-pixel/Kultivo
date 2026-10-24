@@ -70,6 +70,51 @@
     }
     .s-lava .league-avatar { background: linear-gradient(120deg, #ff3d00, #ffb300, #ff3d00, #b71c1c); background-size: 300% 300%; animation: lava 4s ease-in-out infinite; }
 
+    /* Cadres à gagner (prestige) */
+    .f-ember::before { background: conic-gradient(#7a0b00, #ff3d00, #7a0b00, #ff7a00, #7a0b00); box-shadow: 0 0 10px rgba(255, 61, 0, 0.6); animation: pulse 1.6s ease-in-out infinite; }
+    .f-phoenix::before { background: conic-gradient(#ffd600, #ff6d00, #d50000, #ff6d00, #ffd600); animation: spin 3s linear infinite; box-shadow: 0 0 16px rgba(255, 160, 0, 0.8); }
+    .f-laurel-green::before { background: conic-gradient(#a5d66f, #4f9a2b, #a5d66f, #4f9a2b, #a5d66f); }
+    .laurel.green { filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+    .f-diamond::before { background: conic-gradient(#b9f3ff, #5ad1ff, #ffffff, #a78bfa, #5ad1ff, #b9f3ff); animation: spin 4s linear infinite; box-shadow: 0 0 14px rgba(90, 209, 255, 0.7); }
+    .f-swords::before { background: conic-gradient(#d9dee6, #8a94a6, #d9dee6, #5b6577, #d9dee6); }
+    .f-gladiator::before { background: conic-gradient(#b71c1c, #d9dee6, #b71c1c, #8a94a6, #b71c1c); }
+    .f-explorer::before { background: repeating-conic-gradient(#8d6e63 0 15deg, #c8a27a 15deg 30deg); }
+    .f-globe::before { background: conic-gradient(#1e88e5, #43a047, #1e88e5, #43a047, #1e88e5); }
+    .f-grandmaster::before { background: conic-gradient(#8b5cf6, #ffc800, #ec4899, #8b5cf6); animation: spin 3s linear infinite; box-shadow: 0 0 14px rgba(139, 92, 246, 0.7); }
+    .f-collector::before { background: conic-gradient(#9aa6bd, #1899d6, #8b5cf6, #ffc800, #9aa6bd); }
+    .f-perfect::before { background: repeating-conic-gradient(#ffc800 0 10deg, #ffffff 10deg 20deg); }
+    .f-xmas::before { background: repeating-conic-gradient(#d50000 0 15deg, #ffffff 15deg 30deg); }
+    /* Cadres de la boutique (décoratifs) */
+    .f-dots::before { background: radial-gradient(circle, #ff4f8b 30%, transparent 32%) 0 0 / 8px 8px, #ffe1ec; }
+    .f-stripes::before { background: repeating-linear-gradient(45deg, #2b5cff 0 4px, #ffffff 4px 8px); }
+    .f-neon-pink::before { background: #ff2bd6; box-shadow: 0 0 6px #ff2bd6, 0 0 16px #ff2bd6; }
+    .f-neon-blue::before { background: #00e5ff; box-shadow: 0 0 6px #00e5ff, 0 0 16px #00e5ff; }
+    .f-rainbow::before { background: conic-gradient(#ff4d4d, #ffb84d, #f9f871, #4dff88, #4dd2ff, #8b5cf6, #ff4dd2, #ff4d4d); animation: spin 3s linear infinite; }
+    .f-gold-plain::before { background: linear-gradient(135deg, #b8860b, #fff1a8, #c9952b); }
+    .f-wood::before { background: repeating-linear-gradient(80deg, #8d5a2b 0 3px, #b07a45 3px 7px, #6d4320 7px 9px); }
+    .f-pumpkin::before { background: radial-gradient(circle, #2b1b3d 30%, transparent 32%) 0 0 / 8px 8px, #ff9a3c; }
+    .f-night::before { background: linear-gradient(135deg, #3a4a8c, #0d1333); }
+    .deco { position: absolute; width: 16px; height: 16px; }
+    .deco.a { top: -8px; left: -4px; } .deco.b { top: -8px; right: -4px; } .deco.c { bottom: -8px; left: 50%; transform: translateX(-50%); }
+    /* Couleurs spéciales en plus */
+    .s-forest .league-avatar { background: linear-gradient(135deg, #a8e063, #2e7d32); }
+    .s-lavender .league-avatar { background: linear-gradient(135deg, #e0c3fc, #8b5cf6); }
+    .s-peach .league-avatar { background: linear-gradient(135deg, #ffd1a9, #ff7e5f); }
+    .s-mint .league-avatar { background: linear-gradient(135deg, #b8f5d8, #1fbf8f); }
+    .s-night .league-avatar { background: linear-gradient(135deg, #3a4a8c, #0d1333); }
+    .s-cherry .league-avatar { background: linear-gradient(135deg, #ffc1d9, #e0245e); }
+    .s-marble .league-avatar { background: linear-gradient(120deg, transparent 40%, rgba(150,150,160,.5) 42%, transparent 46%), linear-gradient(60deg, transparent 60%, rgba(150,150,160,.45) 62%, transparent 65%), #f4f4f6; color: #555; }
+    .s-wood .league-avatar { background: repeating-linear-gradient(80deg, #a0663a 0 4px, #c08552 4px 9px, #8a5530 9px 11px); }
+    .s-jade .league-avatar { background: radial-gradient(circle at 30% 30%, #9ff2c8, #1b8a5a 70%); }
+    .s-ruby .league-avatar { background: radial-gradient(circle at 30% 30%, #ff8a9a, #b0002a 70%); }
+    .s-bronze .league-avatar { position: relative; overflow: hidden; background: linear-gradient(135deg, #7a4a1e, #e0a060 45%, #f5c890 52%, #a8682f 70%, #5c3412); color: #3b2008; }
+    .s-bronze .league-avatar::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.6) 50%, transparent 65%); background-size: 250% 100%; animation: shine 2.8s ease-in-out infinite; }
+    .s-neon .league-avatar { background: #12002b; color: #ff2bd6; text-shadow: 0 0 6px #ff2bd6; box-shadow: inset 0 0 10px #ff2bd6; }
+    .s-boreal .league-avatar { background: linear-gradient(120deg, #00c9a7, #3d5afe, #b388ff, #00c9a7); background-size: 300% 300%; animation: lava 5s ease-in-out infinite; }
+    .s-holo .league-avatar { background: linear-gradient(120deg, #ffd6f6, #c3f0ff, #fff6b8, #d8c8ff, #ffd6f6); background-size: 300% 300%; animation: lava 3.5s ease-in-out infinite; color: #6b5b95; }
+    .s-snow .league-avatar { background: radial-gradient(2px 2px at 25% 30%, #fff 50%, transparent 51%), radial-gradient(2px 2px at 70% 25%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 55% 75%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 30% 70%, #fff 50%, transparent 51%), linear-gradient(135deg, #9fd3ff, #3a7bd5); }
+    .s-hearts .league-avatar { background: radial-gradient(circle at 30% 30%, #ff9ac1, #e0245e 75%); }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes shine { 0% { background-position: 150% 0; } 60%, 100% { background-position: -100% 0; } }
     @keyframes lava { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
@@ -146,7 +191,7 @@ const emoji = e => {
     img.alt = e;
     return img;
 };
-function avatar({ cls = '', hue = 200, letter = 'A', pic = null, tag = null, top = false, small = false, laurel = false }) {
+function avatar({ cls = '', hue = 200, letter = 'A', pic = null, tag = null, top = false, small = false, laurel = false, deco = null, green = false }) {
     const w = document.createElement('span');
     w.className = `av ${small ? 'small ' : ''}${cls}`;
     const a = document.createElement('span');
@@ -154,7 +199,8 @@ function avatar({ cls = '', hue = 200, letter = 'A', pic = null, tag = null, top
     a.style.setProperty('--hue', hue);
     if (pic) a.append(emoji(pic)); else a.textContent = letter;
     w.append(a);
-    if (laurel) ['l', 'r'].forEach(side => { const b = emoji('🌿'); b.className = `laurel ${side}`; w.append(b); });
+    if (laurel) ['l', 'r'].forEach(side => { const b = emoji('🌿'); b.className = `laurel ${side}${green ? ' green' : ''}`; w.append(b); });
+    if (deco && !small) ['a', 'b', 'c'].forEach(k => { const b = emoji(deco); b.className = `deco ${k}`; w.append(b); });
     if (tag) { const t = emoji(tag); t.classList.add('av-tag'); if (top) t.classList.add('top'); w.append(t); }
     return w;
 }
@@ -182,24 +228,68 @@ function grid(c, items) {
 }
 
 const FRAMES = [
-    { name: 'Laurier', how: '10 semaines 1er de la ligue des amis', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', laurel: true } },
     { name: 'Flamme', how: 'Série de 30 jours', av: { cls: 'frame f-flame', hue: 15, letter: 'L', tag: '🔥' } },
+    { name: 'Braise', how: 'Série de 100 jours', av: { cls: 'frame f-ember', hue: 0, pic: '🐉', tag: '🔥' } },
+    { name: 'Phénix', how: 'Série de 365 jours', av: { cls: 'frame f-phoenix', hue: 40, pic: '🦉', tag: '🔥' } },
+    { name: 'Laurier vert', how: '1re semaine 1er de la ligue', av: { cls: 'frame f-laurel-green', hue: 140, letter: 'T', laurel: true, green: true } },
+    { name: 'Laurier d’or', how: '10 semaines 1er de la ligue', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', laurel: true } },
+    { name: 'Diamant', how: '25 semaines 1er de la ligue', av: { cls: 'frame f-diamond', hue: 200, pic: '🦄', tag: '💎' } },
+    { name: 'Épées', how: '10 duels gagnés', av: { cls: 'frame f-swords', hue: 220, letter: 'N', tag: '⚔️' } },
+    { name: 'Gladiateur', how: '50 duels gagnés', av: { cls: 'frame f-gladiator', hue: 0, pic: '🦁', tag: '⚔️' } },
+    { name: 'Explorateur', how: 'Moitié du parcours (niveau 85)', av: { cls: 'frame f-explorer', hue: 30, pic: '🐢', tag: '🧭' } },
+    { name: 'Globe-trotteur', how: 'Parcours terminé (170)', av: { cls: 'frame f-globe', hue: 190, pic: '🐋', tag: '🌍' } },
     { name: 'Maître', how: 'Palier 5 d’entraînement dans un thème', av: { cls: 'frame f-master', hue: 265, pic: '🦊', tag: '⭐' } },
-    { name: 'Halloween 2026', how: 'Événement (45 questions trouvées)', av: { cls: 'frame f-halloween', hue: 30, pic: '🎃', tag: '🎃' } }
+    { name: 'Grand Maître', how: 'Palier 5 dans 5 thèmes', av: { cls: 'frame f-grandmaster', hue: 280, pic: '🤖', tag: '⭐' } },
+    { name: 'Collectionneur', how: 'Un thème de cartes complet', av: { cls: 'frame f-collector', hue: 210, pic: '🐼', tag: '🃏' } },
+    { name: 'Perfectionniste', how: '10 fois 10/10 au défi du jour', av: { cls: 'frame f-perfect', hue: 45, letter: 'J', tag: '🎯' } },
+    { name: 'Halloween 2026', how: 'Événement : 45 questions trouvées', av: { cls: 'frame f-halloween', hue: 30, pic: '🎃', tag: '🎃' } },
+    { name: 'Noël 2026', how: 'Événement de Noël (à venir)', av: { cls: 'frame f-xmas', hue: 140, pic: '🐧', tag: '🎄' } }
 ];
-grid(card('🏅 Cadres à gagner', 'Impossibles à acheter : ils prouvent qu’on a vraiment joué. Le petit emblème dans le coin dit d’où vient le cadre.'), FRAMES);
+grid(card('🏅 Cadres à gagner (jamais en boutique)', 'Ils prouvent qu’on a vraiment joué : impossible de les acheter. Ils arriveraient petit à petit (1 ou 2 par mois). Le petit emblème dit d’où vient le cadre.'), FRAMES);
+
+const SHOP_FRAMES = [
+    { name: 'Pois', how: '<span class="price">400 🪙</span>', av: { cls: 'frame f-dots', hue: 330, letter: 'L' } },
+    { name: 'Rayures', how: '<span class="price">400 🪙</span>', av: { cls: 'frame f-stripes', hue: 210, pic: '🐋' } },
+    { name: 'Bois', how: '<span class="price">400 🪙</span>', av: { cls: 'frame f-wood', hue: 100, pic: '🍄' } },
+    { name: 'Doré simple', how: '<span class="price">600 🪙</span>', av: { cls: 'frame f-gold-plain', hue: 0, letter: 'M' } },
+    { name: 'Néon rose', how: '<span class="price">800 🪙</span>', av: { cls: 'frame f-neon-pink', hue: 280, pic: '👽' } },
+    { name: 'Néon bleu', how: '<span class="price">800 🪙</span>', av: { cls: 'frame f-neon-blue', hue: 220, pic: '🚀' } },
+    { name: 'Fleurs', how: '<span class="price">800 🪙</span>', av: { cls: 'frame f-dots', hue: 120, pic: '🌻', deco: '🌸' } },
+    { name: 'Étoiles', how: '<span class="price">800 🪙</span>', av: { cls: 'frame f-night', hue: 240, letter: 'S', deco: '✨' } },
+    { name: 'Arc-en-ciel animé', how: '<span class="price">1 500 🪙</span>', av: { cls: 'frame f-rainbow', hue: 0, pic: '🦄' } },
+    { name: 'Flocons (Noël)', how: '<span class="price">600 🪙</span> · seulement en décembre', av: { cls: 'frame f-stripes', hue: 200, pic: '🐧', deco: '❄️' } },
+    { name: 'Cœurs (Saint-Valentin)', how: '<span class="price">600 🪙</span> · seulement en février', av: { cls: 'frame f-neon-pink', hue: 340, letter: 'A', deco: '💖' } },
+    { name: 'Citrouilles (Halloween)', how: '<span class="price">600 🪙</span> · seulement fin octobre', av: { cls: 'frame f-pumpkin', hue: 270, letter: 'M', deco: '🎃' } }
+];
+grid(card('🛍️ Cadres de la boutique (décoratifs)', 'Des motifs simples, sans signification : ils passent dans la vitrine de la semaine. Ceux de saison ne sont vendus qu’à leur date.'), SHOP_FRAMES);
 
 const STYLES = [
     { name: 'Coucher de soleil', how: '<span class="price">500 🪙</span>', av: { cls: 's-sunset', letter: 'T' } },
     { name: 'Océan', how: '<span class="price">500 🪙</span>', av: { cls: 's-ocean', pic: '🐋' } },
     { name: 'Aurore', how: '<span class="price">500 🪙</span>', av: { cls: 's-aurora', letter: 'S' } },
+    { name: 'Forêt', how: '<span class="price">500 🪙</span>', av: { cls: 's-forest', pic: '🦉' } },
+    { name: 'Lavande', how: '<span class="price">500 🪙</span>', av: { cls: 's-lavender', letter: 'L' } },
+    { name: 'Pêche', how: '<span class="price">500 🪙</span>', av: { cls: 's-peach', pic: '🦊' } },
+    { name: 'Menthe', how: '<span class="price">500 🪙</span>', av: { cls: 's-mint', pic: '🐢' } },
+    { name: 'Cerise', how: '<span class="price">500 🪙</span>', av: { cls: 's-cherry', letter: 'C' } },
+    { name: 'Nuit', how: '<span class="price">500 🪙</span>', av: { cls: 's-night', pic: '🦉' } },
+    { name: 'Marbre', how: '<span class="price">800 🪙</span>', av: { cls: 's-marble', letter: 'M' } },
+    { name: 'Bois', how: '<span class="price">800 🪙</span>', av: { cls: 's-wood', pic: '🍄' } },
+    { name: 'Jade', how: '<span class="price">800 🪙</span>', av: { cls: 's-jade', pic: '🐉' } },
+    { name: 'Rubis', how: '<span class="price">800 🪙</span>', av: { cls: 's-ruby', letter: 'R' } },
     { name: 'Arc-en-ciel', how: '<span class="price">800 🪙</span>', av: { cls: 's-rainbow', pic: '🦄' } },
     { name: 'Galaxie', how: '<span class="price">800 🪙</span>', av: { cls: 's-galaxy', pic: '🚀' } },
-    { name: 'Lave (animée)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-lava', pic: '🐉' } },
+    { name: 'Néon', how: '<span class="price">1 000 🪙</span>', av: { cls: 's-neon', letter: 'N' } },
+    { name: 'Bronze (brillant)', how: '<span class="price">1 000 🪙</span>', av: { cls: 's-bronze', letter: 'B' } },
     { name: 'Argent (brillant)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-silver', letter: 'N' } },
-    { name: 'Or (brillant)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-gold', letter: 'J' } }
+    { name: 'Or (brillant)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-gold', letter: 'J' } },
+    { name: 'Lave (animée)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-lava', pic: '🐉' } },
+    { name: 'Aurore boréale (animée)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-boreal', pic: '🐧' } },
+    { name: 'Holographique (animée)', how: '<span class="price">2 000 🪙</span>', av: { cls: 's-holo', pic: '🦄' } },
+    { name: 'Neige (Noël)', how: '<span class="price">600 🪙</span> · seulement en décembre', av: { cls: 's-snow', pic: '🐧' } },
+    { name: 'Cœurs (Saint-Valentin)', how: '<span class="price">600 🪙</span> · seulement en février', av: { cls: 's-hearts', letter: 'A' } }
 ];
-grid(card('✨ Couleurs spéciales', 'À acheter à la boutique (prix d’exemple). Les animées bougent doucement.'), STYLES);
+grid(card('✨ Couleurs spéciales (boutique)', 'Le fond du rond. 2 ou 3 nouvelles par mois dans la vitrine ; les animées bougent doucement.'), STYLES);
 
 // Dans le jeu : liste d'amis (petite taille)
 const list = card('👥 Dans la liste d’amis', 'Même chose en petit, comme dans le classement, les duels et sur le parcours.');
@@ -280,10 +370,10 @@ const FREE = ['🦉', '🐱', '🐶', '🦊', '🐼', '🐸', '🐧', '🐢', '�
 const LOCKED = [
     ['🐙', 'Terminer 1 niveau'], ['🍿', '25 bonnes réponses'], ['🎸', '1 leçon sans faute'],
     ['🥐', '1 défi du jour'], ['🧩', '1 révision'], ['🚂', 'Niveau 20'],
-    ['🦈', '1 niveau défi 🏆'], ['🐍', '10 au sprint'], ['🎷', 'Objectif du jour ×7'],
+    ['🦈', '1 niveau défi 🏆'], ['🐍', '8 au sprint'], ['🎷', 'Objectif du jour ×7'],
     ['🐋', '100 bonnes réponses'], ['🦖', 'Série de 7 jours'], ['🔭', 'Niveau 50'],
     ['🐎', '7 défis du jour'], ['🧲', '5 révisions'], ['🤖', '1er duel gagné'],
-    ['🦁', '5 leçons sans faute'], ['🗿', 'Niveau 80'], ['🚀', '20 au sprint'],
+    ['🦁', '5 leçons sans faute'], ['🗿', 'Niveau 80'], ['🚀', '10 au sprint'],
     ['🌋', '10/10 au défi du jour'], ['🏆', '1re semaine 1er de la ligue'], ['👽', '500 bonnes réponses'],
     ['🦄', 'Série de 30 jours'], ['🎨', 'Un thème de cartes complet'], ['👻', 'Niveau 120']
 ];
@@ -363,7 +453,7 @@ pods.append(
 lg.append(pods);
 const ln = document.createElement('p');
 ln.className = 'note';
-ln.innerHTML = '👑 <b>La couronne</b> = 1er <b>cette semaine</b>. Elle change de tête chaque semaine (ici Léa, puis Tom).<br>🌿 <b>Le cadre laurier</b> = Tom a déjà fini 1er <b>10 semaines</b> dans le passé : il le garde <b>pour toujours</b>, partout (podium, liste, duels, parcours), même quand il n’est pas 1er.<br>Le cadre n’a donc plus de couronne : pas de confusion avec le podium.';
+ln.innerHTML = '✅ Retenu : le cadre <b>remplace</b> l’anneau or / argent / bronze (la marche 1-2-3 et la couronne montrent la place).<br>👑 <b>La couronne</b> = 1er <b>cette semaine</b>. Elle change de tête chaque semaine (ici Léa, puis Tom).<br>🌿 <b>Le cadre laurier</b> = Tom a déjà fini 1er <b>10 semaines</b> dans le passé : il le garde <b>pour toujours</b>, partout (podium, liste, duels, parcours), même quand il n’est pas 1er.<br>Le cadre n’a donc plus de couronne : pas de confusion avec le podium.';
 lg.append(ln);
 const oq = document.createElement('p');
 oq.className = 'sub';
@@ -371,7 +461,7 @@ oq.textContent = 'Et l’anneau or / argent / bronze du podium ?';
 const on = document.createElement('p');
 on.className = 'note';
 on.innerHTML = '<b>Option A</b> : le cadre remplace l’anneau de couleur ; la place reste visible grâce à la marche (1, 2, 3) et à la couronne. <b>Option B</b> : on garde l’anneau or / argent / bronze, un peu plus loin, autour du cadre.';
-lg.append(oq, opts, on);
+
 top3.push(lg);
 
 top3.reverse().forEach(c => wrap.prepend(c));
