@@ -1510,8 +1510,18 @@ function openMissionsModal() {
 /* ---------- Défi du jour ---------- */
 
 /** Les mêmes 10 questions pour tout le monde un jour donné (graine = la date). */
+/* Toutes les questions du jeu (parcours + entraînement, ~3 000) depuis le 2026-10-25, pour le défi du jour et le sprint.
+   Liste FIGÉE (ids du parcours < 4000, entraînement x001-x150) : ajouter des questions ne change pas un défi passé.
+   Avant le 25/10 : parcours seul (les défis déjà joués gardent leurs questions). */
+const DAILY_ALL_FROM = '2026-10-25';
+function allQuestionsPool() {
+    const training = (typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS)
+        .filter(q => q.id >= 10000 && q.id < 30000 && q.id % 1000 <= 150);
+    return QUESTIONS.filter(q => q.id < 4000).concat(training);
+}
 function dailyQuestions(day) {
-    const sorted = [...QUESTIONS].sort((a, b) => a.id - b.id);
+    const pool = day >= DAILY_ALL_FROM ? allQuestionsPool() : QUESTIONS;
+    const sorted = [...pool].sort((a, b) => a.id - b.id);
     return seededShuffle(sorted, `culture-g-${day}`).slice(0, DAILY_SIZE);
 }
 
@@ -1598,6 +1608,8 @@ function buildDecor(container, count) {
 const MAIN_SCREENS = ['map', 'challenges', 'league', 'shop', 'profile'];
 
 function showScreen(name) {
+    if (name !== 'league') listsOpen.clear();               // « Voir tous » refermés en quittant l'onglet
+    if (name !== 'challenges') eventFriendsOpen = false;
     $('mapScreen').hidden = name !== 'map';
     $('challengesScreen').hidden = name !== 'challenges';
     $('leagueScreen').hidden = name !== 'league';
@@ -3102,7 +3114,7 @@ function startSession(requestedMode, level = 0) {
         if (state.data.daily[todayKey()]) return;   // déjà fait aujourd'hui
         items = dailyQuestions(todayKey()).map(q => ({ q, review: false }));
     } else if (mode === 'sprint') {
-        items = shuffle(QUESTIONS).map(q => ({ q, review: false }));
+        items = shuffle(allQuestionsPool()).map(q => ({ q, review: false }));
     } else if (mode === 'placement') {
         items = placementCards(0);
     } else if (mode === 'challenge') {

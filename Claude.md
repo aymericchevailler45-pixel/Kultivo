@@ -249,7 +249,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   et 39 dessins (5 nouveaux emojis téléchargés). Sauvegarde `avatar: { hue, emoji }` ; envoyé aux amis via `profiles.avatar_hue/avatar_emoji`
   (`supabase/avatar.sql`, `pushAvatar`) ; `avatarEl(pseudo, look, cls)` partout (podium, liste).
 - Listes longues du Classement (2026-10-24) : Amis et Duels limités à 5 lignes + « Voir tous (N) › » / « Voir moins »
-  (`capList`, `LIST_MAX`, état gardé dans `listsOpen` pendant les mises à jour automatiques).
+  (`capList`, `LIST_MAX`, état gardé dans `listsOpen` pendant les mises à jour automatiques, refermé en changeant d'onglet).
+- Défi du jour (depuis le 2026-10-25, `DAILY_ALL_FROM`) et sprint : toutes les questions (parcours + entraînement, ~3 000,
+  `allQuestionsPool`, liste figée) ; défis d'avant le 25/10 : parcours seul.
 - Profil d'un ami (2026-10-17) : tap sur un ami (liste, podium, classement, liste du défi du jour) → `friendModal` (`openFriendProfile`) :
   titre, XP, série, réussite, niveaux, record de série, sprint, XP de la semaine, badges et cartes. Données :
   `scores.summary` (jsonb, `supabase/profil-ami.sql`), résumé envoyé avec le score (`profileSummary`) — la
