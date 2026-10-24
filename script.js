@@ -1106,17 +1106,27 @@ function placePumpkins() {
     if (!spot || covered) { if (pk) pk.remove(); return; }
     if (pk && pk.dataset.screen === spot.screen) return;
     if (pk) pk.remove();
+    const screen = $(spot.screen);
+    const current = spot.screen === 'mapScreen' ? document.querySelector('.node.is-current') : null;
+    if (spot.screen === 'mapScreen' && !current) return;
     pk = el('button', `pumpkin is-${spot.side}`);
     pk.id = 'pumpkin';
     pk.type = 'button';
     pk.dataset.screen = spot.screen;
     pk.setAttribute('aria-label', 'Citrouille cachée');
     pk.append(emojiImg(ev.pumpkin));
-    const top = $('topbar').getBoundingClientRect().bottom;
-    const nav = document.querySelector('.nav');
-    const navTop = nav && getComputedStyle(nav).position === 'fixed' && nav.getBoundingClientRect().top > window.innerHeight / 2
-        ? nav.getBoundingClientRect().top : window.innerHeight;
-    pk.style.top = `${Math.round(top + 70 + spot.y * Math.max(60, navTop - top - 190))}px`;
+    // Position dans la page (elle défile avec) : sur le parcours, à une hauteur d'écran au plus du niveau en cours ;
+    // ailleurs, dans le haut de la page (au plus ~1,3 écran : un léger défilement peut suffire)
+    let top;
+    if (current) {
+        const r = current.getBoundingClientRect();
+        top = r.top + window.scrollY + (spot.y - 0.42) * window.innerHeight;
+    } else {
+        const r = screen.getBoundingClientRect();
+        const room = Math.min(screen.scrollHeight, window.innerHeight * 1.3) - 160;
+        top = r.top + window.scrollY + 60 + spot.y * Math.max(80, room);
+    }
+    pk.style.top = `${Math.round(top)}px`;
     pk.addEventListener('click', e => {
         e.stopPropagation();
         const pd = pumpkinData(ev);
@@ -4680,6 +4690,25 @@ function openDuelPicker() {
 
 /** Carte « ⚔️ Duels » de l'onglet Classement : une ligne compacte par duel (avatar, pseudo, état, score).
     Duel terminé : tap = le détail (questions, revanche, profil). Duel reçu : bouton « Jouer ». */
+/* Listes longues (amis, duels) : 5 lignes au plus, puis « Voir tous (N) › » (2026-10-24, demande de l'utilisateur :
+   sinon la carte devient immense). L'état ouvert / fermé est gardé pendant les mises à jour automatiques. */
+const LIST_MAX = 5;
+const listsOpen = new Set();
+function capList(box, ul, key, max = LIST_MAX) {
+    const rows = [...ul.children];
+    if (rows.length <= max) return;
+    const open = listsOpen.has(key);
+    if (!open) rows.slice(max).forEach(li => { li.hidden = true; });
+    const more = el('button', 'link-btn list-more');
+    more.type = 'button';
+    more.textContent = open ? 'Voir moins' : `Voir tous (${rows.length}) ›`;
+    more.addEventListener('click', () => {
+        if (listsOpen.has(key)) listsOpen.delete(key); else listsOpen.add(key);
+        renderLeague();
+    });
+    box.append(more);
+}
+
 function renderDuelsCard(grid) {
     const me = cloudUser.id;
     const box = el('article', 'card league-duels');
@@ -4731,7 +4760,7 @@ function renderDuelsCard(grid) {
     });
     // Duels terminés : une ligne par ami, avec le bilan (pastille) et le dernier duel en clair
     const others = [...new Set(list.filter(r => r.o_score !== null).map(r => (r.challenger === me ? r.opponent : r.challenger)))];
-    others.slice(0, 6).forEach(otherId => {
+    others.forEach(otherId => {
         const games = duelsWith(otherId);
         const tally = duelTally(games);
         const pill = el('span', 'duel-right');
@@ -4751,7 +4780,7 @@ function renderDuelsCard(grid) {
             ? 'Touche « + » pour défier un ami en duel !'
             : 'Ajoute des amis pour les défier en duel !';
         box.append(p);
-    } else box.append(ul);
+    } else { box.append(ul); capList(box, ul, 'duels'); }
     grid.append(box);
 }
 
@@ -6437,6 +6466,7 @@ function renderLeague() {
             ul.append(li);
         });
         friends.append(ul);
+        capList(friends, ul, 'friends');
     }
 }
 

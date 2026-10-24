@@ -2815,7 +2815,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .event-steps-text { margin: 6px 0 0; font-size: 0.85rem; font-weight: 700; color: var(--muted); }
 .event-pumpkins { margin: 10px 0 0; padding: 8px 10px; border-radius: 12px; background: rgba(255, 122, 0, 0.12); font-weight: 800; font-size: 0.9rem; }
 .pumpkin {
-    position: fixed; z-index: 18; width: 30px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer;
+    position: absolute; z-index: 18; width: 30px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer;
     animation: pumpkinWobble 2.4s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(255, 160, 0, 0.9));
 }
 .pumpkin.is-left { left: 1px; }
@@ -2842,3 +2842,5 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
     content: attr(data-notif); position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 6px;
     border-radius: 10px; background: var(--red); color: #ffffff; font-size: 0.75rem; font-weight: 900; line-height: 20px; text-align: center;
 }
+.list-more { display: block; margin: 8px auto 0; }
+.league-people li[hidden] { display: none; }

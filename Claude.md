@@ -248,6 +248,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Fenêtre `avatarModal` toujours dans l'écran : seule la grille des dessins défile, « C'est bon » toujours visible
   et 39 dessins (5 nouveaux emojis téléchargés). Sauvegarde `avatar: { hue, emoji }` ; envoyé aux amis via `profiles.avatar_hue/avatar_emoji`
   (`supabase/avatar.sql`, `pushAvatar`) ; `avatarEl(pseudo, look, cls)` partout (podium, liste).
+- Listes longues du Classement (2026-10-24) : Amis et Duels limités à 5 lignes + « Voir tous (N) › » / « Voir moins »
+  (`capList`, `LIST_MAX`, état gardé dans `listsOpen` pendant les mises à jour automatiques).
 - Profil d'un ami (2026-10-17) : tap sur un ami (liste, podium, classement, liste du défi du jour) → `friendModal` (`openFriendProfile`) :
   titre, XP, série, réussite, niveaux, record de série, sprint, XP de la semaine, badges et cartes. Données :
   `scores.summary` (jsonb, `supabase/profil-ami.sql`), résumé envoyé avec le score (`profileSummary`) — la
@@ -385,7 +387,8 @@ Système d'énergie façon Duolingo, nom choisi par l'utilisateur : **💧 goutt
    AJOUTS du 2026-10-23 (demandés par l'utilisateur) : objectif 45 (65 questions dont 10 rébus, ids 30055-30064) ;
    dessins d'avatar gagnés en route (`ev.rewards` : 🎃 10, 🦇 20, 🧙 30, 💀 45 ; sauvegarde `avatarExtra` gardée pour toujours,
    `avatarNew` = pastille sur l'avatar et l'onglet Profil ; annoncés sur l'écran de fin) ; citrouilles cachées (`placePumpkins`,
-   3 par jour, une par onglet tiré au sort, position fixe dans la marge, visibles sans défiler, +5 🪙, `ed.pumpkins`) ;
+   3 par jour, une par onglet tiré au sort, dans la marge de la page (2026-10-24 : défile avec la page ; un léger défilement
+   peut suffire dans les onglets, à une demi-hauteur d'écran au plus du niveau en cours sur le parcours), +5 🪙, `ed.pumpkins`) ;
    missions de la semaine de l'événement (`ev.missions`, seulement si `weekStart() === ev.start`) ; « 👥 Tes amis »
    (`renderEventFriends` : 3 meilleurs + moi, « Voir tous (N) », d'après `summary.event`). Paires Halloween : pour plus tard.
    Autres événements proposés : Noël, Saint-Valentin, Coupe du monde / JO, Eurovision, fête de la musique, rentrée. 3. Rappels de série : PAS en appli web, à faire avec Capacitor (vraie appli). 4. Duel entre amis — FAIT le 2026-10-23 : `supabase/duels.sql` (À LANCER) = table `duels` (lanceur, ami, graine,
