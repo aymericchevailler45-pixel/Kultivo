@@ -199,7 +199,9 @@ const CARDS = [
     // 26/10/2026 : 2 cartes de plus par thème (1 commune, 1 rare) → 12 par thème, 180 en tout. Visibles à partir de ce jour-là.
     const n = new Date();
     const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
-    return today >= '2026-10-26' ? [
+    let demo = false;
+    try { demo = new URLSearchParams(location.search).get('demo') === 'lundi'; } catch (err) { /* sans adresse */ }
+    return demo || today >= '2026-10-26' ? [
         ['hi10', 'Histoire', '🪓', 'Hache viking', 'common', 'Les Vikings maniaient la hache… mais n’ont jamais porté de casque à cornes, une invention du XIXe siècle.'],
         ['hi11', 'Histoire', '🗞️', '« J’accuse… ! »', 'rare', 'Le 13 janvier 1898, Zola défend Dreyfus en une du journal L’Aurore.'],
         ['sc10', 'Sciences', '🔬', 'Microscope de Van Leeuwenhoek', 'common', 'Vers 1675, il est le premier à observer des êtres vivants microscopiques.'],

@@ -18,6 +18,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (`titleList`), 1 🪙 pour 8 XP (`coinRate`), badges 15 🪙 (`coinBadge`), 75 % de cartes nouvelles (`newCardChance`),
   +30 cartes (cards.js, 1 commune + 1 rare par thème, ids xx10 / xx11 : 12 par thème, 180), collection en 2 lignes de 6
   (`--per-row`), fenêtre « ✨ Quoi de neuf ? » une fois pour les joueurs d'avant (`PATCH_NOTES`, `patchSeen`, `patchModal`).
+  Démo avant la date : lien `?demo=lundi` (mise à jour + Halloween, fenêtre à chaque ouverture, rien de noté).
   Prochaine mise à jour : nouvelle date dans `PATCH_DAY` + nouvelles `PATCH_NOTES`. Test : `shotd.ps1` (fausse date).
   Pièces : il faudra plus de choses à acheter (cadres d'avatar, coffre d'un thème au choix…), idée notée pour plus tard.
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :

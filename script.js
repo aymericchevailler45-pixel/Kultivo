@@ -47,7 +47,9 @@ const XP_SPRINT_CORRECT = 2;     // avant: 5  | par bonne réponse en sprint
 /* Mise à jour du 26/10/2026 (avec Halloween) : titres ×3, pièces revues, 75 % de cartes nouvelles, 30 cartes en plus
    (cards.js), fenêtre « Quoi de neuf ? ». Tout s'active seul ce jour-là (`patched`). */
 const PATCH_DAY = '2026-10-26';
-const patched = () => todayKey() >= PATCH_DAY;
+// Démo : ?demo=lundi = comme si on était le 26/10 (mise à jour + Halloween), pour voir avant
+const demoLundi = (() => { try { return new URLSearchParams(location.search).get('demo') === 'lundi'; } catch (err) { return false; } })();
+const patched = () => demoLundi || todayKey() >= PATCH_DAY;
 const COIN_RATE = 5;              // avant: 10 | 1 pièce pour 5 XP gagnés (le reste est gardé pour la suite)
 const COIN_BADGE = 25;           // avant: 5  | bonus : nouveau badge
 const coinRate = () => (patched() ? 8 : COIN_RATE);    // 26/10 : 1 pièce pour 8 XP (on avait trop de pièces)
@@ -1059,7 +1061,7 @@ function currentEvent() {
     let demo = null;
     try { demo = new URLSearchParams(location.search).get('demo'); } catch (err) { /* sans adresse */ }
     const today = todayKey();
-    return EVENTS.find(e => demo === e.bank || (today >= e.start && today <= e.end)) || null;
+    return EVENTS.find(e => demo === e.bank || demo === 'lundi' || (today >= e.start && today <= e.end)) || null;
 }
 const eventQuestions = ev => (window.EVENT_BANKS && window.EVENT_BANKS[ev.bank]) || [];
 function eventData(ev) {
@@ -7468,8 +7470,8 @@ const PATCH_NOTES = [
 ];
 function maybeShowPatchNotes() {
     const d = state.data;
-    if (!patched() || d.patchSeen === PATCH_DAY || !d.onboarded) return;
-    const oldPlayer = Object.keys(d.activeDays || {}).some(k => k < PATCH_DAY);
+    if (!patched() || (d.patchSeen === PATCH_DAY && !demoLundi) || !d.onboarded) return;
+    const oldPlayer = demoLundi || Object.keys(d.activeDays || {}).some(k => k < PATCH_DAY);
     if (!oldPlayer) { d.patchSeen = PATCH_DAY; saveData(); return; }   // nouveau joueur : rien à annoncer
     if (document.querySelector('.modal-overlay:not([hidden]), .tour:not([hidden])') || !$('studyScreen').hidden) {
         setTimeout(maybeShowPatchNotes, 3000);   // une autre fenêtre est ouverte : on réessaie plus tard
@@ -7494,6 +7496,7 @@ function maybeShowPatchNotes() {
 }
 function closePatchNotes() {
     $('patchModal').hidden = true;
+    if (demoLundi) return;   // démo : la fenêtre reviendra pour de vrai lundi
     state.data.patchSeen = PATCH_DAY;
     saveData();
 }
