@@ -1,6 +1,6 @@
 /* ============================================================
    KULTIVO — cartes à collectionner (gagnées dans les coffres du parcours)
-   10 cartes par thème : 3 communes, 3 rares, 2 épiques, 1 légendaire (tirées dans les coffres)
+   12 cartes par thème depuis le 26/10/2026 : 4 communes, 4 rares, 2 épiques, 1 légendaire (tirées dans les coffres)
    + 1 carte « Maître » (rareté master), gagnée seulement au palier 5 de l'entraînement du thème.
    [id, thème, emoji (affiché en image Twemoji, dossier emoji/), nom, rareté, texte]
    Pour ajouter une carte : un id jamais utilisé, et télécharger l'emoji dans emoji/ (+ sw.js).
@@ -195,4 +195,40 @@ const CARDS = [
     ['mo8', 'Monuments', '⛲', 'Fontaine de Trevi', 'epic', 'Environ 3 000 € de pièces y sont jetés chaque jour, puis donnés à une œuvre caritative.'],
     ['mo9', 'Monuments', '⛩️', 'Torii de Miyajima', 'rare', 'Ce grand portail rouge semble flotter sur la mer à marée haute.'],
     ['moM', 'Monuments', '🏰', 'Château de Neuschwanstein', 'master', 'Le château de Louis II de Bavière aurait inspiré celui de La Belle au bois dormant.']
-].map(([id, theme, icon, name, rarity, text]) => ({ id, theme, icon, name, rarity, text }));
+].concat((() => {
+    // 26/10/2026 : 2 cartes de plus par thème (1 commune, 1 rare) → 12 par thème, 180 en tout. Visibles à partir de ce jour-là.
+    const n = new Date();
+    const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+    return today >= '2026-10-26' ? [
+        ['hi10', 'Histoire', '🪓', 'Hache viking', 'common', 'Les Vikings maniaient la hache… mais n’ont jamais porté de casque à cornes, une invention du XIXe siècle.'],
+        ['hi11', 'Histoire', '🗞️', '« J’accuse… ! »', 'rare', 'Le 13 janvier 1898, Zola défend Dreyfus en une du journal L’Aurore.'],
+        ['sc10', 'Sciences', '🔬', 'Microscope de Van Leeuwenhoek', 'common', 'Vers 1675, il est le premier à observer des êtres vivants microscopiques.'],
+        ['sc11', 'Sciences', '⚛️', 'Atome de Bohr', 'rare', 'En 1913, Niels Bohr imagine les électrons tournant autour du noyau comme des planètes.'],
+        ['ge10', 'Géographie', '🌵', 'Cactus saguaro', 'common', 'Dans le désert de Sonora, il peut dépasser 12 mètres de haut.'],
+        ['ge11', 'Géographie', '🌀', 'Cyclone', 'rare', 'Dans l’hémisphère Sud, les cyclones tournent dans le sens des aiguilles d’une montre.'],
+        ['te10', 'Technologie', '🔋', 'Pile de Volta', 'common', 'En 1800, Volta empile des disques de zinc et de cuivre : la première pile électrique.'],
+        ['te11', 'Technologie', '📷', 'Appareil Kodak', 'rare', '1888 : « Vous appuyez sur le bouton, nous faisons le reste. »'],
+        ['mu10', 'Musique', '🪕', 'Banjo', 'common', 'Il descend d’instruments venus d’Afrique de l’Ouest.'],
+        ['mu11', 'Musique', '🎧', 'Casque du Walkman', 'rare', 'En 1979, le Walkman de Sony permet d’écouter sa musique partout.'],
+        ['li10', 'Littérature', '🐇', 'Lapin blanc', 'common', '« En retard ! » : il entraîne Alice au pays des merveilles, en 1865.'],
+        ['li11', 'Littérature', '⚓', 'Le Nautilus', 'rare', 'Le sous-marin du capitaine Nemo, dans « Vingt Mille Lieues sous les mers » de Jules Verne.'],
+        ['je10', 'Jeux', '🪀', 'Yo-yo', 'common', 'L’un des plus vieux jouets du monde : on en jouait déjà en Grèce antique.'],
+        ['je11', 'Jeux', '🎰', 'Liberty Bell', 'rare', 'La première machine à sous, inventée vers 1895 à San Francisco.'],
+        ['ci10', 'Cinéma', '🦍', 'King Kong', 'common', 'En 1933, le gorille géant escalade l’Empire State Building.'],
+        ['ci11', 'Cinéma', '👽', 'E.T.', 'rare', '« E.T. téléphone maison » : le film de Spielberg sort en 1982.'],
+        ['ga10', 'Gastronomie', '🥞', 'Crêpe de la Chandeleur', 'common', 'Le 2 février, on fait sauter la première crêpe avec une pièce dans l’autre main.'],
+        ['ga11', 'Gastronomie', '🍕', 'Pizza Margherita', 'rare', 'Elle porterait le nom de la reine Marguerite d’Italie, en 1889 : tomate, mozzarella et basilic, comme le drapeau.'],
+        ['sp10', 'Sport', '🏉', 'Ballon de rugby', 'common', 'Selon la légende, William Webb Ellis invente le rugby en 1823 en prenant le ballon à la main.'],
+        ['sp11', 'Sport', '⛳', 'Golf sur la Lune', 'rare', 'En 1971, l’astronaute Alan Shepard y frappe deux balles de golf.'],
+        ['ar10', 'Arts', '🖍️', 'Pastel de Degas', 'common', 'Degas a dessiné au pastel une grande partie de ses danseuses.'],
+        ['ar11', 'Arts', '🪷', 'Nymphéas de Monet', 'rare', 'Monet en a peint environ 250 tableaux, dans son jardin de Giverny.'],
+        ['lf10', 'Langue française', '✉️', 'Courriel', 'common', 'Le mot a été inventé au Québec pour remplacer « e-mail ».'],
+        ['lf11', 'Langue française', '📏', 'Anticonstitutionnellement', 'rare', '25 lettres : longtemps cité comme le plus long mot du dictionnaire.'],
+        ['my10', 'Mythologie', '🪽', 'Ailes d’Icare', 'common', 'Collées avec de la cire, elles fondent quand Icare s’approche trop du soleil.'],
+        ['my11', 'Mythologie', '🐺', 'Louve romaine', 'rare', 'Elle aurait nourri Romulus et Rémus, les fondateurs légendaires de Rome.'],
+        ['dr10', 'Drapeaux', '🇨🇦', 'Unifolié', 'common', 'La feuille d’érable rouge flotte sur le drapeau du Canada depuis 1965.'],
+        ['dr11', 'Drapeaux', '🇧🇷', 'Drapeau du Brésil', 'rare', 'Sa devise « Ordre et progrès » est écrite sur un ciel étoilé.'],
+        ['mo10', 'Monuments', '🎡', 'London Eye', 'common', 'Inaugurée en 2000, la grande roue de Londres mesure 135 mètres.'],
+        ['mo11', 'Monuments', '🛕', 'Angkor Vat', 'rare', 'Au Cambodge, c’est le plus grand monument religieux du monde.']
+    ] : [];
+})()).map(([id, theme, icon, name, rarity, text]) => ({ id, theme, icon, name, rarity, text }));

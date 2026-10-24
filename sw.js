@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v18';
+const CACHE = 'kultivo-v19';
 const FILES = [
     './',
     './index.html',
@@ -162,7 +162,7 @@ const FILES = [
     './emoji/26aa.svg',
     './emoji/1f480.svg',
     './emoji/1f608.svg',
-    './emoji/1f4a7.svg',
+    './emoji/1fa93.svg',\n    './emoji/1f5de.svg',\n    './emoji/1f52c.svg',\n    './emoji/269b.svg',\n    './emoji/1f335.svg',\n    './emoji/1f300.svg',\n    './emoji/1f50b.svg',\n    './emoji/1f4f7.svg',\n    './emoji/1fa95.svg',\n    './emoji/1f3a7.svg',\n    './emoji/2693.svg',\n    './emoji/1fa80.svg',\n    './emoji/1f3b0.svg',\n    './emoji/1f95e.svg',\n    './emoji/1f355.svg',\n    './emoji/1f3c9.svg',\n    './emoji/26f3.svg',\n    './emoji/1f58d.svg',\n    './emoji/1fab7.svg',\n    './emoji/2709.svg',\n    './emoji/1f4cf.svg',\n    './emoji/1fabd.svg',\n    './emoji/1f1e8-1f1e6.svg',\n    './emoji/1f1e7-1f1f7.svg',\n    './emoji/1f3a1.svg',\n    './emoji/1f6d5.svg',\n    './emoji/1f4a7.svg',
     './emoji/1f4d6.svg',
     './emoji/1f519.svg',
     './emoji/1f52e.svg',

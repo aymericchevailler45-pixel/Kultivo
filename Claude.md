@@ -14,6 +14,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Prochaines pistes : événement de Noël (fin novembre), « Qui suis-je ? », puis la liste « AVANT DE PUBLIER » (triche
   « J'avais juste », protection classement / duels / heure, suppression de compte, politique de confidentialité, 12 testeurs).
   Abandonné : « Revoir le tutoriel », plein écran en appli web.
+- MISE À JOUR DU LUNDI 26/10 (préparée le 24/10, s'active SEULE ce jour-là : `PATCH_DAY`, `patched()`) : titres ×3
+  (`titleList`), 1 🪙 pour 8 XP (`coinRate`), badges 15 🪙 (`coinBadge`), 75 % de cartes nouvelles (`newCardChance`),
+  +30 cartes (cards.js, 1 commune + 1 rare par thème, ids xx10 / xx11 : 12 par thème, 180), collection en 2 lignes de 6
+  (`--per-row`), fenêtre « ✨ Quoi de neuf ? » une fois pour les joueurs d'avant (`PATCH_NOTES`, `patchSeen`, `patchModal`).
+  Prochaine mise à jour : nouvelle date dans `PATCH_DAY` + nouvelles `PATCH_NOTES`. Test : `shotd.ps1` (fausse date).
+  Pièces : il faudra plus de choses à acheter (cadres d'avatar, coffre d'un thème au choix…), idée notée pour plus tard.
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :
   1. Rajouter des cartes à la collection.
   2. Revoir le système d'XP et de pièces (déjà fait le 24/10 : XP 4/5/6 selon la difficulté ; la ligue reste « à l'effort »,

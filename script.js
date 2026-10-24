@@ -44,8 +44,15 @@ const XP_DAILY_DONE = 10;        // avant: 20 | bonus : défi du jour terminé
 const XP_SPRINT_CORRECT = 2;     // avant: 5  | par bonne réponse en sprint
 
 // Pièces 🪙 : on en gagne en gagnant de l'XP (l'XP, lui, ne baisse jamais)
+/* Mise à jour du 26/10/2026 (avec Halloween) : titres ×3, pièces revues, 75 % de cartes nouvelles, 30 cartes en plus
+   (cards.js), fenêtre « Quoi de neuf ? ». Tout s'active seul ce jour-là (`patched`). */
+const PATCH_DAY = '2026-10-26';
+const patched = () => todayKey() >= PATCH_DAY;
 const COIN_RATE = 5;              // avant: 10 | 1 pièce pour 5 XP gagnés (le reste est gardé pour la suite)
 const COIN_BADGE = 25;           // avant: 5  | bonus : nouveau badge
+const coinRate = () => (patched() ? 8 : COIN_RATE);    // 26/10 : 1 pièce pour 8 XP (on avait trop de pièces)
+const coinBadge = () => (patched() ? 15 : COIN_BADGE); // 26/10 : 15 🪙 par badge
+const newCardChance = () => (patched() ? 0.75 : 0.8);  // chance qu'une carte tirée soit une carte pas encore possédée
 const DROPS_MAX = 5;             // gouttes 💧 : 1 par niveau du parcours
 const DROP_MS = 60 * 60 * 1000;  // +1 goutte par heure
 const DROPS_PRACTICE_DAY = 3;    // gouttes gagnées par jour au plus en révisant / s'entraînant
@@ -430,6 +437,7 @@ function defaultData() {
         events: {},                      // événements : id -> { found, won, pumpkins: { day, got } }
         avatarExtra: [],                 // dessins d'avatar gagnés pendant les événements (gardés pour toujours)
         avatarNew: false,                // un dessin vient d'être gagné : pastille sur l'avatar du Profil
+        patchSeen: null,                 // date de la dernière mise à jour dont « Quoi de neuf ? » a été vu
         duelsSeen: {},                   // duels dont le résultat a été vu (pièces données une seule fois)
         duelAnswers: {},                 // duels : graine -> mes réponses tapées (pour les revoir)
         duelsViewed: {},                 // résultats de duels déjà regardés (sinon pastille)
@@ -641,8 +649,8 @@ function addXp(amount) {
 
     // 1 pièce pour COIN_RATE XP : le reste est gardé (sinon 4 XP arrondis donnaient 0 pièce à chaque réponse)
     data.coinRest += amount;
-    const coinGain = Math.floor(data.coinRest / COIN_RATE);
-    data.coinRest -= coinGain * COIN_RATE;
+    const coinGain = Math.floor(data.coinRest / coinRate());
+    data.coinRest -= coinGain * coinRate();
     data.coins += coinGain;
     state.sessionCoins += coinGain;
 
@@ -654,10 +662,13 @@ function addXp(amount) {
     renderHeader();
 }
 
+/** 26/10 : il faut 3 fois plus d'XP pour chaque titre (on y arrivait trop vite). */
+const titleList = () => (patched() ? TITLES.map(t => ({ ...t, xp: t.xp * 3 })) : TITLES);
 function titleFor(xp) {
     let idx = 0;
-    TITLES.forEach((t, i) => { if (xp >= t.xp) idx = i; });
-    return { current: TITLES[idx], next: TITLES[idx + 1] || null };
+    const list = titleList();
+    list.forEach((t, i) => { if (xp >= t.xp) idx = i; });
+    return { current: list[idx], next: list[idx + 1] || null };
 }
 
 /** Pièces gagnées et objectif atteint, sous les tuiles du récap (l'XP a sa propre tuile). */
@@ -987,9 +998,9 @@ const BADGES = [
     { id: 'league10',  icon: '👑', name: 'Légende de la ligue', desc: 'Finir 10 semaines 1er de la Ligue des amis', test: s => s.leagueWins >= 10 },
 
     // Collection de cartes
-    { id: 'collect1',  icon: '🃏', name: 'Collectionneur',      desc: 'Réunir les 10 cartes d’un thème',       test: s => s.themesComplete >= 1 },
-    { id: 'collect5',  icon: '📚', name: 'Grand collectionneur', desc: 'Réunir les 10 cartes de 5 thèmes',     test: s => s.themesComplete >= 5 },
-    { id: 'collectAll',icon: '💠', name: 'Collection parfaite', desc: 'Réunir les 150 cartes',                 test: s => s.themesComplete >= CARD_THEMES.length },
+    { id: 'collect1',  icon: '🃏', name: 'Collectionneur',      desc: 'Réunir toutes les cartes d’un thème',       test: s => s.themesComplete >= 1 },
+    { id: 'collect5',  icon: '📚', name: 'Grand collectionneur', desc: 'Réunir toutes les cartes de 5 thèmes',     test: s => s.themesComplete >= 5 },
+    { id: 'collectAll',icon: '💠', name: 'Collection parfaite', desc: 'Réunir toutes les cartes',            test: s => s.themesComplete >= CARD_THEMES.length },
     { id: 'shinyTheme',icon: '✨', name: 'Tout brille',         desc: 'Toutes les cartes d’un thème en brillantes (sauf la carte Maître)', test: s => s.shinyTheme }
 ];
 
@@ -1999,7 +2010,7 @@ function drawCard(minRarity, exclude, theme = null) {
     const fresh = CARDS.filter(c => inTheme(c) && !exclude.includes(c));
     const pool = fresh.length ? fresh : CARDS.filter(inTheme);
     const missing = pool.filter(c => !state.data.cards[c.id]);
-    const from = missing.length && Math.random() < 0.8 ? missing : pool;
+    const from = missing.length && Math.random() < newCardChance() ? missing : pool;
     return from[Math.floor(Math.random() * from.length)];
 }
 
@@ -2087,7 +2098,7 @@ async function checkThemeComplete(silent = false) {
     const names = fresh.join(', ');
     const go = await askConfirm({
         title: fresh.length > 1 ? '🃏 Collections complètes !' : '🃏 Collection complète !',
-        text: fresh.length > 1 ? `Tu as réuni toutes les cartes de : ${names}. Bravo !` : `Tu as réuni les 10 cartes ${names}, carte Maître comprise. Bravo !`,
+        text: fresh.length > 1 ? `Tu as réuni toutes les cartes de : ${names}. Bravo !` : `Tu as réuni les ${CARDS.filter(c => c.theme === fresh[0]).length} cartes ${names}, carte Maître comprise. Bravo !`,
         yes: 'Voir ma collection',
         no: 'Super !'
     });
@@ -2352,6 +2363,8 @@ function renderCollection() {
         head.textContent = `${theme} · ${n}/${cards.length}${n === cards.length ? ' ✓' : ''}`;
         head.classList.toggle('is-complete', n === cards.length);
         const row = el('div', 'card-row');
+        row.style.setProperty('--per-row', String(cards.length));                    // une ligne sur grand écran
+        row.style.setProperty('--per-row-phone', String(Math.ceil(cards.length / 2)));  // deux lignes sur téléphone
         for (const card of cards) {
             const count = state.data.cards[card.id] || 0;
             if (count) {
@@ -2645,7 +2658,7 @@ function renderProfile() {
             // « Récupérer » est masqué sur téléphone (cases plus étroites)
             const claimWord = el('span', 'chip-unit');
             claimWord.textContent = 'Récupérer ';
-            claimBtn.replaceChildren('🎁 ', claimWord, `+${COIN_BADGE} 🪙`);
+            claimBtn.replaceChildren('🎁 ', claimWord, `+${coinBadge()} 🪙`);
             claimBtn.style.marginTop = 'auto';
             claimBtn.style.padding = '8px'; // Légèrement plus fin pour bien s'intégrer à la carte
             claimBtn.style.fontSize = '0.95rem';
@@ -2655,11 +2668,11 @@ function renderProfile() {
             // On déclenche la récompense au clic sur ce bouton précis
             claimBtn.addEventListener('click', () => {
                 data.claimedBadges[b.id] = true;
-                data.coins += COIN_BADGE;
+                data.coins += coinBadge();
                 saveData();
                 renderHeader();
                 renderProfile();
-                showToast(`🎁 +${COIN_BADGE} 🪙 pour le badge ${b.name} !`);
+                showToast(`🎁 +${coinBadge()} 🪙 pour le badge ${b.name} !`);
             });
         }
 
@@ -3014,7 +3027,7 @@ function applyPlacement(start) {
     // les pièces correspondantes arrivent petit à petit, à chaque niveau réussi (sinon tout dépensé le 1er jour)
     const xpGift = (start - 1) * PLACEMENT_XP_PER_LEVEL;
     d.xp += xpGift;
-    d.coinBonus += Math.round(xpGift / COIN_RATE);
+    d.coinBonus += Math.round(xpGift / coinRate());
     state.placementXp = xpGift;
     // Coffres sautés : les derniers tout de suite, les autres en cartes bonus dans les prochains coffres du parcours
     // (sinon des dizaines de cartes d'un coup ; et sans rien, il aurait moins de cartes qu'un joueur arrivé là normalement)
@@ -5155,7 +5168,7 @@ function openTitlesModal() {
     const { current, next } = titleFor(xp);
     const list = $('titlesList');
     list.replaceChildren();
-    TITLES.forEach(t => {
+    titleList().forEach(t => {
         const reached = xp >= t.xp;
         const isCurrent = t === current;
         const li = el('li', `title-row${isCurrent ? ' is-current' : reached ? ' is-reached' : ' is-locked'}`);
@@ -7192,6 +7205,7 @@ function bindEvents() {
     window.addEventListener('resize', updateEventBanner);
     $('missionsRow').addEventListener('click', openMissionsModal);
     $('closeMissionsBtn').addEventListener('click', () => { $('missionsModal').hidden = true; });
+    $('patchOk').addEventListener('click', closePatchNotes);
     $('missionsModal').addEventListener('click', e => { if (e.target === $('missionsModal')) $('missionsModal').hidden = true; });
     $('closeDropsBtn').addEventListener('click', closeDropsModal);
     $('dropsModal').addEventListener('click', e => { if (e.target === $('dropsModal')) closeDropsModal(); });
@@ -7442,6 +7456,48 @@ function armBackGuard() {
 }
 
 /** Ferme la fenêtre ouverte la plus « haute » ; renvoie true si quelque chose a été fermé. */
+const PATCH_NOTES = [
+    ['🎃', 'Semaine d’Halloween jusqu’au 2 novembre', 'Dans Défis : des questions spéciales sans gouttes. 45 trouvées = une carte et un badge, et des dessins d’avatar à débloquer en route.'],
+    ['🎃', 'Citrouilles cachées', 'Chaque jour, 3 citrouilles se cachent dans les onglets du jeu : +5 🪙 chacune.'],
+    ['🗓️', 'Missions d’Halloween', 'Cette semaine, les 3 missions sont aux couleurs d’Halloween.'],
+    ['🃏', '30 nouvelles cartes', 'Une commune et une rare de plus par thème : 12 cartes par thème, 180 en tout.'],
+    ['🎖️', 'Titres revus', 'Il faut désormais 3 fois plus d’XP pour chaque titre. Ton XP, elle, ne change pas.'],
+    ['⭐', 'XP selon la difficulté', 'Une question difficile rapporte plus d’XP qu’une facile.'],
+    ['📅', 'Toutes les questions du jeu', 'Défi du jour, sprint et duels piochent aussi dans les questions de l’entraînement.'],
+    ['🪙', 'Pièces rééquilibrées', '1 🪙 pour 8 XP, et 15 🪙 par badge.']
+];
+function maybeShowPatchNotes() {
+    const d = state.data;
+    if (!patched() || d.patchSeen === PATCH_DAY || !d.onboarded) return;
+    const oldPlayer = Object.keys(d.activeDays || {}).some(k => k < PATCH_DAY);
+    if (!oldPlayer) { d.patchSeen = PATCH_DAY; saveData(); return; }   // nouveau joueur : rien à annoncer
+    if (document.querySelector('.modal-overlay:not([hidden]), .tour:not([hidden])') || !$('studyScreen').hidden) {
+        setTimeout(maybeShowPatchNotes, 3000);   // une autre fenêtre est ouverte : on réessaie plus tard
+        return;
+    }
+    const list = $('patchList');
+    list.replaceChildren();
+    for (const [icon, title, text] of PATCH_NOTES) {
+        const item = el('div', 'patch-item');
+        const ic = el('span', 'patch-icon');
+        ic.textContent = icon;
+        const body = el('div');
+        const b = el('b');
+        b.textContent = title;
+        const p = el('p');
+        p.textContent = text;
+        body.append(b, p);
+        item.append(ic, body);
+        list.append(item);
+    }
+    $('patchModal').hidden = false;
+}
+function closePatchNotes() {
+    $('patchModal').hidden = true;
+    state.data.patchSeen = PATCH_DAY;
+    saveData();
+}
+
 function closeTopOverlay() {
     const open = id => !$(id).hidden;
     if (open('askModal')) { $('askNo').click(); return true; }
@@ -7453,6 +7509,7 @@ function closeTopOverlay() {
     if (open('chestModal')) { closeChest(); return true; }
     if (open('dropsModal')) { closeDropsModal(); return true; }
     if (open('missionsModal')) { $('missionsModal').hidden = true; return true; }
+    if (open('patchModal')) { closePatchNotes(); return true; }
     if (open('avatarModal')) { closeAvatarModal(); return true; }
     if (open('titlesModal')) { $('titlesModal').hidden = true; return true; }
     if (open('friendModal')) { $('friendModal').hidden = true; return true; }
@@ -7501,6 +7558,7 @@ function init() {
     window.addEventListener('online', flushReports);        // dès que la connexion revient
     applyEventLook();
     if (currentEvent()) setInterval(placePumpkins, 700);   // citrouilles cachées de l'événement
+    setTimeout(maybeShowPatchNotes, 1500);                  // « Quoi de neuf ? » après une mise à jour
     buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
     buildDecor($('lessonDecor'), 8);
     checkThemeComplete(true);   // thèmes déjà complets : notés sans fête

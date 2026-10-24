@@ -1979,7 +1979,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .card-collection-list { display: flex; flex-direction: column; gap: 6px; }
 .card-theme-head { margin-top: 8px; color: var(--muted); font-size: 0.85rem; font-weight: 800; }
 .card-theme-head.is-complete { color: var(--gold-deep); }
-.card-row { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+.card-row { display: grid; grid-template-columns: repeat(var(--per-row, 10), 1fr); gap: 6px; }
 .kcard-btn { position: relative; padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
 .kcard-count {
     position: absolute;
@@ -1994,7 +1994,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 }
 /* Téléphone : 2 lignes de 5 petites cartes par thème (image seule ; on touche pour voir le nom et l'anecdote) */
 @media (max-width: 600px) {
-    .card-row { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .card-row { grid-template-columns: repeat(var(--per-row-phone, 5), 1fr); gap: 6px; }
     .kcard:not(.is-big) { padding: 2px; border-width: 2px; border-radius: 9px; box-shadow: 0 2px 0 var(--r); }
     .kcard:not(.is-big) .kcard-name { display: none; }
     .kcard-art .emoji-img { width: 1.7rem; height: 1.7rem; }
@@ -2844,3 +2844,13 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 }
 .list-more { display: block; margin: 8px auto 0; }
 .league-people li[hidden] { display: none; }
+
+/* « Quoi de neuf ? » (mise à jour du 26/10) : la liste défile, le bouton reste visible */
+.patch-sheet { display: flex; flex-direction: column; max-height: calc(100dvh - 32px); text-align: left; }
+.patch-sheet h2 { text-align: center; margin-bottom: 8px; }
+.patch-list { flex: 1 1 auto; overflow-y: auto; margin-bottom: 14px; }
+.patch-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 2px solid var(--line); }
+.patch-item:last-child { border-bottom: 0; }
+.patch-icon { flex: none; font-size: 1.4rem; line-height: 1.2; }
+.patch-item b { display: block; }
+.patch-item p { margin: 2px 0 0; font-size: 0.9rem; color: var(--muted); font-weight: 700; line-height: 1.35; }
