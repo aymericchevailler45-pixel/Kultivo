@@ -111,8 +111,8 @@
     .pics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px 8px; margin-top: 8px; }
     .pic { position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border: 2px solid var(--line); border-radius: 12px; }
     .pic .emoji-img { width: 60%; }
-    .pic.locked .emoji-img { filter: grayscale(1); opacity: 0.3; }
-    .pic.locked::after { content: '🔒'; position: absolute; font-size: 0.9rem; }
+    .pic.locked .emoji-img { filter: grayscale(0.7); opacity: 0.6; }
+    .pic.locked::after { content: '🔒'; position: absolute; right: -4px; bottom: -4px; font-size: 0.8rem; }
 
     /* Podium (comme dans le jeu) */
     .pods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -124,6 +124,15 @@
     .pod .podium-step { height: auto; }
     .pod .place-1 .podium-step { height: 54px; } .pod .place-2 .podium-step { height: 40px; } .pod .place-3 .podium-step { height: 30px; }
     .pod .league-avatar { width: 40px !important; height: 40px !important; font-size: 1.1rem !important; }
+    .pod.keep .place-1 .frame::after, .pod.keep .place-2 .frame::after, .pod.keep .place-3 .frame::after {
+        content: ''; position: absolute; inset: -10px; border-radius: 50%; z-index: -2; border: 3px solid var(--ring);
+    }
+    .pod.keep .place-1 { --ring: #ffc800; } .pod.keep .place-2 { --ring: #b8c2d3; } .pod.keep .place-3 { --ring: #d08a4f; }
+    .unlock { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; margin-top: 8px; }
+    .unlock .cell { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font-size: 0.68rem; font-weight: 800; color: var(--muted); line-height: 1.15; }
+    .unlock .pic { width: 52px; }
+    .free { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 6px 0 4px; }
+    .sub { margin: 14px 0 0; font-weight: 900; }
 </style>
 </head>
 <body>
@@ -173,7 +182,7 @@ function grid(c, items) {
 }
 
 const FRAMES = [
-    { name: 'Laurier', how: '10 semaines 1er de la ligue des amis', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', tag: '🏆', laurel: true } },
+    { name: 'Laurier', how: '10 semaines 1er de la ligue des amis', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', laurel: true } },
     { name: 'Flamme', how: 'Série de 30 jours', av: { cls: 'frame f-flame', hue: 15, letter: 'L', tag: '🔥' } },
     { name: 'Maître', how: 'Palier 5 d’entraînement dans un thème', av: { cls: 'frame f-master', hue: 265, pic: '🦊', tag: '⭐' } },
     { name: 'Halloween 2026', how: 'Événement (45 questions trouvées)', av: { cls: 'frame f-halloween', hue: 30, pic: '🎃', tag: '🎃' } }
@@ -195,7 +204,7 @@ grid(card('✨ Couleurs spéciales', 'À acheter à la boutique (prix d’exempl
 // Dans le jeu : liste d'amis (petite taille)
 const list = card('👥 Dans la liste d’amis', 'Même chose en petit, comme dans le classement, les duels et sur le parcours.');
 [
-    ['Léa', { cls: 'frame f-laurel', hue: 210, pic: '🦉', tag: '🏆', laurel: true, small: true }],
+    ['Léa', { cls: 'frame f-laurel', hue: 210, pic: '🦉', laurel: true, small: true }],
     ['Tom', { cls: 'frame f-flame', hue: 15, letter: 'T', tag: '🔥', small: true }],
     ['Inès', { cls: 's-gold', letter: 'I', small: true }],
     ['Noé', { cls: 'frame f-master s-galaxy', pic: '🚀', tag: '⭐', small: true }],
@@ -267,8 +276,31 @@ for (let i = 0; i < 24; i++) {
     bg.append(c);
 }
 base.append(bg);
+const FREE = ['🦉', '🐱', '🐶', '🦊', '🐼', '🐸', '🐧', '🐢', '🌻', '🍄', '⚽', '🎮', '🎲', '💡', '⭐'];
+const LOCKED = [
+    ['🐙', 'Terminer 1 niveau'], ['🍿', '25 bonnes réponses'], ['🎸', '1 leçon sans faute'],
+    ['🥐', '1 défi du jour'], ['🧩', '1 révision'], ['🚂', 'Niveau 20'],
+    ['🦈', '1 niveau défi 🏆'], ['🐍', '10 au sprint'], ['🎷', 'Objectif du jour ×7'],
+    ['🐋', '100 bonnes réponses'], ['🦖', 'Série de 7 jours'], ['🔭', 'Niveau 50'],
+    ['🐎', '7 défis du jour'], ['🧲', '5 révisions'], ['🤖', '1er duel gagné'],
+    ['🦁', '5 leçons sans faute'], ['🗿', 'Niveau 80'], ['🚀', '20 au sprint'],
+    ['🌋', '10/10 au défi du jour'], ['🏆', '1re semaine 1er de la ligue'], ['👽', '500 bonnes réponses'],
+    ['🦄', 'Série de 30 jours'], ['🎨', 'Un thème de cartes complet'], ['👻', 'Niveau 120']
+];
+const fs = document.createElement('p'); fs.className = 'sub'; fs.textContent = '🎁 Les 15 dessins de départ';
+const free = document.createElement('div'); free.className = 'free';
+FREE.forEach(e => { const d = document.createElement('div'); d.className = 'pic'; d.append(emoji(e)); free.append(d); });
+const ls = document.createElement('p'); ls.className = 'sub'; ls.textContent = '🔒 Les 24 à débloquer (du plus facile au plus dur)';
+const unlock = document.createElement('div'); unlock.className = 'unlock';
+LOCKED.forEach(([e, how]) => {
+    const c = document.createElement('div'); c.className = 'cell';
+    const d = document.createElement('div'); d.className = 'pic locked'; d.append(emoji(e));
+    const l = document.createElement('span'); l.textContent = how;
+    c.append(d, l); unlock.append(c);
+});
 const pics = document.createElement('div');
 pics.className = 'pics';
+pics.hidden = true;
 [['🦉', 0], ['🐱', 0], ['🐶', 0], ['🦊', 0], ['🐼', 0], ['⚽', 0], ['🦈', 'Badge « Premiers pas »'], ['🦖', 'Série de 7 jours'], ['🚀', '1er duel gagné'], ['🦄', 'Objectif du jour ×10'], ['🎸', 'Palier 3 en Musique'], ['👽', '10/10 au défi du jour']].forEach(([e, how]) => {
     const c = document.createElement('div');
     c.className = 'cell';
@@ -282,10 +314,10 @@ pics.className = 'pics';
     c.append(d, l);
     pics.append(c);
 });
-base.append(pics);
+base.append(fs, free, ls, unlock);
 const bn = document.createElement('p');
 bn.className = 'note';
-bn.innerHTML = 'Couleurs : une de plus tous les 10 niveaux du parcours (niveaux 10 à 120). Dessins : liés à des badges et des exploits faciles. Un tap sur un cadenas dit comment l’ouvrir. <b>Les joueurs actuels gardent tout ce qu’ils ont déjà</b> : le cadenas ne touche que les nouveaux.';
+bn.innerHTML = 'Couleurs : une de plus tous les 10 niveaux du parcours (niveaux 10 à 120). Dessins : 15 au départ, puis 24 liés à des exploits, des plus faciles (dès la 1re partie) aux plus durs. Un tap sur un cadenas dit comment l’ouvrir. <b>Les joueurs actuels gardent tout ce qu’ils ont déjà</b> : le cadenas ne touche que les nouveaux.';
 base.append(bn);
 top3.push(base);
 
@@ -293,9 +325,9 @@ top3.push(base);
 const lg = card('🥇 3) Ligue : couronne ou cadre ?', 'Deux choses différentes, qui ne se mélangent pas.');
 const pods = document.createElement('div');
 pods.className = 'pods';
-function podium(title, list) {
+function podium(title, list, keep = false) {
     const box = document.createElement('div');
-    box.className = 'pod';
+    box.className = `pod${keep ? ' keep' : ''}`;
     box.innerHTML = `<h3>${title}</h3>`;
     const p = document.createElement('div');
     p.className = 'league-podium';
@@ -317,15 +349,29 @@ function podium(title, list) {
     box.append(p);
     return box;
 }
+const tomFrame = { cls: 'frame f-laurel', hue: 210, pic: '🦉', laurel: true };
+const opts = document.createElement('div');
+opts.className = 'pods';
+opts.append(
+    podium('Option A : le cadre remplace l’anneau', [{ name: 'Tom', av: tomFrame }, { name: 'Léa', av: { hue: 330, letter: 'L' } }, { name: 'Toi', av: { hue: 140, letter: 'M' } }]),
+    podium('Option B : anneau or gardé autour', [{ name: 'Tom', av: tomFrame }, { name: 'Léa', av: { hue: 330, letter: 'L' } }, { name: 'Toi', av: { hue: 140, letter: 'M' } }], true)
+);
 pods.append(
-    podium('Cette semaine', [{ name: 'Léa', av: { hue: 330, letter: 'L' } }, { name: 'Tom', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', tag: '🏆', laurel: true } }, { name: 'Toi', av: { hue: 140, letter: 'M' } }]),
-    podium('La semaine d’après', [{ name: 'Tom', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', tag: '🏆', laurel: true } }, { name: 'Toi', av: { hue: 140, letter: 'M' } }, { name: 'Léa', av: { hue: 330, letter: 'L' } }])
+    podium('Cette semaine', [{ name: 'Léa', av: { hue: 330, letter: 'L' } }, { name: 'Tom', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', laurel: true } }, { name: 'Toi', av: { hue: 140, letter: 'M' } }]),
+    podium('La semaine d’après', [{ name: 'Tom', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', laurel: true } }, { name: 'Toi', av: { hue: 140, letter: 'M' } }, { name: 'Léa', av: { hue: 330, letter: 'L' } }])
 );
 lg.append(pods);
 const ln = document.createElement('p');
 ln.className = 'note';
 ln.innerHTML = '👑 <b>La couronne</b> = 1er <b>cette semaine</b>. Elle change de tête chaque semaine (ici Léa, puis Tom).<br>🌿 <b>Le cadre laurier</b> = Tom a déjà fini 1er <b>10 semaines</b> dans le passé : il le garde <b>pour toujours</b>, partout (podium, liste, duels, parcours), même quand il n’est pas 1er.<br>Le cadre n’a donc plus de couronne : pas de confusion avec le podium.';
 lg.append(ln);
+const oq = document.createElement('p');
+oq.className = 'sub';
+oq.textContent = 'Et l’anneau or / argent / bronze du podium ?';
+const on = document.createElement('p');
+on.className = 'note';
+on.innerHTML = '<b>Option A</b> : le cadre remplace l’anneau de couleur ; la place reste visible grâce à la marche (1, 2, 3) et à la couronne. <b>Option B</b> : on garde l’anneau or / argent / bronze, un peu plus loin, autour du cadre.';
+lg.append(oq, opts, on);
 top3.push(lg);
 
 top3.reverse().forEach(c => wrap.prepend(c));
