@@ -80,6 +80,50 @@
     .sw { position: relative; aspect-ratio: 1; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--line); }
     .sw.locked::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.55); }
     .sw.locked::after { content: '🔒'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+
+    /* Laurier (remplace le cadre « couronne ») : anneau doré + deux branches en bas */
+    .f-laurel::before { background: conic-gradient(#fff3b0, #e0b23a, #c9952b, #ffe680, #e0b23a, #fff3b0); }
+    .laurel { position: absolute; width: 30px; height: 30px; bottom: -6px; filter: hue-rotate(-40deg) saturate(1.4) brightness(1.05) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+    .laurel.l { left: -12px; transform: rotate(-30deg); }
+    .laurel.r { right: -12px; transform: scaleX(-1) rotate(-30deg); }
+    .av.small .laurel { width: 17px; height: 17px; bottom: -4px; }
+    .av.small .laurel.l { left: -7px; } .av.small .laurel.r { right: -7px; }
+
+    /* Vitrine */
+    .shop-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .shop-head .left { color: var(--muted); font-weight: 800; font-size: 0.9rem; }
+    .vitrine { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+    .vit { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 2px 8px; border: 2px solid var(--line); border-radius: 14px; text-align: center; }
+    .vit b { font-size: 0.78rem; line-height: 1.15; }
+    .vit .price { font-size: 0.8rem; }
+    .vit .badge-new { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 0 6px; border-radius: 8px; background: var(--red); color: #fff; font-size: 0.65rem; font-weight: 900; white-space: nowrap; }
+    .vit.is-event { border-color: #ff7a00; background: rgba(255, 122, 0, 0.08); }
+    .vit.is-event .badge-new { background: #ff7a00; }
+    .weeks { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.85rem; }
+    .weeks th, .weeks td { padding: 6px 4px; border-bottom: 2px solid var(--line); text-align: left; vertical-align: top; }
+    .weeks th { color: var(--muted); }
+    .note { margin: 10px 0 0; padding: 8px 10px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: 0.9rem; }
+
+    /* Couleurs et dessins de base */
+    .base { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px 8px; }
+    .base .cell { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.68rem; font-weight: 900; color: var(--muted); }
+    .base .sw { width: 100%; }
+    .pics { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px 8px; margin-top: 8px; }
+    .pic { position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border: 2px solid var(--line); border-radius: 12px; }
+    .pic .emoji-img { width: 60%; }
+    .pic.locked .emoji-img { filter: grayscale(1); opacity: 0.3; }
+    .pic.locked::after { content: '🔒'; position: absolute; font-size: 0.9rem; }
+
+    /* Podium (comme dans le jeu) */
+    .pods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pod { border: 2px solid var(--line); border-radius: 16px; padding: 10px 6px 0; }
+    .pod h3 { margin: 0 0 6px; font-size: 0.9rem; text-align: center; }
+    .pod .league-podium { gap: 4px; }
+    .pod .podium-col { gap: 2px; }
+    .pod .podium-name { font-size: 0.8rem; }
+    .pod .podium-step { height: auto; }
+    .pod .place-1 .podium-step { height: 54px; } .pod .place-2 .podium-step { height: 40px; } .pod .place-3 .podium-step { height: 30px; }
+    .pod .league-avatar { width: 40px !important; height: 40px !important; font-size: 1.1rem !important; }
 </style>
 </head>
 <body>
@@ -93,7 +137,7 @@ const emoji = e => {
     img.alt = e;
     return img;
 };
-function avatar({ cls = '', hue = 200, letter = 'A', pic = null, tag = null, top = false, small = false }) {
+function avatar({ cls = '', hue = 200, letter = 'A', pic = null, tag = null, top = false, small = false, laurel = false }) {
     const w = document.createElement('span');
     w.className = `av ${small ? 'small ' : ''}${cls}`;
     const a = document.createElement('span');
@@ -101,6 +145,7 @@ function avatar({ cls = '', hue = 200, letter = 'A', pic = null, tag = null, top
     a.style.setProperty('--hue', hue);
     if (pic) a.append(emoji(pic)); else a.textContent = letter;
     w.append(a);
+    if (laurel) ['l', 'r'].forEach(side => { const b = emoji('🌿'); b.className = `laurel ${side}`; w.append(b); });
     if (tag) { const t = emoji(tag); t.classList.add('av-tag'); if (top) t.classList.add('top'); w.append(t); }
     return w;
 }
@@ -128,7 +173,7 @@ function grid(c, items) {
 }
 
 const FRAMES = [
-    { name: 'Champion', how: '10 semaines 1er de la ligue des amis', av: { cls: 'frame f-champion', hue: 210, pic: '🦉', tag: '👑', top: true } },
+    { name: 'Laurier', how: '10 semaines 1er de la ligue des amis', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', tag: '🏆', laurel: true } },
     { name: 'Flamme', how: 'Série de 30 jours', av: { cls: 'frame f-flame', hue: 15, letter: 'L', tag: '🔥' } },
     { name: 'Maître', how: 'Palier 5 d’entraînement dans un thème', av: { cls: 'frame f-master', hue: 265, pic: '🦊', tag: '⭐' } },
     { name: 'Halloween 2026', how: 'Événement (45 questions trouvées)', av: { cls: 'frame f-halloween', hue: 30, pic: '🎃', tag: '🎃' } }
@@ -150,7 +195,7 @@ grid(card('✨ Couleurs spéciales', 'À acheter à la boutique (prix d’exempl
 // Dans le jeu : liste d'amis (petite taille)
 const list = card('👥 Dans la liste d’amis', 'Même chose en petit, comme dans le classement, les duels et sur le parcours.');
 [
-    ['Léa', { cls: 'frame f-champion', hue: 210, pic: '🦉', tag: '👑', top: true, small: true }],
+    ['Léa', { cls: 'frame f-laurel', hue: 210, pic: '🦉', tag: '🏆', laurel: true, small: true }],
     ['Tom', { cls: 'frame f-flame', hue: 15, letter: 'T', tag: '🔥', small: true }],
     ['Inès', { cls: 's-gold', letter: 'I', small: true }],
     ['Noé', { cls: 'frame f-master s-galaxy', pic: '🚀', tag: '⭐', small: true }],
@@ -164,16 +209,126 @@ const list = card('👥 Dans la liste d’amis', 'Même chose en petit, comme da
 });
 
 // Choix des couleurs : 12 de départ + 12 à débloquer (cadenas)
-const pick = card('🎨 Choix des couleurs (idée)', '12 couleurs au départ ; les 12 autres avec un cadenas, débloquées en jouant (un tap dit comment).');
-const sw = document.createElement('div');
-sw.className = 'swatches';
+
+/* ===== Sections ajoutées en tête de page ===== */
+const top3 = [];
+
+// 1) Vitrine de la semaine
+const vit = card('🛍️ 1) La vitrine de la semaine', 'Tout en haut de la Boutique. Chaque lundi, 4 objets changent, les mêmes pour tout le monde.');
+vit.querySelector('h2').outerHTML = '<div class="shop-head"><h2>🛍️ Vitrine de la semaine</h2><span class="left">⏳ encore 3 jours</span></div>';
+const v = document.createElement('div');
+v.className = 'vitrine';
+[
+    { name: 'Galaxie', price: '800 🪙', av: { cls: 's-galaxy', pic: '🚀', small: false }, tag: 'Nouveau' },
+    { name: 'Océan', price: '500 🪙', av: { cls: 's-ocean', letter: 'M' } },
+    { name: 'Dragon', price: '300 🪙', av: { hue: 120, pic: '🐉' }, tag: 'Dessin' },
+    { name: 'Citrouille', price: '600 🪙', av: { cls: 'frame f-halloween', hue: 30, letter: 'M' }, tag: 'Halloween', event: true }
+].forEach(it => {
+    const d = document.createElement('div');
+    d.className = `vit${it.event ? ' is-event' : ''}`;
+    if (it.tag) { const t = document.createElement('span'); t.className = 'badge-new'; t.textContent = it.tag; d.append(t); }
+    const av = avatar(it.av);
+    av.querySelector('.league-avatar').style.cssText = 'width:44px;height:44px;font-size:1.2rem';
+    const b = document.createElement('b'); b.textContent = it.name;
+    const pr = document.createElement('span'); pr.className = 'price'; pr.textContent = it.price;
+    d.append(av, b, pr);
+    v.append(d);
+});
+vit.append(v);
+const tbl = document.createElement('table');
+tbl.className = 'weeks';
+tbl.innerHTML = `<tr><th>Semaine</th><th>Les 4 objets</th></tr>
+<tr><td>26 oct.</td><td>🆕 Galaxie · Océan · 🐉 Dragon · 🎃 <b>Cadre citrouille</b> (exclusif Halloween)</td></tr>
+<tr><td>2 nov.</td><td>🆕 Néon · Coucher de soleil · 🦚 Paon · Aurore</td></tr>
+<tr><td>9 nov.</td><td>🆕 Marbre · Galaxie (revient) · 🧜 Sirène · Forêt</td></tr>
+<tr><td>16 nov.</td><td>🆕 Or brillant · Lavande · 🐲 Dragon chinois · Océan (revient)</td></tr>`;
+vit.append(tbl);
+const vn = document.createElement('p');
+vn.className = 'note';
+vn.innerHTML = 'La règle : chaque semaine <b>1 nouveauté</b> jamais vue, <b>2 couleurs</b> déjà sorties qui reviennent (pour ceux qui les ont ratées), <b>1 dessin</b> rare. Pendant un événement, un des 4 est un objet <b>exclusif</b> qui ne reviendra jamais. Ce qu’on achète se choisit ensuite dans « Mon avatar ».';
+vit.append(vn);
+top3.push(vit);
+
+// 2) Couleurs et dessins de base : 12 + 15 au départ, le reste débloqué EN JOUANT (pas à acheter)
+const base = card('🎨 2) Couleurs et dessins de base', 'Ils ne s’achètent pas : ils se gagnent en jouant. Un nouveau joueur a 12 couleurs et 15 dessins ; les autres ont un cadenas avec ce qu’il faut faire.');
+const bg = document.createElement('div');
+bg.className = 'base';
+let lvl = 0;
 for (let i = 0; i < 24; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell';
     const s = document.createElement('span');
-    s.className = `sw${i % 2 ? ' locked' : ''}`;
+    const locked = i % 2 === 1;
+    s.className = `sw${locked ? ' locked' : ''}`;
     s.style.background = `hsl(${i * 15} 65% 52%)`;
-    sw.append(s);
+    const l = document.createElement('span');
+    l.textContent = locked ? `Niv. ${(++lvl) * 10}` : 'Départ';
+    c.append(s, l);
+    bg.append(c);
 }
-pick.append(sw);
+base.append(bg);
+const pics = document.createElement('div');
+pics.className = 'pics';
+[['🦉', 0], ['🐱', 0], ['🐶', 0], ['🦊', 0], ['🐼', 0], ['⚽', 0], ['🦈', 'Badge « Premiers pas »'], ['🦖', 'Série de 7 jours'], ['🚀', '1er duel gagné'], ['🦄', 'Objectif du jour ×10'], ['🎸', 'Palier 3 en Musique'], ['👽', '10/10 au défi du jour']].forEach(([e, how]) => {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    c.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:3px;font-size:0.62rem;font-weight:900;color:var(--muted);text-align:center;line-height:1.1';
+    const d = document.createElement('div');
+    d.className = `pic${how ? ' locked' : ''}`;
+    d.style.width = '100%';
+    d.append(emoji(e));
+    const l = document.createElement('span');
+    l.textContent = how || 'Départ';
+    c.append(d, l);
+    pics.append(c);
+});
+base.append(pics);
+const bn = document.createElement('p');
+bn.className = 'note';
+bn.innerHTML = 'Couleurs : une de plus tous les 10 niveaux du parcours (niveaux 10 à 120). Dessins : liés à des badges et des exploits faciles. Un tap sur un cadenas dit comment l’ouvrir. <b>Les joueurs actuels gardent tout ce qu’ils ont déjà</b> : le cadenas ne touche que les nouveaux.';
+base.append(bn);
+top3.push(base);
+
+// 3) Ligue : la couronne = cette semaine ; le cadre = gagné pour toujours
+const lg = card('🥇 3) Ligue : couronne ou cadre ?', 'Deux choses différentes, qui ne se mélangent pas.');
+const pods = document.createElement('div');
+pods.className = 'pods';
+function podium(title, list) {
+    const box = document.createElement('div');
+    box.className = 'pod';
+    box.innerHTML = `<h3>${title}</h3>`;
+    const p = document.createElement('div');
+    p.className = 'league-podium';
+    [1, 0, 2].forEach(i => {
+        const r = list[i];
+        const col = document.createElement('div');
+        col.className = `podium-col place-${i + 1}`;
+        col.style.animation = 'none';
+        const crown = document.createElement('span');
+        crown.className = 'podium-crown';
+        crown.textContent = i === 0 ? '👑' : '';
+        const av = avatar(r.av);
+        if (!r.av.cls) av.querySelector('.league-avatar').classList.add(`ring-${i + 1}`);
+        const n = document.createElement('span'); n.className = 'podium-name'; n.textContent = r.name;
+        const st = document.createElement('div'); st.className = 'podium-step'; st.textContent = i + 1;
+        col.append(crown, av, n, st);
+        p.append(col);
+    });
+    box.append(p);
+    return box;
+}
+pods.append(
+    podium('Cette semaine', [{ name: 'Léa', av: { hue: 330, letter: 'L' } }, { name: 'Tom', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', tag: '🏆', laurel: true } }, { name: 'Toi', av: { hue: 140, letter: 'M' } }]),
+    podium('La semaine d’après', [{ name: 'Tom', av: { cls: 'frame f-laurel', hue: 210, pic: '🦉', tag: '🏆', laurel: true } }, { name: 'Toi', av: { hue: 140, letter: 'M' } }, { name: 'Léa', av: { hue: 330, letter: 'L' } }])
+);
+lg.append(pods);
+const ln = document.createElement('p');
+ln.className = 'note';
+ln.innerHTML = '👑 <b>La couronne</b> = 1er <b>cette semaine</b>. Elle change de tête chaque semaine (ici Léa, puis Tom).<br>🌿 <b>Le cadre laurier</b> = Tom a déjà fini 1er <b>10 semaines</b> dans le passé : il le garde <b>pour toujours</b>, partout (podium, liste, duels, parcours), même quand il n’est pas 1er.<br>Le cadre n’a donc plus de couronne : pas de confusion avec le podium.';
+lg.append(ln);
+top3.push(lg);
+
+top3.reverse().forEach(c => wrap.prepend(c));
 </script>
 </body>
 </html>
