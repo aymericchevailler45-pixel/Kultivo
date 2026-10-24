@@ -123,6 +123,49 @@
         radial-gradient(circle at 35% 80%, #69f0ae 2px, transparent 2.5px),
         radial-gradient(circle at 50% 50%, #b388ff 1.5px, transparent 2px) 0 0 / 9px 9px,
         #ffffff; box-shadow: 0 0 0 2px #ffd740; }
+    /* ---------- Aperçu de la nouvelle boutique ---------- */
+    .shop-mock { display: grid; gap: 10px; }
+    .shop-mock .card { padding: 14px 14px; }
+    .vit-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+    .vit-cell { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 12px 2px 8px; border: 2px solid var(--line); border-radius: 14px; text-align: center; background: var(--surface); }
+    .vit-cell b { font-size: 0.74rem; line-height: 1.1; }
+    .vit-cell .av { margin: 6px 0 5px; }
+    .vit-cell .price { font-size: 0.78rem; }
+    .vit-cell .pill { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 0 6px; border-radius: 8px; color: #fff; font-size: 0.62rem; font-weight: 900; white-space: nowrap; background: var(--red); }
+    .vit-cell .pill.back { background: #1899d6; }
+    .vit-cell .pill.kc { background: #8b5cf6; }
+    .vit-cell.owned { opacity: 0.6; }
+    .mini-card { width: 40px; height: 52px; display: flex; align-items: center; justify-content: center; border: 3px solid #8b5cf6; border-radius: 9px; background: linear-gradient(180deg, #f3edff, #ffffff); }
+    .mini-card .emoji-img { width: 70%; }
+    .vit-foot { margin: 8px 0 0; font-size: 0.82rem; font-weight: 800; color: var(--muted); text-align: center; }
+    .line-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 2px solid var(--line); }
+    .line-item:last-child { border-bottom: 0; }
+    .line-item .ic { flex: none; width: 34px; font-size: 1.6rem; text-align: center; }
+    .line-item .tx { flex: 1; min-width: 0; }
+    .line-item .tx b { display: block; font-size: 0.95rem; }
+    .line-item .tx small { color: var(--muted); font-weight: 700; font-size: 0.78rem; line-height: 1.25; display: block; }
+    .line-item .bt { flex: none; display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
+    .mbtn { padding: 6px 10px; border-radius: 12px; border: 0; font: inherit; font-weight: 900; font-size: 0.82rem; color: #fff; background: var(--green); box-shadow: 0 3px 0 var(--green-deep, #3c9a00); white-space: nowrap; }
+    .mbtn.violet { background: #8b5cf6; box-shadow: 0 3px 0 #6d3fd6; font-size: 0.72rem; padding: 4px 8px; }
+    .mbtn.off { background: #c9d1dd; box-shadow: 0 3px 0 #a9b3c2; }
+    .shop-title { display: flex; justify-content: space-between; align-items: baseline; }
+    .shop-title h2 { margin: 0; }
+    .shop-title span { color: var(--muted); font-weight: 800; font-size: 0.85rem; }
+
+    /* Animation de déverrouillage (dessin débloqué, à ouvrir) */
+    .pic.ready { border-color: #ffc800; box-shadow: 0 0 0 3px rgba(255, 200, 0, 0.35); cursor: pointer; animation: readyGlow 1.4s ease-in-out infinite; }
+    .pic.ready .emoji-img { filter: grayscale(0.7); opacity: 0.6; }
+    .pic.ready::after { content: '🔒'; position: absolute; right: -4px; bottom: -4px; font-size: 0.9rem; animation: wiggle 0.9s ease-in-out infinite; }
+    .pic.opening::after { content: '🔓'; animation: lockOff 0.45s ease-in forwards; }
+    .pic.revealed { animation: pop 0.45s ease-out; border-color: #58cc02; }
+    .pic.revealed .emoji-img { filter: none; opacity: 1; }
+    .pic .new-dot { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--red); color: #fff; font-size: 0.65rem; font-weight: 900; line-height: 18px; }
+    .spark { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #ffc800; pointer-events: none; animation: spark 0.6s ease-out forwards; }
+    @keyframes readyGlow { 0%, 100% { box-shadow: 0 0 0 3px rgba(255, 200, 0, 0.25); } 50% { box-shadow: 0 0 0 6px rgba(255, 200, 0, 0.5); } }
+    @keyframes wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-15deg); } 75% { transform: rotate(15deg); } }
+    @keyframes lockOff { to { transform: translate(14px, -26px) rotate(40deg) scale(1.3); opacity: 0; } }
+    @keyframes pop { 0% { transform: scale(0.8); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    @keyframes spark { to { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; } }
     .f-night::before { background: linear-gradient(135deg, #3a4a8c, #0d1333); }
     .deco { position: absolute; width: 16px; height: 16px; }
     .deco.a { top: -8px; left: -4px; } .deco.b { top: -8px; right: -4px; } .deco.c { bottom: -8px; left: 50%; transform: translateX(-50%); }
@@ -524,6 +567,98 @@ top3.reverse().forEach(c => wrap.prepend(c));
 // Les 12 nouveaux cadres tout en haut
 wrap.prepend(nl);
 wrap.prepend(nf);
+
+// ===== Aperçu de la nouvelle boutique (en tête de page) =====
+const shopBox = document.createElement('div');
+shopBox.className = 'shop-mock';
+const intro = card('🛒 La nouvelle Boutique (aperçu)', 'Telle qu’elle apparaîtrait sur le téléphone, de haut en bas. Rien n’est cliquable ici.');
+intro.append(shopBox);
+// 1) Vitrine
+const v1 = document.createElement('article');
+v1.className = 'card';
+v1.innerHTML = '<div class="shop-title"><h2>🛍️ Vitrine de la semaine</h2><span>⏳ 3 j 12 h</span></div>';
+const vr = document.createElement('div');
+vr.className = 'vit-row';
+const cell = (pill, pillCls, node, name, price, owned = false) => {
+    const c = document.createElement('div');
+    c.className = `vit-cell${owned ? ' owned' : ''}`;
+    const p = document.createElement('span'); p.className = `pill ${pillCls}`; p.textContent = pill;
+    const b = document.createElement('b'); b.textContent = name;
+    const pr = document.createElement('span'); pr.className = 'price'; pr.textContent = owned ? '✓ À toi' : price;
+    c.append(p, node, b, pr);
+    return c;
+};
+const small = av => { const a = avatar(av); a.querySelector('.league-avatar').style.cssText = 'width:42px;height:42px;font-size:1.15rem'; return a; };
+const mc = document.createElement('div'); mc.className = 'mini-card'; mc.append(emoji('🗿'));
+vr.append(
+    cell('Nouveau', '', small({ cls: 'frame thick n-checker', hue: 140, letter: 'M' }), 'Cadre Damier', '400 🪙'),
+    cell('Nouveau', '', small({ cls: 's-galaxy', pic: '🚀' }), 'Galaxie', '800 🪙'),
+    cell('Revient', 'back', small({ cls: 's-ocean', letter: 'M' }), 'Océan', '500 🪙', true),
+    cell('Ta carte', 'kc', mc, 'Moaï · épique', '400 🪙')
+);
+v1.append(vr);
+const vf = document.createElement('p'); vf.className = 'vit-foot';
+vf.textContent = '💜 Semaine des épiques · la prochaine : légendaires 🟡';
+v1.append(vf);
+// 2) Coffre de cartes (une ligne)
+const v2 = document.createElement('article');
+v2.className = 'card';
+v2.innerHTML = '<div class="line-item"><span class="ic">🎁</span><span class="tx"><b>Coffre de cartes</b><small>3 cartes, dont au moins une rare · collection 64/180</small></span><span class="bt"><button class="mbtn">150 🪙</button></span></div>';
+// 3) Objets utiles (liste compacte)
+const v3 = document.createElement('article');
+v3.className = 'card';
+const items = [
+    ['🔤', 'Indice : forme', 'Les mots en cases vides · en stock : 2', '15 🪙', '×3 · 30 🪙'],
+    ['🅰️', 'Indice : initiales', 'La 1re lettre de chaque mot · en stock : 0', '30 🪙', '×3 · 60 🪙'],
+    ['🔎', 'Indice : plus de lettres', 'Un tiers des lettres · en stock : 1', '50 🪙', '×3 · 100 🪙'],
+    ['💖', 'Cœur de secours', 'Pour continuer une leçon ratée · en stock : 0', '100 🪙', '×3 · 200 🪙'],
+    ['🧊', 'Gel de série', 'Protège ta série un jour manqué · 1/5', '200 🪙', ''],
+    ['💧', 'Recharge de gouttes', 'Remet tes gouttes au plein', '150 🪙', '']
+];
+v3.innerHTML = '<h2 style="margin:0 0 4px">🧰 Objets utiles</h2>' + items.map(([ic, n, d, p1, p2]) =>
+    `<div class="line-item"><span class="ic">${ic}</span><span class="tx"><b>${n}</b><small>${d}</small></span><span class="bt"><button class="mbtn">${p1}</button>${p2 ? `<button class="mbtn violet">${p2}</button>` : ''}</span></div>`).join('');
+shopBox.append(v1, v2, v3);
+const sn = document.createElement('p');
+sn.className = 'note';
+sn.innerHTML = 'Aujourd’hui la boutique fait 7 grandes cartes. Là : la vitrine (1 ligne), le coffre (1 ligne) et les objets utiles en liste → <b>à peu près la même longueur qu’avant</b>, avec la vitrine en plus. Les gros emojis disparaissent au profit de lignes compactes.';
+intro.append(sn);
+
+// ===== Démo : dessin débloqué → on le touche → le cadenas s'envole =====
+const demo = card('🔓 Dessin débloqué : l’animation', 'Dans « Mon avatar », un dessin qu’on vient de gagner brille avec son cadenas qui bouge. <b>Touche-le</b> : le cadenas s’envole et le dessin s’allume. (Essaie ici !)');
+const dg = document.createElement('div');
+dg.className = 'free';
+[['🦉', ''], ['🐱', ''], ['🐙', 'ready'], ['🍿', 'ready'], ['🦈', 'locked']].forEach(([e, st]) => {
+    const d = document.createElement('div');
+    d.className = `pic${st ? ' ' + st : ''}`;
+    d.append(emoji(e));
+    if (st === 'ready') {
+        const n = document.createElement('span'); n.className = 'new-dot'; n.textContent = '1'; d.append(n);
+        d.addEventListener('click', () => {
+            if (!d.classList.contains('ready')) return;
+            d.classList.add('opening');
+            d.querySelector('.new-dot').remove();
+            setTimeout(() => {
+                d.classList.remove('ready', 'opening');
+                d.classList.add('revealed');
+                for (let k = 0; k < 8; k++) {
+                    const sp = document.createElement('span'); sp.className = 'spark';
+                    const a = (k / 8) * Math.PI * 2;
+                    sp.style.cssText = `left:50%;top:50%;--dx:${Math.cos(a) * 34}px;--dy:${Math.sin(a) * 34}px;background:${['#ffc800', '#58cc02', '#1899d6', '#ff4b4b'][k % 4]}`;
+                    d.append(sp);
+                    setTimeout(() => sp.remove(), 650);
+                }
+            }, 420);
+        });
+    }
+    dg.append(d);
+});
+demo.append(dg);
+const dn = document.createElement('p');
+dn.className = 'note';
+dn.innerHTML = 'Le <b>1</b> rouge est aussi sur l’onglet Profil et sur ton avatar tant qu’il reste un dessin (ou une couleur) à ouvrir. Le 🦈 garde son cadenas gris : pas encore gagné (un tap dit comment).';
+demo.append(dn);
+wrap.prepend(demo);
+wrap.prepend(intro);
 </script>
 </body>
 </html>

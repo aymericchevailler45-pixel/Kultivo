@@ -21,6 +21,18 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Démo avant la date : lien `?demo=lundi` (mise à jour + Halloween, fenêtre à chaque ouverture, rien de noté).
   Prochaine mise à jour : nouvelle date dans `PATCH_DAY` + nouvelles `PATCH_NOTES`. Test : `shotd.ps1` (fausse date).
   Pièces : il faudra plus de choses à acheter (cadres d'avatar, coffre d'un thème au choix…), idée notée pour plus tard.
+- IDÉE GARDÉE EN TÊTE (2026-10-24, pas pour lundi) : créneaux « pièces ×2 » façon Duolingo. PAS d'XP ×2 (fausserait la ligue).
+  « Heure dorée » 1 h par jour (même heure pour tous, change chaque jour, bandeau avec compte à rebours) + bonus « ×2 pièces
+  15 min » en récompense (coffre des missions, 3e objectif du jour). Jamais à acheter.
+- BOUTIQUE ET AVATARS (décidé le 2026-10-24, à faire pour lundi 26 ; aperçu : apercu-avatars.html, page publiée hors du jeu) :
+  couleurs de base 12 au départ + 12 (une tous les 10 niveaux) ; dessins 15 au départ + 24 liés à des exploits (🐍 8 au sprint,
+  🚀 10 au sprint) ; débloqués TOUT SEULS, puis à « ouvrir » d'un tap dans Mon avatar (cadenas qui s'envole), pastille 1 sur
+  Profil + avatar, ligne en fin de partie ; joueurs actuels gardent tout. 16 cadres à gagner (jamais vendus ; laurier sans
+  couronne ; podium : le cadre REMPLACE l'anneau, option A). Boutique : 21 cadres + 24 couleurs spéciales ; vitrine en haut
+  (4 cases : nouveau cadre, nouvelle couleur, un objet qui revient ≥ 4 semaines après / l'exclusif d'événement, carte de la
+  semaine parmi MES manquantes, rareté tournante la même pour tous : commune 60, rare 150, épique 400, légendaire 1000 ;
+  jamais Maître ni événement ; tout possédé → carte à faire briller) ; coffre et objets utiles en lignes compactes.
+  Cadre Halloween 2026 = ceux qui ont fini l'événement. Lots suivants de cadres / couleurs tous les 2-3 mois (aperçu d'abord).
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :
   1. Rajouter des cartes à la collection.
   2. Revoir le système d'XP et de pièces (déjà fait le 24/10 : XP 4/5/6 selon la difficulté ; la ligue reste « à l'effort »,
