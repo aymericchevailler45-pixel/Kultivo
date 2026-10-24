@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aperçu avatars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- Page d'APERÇU seulement (2026-10-24) : cadres à gagner et couleurs spéciales, pour choisir avant de les mettre dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
+    .card h2 { margin: 0 0 4px; }
+    .card > p { margin: 0 0 12px; color: var(--muted); font-weight: 700; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+    .item { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; padding: 12px 6px; border: 2px solid var(--line); border-radius: 16px; }
+    .item b { font-size: 0.95rem; }
+    .item small { color: var(--muted); font-weight: 700; line-height: 1.3; }
+    .price { color: #c9952b; font-weight: 900; }
+    .row { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 2px solid var(--line); font-weight: 800; }
+    .row:last-child { border-bottom: 0; }
+    .row .who { flex: 1; }
+
+    /* Avatar de base (comme dans le jeu) */
+    .av { position: relative; display: inline-flex; flex: none; }
+    .av .league-avatar { width: 64px; height: 64px; font-size: 1.7rem; }
+    .av.small .league-avatar { width: 34px; height: 34px; font-size: 0.95rem; border-width: 2px; }
+    .av .league-avatar .emoji-img { width: 60%; height: 60%; }
+
+    /* ---------- CADRES À GAGNER ---------- */
+    .frame .league-avatar { box-shadow: none; }
+    .frame::before { content: ''; position: absolute; inset: -5px; border-radius: 50%; z-index: -1; }
+    .av.small.frame::before { inset: -3px; }
+    .frame { z-index: 0; }
+    .av-tag { position: absolute; width: 26px; height: 26px; right: -6px; bottom: -4px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25)); }
+    .av.small .av-tag { width: 16px; height: 16px; right: -5px; bottom: -3px; }
+    .av-tag.top { right: auto; left: 50%; bottom: auto; top: -18px; transform: translateX(-50%); width: 30px; height: 30px; }
+    .av.small .av-tag.top { top: -11px; width: 18px; height: 18px; }
+
+    /* Champion de la ligue : or */
+    .f-champion::before { background: conic-gradient(#fff3b0, #ffc800, #c9952b, #ffe680, #ffc800, #fff3b0); box-shadow: 0 0 14px rgba(255, 200, 0, 0.6); }
+    /* Série de 30 jours : flamme qui tourne */
+    .f-flame::before { background: conic-gradient(#ff3d00, #ff9100, #ffd600, #ff9100, #ff3d00); animation: spin 2.5s linear infinite; box-shadow: 0 0 14px rgba(255, 110, 0, 0.55); }
+    /* Maître : violet et or */
+    .f-master::before { background: conic-gradient(#8b5cf6, #c4b5fd, #ffc800, #8b5cf6, #c4b5fd, #ffc800, #8b5cf6); }
+    /* Événement Halloween */
+    .f-halloween::before { background: repeating-conic-gradient(#ff7a00 0 30deg, #2b1b3d 30deg 60deg); }
+
+    /* ---------- COULEURS SPÉCIALES (à acheter) ---------- */
+    .s-sunset .league-avatar { background: linear-gradient(135deg, #ffb347, #ff4f8b); }
+    .s-ocean .league-avatar { background: linear-gradient(135deg, #2bd2ff, #2b5cff); }
+    .s-aurora .league-avatar { background: linear-gradient(135deg, #43e97b, #38b6ff, #8b5cf6); }
+    .s-rainbow .league-avatar { background: conic-gradient(#ff4d4d, #ffb84d, #f9f871, #4dff88, #4dd2ff, #8b5cf6, #ff4dd2, #ff4d4d); }
+    .s-galaxy .league-avatar {
+        background:
+            radial-gradient(1.5px 1.5px at 20% 30%, #fff 50%, transparent 51%),
+            radial-gradient(1.5px 1.5px at 70% 20%, #fff 50%, transparent 51%),
+            radial-gradient(1px 1px at 55% 70%, #fff 50%, transparent 51%),
+            radial-gradient(1px 1px at 30% 80%, #fff 50%, transparent 51%),
+            radial-gradient(circle at 30% 30%, #6a3cbc, #1b1340 70%);
+    }
+    .s-gold .league-avatar, .s-silver .league-avatar { position: relative; overflow: hidden; }
+    .s-gold .league-avatar { background: linear-gradient(135deg, #b8860b, #f7d774 40%, #fff1a8 50%, #c9952b 70%, #8a6508); color: #5a3f00; }
+    .s-silver .league-avatar { background: linear-gradient(135deg, #8e98a8, #e8edf3 45%, #ffffff 52%, #b6c0cc 70%, #6d7787); color: #3b4556; }
+    .s-gold .league-avatar::after, .s-silver .league-avatar::after {
+        content: ''; position: absolute; inset: 0; border-radius: 50%;
+        background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.75) 50%, transparent 65%);
+        background-size: 250% 100%; animation: shine 2.8s ease-in-out infinite;
+    }
+    .s-lava .league-avatar { background: linear-gradient(120deg, #ff3d00, #ffb300, #ff3d00, #b71c1c); background-size: 300% 300%; animation: lava 4s ease-in-out infinite; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes shine { 0% { background-position: 150% 0; } 60%, 100% { background-position: -100% 0; } }
+    @keyframes lava { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    @media (prefers-reduced-motion: reduce) { .f-flame::before, .s-gold .league-avatar::after, .s-silver .league-avatar::after, .s-lava .league-avatar { animation: none; } }
+
+    /* Choix « verrouillé » */
+    .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .sw { position: relative; aspect-ratio: 1; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--line); }
+    .sw.locked::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.55); }
+    .sw.locked::after { content: '🔒'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap"></div>
+<script>
+const emoji = e => {
+    let cps = [...e].map(c => c.codePointAt(0)).filter(cp => cp !== 0xFE0F);
+    const img = document.createElement('img');
+    img.className = 'emoji-img';
+    img.src = `emoji/${cps.map(cp => cp.toString(16)).join('-')}.svg`;
+    img.alt = e;
+    return img;
+};
+function avatar({ cls = '', hue = 200, letter = 'A', pic = null, tag = null, top = false, small = false }) {
+    const w = document.createElement('span');
+    w.className = `av ${small ? 'small ' : ''}${cls}`;
+    const a = document.createElement('span');
+    a.className = 'league-avatar';
+    a.style.setProperty('--hue', hue);
+    if (pic) a.append(emoji(pic)); else a.textContent = letter;
+    w.append(a);
+    if (tag) { const t = emoji(tag); t.classList.add('av-tag'); if (top) t.classList.add('top'); w.append(t); }
+    return w;
+}
+const wrap = document.getElementById('wrap');
+function card(title, text) {
+    const c = document.createElement('article');
+    c.className = 'card';
+    c.innerHTML = `<h2>${title}</h2><p>${text}</p>`;
+    wrap.append(c);
+    return c;
+}
+function grid(c, items) {
+    const g = document.createElement('div');
+    g.className = 'grid';
+    for (const it of items) {
+        const d = document.createElement('div');
+        d.className = 'item';
+        d.append(avatar(it.av));
+        const b = document.createElement('b'); b.textContent = it.name;
+        const s = document.createElement('small'); s.innerHTML = it.how;
+        d.append(b, s);
+        g.append(d);
+    }
+    c.append(g);
+}
+
+const FRAMES = [
+    { name: 'Champion', how: '10 semaines 1er de la ligue des amis', av: { cls: 'frame f-champion', hue: 210, pic: '🦉', tag: '👑', top: true } },
+    { name: 'Flamme', how: 'Série de 30 jours', av: { cls: 'frame f-flame', hue: 15, letter: 'L', tag: '🔥' } },
+    { name: 'Maître', how: 'Palier 5 d’entraînement dans un thème', av: { cls: 'frame f-master', hue: 265, pic: '🦊', tag: '⭐' } },
+    { name: 'Halloween 2026', how: 'Événement (45 questions trouvées)', av: { cls: 'frame f-halloween', hue: 30, pic: '🎃', tag: '🎃' } }
+];
+grid(card('🏅 Cadres à gagner', 'Impossibles à acheter : ils prouvent qu’on a vraiment joué. Le petit emblème dans le coin dit d’où vient le cadre.'), FRAMES);
+
+const STYLES = [
+    { name: 'Coucher de soleil', how: '<span class="price">500 🪙</span>', av: { cls: 's-sunset', letter: 'T' } },
+    { name: 'Océan', how: '<span class="price">500 🪙</span>', av: { cls: 's-ocean', pic: '🐋' } },
+    { name: 'Aurore', how: '<span class="price">500 🪙</span>', av: { cls: 's-aurora', letter: 'S' } },
+    { name: 'Arc-en-ciel', how: '<span class="price">800 🪙</span>', av: { cls: 's-rainbow', pic: '🦄' } },
+    { name: 'Galaxie', how: '<span class="price">800 🪙</span>', av: { cls: 's-galaxy', pic: '🚀' } },
+    { name: 'Lave (animée)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-lava', pic: '🐉' } },
+    { name: 'Argent (brillant)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-silver', letter: 'N' } },
+    { name: 'Or (brillant)', how: '<span class="price">1 500 🪙</span>', av: { cls: 's-gold', letter: 'J' } }
+];
+grid(card('✨ Couleurs spéciales', 'À acheter à la boutique (prix d’exemple). Les animées bougent doucement.'), STYLES);
+
+// Dans le jeu : liste d'amis (petite taille)
+const list = card('👥 Dans la liste d’amis', 'Même chose en petit, comme dans le classement, les duels et sur le parcours.');
+[
+    ['Léa', { cls: 'frame f-champion', hue: 210, pic: '🦉', tag: '👑', top: true, small: true }],
+    ['Tom', { cls: 'frame f-flame', hue: 15, letter: 'T', tag: '🔥', small: true }],
+    ['Inès', { cls: 's-gold', letter: 'I', small: true }],
+    ['Noé', { cls: 'frame f-master s-galaxy', pic: '🚀', tag: '⭐', small: true }],
+    ['Sacha', { hue: 140, letter: 'S', small: true }]
+].forEach(([name, av]) => {
+    const r = document.createElement('div');
+    r.className = 'row';
+    const n = document.createElement('span'); n.className = 'who'; n.textContent = name;
+    r.append(avatar(av), n);
+    list.append(r);
+});
+
+// Choix des couleurs : 12 de départ + 12 à débloquer (cadenas)
+const pick = card('🎨 Choix des couleurs (idée)', '12 couleurs au départ ; les 12 autres avec un cadenas, débloquées en jouant (un tap dit comment).');
+const sw = document.createElement('div');
+sw.className = 'swatches';
+for (let i = 0; i < 24; i++) {
+    const s = document.createElement('span');
+    s.className = `sw${i % 2 ? ' locked' : ''}`;
+    s.style.background = `hsl(${i * 15} 65% 52%)`;
+    sw.append(s);
+}
+pick.append(sw);
+</script>
+</body>
+</html>
