@@ -389,7 +389,7 @@ const STYLES = [
     { name: 'Neige (Noël)', how: '<span class="price">600 🪙</span> · seulement en décembre', av: { cls: 's-snow', pic: '🐧' } },
     { name: 'Cœurs (Saint-Valentin)', how: '<span class="price">600 🪙</span> · seulement en février', av: { cls: 's-hearts', letter: 'A' } }
 ];
-grid(card('✨ Couleurs spéciales (boutique)', 'Le fond du rond. 2 ou 3 nouvelles par mois dans la vitrine ; les animées bougent doucement.'), STYLES);
+grid(card('✨ Fonds spéciaux (boutique)', 'Le fond du rond. 2 ou 3 nouvelles par mois dans la vitrine ; les animées bougent doucement.'), STYLES);
 
 // Dans le jeu : liste d'amis (petite taille)
 const list = card('👥 Dans la liste d’amis', 'Même chose en petit, comme dans le classement, les duels et sur le parcours.');
@@ -444,7 +444,7 @@ tbl.innerHTML = `<tr><th>Semaine</th><th>Les 4 objets</th></tr>
 vit.append(tbl);
 const vn = document.createElement('p');
 vn.className = 'note';
-vn.innerHTML = 'La règle : chaque semaine <b>1 nouveauté</b> jamais vue, <b>2 couleurs</b> déjà sorties qui reviennent (pour ceux qui les ont ratées), <b>1 dessin</b> rare. Pendant un événement, un des 4 est un objet <b>exclusif</b> qui ne reviendra jamais. Ce qu’on achète se choisit ensuite dans « Mon avatar ».';
+vn.innerHTML = 'La règle : chaque semaine <b>1 nouveauté</b> jamais vue, <b>2 fonds</b> déjà sortis qui reviennent (pour ceux qui les ont ratées), <b>1 dessin</b> rare. Pendant un événement, un des 4 est un objet <b>exclusif</b> qui ne reviendra jamais. Ce qu’on achète se choisit ensuite dans « Mon avatar ».';
 vit.append(vn);
 top3.push(vit);
 
@@ -597,8 +597,8 @@ const small = av => { const a = avatar(av); a.querySelector('.league-avatar').st
 const mc = document.createElement('div'); mc.className = 'mini-card'; mc.append(emoji('🗿'));
 vr.append(
     cell('Nouveau', '', small({ cls: 'frame thick n-checker', hue: 140, letter: 'M' }), 'Damier', '400 🪙', false, 'Cadre'),
-    cell('Nouveau', '', small({ cls: 's-galaxy', pic: '🚀' }), 'Galaxie', '800 🪙', false, 'Couleur'),
-    cell('Revient', 'back', small({ cls: 's-ocean', letter: 'M' }), 'Océan', '500 🪙', true, 'Couleur'),
+    cell('Nouveau', '', small({ cls: 's-galaxy', pic: '🚀' }), 'Galaxie', '800 🪙', false, 'Fond'),
+    cell('Revient', 'back', small({ cls: 's-ocean', letter: 'M' }), 'Océan', '500 🪙', true, 'Fond'),
     cell('Ta carte', 'kc', mc, 'Moaï', '400 🪙', false, 'Carte épique')
 );
 v1.append(vr);
