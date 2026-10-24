@@ -93,6 +93,36 @@
     .f-gold-plain::before { background: linear-gradient(135deg, #b8860b, #fff1a8, #c9952b); }
     .f-wood::before { background: repeating-linear-gradient(80deg, #8d5a2b 0 3px, #b07a45 3px 7px, #6d4320 7px 9px); }
     .f-pumpkin::before { background: radial-gradient(circle, #2b1b3d 30%, transparent 32%) 0 0 / 8px 8px, #ff9a3c; }
+    /* 12 nouveaux cadres de boutique (2026-10-24, essai) : anneau un peu plus épais pour voir le motif */
+    .thick::before { inset: -8px; }
+    .av.small.thick::before { inset: -4px; }
+    .n-checker::before { background: repeating-conic-gradient(#1b2745 0 25%, #ffffff 0 50%) 0 0 / 8px 8px; }
+    .n-zigzag::before { background:
+        linear-gradient(135deg, #ff9800 25%, transparent 25%) -4px 0 / 8px 8px,
+        linear-gradient(225deg, #ff9800 25%, transparent 25%) -4px 0 / 8px 8px,
+        linear-gradient(315deg, #ff9800 25%, transparent 25%) 0 0 / 8px 8px,
+        linear-gradient(45deg, #ff9800 25%, #fff3e0 25%) 0 0 / 8px 8px; }
+    .n-scales::before { background: radial-gradient(circle at 50% 0, transparent 38%, #4dd0a1 40% 58%, transparent 60%) 0 0 / 10px 7px, #0f6b4f; }
+    .n-waves::before { background: radial-gradient(circle at 50% 100%, #7fdcff 38%, transparent 40%) 0 0 / 10px 6px, #1565c0; }
+    .n-tartan::before { background:
+        repeating-linear-gradient(0deg, rgba(198, 40, 40, 0.75) 0 3px, transparent 3px 9px),
+        repeating-linear-gradient(90deg, rgba(198, 40, 40, 0.75) 0 3px, transparent 3px 9px),
+        repeating-linear-gradient(0deg, transparent 0 4px, rgba(255, 214, 0, 0.6) 4px 5px, transparent 5px 9px),
+        #1b5e20; }
+    .n-pixels::before { background:
+        conic-gradient(#ff4081 25%, #40c4ff 0 50%, #ffd740 0 75%, #69f0ae 0) 0 0 / 8px 8px; }
+    .n-copper::before { background: conic-gradient(#7a3e1d, #e8925a, #ffd1a6, #b5602f, #5a2a10, #e8925a, #7a3e1d); }
+    .n-frost::before { background: conic-gradient(#e3f6ff, #9fdcff, #ffffff, #b3e5fc, #e3f6ff); box-shadow: 0 0 10px rgba(130, 210, 255, 0.9); }
+    .n-parchment::before { background: radial-gradient(circle at 30% 25%, #f7e9c4, #d9b779 60%, #a8834a); box-shadow: inset 0 0 0 2px #7a5a2a; }
+    .n-music::before { background: conic-gradient(#7c4dff, #b388ff, #7c4dff); }
+    .n-film::before { background: repeating-conic-gradient(#111111 0 9deg, #f5f5f5 9deg 13deg, #111111 13deg 18deg); }
+    .n-confetti::before { background:
+        radial-gradient(circle at 20% 30%, #ff4081 2px, transparent 2.5px),
+        radial-gradient(circle at 70% 20%, #40c4ff 2px, transparent 2.5px),
+        radial-gradient(circle at 80% 70%, #ffd740 2px, transparent 2.5px),
+        radial-gradient(circle at 35% 80%, #69f0ae 2px, transparent 2.5px),
+        radial-gradient(circle at 50% 50%, #b388ff 1.5px, transparent 2px) 0 0 / 9px 9px,
+        #ffffff; box-shadow: 0 0 0 2px #ffd740; }
     .f-night::before { background: linear-gradient(135deg, #3a4a8c, #0d1333); }
     .deco { position: absolute; width: 16px; height: 16px; }
     .deco.a { top: -8px; left: -4px; } .deco.b { top: -8px; right: -4px; } .deco.c { bottom: -8px; left: 50%; transform: translateX(-50%); }
@@ -262,6 +292,31 @@ const SHOP_FRAMES = [
     { name: 'Citrouilles (Halloween)', how: '<span class="price">600 🪙</span> · seulement fin octobre', av: { cls: 'frame f-pumpkin', hue: 270, letter: 'M', deco: '🎃' } }
 ];
 grid(card('🛍️ Cadres de la boutique (décoratifs)', 'Des motifs simples, sans signification : ils passent dans la vitrine de la semaine. Ceux de saison ne sont vendus qu’à leur date.'), SHOP_FRAMES);
+
+const NEW_FRAMES = [
+    { name: 'Damier', how: 'Motif · <span class="price">400 🪙</span>', av: { cls: 'frame thick n-checker', hue: 0, letter: 'D' } },
+    { name: 'Zigzag', how: 'Motif · <span class="price">400 🪙</span>', av: { cls: 'frame thick n-zigzag', hue: 200, pic: '🐸' } },
+    { name: 'Écailles', how: 'Motif · <span class="price">500 🪙</span>', av: { cls: 'frame thick n-scales', hue: 150, pic: '🐉' } },
+    { name: 'Vagues', how: 'Motif · <span class="price">500 🪙</span>', av: { cls: 'frame thick n-waves', hue: 190, pic: '🐋' } },
+    { name: 'Écossais', how: 'Motif · <span class="price">500 🪙</span>', av: { cls: 'frame thick n-tartan', hue: 30, letter: 'E' } },
+    { name: 'Pixels', how: 'Motif · <span class="price">600 🪙</span>', av: { cls: 'frame thick n-pixels', hue: 260, pic: '👾' } },
+    { name: 'Cuivre', how: 'Matière · <span class="price">600 🪙</span>', av: { cls: 'frame thick n-copper', hue: 20, letter: 'C' } },
+    { name: 'Givre', how: 'Matière · <span class="price">800 🪙</span>', av: { cls: 'frame thick n-frost', hue: 205, pic: '🐧' } },
+    { name: 'Parchemin', how: 'Thème Histoire · <span class="price">600 🪙</span>', av: { cls: 'frame thick n-parchment', hue: 35, pic: '🦉', tag: '📜' } },
+    { name: 'Notes de musique', how: 'Thème Musique · <span class="price">800 🪙</span>', av: { cls: 'frame thick n-music', hue: 280, pic: '🎸', deco: '🎵' } },
+    { name: 'Pellicule', how: 'Thème Cinéma · <span class="price">600 🪙</span>', av: { cls: 'frame thick n-film', hue: 0, pic: '🍿' } },
+    { name: 'Confettis', how: 'Fête · <span class="price">800 🪙</span>', av: { cls: 'frame thick n-confetti', hue: 320, letter: 'F', deco: '🎉' } }
+];
+const nf = card('🆕 12 nouveaux cadres (essai)', 'Faits en une fois pour voir si c’est facile : motifs, matières et thèmes du jeu. Ils iraient dans la vitrine, 2 nouveautés par semaine.');
+wrap.prepend(nf);
+grid(nf, NEW_FRAMES);
+const nl = card('', '');
+nl.innerHTML = '<h2>👥 Les mêmes, en petit</h2><p>Comme dans la liste d’amis et les duels.</p>';
+const smallRow = document.createElement('div');
+smallRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:18px;padding:8px 4px';
+NEW_FRAMES.forEach(f => smallRow.append(avatar({ ...f.av, small: true })));
+nl.append(smallRow);
+nf.after(nl);
 
 const STYLES = [
     { name: 'Coucher de soleil', how: '<span class="price">500 🪙</span>', av: { cls: 's-sunset', letter: 'T' } },
@@ -465,6 +520,10 @@ on.innerHTML = '<b>Option A</b> : le cadre remplace l’anneau de couleur ; la p
 top3.push(lg);
 
 top3.reverse().forEach(c => wrap.prepend(c));
+
+// Les 12 nouveaux cadres tout en haut
+wrap.prepend(nl);
+wrap.prepend(nf);
 </script>
 </body>
 </html>
