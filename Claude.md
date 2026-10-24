@@ -14,6 +14,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Prochaines pistes : événement de Noël (fin novembre), « Qui suis-je ? », puis la liste « AVANT DE PUBLIER » (triche
   « J'avais juste », protection classement / duels / heure, suppression de compte, politique de confidentialité, 12 testeurs).
   Abandonné : « Revoir le tutoriel », plein écran en appli web.
+- À FAIRE LE 25/10 (demandé par l'utilisateur, dans cet ordre ; il dira « vas-y ») :
+  1. Coder la BOUTIQUE ET AVATARS (plan détaillé plus bas, version finale du 24/10) + un « bac à sable » `?bac=1` (copie de
+     la vraie partie dans une sauvegarde à part, tout le nouveau actif, RIEN envoyé en ligne, bandeau 🧪, « Recommencer le
+     test », « +1 000 🪙 », faux amis avec cadres) pour que l'utilisateur teste sur son téléphone avant les autres.
+  2. Ensuite : XP des niveaux DÉJÀ réussis qu'on refait, trop élevée selon l'utilisateur (à réduire).
+  3. Lui rappeler : la limite de 25 questions (ou non) dans les révisions — à vérifier avec lui.
+  4. Lui rappeler : bug entraînement, la carte Maître se débloque en validant le palier 4 (passage AU palier 5) au lieu
+     d'avoir vraiment réussi le palier 5.
 - MISE À JOUR DU LUNDI 26/10 (préparée le 24/10, s'active SEULE ce jour-là : `PATCH_DAY`, `patched()`) : titres ×3
   (`titleList`), 1 🪙 pour 8 XP (`coinRate`), badges 15 🪙 (`coinBadge`), 75 % de cartes nouvelles (`newCardChance`),
   +30 cartes (cards.js, 1 commune + 1 rare par thème, ids xx10 / xx11 : 12 par thème, 180), collection en 2 lignes de 6
@@ -33,6 +41,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   semaine parmi MES manquantes, rareté tournante la même pour tous : commune 60, rare 150, épique 400, légendaire 1000 ;
   jamais Maître ni événement ; tout possédé → carte à faire briller) ; coffre et objets utiles en lignes compactes.
   Cadre Halloween 2026 = ceux qui ont fini l'événement. Lots suivants de cadres / couleurs tous les 2-3 mois (aperçu d'abord).
+  COMPLÉMENTS (fin du 24/10) : « Mon avatar » en 3 onglets Fond · Dessin · Cadre (couleur unie = un fond ; « Fond » au lieu
+  de « Couleur ») ; chaque onglet = possédés + à gagner (cadenas) + seulement ce qui est EN VITRINE cette semaine (jamais tout le
+  catalogue) ; vitrine : 2 nouveautés qui alternent cadre / fond / dessin (cycle 3 semaines), 1 objet qui revient, 1 carte ;
+  dessins rares en boutique ~300 🪙 ; 3 fonds à gagner jamais vendus (Or = parcours fini, Holographique = collection complète,
+  Nuit d'Halloween = événement fini) ; coffres des missions et du podium : 1 chance sur 10 d'un objet de boutique DÉJÀ sorti
+  (les moins chers plus souvent), ANNONCÉ sur le coffre (« ✨ 1 chance sur 10 : un cadre, un fond ou un dessin de la
+  boutique »), animation spéciale, pas de cadenas pour eux ; Records : « 🎨 Objets d'avatar : X / Y » (objets déjà sortis) ;
+  joueurs actuels SANS passe-droit (testeurs) : seuls leur couleur et leur dessin actuels leur sont débloqués pour de bon.
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :
   1. Rajouter des cartes à la collection.
   2. Revoir le système d'XP et de pièces (déjà fait le 24/10 : XP 4/5/6 selon la difficulté ; la ligue reste « à l'effort »,
