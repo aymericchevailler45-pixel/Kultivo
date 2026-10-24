@@ -126,27 +126,29 @@
     /* ---------- Aperçu de la nouvelle boutique ---------- */
     .shop-mock { display: grid; gap: 10px; }
     .shop-mock .card { padding: 14px 14px; }
-    .vit-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
-    .vit-cell { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 12px 2px 8px; border: 2px solid var(--line); border-radius: 14px; text-align: center; background: var(--surface); }
-    .vit-cell b { font-size: 0.74rem; line-height: 1.1; }
+    .vit-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 10px; margin-top: 14px; }
+    .vit-cell { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 8px 12px; border: 2px solid var(--line); border-radius: 14px; text-align: center; background: var(--surface); }
+    .vit-cell b { font-size: 0.95rem; line-height: 1.15; }
     .vit-cell .av { margin: 6px 0 5px; }
-    .vit-cell .price { font-size: 0.78rem; }
-    .vit-cell .pill { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 0 6px; border-radius: 8px; color: #fff; font-size: 0.62rem; font-weight: 900; white-space: nowrap; background: var(--red); }
+    .vit-cell .price { font-size: 0.85rem; }
+    .vit-cell .mbtn { width: 100%; padding: 9px 10px; font-size: 0.95rem; }
+    .vit-cell .sub2 { color: var(--muted); font-size: 0.78rem; font-weight: 800; margin-top: -4px; }
+    .vit-cell .pill { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); padding: 1px 8px; border-radius: 9px; color: #fff; font-size: 0.72rem; font-weight: 900; white-space: nowrap; background: var(--red); }
     .vit-cell .pill.back { background: #1899d6; }
     .vit-cell .pill.kc { background: #8b5cf6; }
     .vit-cell.owned { opacity: 0.6; }
-    .mini-card { width: 40px; height: 52px; display: flex; align-items: center; justify-content: center; border: 3px solid #8b5cf6; border-radius: 9px; background: linear-gradient(180deg, #f3edff, #ffffff); }
+    .mini-card { width: 50px; height: 64px; display: flex; align-items: center; justify-content: center; border: 3px solid #8b5cf6; border-radius: 9px; background: linear-gradient(180deg, #f3edff, #ffffff); }
     .mini-card .emoji-img { width: 70%; }
     .vit-foot { margin: 8px 0 0; font-size: 0.82rem; font-weight: 800; color: var(--muted); text-align: center; }
-    .line-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 2px solid var(--line); }
+    .line-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 2px solid var(--line); }
     .line-item:last-child { border-bottom: 0; }
-    .line-item .ic { flex: none; width: 34px; font-size: 1.6rem; text-align: center; }
+    .line-item .ic { flex: none; width: 42px; font-size: 2rem; text-align: center; }
     .line-item .tx { flex: 1; min-width: 0; }
-    .line-item .tx b { display: block; font-size: 0.95rem; }
-    .line-item .tx small { color: var(--muted); font-weight: 700; font-size: 0.78rem; line-height: 1.25; display: block; }
-    .line-item .bt { flex: none; display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
-    .mbtn { padding: 6px 10px; border-radius: 12px; border: 0; font: inherit; font-weight: 900; font-size: 0.82rem; color: #fff; background: var(--green); box-shadow: 0 3px 0 var(--green-deep, #3c9a00); white-space: nowrap; }
-    .mbtn.violet { background: #8b5cf6; box-shadow: 0 3px 0 #6d3fd6; font-size: 0.72rem; padding: 4px 8px; }
+    .line-item .tx b { display: block; font-size: 1.05rem; }
+    .line-item .tx small { color: var(--muted); font-weight: 700; font-size: 0.85rem; line-height: 1.25; display: block; }
+    .line-item .bt { flex: none; display: flex; flex-direction: column; gap: 8px; align-items: stretch; min-width: 96px; }
+    .mbtn { padding: 10px 12px; border-radius: 14px; border: 0; font: inherit; font-weight: 900; font-size: 0.95rem; color: #fff; background: var(--green); box-shadow: 0 3px 0 var(--green-deep, #3c9a00); white-space: nowrap; }
+    .mbtn.violet { background: #8b5cf6; box-shadow: 0 3px 0 #6d3fd6; font-size: 0.85rem; padding: 7px 10px; }
     .mbtn.off { background: #c9d1dd; box-shadow: 0 3px 0 #a9b3c2; }
     .shop-title { display: flex; justify-content: space-between; align-items: baseline; }
     .shop-title h2 { margin: 0; }
@@ -579,22 +581,25 @@ v1.className = 'card';
 v1.innerHTML = '<div class="shop-title"><h2>🛍️ Vitrine de la semaine</h2><span>⏳ 3 j 12 h</span></div>';
 const vr = document.createElement('div');
 vr.className = 'vit-row';
-const cell = (pill, pillCls, node, name, price, owned = false) => {
+const cell = (pill, pillCls, node, name, price, owned = false, sub = '') => {
     const c = document.createElement('div');
     c.className = `vit-cell${owned ? ' owned' : ''}`;
     const p = document.createElement('span'); p.className = `pill ${pillCls}`; p.textContent = pill;
     const b = document.createElement('b'); b.textContent = name;
-    const pr = document.createElement('span'); pr.className = 'price'; pr.textContent = owned ? '✓ À toi' : price;
-    c.append(p, node, b, pr);
+    const sb = document.createElement('span'); sb.className = 'sub2'; sb.textContent = sub;
+    const bt = document.createElement('button'); bt.className = `mbtn${owned ? ' off' : ''}`; bt.textContent = owned ? '✓ À toi' : price;
+    c.append(p, node, b);
+    if (sub) c.append(sb);
+    c.append(bt);
     return c;
 };
-const small = av => { const a = avatar(av); a.querySelector('.league-avatar').style.cssText = 'width:42px;height:42px;font-size:1.15rem'; return a; };
+const small = av => { const a = avatar(av); a.querySelector('.league-avatar').style.cssText = 'width:60px;height:60px;font-size:1.6rem'; return a; };
 const mc = document.createElement('div'); mc.className = 'mini-card'; mc.append(emoji('🗿'));
 vr.append(
-    cell('Nouveau', '', small({ cls: 'frame thick n-checker', hue: 140, letter: 'M' }), 'Cadre Damier', '400 🪙'),
-    cell('Nouveau', '', small({ cls: 's-galaxy', pic: '🚀' }), 'Galaxie', '800 🪙'),
-    cell('Revient', 'back', small({ cls: 's-ocean', letter: 'M' }), 'Océan', '500 🪙', true),
-    cell('Ta carte', 'kc', mc, 'Moaï · épique', '400 🪙')
+    cell('Nouveau', '', small({ cls: 'frame thick n-checker', hue: 140, letter: 'M' }), 'Damier', '400 🪙', false, 'Cadre'),
+    cell('Nouveau', '', small({ cls: 's-galaxy', pic: '🚀' }), 'Galaxie', '800 🪙', false, 'Couleur'),
+    cell('Revient', 'back', small({ cls: 's-ocean', letter: 'M' }), 'Océan', '500 🪙', true, 'Couleur'),
+    cell('Ta carte', 'kc', mc, 'Moaï', '400 🪙', false, 'Carte épique')
 );
 v1.append(vr);
 const vf = document.createElement('p'); vf.className = 'vit-foot';
@@ -620,7 +625,7 @@ v3.innerHTML = '<h2 style="margin:0 0 4px">🧰 Objets utiles</h2>' + items.map(
 shopBox.append(v1, v2, v3);
 const sn = document.createElement('p');
 sn.className = 'note';
-sn.innerHTML = 'Aujourd’hui la boutique fait 7 grandes cartes. Là : la vitrine (1 ligne), le coffre (1 ligne) et les objets utiles en liste → <b>à peu près la même longueur qu’avant</b>, avec la vitrine en plus. Les gros emojis disparaissent au profit de lignes compactes.';
+sn.innerHTML = 'Aujourd’hui la boutique fait 7 grandes cartes. Là : la vitrine (2 lignes de 2), le coffre (1 ligne) et les objets utiles en liste → un peu plus longue qu’avant à cause de la vitrine, mais tout reste lisible et les boutons sont faciles à toucher.';
 intro.append(sn);
 
 // ===== Démo : dessin débloqué → on le touche → le cadenas s'envole =====
