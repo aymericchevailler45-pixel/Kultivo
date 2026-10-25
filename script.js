@@ -2976,7 +2976,7 @@ function renderShopV2() {
     const now = VITRINE_CARD_ROT[w % 4];
     const nextR = VITRINE_CARD_ROT[(w + 1) % 4];
     const foot = el('p', 'vitrine-foot');
-    foot.textContent = `${rIcon[now]} Semaine des ${rName[now]} · la prochaine : ${rName[nextR]} ${rIcon[nextR]}`;
+    foot.textContent = `${rIcon[now]} Semaine des cartes ${rName[now]} · la prochaine : ${rName[nextR]} ${rIcon[nextR]}`;
     // En haut : le look complet (les 3 pièces sur mon initiale) et « Toute la collection » (−20 % sur ce qui manque)
     const look = el('div', 'vitrine-look');
     if (coll) {
