@@ -24,6 +24,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      Retouches du 25/10 : un seul message à la fois (`showToast` remplace le précédent) ; vitrine = objet SEUL sur avatar gris
      (`avAlone`), achat = « avant → après » (`avBeforeAfter`) ; crayon sorti du rond → bouton « ✏️ Modifier » (`avatarEditBtn`) ;
      le VRAI lundi, une fois (`mondayFresh`) : bulles d'Halloween et objets d'avatar remis à neuf (déjà vus en démo).
+     COLLECTIONS (25/10, choix B de l'utilisateur) : la vitrine montre UNE collection complète par semaine (cadre + fond +
+     dessin assortis, `AV_COLLECTIONS`, ordre `COLLECTION_ORDER` : ajouter les lots À LA FIN) + ma carte ; « Toute la
+     collection » −20 % (`buyCollection`, `COLLECTION_DISCOUNT`) ; une semaine normale sur 3 = une ancienne collection revient
+     (seulement si pas vue depuis ≥ 4 semaines) ; collections de fête (Halloween, Noël, Saint-Valentin) la 1re semaine de leur
+     période. 1er lot : 12 collections + 3 de fête. Aperçu : apercu-collections.html (vrais styles du jeu). Prochains lots :
+     ~12 collections tous les ~4 mois, montrées d'abord sur l'aperçu. Objets pas encore rangés dans une collection (réserve) :
+     cadres checker, neon-blue, stripes, parchment, zigzag, tartan, music, frost, confetti ; fonds sunset, aurora, jade,
+     lavender, bronze, wood, mint, ruby, silver, boreal ; dessins butterfly…(voir cosmetiques.js).
      ANCIEN TEXTE : Coder la BOUTIQUE ET AVATARS (plan détaillé plus bas, version finale du 24/10) + un « bac à sable » `?bac=1` (copie de
      la vraie partie dans une sauvegarde à part, tout le nouveau actif, RIEN envoyé en ligne, bandeau 🧪, « Recommencer le
      test », « +1 000 🪙 », faux amis avec cadres) pour que l'utilisateur teste sur son téléphone avant les autres.

@@ -2875,6 +2875,30 @@ async function buyAvItem(it) {
     showToast('✓ C’est à toi ! Change-le quand tu veux dans « Mon avatar ».');
     checkBadges();
 }
+async function buyCollection(items, price) {
+    const d = state.data;
+    if (d.coins < price) { showToast(`Il te manque ${price - d.coins} 🪙.`); return; }
+    const look = { ...avEnsureLook() };
+    items.forEach(it => { if (it.type === 'frame') look.frame = it.id; else if (it.type === 'pic') look.emoji = it.emoji; else look.bg = it.id; });
+    const art = el('div', 'av-before-after');
+    const arrow = el('span', 'av-arrow');
+    arrow.textContent = '→';
+    art.append(avatarEl(myAvatarName(), avEnsureLook()), arrow, avatarEl(myAvatarName(), look));
+    const ok = await askConfirm({ title: 'Toute la collection ?', art,
+        text: `${items.map(it => it.name).join(' + ')} · ${price} 🪙 (il t’en restera ${d.coins - price}). Tout ira sur ton avatar.`, yes: `Acheter · ${price} 🪙` });
+    if (!ok || d.coins < price) return;
+    d.coins -= price;
+    items.forEach(it => { d.av.owned[it.id] = 1; d.av.opened[it.id] = 1; d.av.known[it.id] = 1; avWear(it); });
+    d.totals.purchases++;
+    saveData();
+    pushAvatar();
+    renderHeader();
+    renderShop();
+    playSound('win');
+    launchConfetti();
+    showToast('✓ Toute la collection est à toi !');
+    checkBadges();
+}
 async function buyVitrineCard() {
     const d = state.data;
     const v = vitrineCard();
@@ -2934,9 +2958,10 @@ function renderShopV2() {
         return cell(pill, pillCls, avAlone(it), it.name, AV_TYPE_NAME[it.type], owned ? '✓ À toi' : `${it.price} 🪙`,
             owned ? null : () => buyAvItem(it), owned || d.coins < it.price, owned, cellCls);
     };
-    plan.news.forEach(id => row.append(itemCell(AVI[id], 'Nouveau', '', '')));
-    if (plan.back) row.append(plan.season ? itemCell(AVI[plan.back], VITRINE_SEASON_LABEL[plan.season], 'is-event', 'is-event')
-        : itemCell(AVI[plan.back], 'Revient', 'is-back', ''));
+    const coll = AV_COLL[plan.coll];
+    const pill = plan.season ? VITRINE_SEASON_LABEL[plan.season] : plan.back ? 'Revient' : 'Nouveau';
+    const pillCls = plan.season ? 'is-event' : plan.back ? 'is-back' : '';
+    plan.items.forEach(id => row.append(itemCell(AVI[id], pill, pillCls, plan.season ? 'is-event' : '')));
     const v = vitrineCard();
     const card = CARDS.find(c => c.id === v.card);
     if (card) {
@@ -2951,7 +2976,22 @@ function renderShopV2() {
     const nextR = VITRINE_CARD_ROT[(w + 1) % 4];
     const foot = el('p', 'vitrine-foot');
     foot.textContent = `${rIcon[now]} Semaine des ${rName[now]} · la prochaine : ${rName[nextR]} ${rIcon[nextR]}`;
-    vit.append(head, row, foot);
+    const sub = el('p', 'vitrine-coll');
+    if (coll) sub.textContent = `${coll.icon} Collection ${coll.name}${plan.back ? ' · elle revient !' : plan.season ? ' · seulement cette semaine' : ''}`;
+    vit.append(head, sub, row);
+    // Toute la collection d'un coup : −20 % sur les pièces qui manquent
+    const missing = plan.items.map(id => AVI[id]).filter(it => it && !d.av.owned[it.id]);
+    if (missing.length >= 2) {
+        const full = missing.reduce((sum, it) => sum + it.price, 0);
+        const price = Math.round((full * COLLECTION_DISCOUNT) / 10) * 10;
+        const all = el('button', 'btn btn-violet btn-full vitrine-all');
+        all.type = 'button';
+        all.textContent = `Toute la collection · ${price} 🪙 au lieu de ${full}`;
+        all.disabled = d.coins < price;
+        all.addEventListener('click', () => buyCollection(missing, price));
+        vit.append(all);
+    }
+    vit.append(foot);
     grid.append(vit);
 
     // 2) Coffre de cartes
@@ -5949,31 +5989,40 @@ function vitrineSeason(k) {
     return VITRINE_SEASONS.find(se => md >= se.from && md <= se.to) || null;
 }
 const vitrineCache = {};
-/** Semaine k : 2 nouveautés (cadre / fond / dessin à tour de rôle), 1 objet qui revient (ou l'objet de saison). */
+const AV_COLL = Object.fromEntries(AV_COLLECTIONS.map(c => [c.id, c]));
+/** Semaine k : une collection complète (cadre + fond + dessin). 1re semaine d'une saison : sa collection ;
+    une semaine normale sur trois : une ancienne collection revient. Rejoué depuis le 26/10/2026 (rien d'enregistré). */
 function vitrinePlan(w) {
     if (vitrineCache[w]) return vitrineCache[w];
-    const next = { frame: 0, bg: 0, pic: 0 };
+    let next = 0;
+    let normal = 0;
     const last = {};
-    const released = [];
+    const shown = [];   // collections déjà sorties (hors saison)
+    const releasedItems = [];
     let plan = null;
     for (let k = 0; k <= w; k++) {
-        const news = [];
-        for (const t of [['frame', 'bg'], ['pic', 'frame'], ['bg', 'pic']][k % 3]) {
-            const id = VITRINE_ORDER[t][next[t]];
-            if (id) { next[t]++; news.push(id); }
-        }
         const season = vitrineSeason(k);
-        let back = null;
-        if (season) back = season.items[k % season.items.length];
+        const firstOfSeason = season && (k === 0 || vitrineSeason(k - 1)?.id !== season.id);
+        let coll = null;
+        let back = false;
+        if (firstOfSeason && AV_COLLECTIONS.some(c => c.season === season.id)) coll = AV_COLLECTIONS.find(c => c.season === season.id);
         else {
-            const pool = released.filter(id => !news.includes(id));
-            const old = pool.filter(id => k - last[id] >= 4);
-            const from = old.length ? old : pool.sort((a, b) => last[a] - last[b]).slice(0, 3);
-            if (from.length) back = seededShuffle([...from].sort(), `vitrine-${k}`)[0];
+            // Retour : seulement une collection pas vue depuis 4 semaines au moins (les plus anciennes d'abord) ; sinon une nouvelle
+            const old = shown.filter(id => k - last[id] >= 4).sort((a, b) => last[a] - last[b]).slice(0, 2);
+            const retour = (normal % 3 === 2 && old.length > 0) || next >= COLLECTION_ORDER.length;
+            normal++;
+            if (!retour) coll = AV_COLL[COLLECTION_ORDER[next++]];
+            else {
+                const from = old.length ? old : [...shown].sort((a, b) => last[a] - last[b]).slice(0, 1);
+                if (from.length) { coll = AV_COLL[seededShuffle([...from].sort(), `retour-${k}`)[0]]; back = true; }
+            }
         }
-        news.forEach(id => { if (!released.includes(id)) released.push(id); last[id] = k; });
-        if (back) last[back] = k;
-        if (k === w) plan = { news, back, season: season ? season.id : null, released: released.slice() };
+        if (k === w) plan = { coll: coll ? coll.id : null, items: coll ? coll.items.slice() : [], back, season: coll?.season || null, released: releasedItems.slice() };
+        if (coll) {
+            last[coll.id] = k;
+            if (!coll.season && !shown.includes(coll.id)) shown.push(coll.id);
+            coll.items.forEach(id => { if (!releasedItems.includes(id)) releasedItems.push(id); });
+        }
     }
     vitrineCache[w] = plan;
     return plan;
@@ -6013,7 +6062,7 @@ const AV_CHEST_CHANCE = 0.1;
 function avChestPool() {
     if (!avOn()) return [];
     const plan = vitrinePlan(vitrineWeek());
-    return plan.released.filter(id => !plan.news.includes(id) && AVI[id] && !AVI[id].season && !state.data.av.owned[id]);
+    return plan.released.filter(id => !plan.items.includes(id) && AVI[id] && !AVI[id].season && !state.data.av.owned[id]);
 }
 function avChestDrop() {
     const pool = avChestPool();
@@ -6028,7 +6077,7 @@ const AV_CHEST_TEXT = '✨ 1 chance sur 10 : un cadre, un fond ou un dessin de l
 function avCount() {
     const st = avStats();
     const plan = vitrinePlan(vitrineWeek());
-    const out = new Set([...plan.released, ...(plan.back ? [plan.back] : [])]);
+    const out = new Set([...plan.released, ...plan.items]);
     const list = AV_ALL.filter(it => it.kind !== 'shop' ? (!it.event || avHas(it, st) || currentEvent()?.id === it.event) : out.has(it.id) || state.data.av.owned[it.id]);
     return { have: list.filter(it => avHas(it, st)).length, total: list.length };
 }
@@ -6117,7 +6166,7 @@ function renderAvatarModalV2() {
         grid.append(tile(`is-none${!look.frame ? ' is-active' : ''}`, none, () => { look.frame = null; renderAvatarModalV2(); }));
     }
     const plan = vitrinePlan(vitrineWeek());
-    const onSale = [...plan.news, plan.back].filter(Boolean);
+    const onSale = plan.items;
     for (const it of AV_ALL.filter(x => x.type === avTab)) {
         const has = avHas(it, st);
         if (it.kind === 'shop' && !has) continue;                                   // la boutique : seulement ce qu'on a
@@ -8051,7 +8100,8 @@ function initBac() {
     if (!BAC) return;
     const pill = el('button', 'bac-pill');
     pill.type = 'button';
-    pill.textContent = '🧪 Bac à sable';
+    pill.textContent = '🧪';
+    pill.setAttribute('aria-label', 'Bac à sable');
     pill.addEventListener('click', async () => {
         const more = await askConfirm({ title: '🧪 Bac à sable', text: 'Une copie de ta partie : tout ce que tu fais ici reste ici. Rien n’est envoyé en ligne, ton vrai jeu ne change pas.',
             yes: '+1 000 🪙 pour tester', no: 'Plus d’options' });
@@ -8088,7 +8138,7 @@ const PATCH_NOTES = [
     ['⭐', 'XP selon la difficulté', 'Une question difficile rapporte plus d’XP qu’une facile.'],
     ['📅', 'Toutes les questions du jeu', 'Défi du jour, sprint et duels piochent aussi dans les questions de l’entraînement.'],
     ['🪙', 'Pièces rééquilibrées', '1 🪙 pour 8 XP, et 15 🪙 par badge.'],
-    ['🛍️', 'Nouvelle boutique', 'Une vitrine qui change chaque lundi : cadres, fonds et dessins pour ton avatar, et une carte de la semaine.'],
+    ['🛍️', 'Nouvelle boutique', 'Chaque lundi, une collection assortie pour ton avatar (un cadre, un fond, un dessin), et ta carte de la semaine.'],
     ['🎨', 'Ton avatar', 'Des fonds, des dessins et des cadres à gagner en jouant (ils s’ouvrent dans Profil → ton avatar).']
 ];
 function maybeShowPatchNotes() {

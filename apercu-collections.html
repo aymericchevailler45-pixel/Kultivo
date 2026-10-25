@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aperçu collections</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=coll1">
+<!-- Page d'APERÇU (2026-10-25) : les collections de la vitrine, avec les vrais objets du jeu (style.css + cosmetiques.js). -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 16px; }
+    .card h2 { margin: 0 0 2px; }
+    .card > p { margin: 0 0 12px; color: var(--muted); font-weight: 700; }
+    .coll-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: end; }
+    .piece { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+    .piece .art { display: flex; align-items: center; justify-content: center; height: 80px; }
+    .piece .league-avatar { width: 56px; height: 56px; font-size: 1.5rem; }
+    .piece.look .league-avatar { width: 66px; height: 66px; font-size: 1.8rem; }
+    .piece b { font-size: 0.8rem; line-height: 1.15; }
+    .piece small { color: var(--muted); font-weight: 800; font-size: 0.72rem; }
+    .price { color: #b07d00; font-weight: 900; font-size: 0.75rem; }
+    .piece.look b { color: #8b5cf6; }
+    .tag-season { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 9px; background: #ff7a00; color: #fff; font-size: 0.72rem; font-weight: 900; vertical-align: middle; }
+    .total { margin: 10px 0 0; font-weight: 800; color: var(--muted); font-size: 0.85rem; }
+    .weeks { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .weeks td, .weeks th { padding: 7px 4px; border-bottom: 2px solid var(--line); text-align: left; }
+    .weeks th { color: var(--muted); }
+    .back { color: #1899d6; font-weight: 900; }
+    .season { color: #ff7a00; font-weight: 900; }
+    .league-avatar.av-neutral { background: #c9d1dd; color: #fff; }
+    @media (max-width: 420px) { .piece .league-avatar { width: 48px; height: 48px; } .piece.look .league-avatar { width: 56px; height: 56px; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap"></div>
+<script src="cosmetiques.js?v=coll1"></script>
+<script>
+const AVI = Object.fromEntries(AV_ITEMS.map(it => [it.id, it]));
+const TYPE = { frame: 'Cadre', bg: 'Fond', pic: 'Dessin' };
+const emojiImg = e => {
+    let cps = [...e].map(c => c.codePointAt(0));
+    if (!cps.includes(0x200D)) cps = cps.filter(cp => cp !== 0xFE0F);
+    const img = document.createElement('img');
+    img.className = 'emoji-img';
+    img.src = `emoji/${cps.map(cp => cp.toString(16)).join('-')}.svg`;
+    return img;
+};
+// Comme avatarEl du jeu
+function av(look, neutral) {
+    const a = document.createElement('span');
+    a.className = 'league-avatar';
+    a.style.setProperty('--hue', String(look.hue ?? 140));
+    if (look.emoji) a.append(emojiImg(look.emoji)); else a.textContent = 'M';
+    if (neutral) a.classList.add('av-neutral');
+    const bg = look.bg && AVI[look.bg];
+    if (bg) a.classList.add(bg.id);
+    const fr = look.frame && AVI[look.frame];
+    if (fr) a.classList.add('fr', fr.id, `fx-${fr.fx || 'none'}`);
+    if (look.blank) a.textContent = '';
+    return a;
+}
+const wrap = document.getElementById('wrap');
+const intro = document.createElement('article');
+intro.className = 'card';
+intro.innerHTML = `<h2>🛍️ Les collections de la vitrine</h2><p>Chaque semaine : <b>une collection complète</b> (cadre + fond + dessin qui vont ensemble) + ta carte de la semaine. Une semaine sur trois, une ancienne collection revient. Les collections de fête ne sortent qu’à leur date. À droite de chaque ligne : le look complet. Bouton « Toute la collection » : −20 %.</p>`;
+wrap.append(intro);
+
+// Programme des 18 premières semaines (même règle que dans le jeu)
+const START = new Date(2026, 9, 26);
+const md = k => { const d = new Date(START); d.setDate(d.getDate() + 7 * k); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const label = k => { const d = new Date(START); d.setDate(d.getDate() + 7 * k); return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); };
+const seasonOf = k => VITRINE_SEASONS.find(s => md(k) >= s.from && md(k) <= s.to) || null;
+const C = Object.fromEntries(AV_COLLECTIONS.map(c => [c.id, c]));
+const plan = [];
+let next = 0, normal = 0; const last = {}, shown = [];
+for (let k = 0; k < 18; k++) {
+    const se = seasonOf(k);
+    const first = se && (k === 0 || seasonOf(k - 1)?.id !== se.id);
+    let coll = null, back = false;
+    if (first) coll = AV_COLLECTIONS.find(c => c.season === se.id);
+    else {
+        const old = shown.filter(id => k - last[id] >= 4).sort((a, b) => last[a] - last[b]).slice(0, 2);
+        const retour = (normal % 3 === 2 && old.length > 0) || next >= COLLECTION_ORDER.length;
+        normal++;
+        if (!retour) coll = C[COLLECTION_ORDER[next++]];
+        else { const from = old.length ? old : [...shown].sort((a, b) => last[a] - last[b]).slice(0, 1); coll = C[from[k % from.length]]; back = true; }
+    }
+    plan.push({ k, coll, back });
+    last[coll.id] = k;
+    if (!coll.season && !shown.includes(coll.id)) shown.push(coll.id);
+}
+const sched = document.createElement('article');
+sched.className = 'card';
+sched.innerHTML = `<h2>📅 Le programme</h2><p>Ce que la vitrine montrerait chaque lundi (le choix des collections qui reviennent est tiré au sort dans le jeu).</p>`;
+const t = document.createElement('table');
+t.className = 'weeks';
+t.innerHTML = '<tr><th>Semaine du</th><th>Collection</th></tr>' + plan.map(p =>
+    `<tr><td>${label(p.k)}</td><td>${p.coll.icon} ${p.coll.name}${p.back ? ' <span class="back">· revient</span>' : ''}${p.coll.season ? ' <span class="season">· fête</span>' : ''}</td></tr>`).join('');
+sched.append(t);
+wrap.append(sched);
+
+// Chaque collection : les 3 pièces seules (comme dans la vitrine) + le look complet
+for (const c of AV_COLLECTIONS) {
+    const card = document.createElement('article');
+    card.className = 'card';
+    const items = c.items.map(id => AVI[id]);
+    const full = items.reduce((s, it) => s + it.price, 0);
+    card.innerHTML = `<h2>${c.icon} ${c.name}${c.season ? '<span class="tag-season">seulement à sa date</span>' : ''}</h2>`;
+    const row = document.createElement('div');
+    row.className = 'coll-row';
+    items.forEach(it => {
+        const p = document.createElement('div');
+        p.className = 'piece';
+        const art = document.createElement('div');
+        art.className = 'art';
+        const look = it.type === 'frame' ? { frame: it.id } : it.type === 'pic' ? { emoji: it.emoji } : { bg: it.id, blank: true };
+        art.append(av(look, it.type !== 'bg'));
+        p.append(art);
+        p.insertAdjacentHTML('beforeend', `<b>${it.name}</b><small>${TYPE[it.type]}</small><span class="price">${it.price} 🪙</span>`);
+        row.append(p);
+    });
+    const lp = document.createElement('div');
+    lp.className = 'piece look';
+    const art = document.createElement('div');
+    art.className = 'art';
+    const fr = items.find(i => i.type === 'frame'), bg = items.find(i => i.type === 'bg'), pic = items.find(i => i.type === 'pic');
+    art.append(av({ frame: fr.id, bg: bg.id, emoji: pic.emoji }));
+    lp.append(art);
+    lp.insertAdjacentHTML('beforeend', `<b>Le look complet</b><small>Toute la collection</small><span class="price">${Math.round(full * COLLECTION_DISCOUNT / 10) * 10} 🪙 <s style="color:var(--muted);font-weight:700">${full}</s></span>`);
+    row.append(lp);
+    card.append(row);
+    wrap.append(card);
+}
+</script>
+</body>
+</html>

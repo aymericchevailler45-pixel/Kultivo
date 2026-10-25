@@ -4,11 +4,11 @@
    KULTIVO — objets d'avatar (mise à jour du 26/10/2026) : fonds, dessins et cadres.
    - Couleurs unies et dessins de base : 12 couleurs et 15 dessins au départ, les autres se GAGNENT en jouant.
    - Cadres et fonds « à gagner » (exploits, événements) : jamais vendus.
-   - Objets de la boutique : vendus seulement quand ils passent dans la vitrine de la semaine (VITRINE_ORDER).
+   - Objets de la boutique : vendus seulement quand leur collection est dans la vitrine de la semaine (AV_COLLECTIONS).
    L'apparence de chaque objet est dans style.css (classe = id de l'objet).
    Les conditions reçoivent `s` (voir avStats dans script.js).
-   Ajouter un lot : de nouveaux objets à la fin d'AV_ITEMS + leurs ids à la fin des listes de VITRINE_ORDER
-   (jamais au milieu : ça décalerait les vitrines déjà passées).
+   Ajouter un lot : de nouveaux objets à la fin d'AV_ITEMS, une collection dans AV_COLLECTIONS et son id À LA FIN de
+   COLLECTION_ORDER (jamais au milieu : ça décalerait les vitrines déjà passées).
    ============================================================ */
 
 // Dessins de départ (gratuits) et dessins à gagner, du plus facile au plus dur
@@ -127,23 +127,50 @@ const AV_ITEMS = [
     { id: 'pic-vampire',   type: 'pic', kind: 'shop', name: 'Vampire',     emoji: '🧛', price: 300 },
     { id: 'pic-flamingo',  type: 'pic', kind: 'shop', name: 'Flamant',     emoji: '🦩', price: 300 },
     { id: 'pic-bee',       type: 'pic', kind: 'shop', name: 'Abeille',     emoji: '🐝', price: 300 },
-    { id: 'pic-tophat',    type: 'pic', kind: 'shop', name: 'Haut-de-forme', emoji: '🎩', price: 300 }
+    { id: 'pic-tophat',    type: 'pic', kind: 'shop', name: 'Haut-de-forme', emoji: '🎩', price: 300 },
+
+    // ---------- Ajoutés pour les collections (2026-10-25) ----------
+    { id: 'bg-brume',      type: 'bg',  kind: 'shop', name: 'Brume orange', price: 600 },
+    { id: 'bg-retro',      type: 'bg',  kind: 'shop', name: 'Écran rétro',  price: 500 },
+    { id: 'bg-velvet',     type: 'bg',  kind: 'shop', name: 'Velours',      price: 800 },
+    { id: 'bg-candy',      type: 'bg',  kind: 'shop', name: 'Sucre d’orge', price: 500 },
+    { id: 'pic-spider',    type: 'pic', kind: 'shop', name: 'Araignée',     emoji: '🕷️', price: 300 },
+    { id: 'pic-dolphin',   type: 'pic', kind: 'shop', name: 'Dauphin',      emoji: '🐬', price: 300 },
+    { id: 'pic-clapper',   type: 'pic', kind: 'shop', name: 'Clap',         emoji: '🎬', price: 300 },
+    { id: 'pic-disco',     type: 'pic', kind: 'shop', name: 'Boule disco',  emoji: '🪩', price: 300 },
+    { id: 'pic-invader',   type: 'pic', kind: 'shop', name: 'Envahisseur',  emoji: '👾', price: 300 },
+    { id: 'pic-lollipop',  type: 'pic', kind: 'shop', name: 'Sucette',      emoji: '🍭', price: 300 },
+    { id: 'pic-reindeer',  type: 'pic', kind: 'shop', name: 'Renne',        emoji: '🦌', price: 300, season: 'noel' },
+    { id: 'pic-love',      type: 'pic', kind: 'shop', name: 'Lettre d’amour', emoji: '💌', price: 300, season: 'valentin' }
 ];
 
-// Ordre de sortie dans la vitrine (une nouveauté de chaque type à son tour). Objets de saison : à part.
-const VITRINE_ORDER = {
-    frame: ['fr-checker', 'fr-dots', 'fr-neon-pink', 'fr-scales', 'fr-stripes', 'fr-parchment', 'fr-zigzag', 'fr-wood',
-            'fr-neon-blue', 'fr-waves', 'fr-film', 'fr-gold', 'fr-tartan', 'fr-flowers', 'fr-music', 'fr-pixels',
-            'fr-copper', 'fr-stars', 'fr-frost', 'fr-confetti', 'fr-rainbow'],
-    bg: ['bg-galaxy', 'bg-sunset', 'bg-ocean', 'bg-marble', 'bg-forest', 'bg-neon', 'bg-aurora', 'bg-jade', 'bg-lavender',
-         'bg-bronze', 'bg-peach', 'bg-wood', 'bg-mint', 'bg-rainbow', 'bg-cherry', 'bg-ruby', 'bg-night', 'bg-silver',
-         'bg-lava', 'bg-boreal'],
-    pic: ['pic-dragon', 'pic-butterfly', 'pic-peacock', 'pic-planet', 'pic-mermaid', 'pic-parrot', 'pic-hero',
-          'pic-rainbow', 'pic-vampire', 'pic-flamingo', 'pic-bee', 'pic-tophat']
-};
-// Périodes de saison (mois-jour du lundi de la semaine) et objets vendus à ce moment-là
+// Collections (2026-10-25, choix de l'utilisateur) : chaque semaine, la vitrine montre UNE collection complète
+// (un cadre + un fond + un dessin qui vont ensemble). Une semaine sur trois : une ancienne collection revient.
+// Collections de saison : seulement à leur date (1re semaine de la période), puis l'année suivante.
+const AV_COLLECTIONS = [
+    { id: 'halloween', name: 'Halloween',    icon: '🎃', items: ['fr-pumpkins', 'bg-brume', 'pic-spider'], season: 'halloween' },
+    { id: 'noel',      name: 'Noël',         icon: '🎄', items: ['fr-snowflakes', 'bg-snow', 'pic-reindeer'], season: 'noel' },
+    { id: 'valentin',  name: 'Saint-Valentin', icon: '💖', items: ['fr-hearts', 'bg-hearts', 'pic-love'], season: 'valentin' },
+    { id: 'espace',    name: 'Espace',       icon: '🌌', items: ['fr-stars', 'bg-galaxy', 'pic-planet'] },
+    { id: 'ocean',     name: 'Océan',        icon: '🌊', items: ['fr-waves', 'bg-ocean', 'pic-dolphin'] },
+    { id: 'dragon',    name: 'Dragon',       icon: '🐉', items: ['fr-scales', 'bg-lava', 'pic-dragon'] },
+    { id: 'printemps', name: 'Printemps',    icon: '🌸', items: ['fr-flowers', 'bg-cherry', 'pic-butterfly'] },
+    { id: 'cinema',    name: 'Cinéma',       icon: '🎬', items: ['fr-film', 'bg-night', 'pic-clapper'] },
+    { id: 'neon',      name: 'Néon',         icon: '🌃', items: ['fr-neon-pink', 'bg-neon', 'pic-disco'] },
+    { id: 'retro',     name: 'Rétro gaming', icon: '👾', items: ['fr-pixels', 'bg-retro', 'pic-invader'] },
+    { id: 'royal',     name: 'Royal',        icon: '👑', items: ['fr-gold', 'bg-velvet', 'pic-peacock'] },
+    { id: 'arcenciel', name: 'Arc-en-ciel',  icon: '🌈', items: ['fr-rainbow', 'bg-rainbow', 'pic-rainbow'] },
+    { id: 'luxe',      name: 'Luxe',         icon: '💎', items: ['fr-copper', 'bg-marble', 'pic-tophat'] },
+    { id: 'jungle',    name: 'Jungle',       icon: '🌴', items: ['fr-wood', 'bg-forest', 'pic-parrot'] },
+    { id: 'bonbons',   name: 'Bonbons',      icon: '🍬', items: ['fr-dots', 'bg-candy', 'pic-lollipop'] }
+];
+// Ordre de sortie des collections hors saison (ajouter les nouveaux lots À LA FIN)
+const COLLECTION_ORDER = ['espace', 'ocean', 'dragon', 'printemps', 'cinema', 'neon', 'retro', 'royal', 'arcenciel', 'luxe', 'jungle', 'bonbons'];
+const COLLECTION_DISCOUNT = 0.8;   // « Toute la collection » : −20 %
+
+// Périodes de saison (mois-jour du lundi) : la collection de saison sort la 1re semaine de la période
 const VITRINE_SEASONS = [
-    { id: 'halloween', from: '10-19', to: '11-01', items: ['fr-pumpkins'] },
-    { id: 'noel',      from: '12-07', to: '12-21', items: ['fr-snowflakes', 'bg-snow'] },
-    { id: 'valentin',  from: '02-01', to: '02-14', items: ['fr-hearts', 'bg-hearts'] }
+    { id: 'halloween', from: '10-19', to: '11-01' },
+    { id: 'noel',      from: '12-07', to: '12-21' },
+    { id: 'valentin',  from: '02-01', to: '02-14' }
 ];
