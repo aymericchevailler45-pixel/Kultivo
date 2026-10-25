@@ -3074,3 +3074,10 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .av-before-after { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .av-before-after .league-avatar { width: 70px; height: 70px; font-size: 1.9rem; }
 .av-before-after .av-arrow { color: var(--muted); font-size: 1.6rem; font-weight: 900; }
+
+/* Étiquettes de la question sur UNE ligne (2026-10-25 : « Halloween » passait à la ligne sous « Rébus » et cachait « Vérifier ») :
+   le nom du thème se raccourcit (…) s'il manque de place, les autres étiquettes restent entières */
+.tags { flex-wrap: nowrap; min-width: 0; }
+.tags .tag { flex: 0 0 auto; white-space: nowrap; }
+.tags .tag#cardTag, .tags .tag#pairsTag, .tags .tag#orderTag { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 420px) { .tags { gap: 6px; } .tags .tag { padding: 4px 10px; font-size: 0.8rem; } }
