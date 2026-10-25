@@ -87,6 +87,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `hintComposed`, `typedAnswer`, `gridTyping`, zone de réponse invisible `.is-grid-typing` pour garder le clavier, lien
   « ⌨️ Écrire librement » / « 🔤 Remplir la grille ») ; frise : rester appuyé sur une carte placée puis glisser = elle
   s'INSÈRE et pousse les autres (`startOrderDrag`, `moveOrderCard`, 220 ms, aperçu animé ; la carte du coup de pouce reste).
+- FAIT le 25/10 : « 📊 Résultat de la semaine dernière » en haut du Classement (`data.leagueRecap`, préparé par `checkPodium`
+  à la 1re ouverture de la semaine, quel que soit le jour) : podium final, ma place et mes XP, coffre ouvert d'un bouton
+  (`claimLeagueRecap` : cartes selon les amis battus, pièces selon la place) ou la raison s'il n'y en a pas ; pastille sur
+  Classement tant que ce n'est pas vu. Le coffre ne s'ouvre plus tout seul. Phrase : « au moins un ami ET 100 XP ». Temps
+  restant de la ligue précis (« 3 j 14 h », « 14 h 32 min »), mis à jour toutes les 30 s.
 - IDÉE pour la vraie appli Android (Capacitor) : icône qui change selon les fêtes, comme Duolingo (impossible proprement en
   appli web : Chrome met l'icône à jour seul, avec retard et un message de confirmation).
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :

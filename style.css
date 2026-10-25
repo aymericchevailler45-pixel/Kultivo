@@ -3170,3 +3170,15 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .order-slot.is-drop .order-card, .order-slot.is-drop .order-empty { outline: 3px dashed var(--pink, #ec4899); outline-offset: 2px; }
 .link-btn.hint-switch { margin: 0; padding: 2px 0; }
 .order-slots.is-sorting .order-card:not(.is-dragging), .order-slots.is-sorting .order-empty { transition: transform 0.15s ease; }
+
+/* Résultat de la semaine dernière (ligue des amis) */
+.league-recap { border-color: #ffc800; }
+.recap-podium { display: flex; justify-content: center; gap: 14px; margin: 6px 0 4px; }
+.recap-col { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; max-width: 90px; text-align: center; }
+.recap-col b { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; }
+.recap-col small { color: var(--muted); font-weight: 800; font-size: 0.78rem; }
+.recap-col.is-me b { color: var(--green-ink); }
+.recap-medal { font-size: 1.3rem; line-height: 1; }
+.recap-me { margin: 8px 0 0; font-weight: 800; text-align: center; }
+.recap-why { margin: 4px 0 0; color: var(--muted); font-weight: 700; font-size: 0.9rem; text-align: center; }
+.league-recap .btn { margin-top: 10px; }

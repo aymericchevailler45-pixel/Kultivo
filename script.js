@@ -610,6 +610,7 @@ function defaultData() {
         vitrine: null,                   // carte de la semaine : { week, card, rarity, shine, bought }
         vitrineSeen: null,               // lundi de la dernière vitrine regardée (pastille de la Boutique)
         playerSeed: null,                // tirage propre au joueur (carte de la semaine)
+        leagueRecap: null,               // résultat de la semaine dernière (ligue des amis), montré jusqu'à « vu » / coffre ouvert
         duelsSeen: {},                   // duels dont le résultat a été vu (pièces données une seule fois)
         duelAnswers: {},                 // duels : graine -> mes réponses tapées (pour les revoir)
         duelsViewed: {},                 // résultats de duels déjà regardés (sinon pastille)
@@ -1882,7 +1883,7 @@ function updateNavNotifications() {
     else challengesBtn.removeAttribute('data-notif');
 
     // 3. Demandes d'amis reçues (onglet Classement)
-    const requests = cloudUser && league?.userId === cloudUser.id ? league.incoming.length + duelsBadge() : 0;
+    const requests = (cloudUser && league?.userId === cloudUser.id ? league.incoming.length + duelsBadge() : 0) + (leagueRecapPending() ? 1 : 0);
     const leagueBtn = document.querySelector('.nav-btn[data-screen="league"]');
     if (requests > 0) leagueBtn.setAttribute('data-notif', requests);
     else leagueBtn.removeAttribute('data-notif');
@@ -7233,20 +7234,79 @@ function checkPodium() {
     const beaten = others.filter(xp => xp < mine).length;
     const rank = 1 + others.filter(xp => xp > mine).length;
     data.podium[last] = 0;
-    if (mine >= PODIUM_MIN_XP && beaten > 0) {
-        data.podium[last] = rank;
-        saveData();
-        const size = Math.min(5, 1 + beaten);
-        const place = rank === 1 ? '1er' : `${rank}e`;
-        const coins = PODIUM_COINS[rank - 1] || 0;   // pièces selon la place : 🥇 50, 🥈 25, 🥉 10
-        data.coins += coins;
+    const won = mine >= PODIUM_MIN_XP && beaten > 0;
+    if (won) data.podium[last] = rank;
+    // Résultat de la semaine (2026-10-25) : montré en haut du Classement jusqu'à ce qu'on l'ait vu et ouvert son coffre
+    const rows = [{ pseudo: league.pseudo, look: data.avatar ? { ...data.avatar } : null, xp: mine, me: true },
+        ...league.friends.map(f => ({ pseudo: f.pseudo, look: f.look || null, xp: friendWeekXp(f, last) }))]
+        .sort((a, b) => b.xp - a.xp || (a.me ? -1 : b.me ? 1 : 0));
+    data.leagueRecap = {
+        week: last, rank, xp: mine, beaten, friends: league.friends.length,
+        top: rows.slice(0, 3), won,
+        size: won ? Math.min(5, 1 + beaten) : 0,
+        coins: won ? (PODIUM_COINS[rank - 1] || 0) : 0,   // pièces selon la place : 🥇 50, 🥈 25, 🥉 10
+        why: won ? '' : mine < PODIUM_MIN_XP ? 'xp' : 'beaten',
+        done: false
+    };
+    saveData();
+    updateNavNotifications();
+    if (!$('leagueScreen').hidden) renderLeague();
+}
+
+/** Ouvre le coffre de la semaine depuis la carte du résultat. */
+function claimLeagueRecap() {
+    const data = state.data;
+    const r = data.leagueRecap;
+    if (!r || r.done) return;
+    r.done = true;
+    if (r.won) {
+        data.coins += r.coins;
+        const place = r.rank === 1 ? '1er' : `${r.rank}e`;
         const drop = avChestDrop();
-        openCardBoxes([{ size: drop ? Math.max(1, size - 1) : size, rare: size >= 3 }],
-            `${['🥇', '🥈', '🥉'][rank - 1] || '🏅'} ${place} de la semaine : ${plural(beaten, 'ami battu', 'amis battus')}${coins ? ` · +${coins} 🪙` : ''} !`, drop);
+        openCardBoxes([{ size: drop ? Math.max(1, r.size - 1) : r.size, rare: r.size >= 3 }],
+            `${['🥇', '🥈', '🥉'][r.rank - 1] || '🏅'} ${place} de la semaine : ${plural(r.beaten, 'ami battu', 'amis battus')}${r.coins ? ` · +${r.coins} 🪙` : ''} !`, drop);
         checkBadges();
-        return;
     }
     saveData();
+    renderHeader();
+    updateNavNotifications();
+    renderLeague();
+}
+const leagueRecapPending = () => !!(state.data.leagueRecap && !state.data.leagueRecap.done);
+
+/** Carte « Résultat de la semaine dernière » : podium final, ma place, ma récompense (ou pourquoi il n'y en a pas). */
+function renderLeagueRecap(box) {
+    const r = state.data.leagueRecap;
+    const place = n => (n === 1 ? '1er' : `${n}ᵉ`);
+    const podium = el('div', 'recap-podium');
+    r.top.forEach((row, i) => {
+        const col = el('div', `recap-col${row.me ? ' is-me' : ''}`);
+        const medal = el('span', 'recap-medal');
+        medal.textContent = ['🥇', '🥈', '🥉'][i];
+        const name = el('b');
+        name.textContent = row.me ? 'Toi' : row.pseudo;
+        const xp = el('small');
+        xp.textContent = `${row.xp} XP`;
+        col.append(medal, avatarEl(row.pseudo, row.look, 'is-small'), name, xp);
+        podium.append(col);
+    });
+    const me = el('p', 'recap-me');
+    me.textContent = `Tu as fini ${place(r.rank)} sur ${r.friends + 1} avec ${r.xp} XP${r.beaten ? ` · ${plural(r.beaten, 'ami battu', 'amis battus')}` : ''}.`;
+    box.append(podium, me);
+    const btn = el('button', `btn ${r.won ? 'btn-green' : 'btn-ghost'} btn-full`);
+    btn.type = 'button';
+    if (r.won) {
+        btn.textContent = `🎁 Ouvrir mon coffre · ${plural(r.size, 'carte', 'cartes')}${r.coins ? ` + ${r.coins} 🪙` : ''}`;
+    } else {
+        const why = el('p', 'recap-why');
+        why.textContent = r.why === 'xp'
+            ? `Pas de coffre cette fois : il fallait faire au moins ${PODIUM_MIN_XP} XP dans la semaine.`
+            : 'Pas de coffre cette fois : il fallait battre au moins un ami.';
+        box.append(why);
+        btn.textContent = 'J’ai vu';
+    }
+    btn.addEventListener('click', claimLeagueRecap);
+    box.append(btn);
 }
 
 const escapeLike = text => text.replace(/[\\%_]/g, '\\$&');
@@ -7477,7 +7537,8 @@ function renderLeague() {
         return;
     }
 
-    // 3) Classement de la semaine : podium (3 premiers) puis liste
+    // 3) Résultat de la semaine dernière (jusqu'à ce qu'on l'ait vu), puis le classement de la semaine
+    if (leagueRecapPending()) renderLeagueRecap(card('league-recap', '📊 Résultat de la semaine dernière'));
     const week = weekStart();
     const rows = [
         { pseudo: league.pseudo, look: state.data.avatar, xp: weekXp(week), streak: currentStreak(), me: true },
@@ -7488,7 +7549,8 @@ function renderLeague() {
     const h = el('h2');
     h.textContent = '🏆 Ligue des amis';
     const left = el('span', 'league-left');
-    left.textContent = `⏳ ${plural(weekDaysLeft(), 'jour', 'jours')}`;
+    left.id = 'leagueLeft';
+    left.textContent = `⏳ ${vitrineTimeLeft()}`;   // « 3 j 14 h », puis « 14 h 32 min » le dernier jour
     left.title = 'XP gagnés depuis lundi · temps restant avant la fin de la semaine';
     head.append(h, left);
     rank.append(head);
@@ -7541,7 +7603,7 @@ function renderLeague() {
         : myIndex === 0 ? (rows[0].xp > 0 ? '🏆 Tu es en tête : garde ta place jusqu’à lundi !' : 'Personne n’a encore joué cette semaine : à toi de commencer !')
         : `Tu es ${myIndex + 1}e · encore ${rows[myIndex - 1].xp - rows[myIndex].xp + 1} XP pour dépasser ${rows[myIndex - 1].pseudo} !`;
     para(rank, tip, 'league-tip');
-    para(rank, `🎁 Lundi : un coffre si tu bats au moins un ami.${avChestLine()}`, 'muted league-sub');
+    para(rank, `🎁 Lundi : un coffre si tu bats au moins un ami et fais au moins ${PODIUM_MIN_XP} XP.${avChestLine()}`, 'muted league-sub');
 
     renderDuelsCard(grid);
 
@@ -8741,6 +8803,7 @@ function init() {
     applyEventLook();
     if (currentEvent()) setInterval(placePumpkins, 700);   // citrouilles cachées de l'événement
     initBac();
+    setInterval(() => { const l = document.getElementById('leagueLeft'); if (l && !$('leagueScreen').hidden) l.textContent = `⏳ ${vitrineTimeLeft()}`; }, 30000);
     avCheck();                                              // objets d'avatar déjà gagnés (sans annonce)
     updateNavNotifications();
     setTimeout(maybeShowPatchNotes, 1500);                  // « Quoi de neuf ? » après une mise à jour
