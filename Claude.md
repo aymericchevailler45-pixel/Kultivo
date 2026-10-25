@@ -83,6 +83,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `nudgeOrderCard`, `nudgePair` : on lit ce qu'il fait, puis on touche la carte / la case de son choix ; 1 par frise ou
   grille ; pas d'XP pour elle ; stock 20 🪙 à la boutique (`SHOP` id `nudge`), 35 🪙 sur le moment) ; indices des questions
   plus chers sur le moment (champ `spot` : 25 / 45 / 75 🪙) qu'en stock (15 / 30 / 50 🪙), avec une phrase qui le dit.
+- FAIT le 25/10 : indice « pendu » = on tape DANS la grille (seulement les lettres qui manquent : `hintCells`,
+  `hintComposed`, `typedAnswer`, `gridTyping`, zone de réponse invisible `.is-grid-typing` pour garder le clavier, lien
+  « ⌨️ Écrire librement » / « 🔤 Remplir la grille ») ; frise : rester appuyé sur une carte placée puis glisser = échange de
+  place (`startOrderDrag`, 220 ms, la carte du coup de pouce ne bouge pas).
 - IDÉE pour la vraie appli Android (Capacitor) : icône qui change selon les fêtes, comme Duolingo (impossible proprement en
   appli web : Chrome met l'icône à jour seul, avec retard et un message de confirmation).
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :

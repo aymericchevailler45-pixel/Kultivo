@@ -2779,8 +2779,38 @@ function hintShown(len, level) {
     return Math.min(len - 1, Math.max(2, Math.ceil(len / 3))) || 1;
 }
 
+/* Saisie dans la grille (2026-10-25, demande de l'utilisateur) : avec un indice, on tape seulement les lettres qui
+   manquent (« C _ _ _ _ » + HIEN = CHIEN). La zone de réponse reste là, invisible, pour garder le clavier ; un lien
+   « ⌨️ Écrire librement » permet de revenir à la saisie normale (autre réponse acceptée, par exemple). */
+const isLetter = ch => /[\p{L}\p{N}]/u.test(ch);
+/** Les morceaux de la réponse principale, avec pour chaque lettre : montrée par l'indice ou à taper. */
+function hintCells(q, level) {
+    const answer = q.a[0].trim();
+    const parts = answer.match(/[\p{L}\p{N}]+|[^\p{L}\p{N}]+/gu) || [];
+    const words = parts.filter(t => isLetter(t));
+    return parts.map(part => {
+        if (!isLetter(part)) return { sep: part };
+        const small = words.length > 1 && HINT_SMALL_WORDS.has(part.toLowerCase());
+        const letters = [...part];
+        const shown = small ? letters.length : hintShown(letters.length, level);
+        return { small, letters, shown };
+    });
+}
+const hintBlankCount = (q, level) => hintCells(q, level).reduce((n, c) => n + (c.letters ? c.letters.length - c.shown : 0), 0);
+/** La réponse complète : lettres montrées + lettres tapées (dans l'ordre des cases vides). */
+function hintComposed(q, level, typed) {
+    const t = [...typed];
+    let k = 0;
+    return hintCells(q, level).map(c => c.sep !== undefined ? c.sep
+        : c.letters.map((ch, i) => (i < c.shown ? ch : (t[k++] || ''))).join('')).join('');
+}
+const hintLevelNow = () => Math.max(0, ...[...(state.hintUsed || [])].map(id => HINT_LEVEL[id] || 0));
+const gridTyping = () => state.phase !== undefined && hintLevelNow() > 0 && state.gridFree !== true && !!state.current;
+/** Ce que le joueur répond : la grille remplie, ou ce qu'il a écrit. */
+const typedAnswer = () => (gridTyping() ? hintComposed(state.current.q, hintLevelNow(), $('userInput').value) : $('userInput').value);
+
 /** Grille de la réponse principale : mots (lettres et chiffres) et séparateurs (espaces, apostrophes, tirets). */
-function hintGrid(q, level) {
+function hintGrid(q, level, typed = null) {
     const answer = q.a[0].trim();
     const parts = answer.match(/[\p{L}\p{N}]+|[^\p{L}\p{N}]+/gu) || [];
     const words = parts.filter(t => /[\p{L}\p{N}]/u.test(t));
@@ -2803,6 +2833,11 @@ function hintGrid(q, level) {
         letters.forEach((ch, i) => {
             const cell = el('span', small ? 'hint-cell is-small' : i < shown ? 'hint-cell is-shown' : 'hint-cell');
             cell.textContent = i < shown ? ch.toUpperCase() : '';
+            if (typed && i >= shown) {   // case à remplir : la lettre tapée, et un repère sur la prochaine case vide
+                const t = typed.list[typed.k++];
+                if (t) { cell.textContent = t.toUpperCase(); cell.classList.add('is-typed'); }
+                else if (!typed.cursor) { cell.classList.add('is-next'); typed.cursor = true; }
+            }
             word.append(cell);
         });
     });
@@ -2820,8 +2855,34 @@ function renderHintGrid() {
     const label = el('span', 'hint-label');
     const item = SHOP.find(i => HINT_LEVEL[i.id] === level);
     label.textContent = `${item.icon} ${item.short}`;
-    li.append(label, hintGrid(state.current.q, level));
+    const input = $('userInput');
+    const typing = gridTyping() && state.phase === 'answering';
+    const letters = typing ? input.value : state.gridFinal;   // après « Vérifier » : les lettres qui avaient été tapées
+    const typed = gridTyping() && letters !== undefined && letters !== null ? { list: [...letters], k: 0, cursor: !typing } : null;
+    const grid = hintGrid(state.current.q, level, typed);
+    li.append(label, grid);
+    if (state.phase === 'answering') {
+        grid.classList.toggle('is-typing', typing);
+        grid.addEventListener('click', () => input.focus());   // toucher la grille ouvre le clavier
+        const sw = el('button', 'link-btn hint-switch');
+        sw.type = 'button';
+        sw.textContent = state.gridFree ? '🔤 Remplir la grille' : '⌨️ Écrire librement';
+        sw.addEventListener('click', () => {
+            state.gridFree = !state.gridFree;
+            input.value = '';
+            applyGridTyping();
+            input.focus();
+        });
+        li.append(sw);
+    }
     list.append(li);
+    applyGridTyping(false);
+}
+/** Zone de réponse cachée (mais toujours là pour le clavier) quand on tape dans la grille. */
+function applyGridTyping(redraw = true) {
+    const on = gridTyping() && state.phase === 'answering';
+    $('userInput').classList.toggle('is-grid-typing', on);
+    if (redraw) renderHintGrid();
 }
 
 function renderHintOptions() {
@@ -2872,6 +2933,7 @@ function useHint(id) {
     saveData();
     renderHeader();
 
+    if (!state.gridFree) $('userInput').value = '';
     renderHintGrid();
     $('hintPanel').hidden = true;
     $('userInput').focus();
@@ -3976,6 +4038,9 @@ function showCard() {
 
     // Indices : on repart de zéro à chaque carte (et pas d'indice en défi du jour ni en sprint)
     state.hintUsed = new Set();
+    state.gridFree = false;
+    state.gridFinal = null;
+    $('userInput').classList.remove('is-grid-typing');
     $('hintList').replaceChildren();
     $('hintList').hidden = true;
     $('hintPanel').hidden = true;
@@ -4013,9 +4078,10 @@ function verify(skipped = false) {
 
     let verdict = 'wrong';
     if (!skipped) {
-        if (!input.value.trim()) { shake(input); return; }
-        verdict = judge(input.value, state.current.q.a, state.current.q.q);
-        state.lastTyped = input.value.trim();
+        const answer = typedAnswer();
+        if (!input.value.trim()) { shake(gridTyping() ? $('hintList') : input); return; }
+        verdict = judge(answer, state.current.q.a, state.current.q.q);
+        state.lastTyped = answer.trim();
     }
 
     state.phase = 'feedback';
@@ -4025,6 +4091,7 @@ function verify(skipped = false) {
     const ok = verdict !== 'wrong';
     input.readOnly = true;
     input.classList.add(ok ? 'is-ok' : 'is-wrong');
+    if (gridTyping()) { state.gridFinal = input.value; input.classList.remove('is-grid-typing'); input.value = state.lastTyped; renderHintGrid(); }
     $('answerActions').hidden = true;
     $('hintPanel').hidden = true;
     showFeedback(verdict, skipped);
@@ -4492,7 +4559,7 @@ function showOrderRound() {
     $('orderTag').textContent = f.theme;
     $('orderStep').textContent = `Frise ${state.orderIndex + 1}/${state.orderRounds.length}`;
     $('orderTitle').textContent = `${f.title} : ${f.prompt.charAt(0).toLowerCase()}${f.prompt.slice(1)}`;
-    $('orderHelp').textContent = 'Touche les cartes dans l’ordre. Touche une carte placée pour la retirer.';
+    $('orderHelp').textContent = 'Touche les cartes dans l’ordre. Reste appuyé sur une carte placée pour la déplacer, touche-la pour la retirer.';
     $('orderTopLabel').textContent = `⬆ ${f.ends[0]}`;
     $('orderBottomLabel').textContent = `⬇ ${f.ends[1]}`;
     state.nudgePick = null;
@@ -4519,7 +4586,8 @@ function renderOrder() {
                 const card = el('button', `order-card is-placed${round.nudged && round.nudged.slot === i ? ' is-nudged' : ''}`);
                 card.type = 'button';
                 card.textContent = round.items[idx].label;
-                card.addEventListener('click', () => unplaceOrderCard(i));
+                card.addEventListener('click', () => { if (Date.now() - orderDragEnd > 350) unplaceOrderCard(i); });
+                card.addEventListener('pointerdown', e => startOrderDrag(e, i, card));
                 li.append(card);
             } else {
                 li.append(el('span', 'order-empty'));
@@ -4616,7 +4684,7 @@ async function askNudge(kind) {
 }
 function refreshNudgeView(kind) {
     if (kind === 'order') {
-        $('orderHelp').textContent = state.nudgePick === 'order' ? '👆 Touche la carte à placer.' : 'Touche les cartes dans l’ordre. Touche une carte placée pour la retirer.';
+        $('orderHelp').textContent = state.nudgePick === 'order' ? '👆 Touche la carte à placer.' : 'Touche les cartes dans l’ordre. Reste appuyé sur une carte placée pour la déplacer, touche-la pour la retirer.';
         $('orderView').classList.toggle('is-nudging', state.nudgePick === 'order');
     } else {
         $('pairsHelp').textContent = state.nudgePick === 'pairs' ? '👆 Touche la case dont tu veux voir la paire.' : 'Touche une case à gauche, puis la case qui va avec à droite.';
@@ -4638,6 +4706,57 @@ function nudgeOrderCard(idx) {
     playSound('pair');
     refreshNudgeView('order');
     renderOrder();
+}
+
+/* Frise (2026-10-25) : rester appuyé sur une carte placée, puis la glisser plus haut ou plus bas : elle échange sa place
+   avec la carte (ou la case vide) où on la lâche. Un simple tap la retire, comme avant. */
+let orderDragEnd = 0;
+function startOrderDrag(e, slot, card) {
+    if (state.phase !== 'order' || state.nudgePick === 'order') return;
+    const round = state.orderRounds[state.orderIndex];
+    if (round.nudged && round.nudged.slot === slot) return;   // la carte du coup de pouce ne bouge pas
+    const startY = e.clientY;
+    let dragging = false;
+    let target = null;
+    const timer = setTimeout(() => {
+        dragging = true;
+        card.classList.add('is-dragging');
+        try { card.setPointerCapture(e.pointerId); } catch (err) { /* tant pis */ }
+        if (navigator.vibrate) navigator.vibrate(15);
+    }, 220);
+    const move = ev => {
+        const dy = ev.clientY - startY;
+        if (!dragging) { if (Math.abs(dy) > 10) stop(); return; }   // on fait défiler : pas de glisser
+        ev.preventDefault();
+        card.style.transform = `translateY(${dy}px)`;
+        const under = document.elementFromPoint(ev.clientX, ev.clientY);
+        const li = under && under.closest('#orderSlots .order-slot');
+        const to = li ? [...$('orderSlots').children].indexOf(li) : -1;
+        $('orderSlots').querySelectorAll('.order-slot').forEach((x, k) => x.classList.toggle('is-drop', k === to && to !== slot));
+        target = to;
+    };
+    const stop = () => {
+        clearTimeout(timer);
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', up);
+        window.removeEventListener('pointercancel', stop);
+    };
+    const up = () => {
+        stop();
+        if (!dragging) return;
+        orderDragEnd = Date.now();
+        const locked = round.nudged ? round.nudged.slot : -1;
+        if (target >= 0 && target !== slot && target !== locked) {
+            const a = round.placed[slot];
+            round.placed[slot] = round.placed[target];
+            round.placed[target] = a;
+            playSound('pair');
+        }
+        renderOrder();
+    };
+    window.addEventListener('pointermove', move, { passive: false });
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', stop);
 }
 
 /** La carte touchée va dans le premier emplacement libre. */
@@ -8221,6 +8340,12 @@ function bindEvents() {
     $('userInput').addEventListener('input', () => {   // texte collé avec des retours à la ligne
         const input = $('userInput');
         if (/[\r\n]/.test(input.value)) input.value = input.value.replace(/[\r\n]+/g, ' ');
+        if (gridTyping() && state.phase === 'answering') {   // saisie dans la grille : lettres seulement, une par case vide
+            const max = hintBlankCount(state.current.q, hintLevelNow());
+            const clean = [...input.value].filter(isLetter).slice(0, max).join('');
+            if (clean !== input.value) input.value = clean;
+            renderHintGrid();
+        }
     });
 
     document.addEventListener('keydown', e => {

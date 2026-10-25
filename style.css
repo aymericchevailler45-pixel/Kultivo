@@ -3155,3 +3155,17 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .order-actions { display: flex; gap: 10px; align-items: stretch; }
 .order-actions #orderBtn { flex: 1; }
 .order-actions .nudge-btn { flex: none; align-self: stretch; padding: 0 16px; font-size: 1.3rem; }
+
+/* Indice « pendu » : on tape dans la grille (la zone de réponse reste là pour le clavier, mais invisible) */
+.answer-input.is-grid-typing { position: absolute; left: 0; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+.hint-grid.is-typing { cursor: text; }
+.hint-cell.is-typed { color: var(--blue); }
+.hint-cell.is-next { border-bottom-color: var(--blue); animation: hintCaret 1s steps(2) infinite; }
+@keyframes hintCaret { 50% { border-bottom-color: transparent; } }
+.hint-switch { align-self: flex-start; font-size: 0.8rem; }
+@media (prefers-reduced-motion: reduce) { .hint-cell.is-next { animation: none; } }
+/* Frise : carte qu'on fait glisser, et la place où elle va */
+.order-slots .order-card.is-placed { touch-action: none; }
+.order-card.is-dragging { position: relative; z-index: 5; pointer-events: none; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); transition: none; }
+.order-slot.is-drop .order-card, .order-slot.is-drop .order-empty { outline: 3px dashed var(--pink, #ec4899); outline-offset: 2px; }
+.link-btn.hint-switch { margin: 0; padding: 2px 0; }
