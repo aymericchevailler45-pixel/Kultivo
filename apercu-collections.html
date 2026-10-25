@@ -6,7 +6,7 @@
 <title>Aperçu collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=coll3">
+<link rel="stylesheet" href="style.css?v=coll4">
 <!-- Page d'APERÇU (2026-10-25) : les collections de la vitrine, avec les vrais objets du jeu (style.css + cosmetiques.js). -->
 <style>
     body { padding: 16px; }
@@ -35,7 +35,7 @@
 </head>
 <body>
 <div class="wrap" id="wrap"></div>
-<script src="cosmetiques.js?v=coll3"></script>
+<script src="cosmetiques.js?v=coll4"></script>
 <script>
 const AVI = Object.fromEntries(AV_ITEMS.map(it => [it.id, it]));
 const TYPE = { frame: 'Cadre', bg: 'Fond', pic: 'Dessin' };
@@ -64,7 +64,7 @@ function av(look, neutral) {
 const wrap = document.getElementById('wrap');
 const intro = document.createElement('article');
 intro.className = 'card';
-intro.innerHTML = `<h2>🛍️ Les collections de la vitrine</h2><p>Chaque semaine : <b>une collection complète</b> (cadre + fond + dessin qui vont ensemble) + ta carte de la semaine. Une semaine sur trois, une ancienne collection revient. Les collections de fête ne sortent qu’à leur date. À droite de chaque ligne : le look complet. Prix toujours les mêmes : cadre 500, fond 500, dessin 300, toute la collection 1 000.</p>`;
+intro.innerHTML = `<h2>🛍️ Les collections de la vitrine</h2><p>Chaque semaine : <b>une collection complète</b> (cadre + fond + dessin qui vont ensemble) + ta carte de la semaine. Une semaine sur trois, une ancienne collection revient. Les collections de fête ne sortent qu’à leur date. À droite de chaque ligne : le look complet. Prix toujours les mêmes : cadre 600, fond 600, dessin 300, toute la collection 1 200.</p>`;
 wrap.append(intro);
 
 // Programme des 24 premières semaines (même règle que dans le jeu)

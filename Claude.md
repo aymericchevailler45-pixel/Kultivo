@@ -31,7 +31,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      période. Saisons (`VITRINE_SEASONS`, 25/10) : Halloween 26/10, Hiver fin nov., Noël le lundi avant le 25, Nouvel an,
      Nouvel an chinois (Dragon), Saint-Valentin, Printemps (fin mars). 1er lot : 10 collections de toute l'année + 7 de saison
      (il faudra le 2e lot vers février : sinon trop de retours).
-     Prix FIXES (25/10) : cadre 500, fond 500, dessin 300, collection 1 000 (`AV_PRICES`, `COLLECTION_DISCOUNT` 0,77 arrondi à 50).
+     Prix FIXES (25/10) : cadre 600, fond 600, dessin 300, collection 1 200 (`AV_PRICES`, `COLLECTION_DISCOUNT` 0,8 arrondi à 50) ;
+     en haut de la vitrine : le look complet de la collection + bouton « Les 3 · 1 200 🪙 » (`.vitrine-look`).
      Retour = une semaine normale sur 3, la collection vue il y a le plus longtemps (≥ 2 semaines). Aperçu : apercu-collections.html (vrais styles du jeu). Prochains lots :
      ~12 collections tous les ~4 mois, montrées d'abord sur l'aperçu. Objets pas encore rangés dans une collection (réserve) :
      cadres checker, neon-blue, stripes, parchment, zigzag, tartan, music, frost, confetti ; fonds sunset, aurora, jade,

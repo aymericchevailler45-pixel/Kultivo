@@ -2976,22 +2976,40 @@ function renderShopV2() {
     const nextR = VITRINE_CARD_ROT[(w + 1) % 4];
     const foot = el('p', 'vitrine-foot');
     foot.textContent = `${rIcon[now]} Semaine des ${rName[now]} · la prochaine : ${rName[nextR]} ${rIcon[nextR]}`;
-    const sub = el('p', 'vitrine-coll');
-    if (coll) sub.textContent = `${coll.icon} Collection ${coll.name}${plan.back ? ' · elle revient !' : plan.season ? ' · seulement cette semaine' : ''}`;
-    vit.append(head, sub, row);
-    // Toute la collection d'un coup : −20 % sur les pièces qui manquent
-    const missing = plan.items.map(id => AVI[id]).filter(it => it && !d.av.owned[it.id]);
-    if (missing.length >= 2) {
-        const full = missing.reduce((sum, it) => sum + it.price, 0);
-        const price = Math.round((full * COLLECTION_DISCOUNT) / 50) * 50;
-        const all = el('button', 'btn btn-violet btn-full vitrine-all');
-        all.type = 'button';
-        all.textContent = `Toute la collection · ${price} 🪙 au lieu de ${full}`;
-        all.disabled = d.coins < price;
-        all.addEventListener('click', () => buyCollection(missing, price));
-        vit.append(all);
+    // En haut : le look complet (les 3 pièces sur mon initiale) et « Toute la collection » (−20 % sur ce qui manque)
+    const look = el('div', 'vitrine-look');
+    if (coll) {
+        const full = { hue: 0, emoji: null, bg: null, frame: null };
+        coll.items.map(id => AVI[id]).forEach(it => { if (it.type === 'frame') full.frame = it.id; else if (it.type === 'pic') full.emoji = it.emoji; else full.bg = it.id; });
+        const lookAv = el('div', 'vitrine-look-art');
+        lookAv.append(avatarEl(myAvatarName(), full));
+        const txt = el('div', 'vitrine-look-text');
+        const nm = el('b');
+        nm.textContent = `${coll.icon} Collection ${coll.name}`;
+        const note = el('small');
+        note.textContent = plan.back ? 'Elle revient cette semaine !' : plan.season ? 'Seulement cette semaine' : 'Le look complet';
+        txt.append(nm, note);
+        const missing = plan.items.map(id => AVI[id]).filter(it => it && !d.av.owned[it.id]);
+        if (missing.length >= 2) {
+            const total = missing.reduce((sum, it) => sum + it.price, 0);
+            const price = Math.round((total * COLLECTION_DISCOUNT) / 50) * 50;
+            const all = el('button', 'btn btn-violet vitrine-all');
+            all.type = 'button';
+            all.textContent = `Les ${missing.length} · ${price} 🪙`;
+            all.title = `au lieu de ${total} 🪙`;
+            all.disabled = d.coins < price;
+            all.addEventListener('click', () => buyCollection(missing, price));
+            const was = el('small', 'vitrine-was');
+            was.textContent = `au lieu de ${total} 🪙`;
+            txt.append(all, was);
+        } else if (!missing.length) {
+            const ok = el('small', 'vitrine-done');
+            ok.textContent = '✓ Toute la collection est à toi';
+            txt.append(ok);
+        }
+        look.append(lookAv, txt);
     }
-    vit.append(foot);
+    vit.append(head, look, row, foot);
     grid.append(vit);
 
     // 2) Coffre de cartes
