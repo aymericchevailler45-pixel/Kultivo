@@ -78,6 +78,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Les anciens ids de comptes notés plus bas (compte de l'utilisateur bef7f100…, comptes de test) n'existent plus après ça.
 
 ## Fichiers
+- VERSION DES FICHIERS (2026-10-25) : index.html charge `script.js?v=AAAAMMJJx` (tous les .js / .css locaux). À CHAQUE mise en
+  ligne qui touche le code, CHANGER ce numéro partout dans index.html (sinon un téléphone peut garder l'ancien script avec la
+  nouvelle page : bouton qui ne marche pas). Le service worker cherche sa copie hors ligne avec `ignoreSearch`.
 - `index.html` : 4 onglets (Parcours, Défis, Boutique, Profil) + écran de leçon + popups.
   Ordre de chargement OBLIGATOIRE : `questions.js` → `pairs.js` → `order.js` → `levels.js` → `script.js`.
 - `style.css` : mise en page plein écran, décors latéraux, points de notification sur les onglets.

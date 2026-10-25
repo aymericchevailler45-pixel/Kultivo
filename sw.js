@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v21';
+const CACHE = 'kultivo-v22';
 const FILES = [
     './',
     './index.html',
@@ -519,6 +519,6 @@ self.addEventListener('fetch', event => {
                 }
                 return response;
             })
-            .catch(() => caches.match(request).then(found => found || caches.match('./index.html')))
+            .catch(() => caches.match(request, { ignoreSearch: true }).then(found => found || caches.match('./index.html')))
     );
 });
