@@ -8639,6 +8639,7 @@ const PATCH_NOTES = [
     ['🎨', 'Ton avatar', 'Des fonds, des emojis et des cadres à débloquer en jouant. Bouton « ✏️ Modifier » à côté de ton nom.'],
     ['🃏', '30 nouvelles cartes', '12 cartes par thème désormais, 180 en tout.'],
     ['🔤', 'Indices plus pratiques', 'Avec un indice, tape seulement les lettres qui manquent : elles se placent dans la grille.'],
+    ['✍️', 'Correction plus précise', 'Un nouveau système reconnaît mieux les fautes de frappe dans tes réponses.'],
     ['⏳', 'Frises', 'Reste appuyé sur une carte placée pour la déplacer. Et la difficulté monte plus doucement.'],
     ['👆', 'Coup de pouce', 'Dans les frises et les paires : place une carte ou révèle une paire de ton choix.'],
     ['🔁', 'Niveaux déjà réussis', 'Les refaire rapporte moins d’XP. S’ils font partie de tes 20 derniers niveaux, ils comptent pour tes missions.'],
