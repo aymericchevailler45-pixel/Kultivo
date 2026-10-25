@@ -14,7 +14,10 @@ const CHALLENGE_HEARTS = 2;      // cœurs pendant un niveau défi
 const REVIEW_MIN = 3;            // cartes de révision ajoutées à chaque niveau (minimum)
 const REVIEW_MAX = 4;            // maximum : +1 place par tranche de 3 questions ratées (11 questions au plus par niveau)
 const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs »
-const STORAGE_KEY = 'cultureG_v2';
+// Bac à sable (?bac=1, 2026-10-25) : copie de la vraie partie dans une sauvegarde à part, toutes les nouveautés actives,
+// RIEN envoyé en ligne (sauvegarde, classement, duels, statistiques). Pour essayer avant les autres.
+const BAC = (() => { try { return new URLSearchParams(location.search).get('bac') === '1'; } catch (err) { return false; } })();
+const STORAGE_KEY = BAC ? 'kultivo_bac' : 'cultureG_v2';
 // Remise à zéro de TOUS les joueurs (2026-10-20, demande de l'utilisateur avant les tests depuis zéro) : une sauvegarde
 // (de l'appareil ou en ligne) sans cette marque est effacée / ignorée. Changer la date = nouvelle remise à zéro générale.
 const RESET_EPOCH = '2026-10-20';
@@ -49,7 +52,7 @@ const XP_SPRINT_CORRECT = 2;     // avant: 5  | par bonne réponse en sprint
 const PATCH_DAY = '2026-10-26';
 // Démo : ?demo=lundi = comme si on était le 26/10 (mise à jour + Halloween), pour voir avant
 const demoLundi = (() => { try { return new URLSearchParams(location.search).get('demo') === 'lundi'; } catch (err) { return false; } })();
-const patched = () => demoLundi || todayKey() >= PATCH_DAY;
+const patched = () => demoLundi || BAC || todayKey() >= PATCH_DAY;
 const COIN_RATE = 5;              // avant: 10 | 1 pièce pour 5 XP gagnés (le reste est gardé pour la suite)
 const COIN_BADGE = 25;           // avant: 5  | bonus : nouveau badge
 const coinRate = () => (patched() ? 8 : COIN_RATE);    // 26/10 : 1 pièce pour 8 XP (on avait trop de pièces)
@@ -440,6 +443,10 @@ function defaultData() {
         avatarExtra: [],                 // dessins d'avatar gagnés pendant les événements (gardés pour toujours)
         avatarNew: false,                // un dessin vient d'être gagné : pastille sur l'avatar du Profil
         patchSeen: null,                 // date de la dernière mise à jour dont « Quoi de neuf ? » a été vu
+        av: { owned: {}, opened: {}, known: {}, grant: {}, migrated: false },   // objets d'avatar (26/10) : achetés, déjà « ouverts », déjà connus, offerts
+        vitrine: null,                   // carte de la semaine : { week, card, rarity, shine, bought }
+        vitrineSeen: null,               // lundi de la dernière vitrine regardée (pastille de la Boutique)
+        playerSeed: null,                // tirage propre au joueur (carte de la semaine)
         duelsSeen: {},                   // duels dont le résultat a été vu (pièces données une seule fois)
         duelAnswers: {},                 // duels : graine -> mes réponses tapées (pour les revoir)
         duelsViewed: {},                 // résultats de duels déjà regardés (sinon pastille)
@@ -457,6 +464,9 @@ function normalizeData(data) {
     backfillActiveDays(data);
     if (!Array.isArray(data.reports)) data.reports = [];
     if (!Array.isArray(data.avatarExtra)) data.avatarExtra = [];
+    data.av = { owned: {}, opened: {}, known: {}, grant: {}, migrated: false, ...(data.av || {}) };
+    for (const k of ['owned', 'opened', 'known', 'grant']) data.av[k] = data.av[k] || {};
+    if (typeof data.playerSeed !== 'string') data.playerSeed = Math.random().toString(36).slice(2, 10);
     data.avatarNew = data.avatarNew === true;
     // Gouttes : les joueurs d'avant commencent avec le plein
     if (typeof data.drops !== 'number' || !(data.drops >= 0)) data.drops = DROPS_MAX;
@@ -517,7 +527,9 @@ function wipeBeforeReset() {
 }
 
 function loadData() {
-    wipeBeforeReset();
+    if (BAC) {   // 1re ouverture du bac à sable : on copie la vraie partie
+        try { if (!localStorage.getItem(STORAGE_KEY) && localStorage.getItem('cultureG_v2')) localStorage.setItem(STORAGE_KEY, localStorage.getItem('cultureG_v2')); } catch (err) { /* tant pis */ }
+    } else wipeBeforeReset();
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         const data = raw ? { ...defaultData(), ...JSON.parse(raw) } : migrateV1();
@@ -1061,7 +1073,7 @@ function currentEvent() {
     let demo = null;
     try { demo = new URLSearchParams(location.search).get('demo'); } catch (err) { /* sans adresse */ }
     const today = todayKey();
-    return EVENTS.find(e => demo === e.bank || demo === 'lundi' || (today >= e.start && today <= e.end)) || null;
+    return EVENTS.find(e => demo === e.bank || demo === 'lundi' || BAC || (today >= e.start && today <= e.end)) || null;
 }
 const eventQuestions = ev => (window.EVENT_BANKS && window.EVENT_BANKS[ev.bank]) || [];
 function eventData(ev) {
@@ -1508,11 +1520,12 @@ function openMissionsModal() {
             $('missionsModal').hidden = true;
             renderMissionsRow();
             updateNavNotifications();
-            openCardBoxes([{ size: 3, rare: true }], '🗓️ Coffre des missions');
+            const drop = avChestDrop();
+            openCardBoxes([{ size: drop ? 2 : 3, rare: true }], '🗓️ Coffre des missions', drop);
         });
         chest.append(btn);
     } else {
-        chest.textContent = '🎁 Les 3 missions réussies : un coffre de 3 cartes en plus.';
+        chest.textContent = `🎁 Les 3 missions réussies : un coffre de 3 cartes en plus.${avChestPool().length ? ` ${AV_CHEST_TEXT}.` : ''}`;
     }
     body.append(chest);
     const days = 7 - ((new Date().getDay() + 6) % 7);   // jours restants, lundi compris
@@ -1671,8 +1684,10 @@ function updateNavNotifications() {
     const cardsTab = document.querySelector('.profile-tab[data-tab="cards"]');
     const shinies = pendingShinyCount();   // cartes à 3/3 à rendre brillantes
     const setNotif = (target, n) => n > 0 ? target.setAttribute('data-notif', n) : target.removeAttribute('data-notif');
-    setNotif(profileBtn, unclaimedBadges + shinies + (data.avatarNew ? 1 : 0));
-    setNotif($('avatarBtn'), data.avatarNew ? 1 : 0);
+    const avNew = avOn() ? avReadyCount : (data.avatarNew ? 1 : 0);
+    setNotif(profileBtn, unclaimedBadges + shinies + avNew);
+    setNotif($('avatarBtn'), avNew);
+    setNotif(document.querySelector('.nav-btn[data-screen="shop"]'), avOn() && data.vitrineSeen !== weekStart() ? 1 : 0);
     setNotif(badgesTab, unclaimedBadges);
     setNotif(cardsTab, shinies);
     
@@ -2035,8 +2050,14 @@ function openChests(levels) {
 
 /** Tire les cartes de chaque coffre ({ size, rare : au moins une rare ou mieux }), les ajoute à la collection
     (doublon = pièces), enregistre, puis ouvre la fenêtre du coffre. */
-function openCardBoxes(boxes, title) {
+function openCardBoxes(boxes, title, avItem = null) {
     const data = state.data;
+    if (avItem) {   // objet d'avatar trouvé dans le coffre : à moi tout de suite, montré à la fermeture du coffre
+        data.av.owned[avItem.id] = 1;
+        data.av.opened[avItem.id] = 1;
+        data.av.known[avItem.id] = 1;
+        state.chestAvItem = avItem;
+    }
     const results = [];
     for (const { size = 0, rare, theme = null, fixed = [] } of boxes) {
         const picked = [...fixed];
@@ -2065,7 +2086,7 @@ function openCardBoxes(boxes, title) {
     gift.setAttribute('aria-label', 'Ouvrir le coffre');
     gift.addEventListener('click', chestNext);
     stage.append(gift);
-    $('chestNote').textContent = `${plural(results.length, 'carte', 'cartes')} à l’intérieur. Touche le coffre !`;
+    $('chestNote').textContent = `${plural(results.length, 'carte', 'cartes')}${avItem ? ' et une surprise ✨' : ''} à l’intérieur. Touche le coffre !`;
     $('chestBtn').textContent = 'Ouvrir';
     $('chestModal').hidden = false;
 }
@@ -2227,6 +2248,7 @@ function closeChest() {
     state.chest = null;
     $('chestModal').hidden = true;
     if (chestBack) { const back = chestBack; chestBack = null; back(); return; }
+    if (wasChest && state.chestAvItem) { const it = state.chestAvItem; state.chestAvItem = null; setTimeout(() => avFound(it), 250); }
     if (wasChest) {
         setTimeout(checkThemeComplete, 300);   // un thème vient d'être complété ?
         renderHeader();
@@ -2589,7 +2611,8 @@ function renderProfile() {
         ['🎯 Jours d’objectif atteint', String(Object.keys(data.goalDays).length)],
         ['🏆 Semaines 1er de la ligue', String(leagueWins())],
         ['⚔️ Duels gagnés', String(data.totals.duelsWon || 0)],
-        ['🎖️ Médailles d’entraînement', trainMedalsText()]
+        ['🎖️ Médailles d’entraînement', trainMedalsText()],
+        ...(avOn() ? [['🎨 Objets d’avatar', (c => `${c.have} / ${c.total}`)(avCount())]] : [])
     ];
     const list = $('recordsList');
     list.replaceChildren();
@@ -2806,7 +2829,172 @@ function useHint(id) {
     $('userInput').focus();
 }
 
+/** Objet trouvé dans un coffre : grande annonce, puis on peut le mettre tout de suite. */
+async function avFound(it) {
+    launchConfetti();
+    playSound('win');
+    const wear = await askConfirm({ title: '🎉 Objet trouvé !', text: `Dans le coffre : ${AV_TYPE_NAME[it.type].toLowerCase()} « ${it.name} » ! Il est à toi pour toujours.`,
+        yes: 'Le mettre', no: 'Plus tard', art: avPreview(it) });
+    if (wear) { avWear(it); saveData(); pushAvatar(); renderProfile(); }
+}
+
+async function buyAvItem(it) {
+    const d = state.data;
+    if (d.av.owned[it.id]) return;
+    if (d.coins < it.price) { showToast(`Il te manque ${it.price - d.coins} 🪙.`); return; }
+    const ok = await askConfirm({ title: `Acheter « ${it.name} » ?`, art: avPreview(it),
+        text: `${AV_TYPE_NAME[it.type]} · ${it.price} 🪙 (il t’en restera ${d.coins - it.price}). Il ira tout de suite sur ton avatar.`,
+        yes: `Acheter · ${it.price} 🪙` });
+    if (!ok || d.coins < it.price) return;
+    d.coins -= it.price;
+    d.av.owned[it.id] = 1;
+    d.av.opened[it.id] = 1;
+    d.av.known[it.id] = 1;
+    d.totals.purchases++;
+    avWear(it);
+    saveData();
+    pushAvatar();
+    renderHeader();
+    renderShop();
+    playSound('win');
+    showToast('✓ C’est à toi ! Change-le quand tu veux dans « Mon avatar ».');
+    checkBadges();
+}
+async function buyVitrineCard() {
+    const d = state.data;
+    const v = vitrineCard();
+    const card = CARDS.find(c => c.id === v.card);
+    const price = VITRINE_CARD_PRICE[v.rarity];
+    if (!card || v.bought) return;
+    if (d.coins < price) { showToast(`Il te manque ${price - d.coins} 🪙.`); return; }
+    const ok = await askConfirm({ title: `Acheter « ${card.name} » ?`, art: cardFace(card, false, false),
+        text: `Carte ${CARD_RARITIES[card.rarity].name.toLowerCase()} · ${price} 🪙 (il t’en restera ${d.coins - price}).`, yes: `Acheter · ${price} 🪙` });
+    if (!ok || d.coins < price) return;
+    d.coins -= price;
+    v.bought = true;
+    d.totals.purchases++;
+    openCardBoxes([{ fixed: [card] }], '🃏 Carte de la semaine');
+    renderHeader();
+    renderShop();
+    checkBadges();
+}
+
+function renderShopV2() {
+    const grid = $('shopGrid');
+    grid.replaceChildren();
+    grid.classList.add('is-v2');
+    const d = state.data;
+    if (d.vitrineSeen !== weekStart()) { d.vitrineSeen = weekStart(); saveData(); updateNavNotifications(); }
+    const w = vitrineWeek();
+    const plan = vitrinePlan(w);
+    // 1) Vitrine de la semaine
+    const vit = el('article', 'card vitrine');
+    const head = el('div', 'vitrine-head');
+    const h = el('h2');
+    h.textContent = '🛍️ Vitrine de la semaine';
+    const left = el('span');
+    left.textContent = `⏳ ${vitrineTimeLeft()}`;
+    head.append(h, left);
+    const row = el('div', 'vitrine-row');
+    const cell = (pill, pillCls, artNode, name, type, btnText, onBuy, disabled, owned, cellCls = '') => {
+        const c = el('div', `vit-cell${cellCls ? ' ' + cellCls : ''}`);
+        const p = el('span', `vit-pill${pillCls ? ' ' + pillCls : ''}`);
+        p.textContent = pill;
+        const a = el('div', 'vit-art');
+        a.append(artNode);
+        const b = el('b');
+        b.textContent = name;
+        const t = el('span', 'vit-type');
+        t.textContent = type;
+        const btn = el('button', `btn ${owned ? 'btn-ghost' : 'btn-green'}`);
+        btn.type = 'button';
+        btn.textContent = btnText;
+        btn.disabled = disabled;
+        if (onBuy) btn.addEventListener('click', onBuy);
+        c.append(p, a, b, t, btn);
+        return c;
+    };
+    const itemCell = (it, pill, pillCls, cellCls) => {
+        const owned = !!d.av.owned[it.id];
+        return cell(pill, pillCls, avPreview(it), it.name, AV_TYPE_NAME[it.type], owned ? '✓ À toi' : `${it.price} 🪙`,
+            owned ? null : () => buyAvItem(it), owned || d.coins < it.price, owned, cellCls);
+    };
+    plan.news.forEach(id => row.append(itemCell(AVI[id], 'Nouveau', '', '')));
+    if (plan.back) row.append(plan.season ? itemCell(AVI[plan.back], VITRINE_SEASON_LABEL[plan.season], 'is-event', 'is-event')
+        : itemCell(AVI[plan.back], 'Revient', 'is-back', ''));
+    const v = vitrineCard();
+    const card = CARDS.find(c => c.id === v.card);
+    if (card) {
+        const price = VITRINE_CARD_PRICE[v.rarity];
+        row.append(cell('Ta carte', 'is-card', cardFace(card, false, false), card.name,
+            `Carte ${CARD_RARITIES[card.rarity].name.toLowerCase()}${v.shine ? ' · à faire briller' : ''}`,
+            v.bought ? '✓ À toi' : `${price} 🪙`, v.bought ? null : buyVitrineCard, v.bought || d.coins < price, v.bought));
+    }
+    const rName = { common: 'communes', rare: 'rares', epic: 'épiques', legendary: 'légendaires' };
+    const rIcon = { common: '⚪', rare: '🔵', epic: '💜', legendary: '🟡' };
+    const now = VITRINE_CARD_ROT[w % 4];
+    const nextR = VITRINE_CARD_ROT[(w + 1) % 4];
+    const foot = el('p', 'vitrine-foot');
+    foot.textContent = `${rIcon[now]} Semaine des ${rName[now]} · la prochaine : ${rName[nextR]} ${rIcon[nextR]}`;
+    vit.append(head, row, foot);
+    grid.append(vit);
+
+    // 2) Coffre de cartes
+    const owned = CARDS.filter(c => d.cards[c.id]).length;
+    const chestCard = el('article', 'card shop-lines');
+    const line = (icon, title, sub, buttons) => {
+        const l = el('div', 'shop-line');
+        const ic = el('span', 'sl-icon');
+        ic.textContent = icon;
+        const tx = el('span', 'sl-text');
+        const b = el('b');
+        b.textContent = title;
+        const sm = el('small');
+        sm.textContent = sub;
+        tx.append(b, sm);
+        const bt = el('span', 'sl-btns');
+        buttons.forEach(x => bt.append(x));
+        l.append(ic, tx, bt);
+        return l;
+    };
+    const mkBtn = (text, cls, disabled, onClick) => {
+        const b = el('button', `btn ${cls}`);
+        b.type = 'button';
+        b.textContent = text;
+        b.disabled = disabled;
+        b.addEventListener('click', onClick);
+        return b;
+    };
+    chestCard.append(line('🎁', 'Coffre de cartes', `${SHOP_CHEST.size} cartes, dont au moins une rare · collection ${owned}/${CARDS.length}`,
+        [mkBtn(`${SHOP_CHEST.price} 🪙`, 'btn-green', d.coins < SHOP_CHEST.price, () => {
+            if (state.data.coins < SHOP_CHEST.price) return;
+            state.data.coins -= SHOP_CHEST.price;
+            openCardBoxes([{ size: SHOP_CHEST.size, rare: true }], '🎁 Coffre de cartes');
+            renderHeader();
+            renderShop();
+        })]));
+    grid.append(chestCard);
+
+    // 3) Objets utiles
+    syncDrops();
+    const tools = el('article', 'card shop-lines');
+    const th = el('h2');
+    th.textContent = '🧰 Objets utiles';
+    tools.append(th);
+    SHOP.forEach(item => {
+        const have = d.inv[item.id] || 0;
+        const full = item.max && have + 1 > item.max;
+        const buttons = [mkBtn(`${item.price} 🪙`, 'btn-green', d.coins < item.price || !!full, () => buyItem(item.id, 1))];
+        if (!item.max) buttons.push(mkBtn(`×${PACK_SIZE} · ${item.price * (PACK_SIZE - 1)} 🪙`, 'btn-violet', d.coins < item.price * (PACK_SIZE - 1), () => buyItem(item.id, PACK_SIZE)));
+        tools.append(line(item.icon, item.name, `${item.desc.replace(/\.$/, '')} · ${item.max ? `${have}/${item.max}` : `en stock : ${have}`}`, buttons));
+    });
+    tools.append(line('💧', 'Recharge de gouttes', `Toutes tes gouttes d’un coup · ${d.drops}/${DROPS_MAX}`,
+        [mkBtn(d.drops >= DROPS_MAX ? 'Plein' : `${DROPS_REFILL_PRICE} 🪙`, 'btn-green', d.drops >= DROPS_MAX || d.coins < DROPS_REFILL_PRICE, () => { if (refillDrops()) renderShop(); })]));
+    grid.append(tools);
+}
+
 function renderShop() {
+    if (avOn()) { renderShopV2(); return; }
     const grid = $('shopGrid');
     grid.replaceChildren();
     const data = state.data;
@@ -3908,6 +4096,8 @@ function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryCl
     $('endTitle').textContent = title;
     $('endText').textContent = text;
     const missions = (state.missionsJustDone || []).map(m => `🗓️ Mission réussie : ${m.text(m.goal, m.theme)} !`);
+    const unlocked = avCheck();
+    if (unlocked.length) missions.push(`🎨 Débloqué pour ton avatar : ${unlocked.slice(0, 3).map(avLabel).join(', ')}${unlocked.length > 3 ? ` et ${unlocked.length - 3} autre${unlocked.length > 4 ? 's' : ''}` : ''} ! (Profil → ton avatar)`);
     state.missionsJustDone = [];
     $('endExtra').textContent = [extra, ...missions].filter(Boolean).join('\n');
     $('endPrimary').textContent = primary;
@@ -4824,6 +5014,7 @@ function readStatsQueue() {
     try { return JSON.parse(localStorage.getItem(STATS_KEY) || '[]'); } catch (err) { return []; }
 }
 function writeStatsQueue(list) {
+    if (BAC) return;
     try { localStorage.setItem(STATS_KEY, JSON.stringify(list.slice(-50))); } catch (err) { /* tant pis */ }
 }
 
@@ -4868,10 +5059,12 @@ function cloudMeta() {
     try { return JSON.parse(localStorage.getItem(CLOUD_META_KEY) || '{}'); } catch (err) { return {}; }
 }
 function setCloudMeta(meta) {
+    if (BAC) return;
     try { localStorage.setItem(CLOUD_META_KEY, JSON.stringify({ ...cloudMeta(), ...meta })); } catch (err) { /* tant pis */ }
 }
 
 function cloudClient() {
+    if (BAC) return null;   // bac à sable : jamais en ligne
     if (!sbClient && window.supabase) {
         sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: { persistSession: true, autoRefreshToken: true, storageKey: 'kultivo_auth', detectSessionInUrl: true }
@@ -5141,8 +5334,10 @@ async function cloudLogout() {
 
 /** Question oui / non dans une fenêtre du jeu (au lieu de confirm(), moche et qui affiche l'adresse du site).
     Renvoie une promesse : true = oui. `danger` : bouton rouge (retirer, effacer…). */
-function askConfirm({ title, text = '', yes = 'Oui', no = 'Annuler', danger = false }) {
+function askConfirm({ title, text = '', yes = 'Oui', no = 'Annuler', danger = false, art = null }) {
     const nbsp = t => t.replace(/ ([?!:»])/g, ' $1');   // « ? » jamais seul en début de ligne
+    $('askArt').replaceChildren(...(art ? [art] : []));
+    $('askArt').hidden = !art;
     $('askTitle').textContent = nbsp(title);
     $('askText').textContent = nbsp(text);
     $('askText').hidden = !text;
@@ -5594,6 +5789,208 @@ const AVATAR_EMOJIS = ['🦉', '🦈', '🦖', '🐋', '🐍', '🐎', '🍄', '
                        '🧩', '🔭', '🧲', '💡', '🤖', '⚽', '🏆', '🍿', '🥐', '🗿', '🌋', '🚂',
                        '🐱', '🐶', '🦊', '🐼', '🦁', '🐸', '🐙', '🐧', '🦄', '👻', '👽', '🐢', '🚀', '🎨', '⭐'];
 
+/* ---------- Objets d'avatar et vitrine de la semaine (mise à jour du 26/10/2026 ; catalogue : cosmetiques.js) ---------- */
+const avOn = () => patched();
+// Couleurs unies (une sur deux au départ, les autres tous les 10 niveaux), dessins de base, dessins d'événement
+const AV_ALL = (() => {
+    const list = [];
+    AVATAR_HUES.forEach((hue, i) => {
+        const level = i % 2 === 0 ? 0 : 10 * Math.ceil(i / 2);
+        list.push({ id: `hue-${hue}`, type: 'bg', kind: level ? 'earn' : 'free', hue, name: 'Couleur unie',
+                    how: `Termine le niveau ${level}`, test: st => st.maxDone >= level });
+    });
+    AV_FREE_PICS.forEach(e => list.push({ id: `pic-${e}`, type: 'pic', kind: 'free', emoji: e, name: 'Dessin' }));
+    AV_EARN_PICS.forEach(([e, how, test]) => list.push({ id: `pic-${e}`, type: 'pic', kind: 'earn', emoji: e, name: 'Dessin', how, test }));
+    EVENTS.forEach(ev => (ev.rewards || []).forEach(r => list.push({ id: `pic-${r.emoji}`, type: 'pic', kind: 'earn', emoji: r.emoji, name: 'Dessin',
+        event: ev.id, how: `${ev.title} : trouve ${r.at} questions`, test: () => state.data.avatarExtra.includes(r.emoji) })));
+    return list.concat(AV_ITEMS);
+})();
+const AVI = Object.fromEntries(AV_ALL.map(it => [it.id, it]));
+const AV_TYPE_NAME = { frame: 'Cadre', bg: 'Fond', pic: 'Dessin' };
+const avPicId = emoji => AV_ALL.find(it => it.type === 'pic' && it.emoji === emoji)?.id || null;
+
+/** Chiffres utiles aux conditions (badges + quelques autres). */
+function avStats() {
+    const d = state.data;
+    const st = badgeStats();
+    const done = Object.keys(d.done).map(Number).filter(n => d.done[n]);
+    st.maxDone = done.length ? Math.max(...done) : 0;
+    st.duelsWon = d.totals.duelsWon || 0;
+    st.masters = CARDS.filter(c => c.rarity === 'master' && d.cards[c.id]).length;
+    st.dailyTen = Object.values(d.daily).filter(r => r.score >= DAILY_SIZE).length;
+    st.allThemes = completeThemes().length >= CARD_THEMES.length;
+    return st;
+}
+/** L'objet est-il à moi ? (gratuit, acheté, offert, ou condition remplie) */
+function avHas(it, st) {
+    const av = state.data.av;
+    if (it.kind === 'free') return true;
+    if (av.owned[it.id] || av.grant[it.id]) return true;
+    return it.kind === 'earn' && !!it.test && !!it.test(st);
+}
+/** Joueurs d'avant la mise à jour (testeurs) : pas de passe-droit, sauf la couleur et le dessin qu'ils portent. */
+function avMigrate() {
+    const d = state.data;
+    if (d.av.migrated) return;
+    d.av.migrated = true;
+    const old = Object.keys(d.activeDays || {}).some(k => k < PATCH_DAY);
+    if (old && d.avatar) {
+        const ids = [`hue-${d.avatar.hue}`, d.avatar.emoji ? avPicId(d.avatar.emoji) : null].filter(id => id && AVI[id]);
+        ids.forEach(id => { d.av.grant[id] = 1; d.av.opened[id] = 1; d.av.known[id] = 1; });
+    }
+    saveData();
+}
+let avReadyCount = 0;   // objets gagnés pas encore « ouverts » (pastille)
+/** Vérifie ce qui vient d'être débloqué ; renvoie les nouveautés (pour l'écran de fin). */
+function avCheck() {
+    if (!avOn()) { avReadyCount = 0; return []; }
+    avMigrate();
+    const d = state.data;
+    const st = avStats();
+    const fresh = [];
+    let ready = 0;
+    for (const it of AV_ALL) {
+        if (it.kind === 'free' || !avHas(it, st)) continue;
+        if (!d.av.known[it.id]) { d.av.known[it.id] = 1; if (it.kind === 'earn') fresh.push(it); }
+        if (!d.av.opened[it.id]) ready++;
+    }
+    avReadyCount = ready;
+    if (fresh.length) saveData();
+    return fresh;
+}
+const avLabel = it => it.type === 'pic' ? `le dessin ${it.emoji}` : `${it.type === 'frame' ? 'le cadre' : 'le fond'} ${it.hue !== undefined ? 'couleur' : `« ${it.name} »`}`;
+
+/** Habille un rond d'avatar avec son fond et son cadre (classes de style.css). */
+function avDress(a, look) {
+    const bg = look.bg && AVI[look.bg];
+    if (bg && bg.type === 'bg' && bg.hue === undefined) a.classList.add(bg.id);
+    const fr = look.frame && AVI[look.frame];
+    if (fr && fr.type === 'frame') a.classList.add('fr', fr.id, `fx-${fr.fx || 'none'}`);
+}
+function avEnsureLook() {
+    if (!state.data.avatar) {
+        const auto = avatarEl(myAvatarName(), null);
+        state.data.avatar = { hue: Number(auto.style.getPropertyValue('--hue')), emoji: null };
+    }
+    const look = state.data.avatar;
+    if (look.bg === undefined) look.bg = null;
+    if (look.frame === undefined) look.frame = null;
+    return look;
+}
+/** Met l'objet sur l'avatar. */
+function avWear(it) {
+    const look = avEnsureLook();
+    if (it.type === 'frame') look.frame = it.id;
+    else if (it.type === 'pic') look.emoji = it.emoji;
+    else if (it.hue !== undefined) { look.hue = it.hue; look.bg = null; }
+    else look.bg = it.id;
+}
+/** Aperçu : mon avatar avec cet objet. */
+function avPreview(it, cls = '') {
+    const look = { ...avEnsureLook() };
+    if (it.type === 'frame') look.frame = it.id;
+    else if (it.type === 'pic') look.emoji = it.emoji;
+    else if (it.hue !== undefined) { look.hue = it.hue; look.bg = null; }
+    else look.bg = it.id;
+    return avatarEl(myAvatarName(), look, cls);
+}
+
+// Vitrine : la même pour tout le monde, rejouée semaine par semaine depuis le 26/10/2026 (rien d'enregistré)
+const VITRINE_START = '2026-10-26';
+const VITRINE_CARD_ROT = ['common', 'rare', 'epic', 'legendary'];
+const VITRINE_CARD_PRICE = { common: 60, rare: 150, epic: 400, legendary: 1000 };
+const VITRINE_SEASON_LABEL = { halloween: '🎃 Halloween', noel: '🎄 Noël', valentin: '💖 Saint-Valentin' };
+const dayGap = (a, b) => Math.round((new Date(`${b}T12:00:00`) - new Date(`${a}T12:00:00`)) / 86400000);
+const vitrineWeek = () => Math.max(0, Math.floor(dayGap(VITRINE_START, weekStart()) / 7));
+function vitrineSeason(k) {
+    const md = shiftDays(VITRINE_START, 7 * k).slice(5);
+    return VITRINE_SEASONS.find(se => md >= se.from && md <= se.to) || null;
+}
+const vitrineCache = {};
+/** Semaine k : 2 nouveautés (cadre / fond / dessin à tour de rôle), 1 objet qui revient (ou l'objet de saison). */
+function vitrinePlan(w) {
+    if (vitrineCache[w]) return vitrineCache[w];
+    const next = { frame: 0, bg: 0, pic: 0 };
+    const last = {};
+    const released = [];
+    let plan = null;
+    for (let k = 0; k <= w; k++) {
+        const news = [];
+        for (const t of [['frame', 'bg'], ['pic', 'frame'], ['bg', 'pic']][k % 3]) {
+            const id = VITRINE_ORDER[t][next[t]];
+            if (id) { next[t]++; news.push(id); }
+        }
+        const season = vitrineSeason(k);
+        let back = null;
+        if (season) back = season.items[k % season.items.length];
+        else {
+            const pool = released.filter(id => !news.includes(id));
+            const old = pool.filter(id => k - last[id] >= 4);
+            const from = old.length ? old : pool.sort((a, b) => last[a] - last[b]).slice(0, 3);
+            if (from.length) back = seededShuffle([...from].sort(), `vitrine-${k}`)[0];
+        }
+        news.forEach(id => { if (!released.includes(id)) released.push(id); last[id] = k; });
+        if (back) last[back] = k;
+        if (k === w) plan = { news, back, season: season ? season.id : null, released: released.slice() };
+    }
+    vitrineCache[w] = plan;
+    return plan;
+}
+/** Carte de la semaine : parmi MES cartes manquantes, rareté tournante (la même pour tous). Gardée toute la semaine. */
+function vitrineCard() {
+    const d = state.data;
+    const week = weekStart();
+    if (d.vitrine && d.vitrine.week === week) return d.vitrine;
+    const rarity = VITRINE_CARD_ROT[vitrineWeek() % VITRINE_CARD_ROT.length];
+    const normal = CARDS.filter(c => c.rarity !== 'master').sort((a, b) => (a.id < b.id ? -1 : 1));
+    const seed = `carte-${week}-${d.playerSeed}`;
+    let card = null;
+    let rar = rarity;
+    let shine = false;
+    for (const r of [rarity, ...VITRINE_CARD_ROT.filter(x => x !== rarity)]) {
+        const miss = normal.filter(c => c.rarity === r && !d.cards[c.id]);
+        if (miss.length) { card = seededShuffle(miss, seed)[0]; rar = r; break; }
+    }
+    if (!card) {   // collection complète : une carte à faire briller
+        const dim = normal.filter(c => (d.cards[c.id] || 0) < SHINY_AT);
+        const same = dim.filter(c => c.rarity === rarity);
+        const from = same.length ? same : dim;
+        if (from.length) { card = seededShuffle(from, seed)[0]; rar = card.rarity; shine = true; }
+    }
+    d.vitrine = { week, card: card ? card.id : null, rarity: rar, shine, bought: false };
+    saveData();
+    return d.vitrine;
+}
+function vitrineTimeLeft() {
+    const ms = new Date(`${shiftDays(weekStart(), 7)}T00:00:00`) - new Date();
+    const h = Math.max(0, Math.floor(ms / 3600000));
+    return h >= 24 ? `${Math.floor(h / 24)} j ${h % 24} h` : `${h} h ${Math.max(0, Math.floor(ms / 60000) % 60)} min`;
+}
+/** Coffres des missions et du podium : 1 chance sur 10 d'un objet de la boutique déjà sorti (les moins chers plus souvent). */
+const AV_CHEST_CHANCE = 0.1;
+function avChestPool() {
+    if (!avOn()) return [];
+    const plan = vitrinePlan(vitrineWeek());
+    return plan.released.filter(id => !plan.news.includes(id) && AVI[id] && !AVI[id].season && !state.data.av.owned[id]);
+}
+function avChestDrop() {
+    const pool = avChestPool();
+    if (!pool.length || Math.random() >= AV_CHEST_CHANCE) return null;
+    const weights = pool.map(id => 1 / AVI[id].price);
+    let r = Math.random() * weights.reduce((a, b) => a + b, 0);
+    for (let i = 0; i < pool.length; i++) { r -= weights[i]; if (r <= 0) return AVI[pool[i]]; }
+    return AVI[pool[pool.length - 1]];
+}
+const AV_CHEST_TEXT = '✨ 1 chance sur 10 : un cadre, un fond ou un dessin de la boutique';
+/** « 🎨 Objets d'avatar : 12 / 45 » : parmi les objets déjà sortis. */
+function avCount() {
+    const st = avStats();
+    const plan = vitrinePlan(vitrineWeek());
+    const out = new Set([...plan.released, ...(plan.back ? [plan.back] : [])]);
+    const list = AV_ALL.filter(it => it.kind !== 'shop' ? (!it.event || avHas(it, st) || currentEvent()?.id === it.event) : out.has(it.id) || state.data.av.owned[it.id]);
+    return { have: list.filter(it => avHas(it, st)).length, total: list.length };
+}
+
 /** Nom utilisé pour l'initiale : le pseudo, sinon « Moi ». */
 const myAvatarName = () => (cloudUser && league?.userId === cloudUser.id && league.pseudo) || 'Moi';
 
@@ -5609,6 +6006,7 @@ function avatarEl(pseudo, look, cls = '') {
     a.style.setProperty('--light', hueLight(hue));
     if (look?.emoji) a.append(emojiImg(look.emoji));
     else a.textContent = [...pseudo][0].toUpperCase();
+    if (look && avOn()) avDress(a, look);
     return a;
 }
 
@@ -5617,12 +6015,125 @@ function openAvatarModal() {
         const auto = avatarEl(myAvatarName(), null);
         state.data.avatar = { hue: Number(auto.style.getPropertyValue('--hue')), emoji: null };
     }
+    if (avOn()) avCheck();
     renderAvatarModal();
     $('avatarModal').hidden = false;
     if (state.data.avatarNew) { state.data.avatarNew = false; saveData(); updateNavNotifications(); }
 }
 
+let avTab = 'bg';
+function renderAvatarModalV2() {
+    const d = state.data;
+    const look = avEnsureLook();
+    const name = myAvatarName();
+    const st = avStats();
+    $('avatarModal').querySelector('.avatar-sheet').classList.add('is-v2');
+    $('avatarPreview').replaceChildren(avatarEl(name, look, 'is-big'));
+    const tabs = $('avatarTabs');
+    tabs.hidden = false;
+    tabs.replaceChildren();
+    [['bg', '🎨 Fond'], ['pic', '🐱 Dessin'], ['frame', '⭕ Cadre']].forEach(([t, label]) => {
+        const b = el('button', `avatar-tab${avTab === t ? ' is-active' : ''}`);
+        b.type = 'button';
+        b.textContent = label;
+        const n = AV_ALL.filter(it => it.type === t && it.kind !== 'free' && avHas(it, st) && !d.av.opened[it.id]).length;
+        if (n) b.setAttribute('data-notif', n);
+        b.addEventListener('click', () => { avTab = t; renderAvatarModalV2(); $('avatarGrid').scrollTop = 0; });
+        tabs.append(b);
+    });
+    const grid = $('avatarGrid');
+    grid.hidden = false;
+    grid.className = `avatar-grid${avTab === 'frame' ? ' is-frames' : ''}`;
+    grid.replaceChildren();
+    const tile = (cls, child, onClick) => {
+        const b = el('button', `av-tile ${cls}`);
+        b.type = 'button';
+        if (child) b.append(child);
+        b.addEventListener('click', () => onClick(b));
+        return b;
+    };
+    const art = it => {
+        if (it.type === 'pic') return emojiImg(it.emoji);
+        if (it.type === 'bg') {   // le fond seul, sans le cadre ni le dessin portés
+            const a = avatarEl(name, it.hue !== undefined ? { hue: it.hue } : { hue: look.hue, bg: it.id });
+            a.textContent = '';
+            return a;
+        }
+        return avPreview(it);
+    };
+    const active = it => it.type === 'frame' ? look.frame === it.id
+        : it.type === 'pic' ? look.emoji === it.emoji
+        : it.hue !== undefined ? !look.bg && look.hue === it.hue : look.bg === it.id;
+    if (avTab === 'pic') {
+        const ini = el('span');
+        ini.textContent = [...name][0].toUpperCase();
+        grid.append(tile(!look.emoji ? 'is-active' : '', ini, () => { look.emoji = null; renderAvatarModalV2(); }));
+    }
+    if (avTab === 'frame') {
+        const none = el('span');
+        none.textContent = 'Aucun';
+        grid.append(tile(`is-none${!look.frame ? ' is-active' : ''}`, none, () => { look.frame = null; renderAvatarModalV2(); }));
+    }
+    const plan = vitrinePlan(vitrineWeek());
+    const onSale = [...plan.news, plan.back].filter(Boolean);
+    for (const it of AV_ALL.filter(x => x.type === avTab)) {
+        const has = avHas(it, st);
+        if (it.kind === 'shop' && !has) continue;                                   // la boutique : seulement ce qu'on a
+        if (it.event && !has && currentEvent()?.id !== it.event) continue;          // événement fini et pas gagné
+        const swatch = it.type === 'bg' ? ' is-swatch' : '';
+        if (!has) {
+            const b = tile(`is-locked${swatch}`, art(it), () => showToast(`🔒 ${it.how}`));
+            const lock = el('span', 'av-lock');
+            lock.textContent = '🔒';
+            b.append(lock);
+            grid.append(b);
+        } else if (it.kind !== 'free' && !d.av.opened[it.id]) {
+            const b = tile(`is-ready${swatch}`, art(it), btn => avOpenTile(it, btn));
+            const lock = el('span', 'av-lock');
+            lock.textContent = '🔒';
+            const dot = el('span', 'av-dot');
+            dot.textContent = '1';
+            b.append(lock, dot);
+            grid.append(b);
+        } else {
+            grid.append(tile(`${active(it) ? 'is-active' : ''}${swatch}`, art(it), () => { avWear(it); renderAvatarModalV2(); }));
+        }
+    }
+    // Ce qui est en vitrine cette semaine (pas encore à moi) : mène à la boutique
+    onSale.map(id => AVI[id]).filter(it => it && it.type === avTab && !avHas(it, st)).forEach(it => {
+        const b = tile(`is-shop${it.type === 'bg' ? ' is-swatch' : ''}`, art(it), () => { closeAvatarModal(); showScreen('shop'); });
+        const pr = el('span', 'av-price');
+        pr.textContent = `🛍️ ${it.price} 🪙`;
+        b.append(pr);
+        grid.append(b);
+    });
+}
+/** Un objet gagné : on le touche, le cadenas s'envole, il s'allume. */
+function avOpenTile(it, b) {
+    if (b.classList.contains('is-opening')) return;
+    b.classList.add('is-opening');
+    b.querySelector('.av-dot')?.remove();
+    playSound('win');
+    setTimeout(() => {
+        state.data.av.opened[it.id] = 1;
+        saveData();
+        avCheck();
+        updateNavNotifications();
+        b.classList.remove('is-ready', 'is-opening');
+        b.classList.add('is-revealed');
+        b.querySelector('.av-lock')?.remove();
+        for (let k = 0; k < 8; k++) {
+            const sp = el('span', 'av-spark');
+            const ang = (k / 8) * Math.PI * 2;
+            sp.style.cssText = `--dx:${Math.round(Math.cos(ang) * 34)}px;--dy:${Math.round(Math.sin(ang) * 34)}px;background:${['#ffc800', '#58cc02', '#1899d6', '#ff4b4b'][k % 4]}`;
+            b.append(sp);
+        }
+        setTimeout(renderAvatarModalV2, 700);
+    }, 420);
+}
+
 function renderAvatarModal() {
+    if (avOn()) { renderAvatarModalV2(); return; }
     const look = state.data.avatar;
     const name = myAvatarName();
     $('avatarPreview').replaceChildren(avatarEl(name, look, 'is-big'));
@@ -5685,6 +6196,7 @@ function loadLeagueCache() {
     try { return JSON.parse(localStorage.getItem(LEAGUE_KEY) || 'null'); } catch (err) { return null; }
 }
 function saveLeagueCache() {
+    if (BAC) return;
     try { localStorage.setItem(LEAGUE_KEY, JSON.stringify(league)); } catch (err) { /* tant pis */ }
 }
 
@@ -5793,6 +6305,7 @@ function profileSummary() {
         bestStreak: Math.max(d.best.streak, currentStreak()),
         levels: Object.values(d.done).filter(Boolean).length,
         unlocked: d.unlocked,   // niveau en cours (avatar sur le parcours des amis)
+        look: d.avatar ? { bg: d.avatar.bg || null, frame: d.avatar.frame || null } : null,   // fond et cadre (26/10)
         event: (ev => ev ? { id: ev.id, found: Object.keys(eventData(ev).found).length } : null)(currentEvent()),
         rate: d.totals.tries > 0 ? Math.round((d.totals.right / d.totals.tries) * 100) : null,
         sprint: d.best.sprint || 0,
@@ -6079,7 +6592,9 @@ async function leagueFetch() {
         const row = l => {
             const id = l.requester === me ? l.addressee : l.requester;
             const prof = pseudos[id] || {};
-            const look = Number.isInteger(prof.avatar_hue) ? { hue: prof.avatar_hue, emoji: prof.avatar_emoji || null } : null;
+            const base = Number.isInteger(prof.avatar_hue) ? { hue: prof.avatar_hue, emoji: prof.avatar_emoji || null } : null;
+            const extra = scores[id]?.summary?.look;   // fond et cadre, envoyés dans le résumé du profil
+            const look = extra && (extra.bg || extra.frame) ? { ...(base || {}), bg: extra.bg || null, frame: extra.frame || null } : base;
             return { link: l.id, id, pseudo: prof.pseudo || '?', look, ...(scores[id] || { week: null, week_xp: 0, prev_week: null, prev_week_xp: 0, streak: 0 }) };
         };
         const before = league?.userId === me ? league : null;
@@ -6139,8 +6654,9 @@ function checkPodium() {
         const place = rank === 1 ? '1er' : `${rank}e`;
         const coins = PODIUM_COINS[rank - 1] || 0;   // pièces selon la place : 🥇 50, 🥈 25, 🥉 10
         data.coins += coins;
-        openCardBoxes([{ size, rare: size >= 3 }],
-            `${['🥇', '🥈', '🥉'][rank - 1] || '🏅'} ${place} de la semaine : ${plural(beaten, 'ami battu', 'amis battus')}${coins ? ` · +${coins} 🪙` : ''} !`);
+        const drop = avChestDrop();
+        openCardBoxes([{ size: drop ? Math.max(1, size - 1) : size, rare: size >= 3 }],
+            `${['🥇', '🥈', '🥉'][rank - 1] || '🏅'} ${place} de la semaine : ${plural(beaten, 'ami battu', 'amis battus')}${coins ? ` · +${coins} 🪙` : ''} !`, drop);
         checkBadges();
         return;
     }
@@ -6439,7 +6955,7 @@ function renderLeague() {
         : myIndex === 0 ? (rows[0].xp > 0 ? '🏆 Tu es en tête : garde ta place jusqu’à lundi !' : 'Personne n’a encore joué cette semaine : à toi de commencer !')
         : `Tu es ${myIndex + 1}e · encore ${rows[myIndex - 1].xp - rows[myIndex].xp + 1} XP pour dépasser ${rows[myIndex - 1].pseudo} !`;
     para(rank, tip, 'league-tip');
-    para(rank, '🎁 Lundi : un coffre si tu bats au moins un ami.', 'muted league-sub');
+    para(rank, `🎁 Lundi : un coffre si tu bats au moins un ami.${avChestPool().length ? ` ${AV_CHEST_TEXT}.` : ''}`, 'muted league-sub');
 
     renderDuelsCard(grid);
 
@@ -7458,6 +7974,30 @@ function armBackGuard() {
 }
 
 /** Ferme la fenêtre ouverte la plus « haute » ; renvoie true si quelque chose a été fermé. */
+/** Bac à sable : pastille 🧪 toujours visible (menu : +1 000 🪙, recommencer, quitter) et quelques faux amis. */
+function initBac() {
+    if (!BAC) return;
+    const pill = el('button', 'bac-pill');
+    pill.type = 'button';
+    pill.textContent = '🧪 Bac à sable';
+    pill.addEventListener('click', async () => {
+        const more = await askConfirm({ title: '🧪 Bac à sable', text: 'Une copie de ta partie : tout ce que tu fais ici reste ici. Rien n’est envoyé en ligne, ton vrai jeu ne change pas.',
+            yes: '+1 000 🪙 pour tester', no: 'Plus d’options' });
+        if (more) { state.data.coins += 1000; saveData(); renderHeader(); if (!$('shopScreen').hidden) renderShop(); return; }
+        const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Fermer' });
+        if (reset) { try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* tant pis */ } location.reload(); }
+    });
+    document.body.append(pill);
+    // Faux amis, pour voir les cadres et les fonds chez les autres
+    const me = { id: 'bac-moi' };
+    cloudUser = me;
+    const fake = (id, pseudo, hue, emoji, bg, frame, xp, found) => ({ id, link: id, pseudo, look: { hue, emoji, bg, frame }, week: weekStart(), week_xp: xp,
+        prev_week: null, prev_week_xp: 0, streak: 5, summary: { title: 'Curieux', xp: xp * 3, streak: 5, unlocked: 30, levels: 29, badges: [], cards: [], event: { id: 'halloween-2026', found } } });
+    league = { userId: 'bac-moi', pseudo: (loadLeagueCache() || {}).pseudo || 'Moi', incoming: [], outgoing: [], duels: [],
+        friends: [fake('bac1', 'Léa', 330, '🦉', 'bg-galaxy', 'fr-laurel-gold', 420, 31), fake('bac2', 'Tom', 15, null, null, 'fr-flame', 260, 12),
+                  fake('bac3', 'Inès', 200, '🦄', 'bg-or', 'fr-diamond', 180, 45), fake('bac4', 'Noé', 120, '🐢', 'bg-ocean', 'fr-checker', 90, 5)] };
+}
+
 const PATCH_NOTES = [
     ['🎃', 'Semaine d’Halloween jusqu’au 2 novembre', 'Dans Défis : des questions spéciales sans gouttes. 45 trouvées = une carte et un badge, et des dessins d’avatar à débloquer en route.'],
     ['🎃', 'Citrouilles cachées', 'Chaque jour, 3 citrouilles se cachent dans les onglets du jeu : +5 🪙 chacune.'],
@@ -7466,7 +8006,9 @@ const PATCH_NOTES = [
     ['🎖️', 'Titres revus', 'Il faut désormais 3 fois plus d’XP pour chaque titre. Ton XP, elle, ne change pas.'],
     ['⭐', 'XP selon la difficulté', 'Une question difficile rapporte plus d’XP qu’une facile.'],
     ['📅', 'Toutes les questions du jeu', 'Défi du jour, sprint et duels piochent aussi dans les questions de l’entraînement.'],
-    ['🪙', 'Pièces rééquilibrées', '1 🪙 pour 8 XP, et 15 🪙 par badge.']
+    ['🪙', 'Pièces rééquilibrées', '1 🪙 pour 8 XP, et 15 🪙 par badge.'],
+    ['🛍️', 'Nouvelle boutique', 'Une vitrine qui change chaque lundi : cadres, fonds et dessins pour ton avatar, et une carte de la semaine.'],
+    ['🎨', 'Ton avatar', 'Des fonds, des dessins et des cadres à gagner en jouant (ils s’ouvrent dans Profil → ton avatar).']
 ];
 function maybeShowPatchNotes() {
     const d = state.data;
@@ -7561,6 +8103,9 @@ function init() {
     window.addEventListener('online', flushReports);        // dès que la connexion revient
     applyEventLook();
     if (currentEvent()) setInterval(placePumpkins, 700);   // citrouilles cachées de l'événement
+    initBac();
+    avCheck();                                              // objets d'avatar déjà gagnés (sans annonce)
+    updateNavNotifications();
     setTimeout(maybeShowPatchNotes, 1500);                  // « Quoi de neuf ? » après une mise à jour
     buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
     buildDecor($('lessonDecor'), 8);

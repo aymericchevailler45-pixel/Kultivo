@@ -200,7 +200,7 @@ const CARDS = [
     const n = new Date();
     const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
     let demo = false;
-    try { demo = new URLSearchParams(location.search).get('demo') === 'lundi'; } catch (err) { /* sans adresse */ }
+    try { const q = new URLSearchParams(location.search); demo = q.get('demo') === 'lundi' || q.get('bac') === '1'; } catch (err) { /* sans adresse */ }
     return demo || today >= '2026-10-26' ? [
         ['hi10', 'Histoire', '🪓', 'Hache viking', 'common', 'Les Vikings maniaient la hache… mais n’ont jamais porté de casque à cornes, une invention du XIXe siècle.'],
         ['hi11', 'Histoire', '🗞️', '« J’accuse… ! »', 'rare', 'Le 13 janvier 1898, Zola défend Dreyfus en une du journal L’Aurore.'],

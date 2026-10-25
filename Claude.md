@@ -15,7 +15,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   « J'avais juste », protection classement / duels / heure, suppression de compte, politique de confidentialité, 12 testeurs).
   Abandonné : « Revoir le tutoriel », plein écran en appli web.
 - À FAIRE LE 25/10 (demandé par l'utilisateur, dans cet ordre ; il dira « vas-y ») :
-  1. Coder la BOUTIQUE ET AVATARS (plan détaillé plus bas, version finale du 24/10) + un « bac à sable » `?bac=1` (copie de
+  1. FAIT le 25/10 (s'active seul le 26) : BOUTIQUE ET AVATARS. Catalogue `cosmetiques.js` (AV_FREE_PICS, AV_EARN_PICS,
+     AV_ITEMS, VITRINE_ORDER, VITRINE_SEASONS), apparence dans style.css (classe = id, cadre = ::before masqué en anneau +
+     ::after emblème / déco / laurier `cadres/*.svg`), logique dans script.js (`AV_ALL`, `avHas`, `avCheck`, `avMigrate`,
+     `vitrinePlan` rejoué depuis le 26/10, `vitrineCard`, `avChestDrop`, `renderShopV2`, `renderAvatarModalV2`, `avOpenTile`,
+     `buyAvItem`, `buyVitrineCard`, `avFound`, `avDress` dans `avatarEl`) ; sauvegarde `av`, `vitrine`, `vitrineSeen`,
+     `playerSeed` ; fond / cadre des amis via `summary.look`. Bac à sable FAIT : `?bac=1` (`BAC`, clé `kultivo_bac`, `initBac`).
+     ANCIEN TEXTE : Coder la BOUTIQUE ET AVATARS (plan détaillé plus bas, version finale du 24/10) + un « bac à sable » `?bac=1` (copie de
      la vraie partie dans une sauvegarde à part, tout le nouveau actif, RIEN envoyé en ligne, bandeau 🧪, « Recommencer le
      test », « +1 000 🪙 », faux amis avec cadres) pour que l'utilisateur teste sur son téléphone avant les autres.
   2. Ensuite : XP des niveaux DÉJÀ réussis qu'on refait, trop élevée selon l'utilisateur (à réduire).

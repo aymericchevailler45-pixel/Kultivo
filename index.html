@@ -463,6 +463,8 @@
         <div class="modal-content avatar-sheet" role="dialog" aria-modal="true" aria-labelledby="avatarTitle">
             <h2 id="avatarTitle">Mon avatar</h2>
             <div class="avatar-preview" id="avatarPreview"></div>
+            <div class="avatar-tabs" id="avatarTabs" hidden></div>
+            <div class="avatar-grid" id="avatarGrid" hidden></div>
             <p class="avatar-label">Couleur</p>
             <div class="avatar-colors" id="avatarColors"></div>
             <p class="avatar-label">Dans le rond</p>
@@ -507,6 +509,7 @@
 
     <div id="askModal" class="modal-overlay" hidden>
         <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="askTitle" aria-describedby="askText">
+            <div class="ask-art" id="askArt" hidden></div>
             <h2 id="askTitle"></h2>
             <p id="askText"></p>
             <button type="button" id="askYes" class="btn btn-green btn-full"></button>
@@ -585,6 +588,7 @@
     <script src="entrainement/drapeaux.js"></script>
     <script src="entrainement/monuments.js"></script>
     <script src="cards.js"></script>
+    <script src="cosmetiques.js"></script>
     <script src="levels.js"></script>
     <script src="vendor/supabase.min.js"></script>
     <script src="evenements/halloween.js"></script>

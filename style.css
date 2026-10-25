@@ -2854,3 +2854,187 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .patch-icon { flex: none; font-size: 1.4rem; line-height: 1.2; }
 .patch-item b { display: block; }
 .patch-item p { margin: 2px 0 0; font-size: 0.9rem; color: var(--muted); font-weight: 700; line-height: 1.35; }
+
+/* ============================================================
+   Objets d'avatar (26/10/2026) : cadres, fonds, dessins — classe = id de l'objet (cosmetiques.js)
+   Cadre = anneau (::before, découpé en rond par un masque) + emblème / décorations / laurier (::after)
+   ============================================================ */
+.league-avatar.fr { position: relative; box-shadow: none !important; --fw: 5px; --bw: 4px; }
+.league-avatar.fr.is-small, .map-friend .league-avatar.fr { --fw: 3px; --bw: 2px; }
+.league-avatar.fr.is-big { --fw: 7px; }
+.league-avatar.fr::before {
+    content: ''; position: absolute; inset: calc(-1 * (var(--bw) + var(--fw))); border-radius: 50%; pointer-events: none;
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--fw) - 0.5px), #000 calc(100% - var(--fw)));
+            mask: radial-gradient(farthest-side, transparent calc(100% - var(--fw) - 0.5px), #000 calc(100% - var(--fw)));
+}
+.league-avatar.fr::after { content: ''; position: absolute; pointer-events: none; background-repeat: no-repeat; background-position: center; background-size: contain; }
+.league-avatar.fr.fx-tag::after { width: 42%; height: 42%; right: -16%; bottom: -16%; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25)); }
+.league-avatar.fr.fx-deco::after { inset: -26%; background-size: 30% 30%; background-position: 6% 4%, 94% 4%, 50% 100%; }
+.league-avatar.fr.fx-laurel::after { left: -32%; right: -32%; top: 6%; bottom: -26%; background-size: 50% 100%; background-position: 0 100%, 100% 100%; }
+@media (prefers-reduced-motion: reduce) { .league-avatar.fr::before, .league-avatar[class*="bg-"] { animation: none !important; } }
+
+/* Cadres à gagner */
+.fr-flame::before { background: conic-gradient(#ff3d00, #ff9100, #ffd600, #ff9100, #ff3d00); animation: avSpin 2.5s linear infinite; }
+.fr-flame::after, .fr-ember::after, .fr-phoenix::after { background-image: url(emoji/1f525.svg); }
+.fr-ember::before { background: conic-gradient(#7a0b00, #ff3d00, #7a0b00, #ff7a00, #7a0b00); animation: avPulse 1.6s ease-in-out infinite; }
+.fr-phoenix::before { background: conic-gradient(#ffd600, #ff6d00, #d50000, #ff6d00, #ffd600); animation: avSpin 3s linear infinite; }
+.fr-laurel-green::before { background: conic-gradient(#a5d66f, #4f9a2b, #a5d66f, #4f9a2b, #a5d66f); }
+.fr-laurel-green::after { background-image: url(cadres/laurier-vert-g.svg), url(cadres/laurier-vert-d.svg); }
+.fr-laurel-gold::before { background: conic-gradient(#fff3b0, #e0b23a, #c9952b, #ffe680, #e0b23a, #fff3b0); }
+.fr-laurel-gold::after { background-image: url(cadres/laurier-or-g.svg), url(cadres/laurier-or-d.svg); }
+.fr-diamond::before { background: conic-gradient(#b9f3ff, #5ad1ff, #ffffff, #a78bfa, #5ad1ff, #b9f3ff); animation: avSpin 4s linear infinite; }
+.fr-diamond::after { background-image: url(emoji/1f48e.svg); }
+.fr-swords::before { background: conic-gradient(#d9dee6, #8a94a6, #d9dee6, #5b6577, #d9dee6); }
+.fr-swords::after, .fr-gladiator::after { background-image: url(emoji/2694.svg); }
+.fr-gladiator::before { background: conic-gradient(#b71c1c, #d9dee6, #b71c1c, #8a94a6, #b71c1c); }
+.fr-explorer::before { background: repeating-conic-gradient(#8d6e63 0 15deg, #c8a27a 15deg 30deg); }
+.fr-explorer::after { background-image: url(emoji/1f9ed.svg); }
+.fr-globe::before { background: conic-gradient(#1e88e5, #43a047, #1e88e5, #43a047, #1e88e5); }
+.fr-globe::after { background-image: url(emoji/1f30d.svg); }
+.fr-master::before { background: conic-gradient(#8b5cf6, #c4b5fd, #ffc800, #8b5cf6, #c4b5fd, #ffc800, #8b5cf6); }
+.fr-master::after, .fr-grandmaster::after { background-image: url(emoji/2b50.svg); }
+.fr-grandmaster::before { background: conic-gradient(#8b5cf6, #ffc800, #ec4899, #8b5cf6); animation: avSpin 3s linear infinite; }
+.fr-collector::before { background: conic-gradient(#9aa6bd, #1899d6, #8b5cf6, #ffc800, #9aa6bd); }
+.fr-collector::after { background-image: url(emoji/1f0cf.svg); }
+.fr-perfect::before { background: repeating-conic-gradient(#ffc800 0 10deg, #ffffff 10deg 20deg); }
+.fr-perfect::after { background-image: url(emoji/1f3af.svg); }
+.fr-halloween-2026::before { background: repeating-conic-gradient(#ff7a00 0 30deg, #2b1b3d 30deg 60deg); }
+.fr-halloween-2026::after { background-image: url(emoji/1f383.svg); }
+/* Cadres de la boutique */
+.fr-checker::before { background: repeating-conic-gradient(#1b2745 0 25%, #ffffff 0 50%) 0 0 / 8px 8px; }
+.fr-dots::before { background: radial-gradient(circle, #ff4f8b 30%, transparent 32%) 0 0 / 7px 7px, #ffe1ec; }
+.fr-neon-pink::before { background: #ff2bd6; }
+.league-avatar.fr-neon-pink { filter: drop-shadow(0 0 5px #ff2bd6); }
+.fr-neon-blue::before { background: #00e5ff; }
+.league-avatar.fr-neon-blue { filter: drop-shadow(0 0 5px #00b8d4); }
+.fr-scales::before { background: radial-gradient(circle at 50% 0, transparent 38%, #4dd0a1 40% 58%, transparent 60%) 0 0 / 9px 7px, #0f6b4f; }
+.fr-stripes::before { background: repeating-linear-gradient(45deg, #2b5cff 0 4px, #ffffff 4px 8px); }
+.fr-parchment::before { background: radial-gradient(circle at 30% 25%, #f7e9c4, #d9b779 60%, #a8834a); }
+.fr-parchment::after { background-image: url(emoji/1f4dc.svg); }
+.fr-zigzag::before { background: linear-gradient(135deg, #ff9800 25%, transparent 25%) -4px 0 / 8px 8px, linear-gradient(225deg, #ff9800 25%, transparent 25%) -4px 0 / 8px 8px, linear-gradient(315deg, #ff9800 25%, transparent 25%) 0 0 / 8px 8px, linear-gradient(45deg, #ff9800 25%, #fff3e0 25%) 0 0 / 8px 8px; }
+.fr-wood::before { background: repeating-linear-gradient(80deg, #8d5a2b 0 3px, #b07a45 3px 7px, #6d4320 7px 9px); }
+.fr-waves::before { background: radial-gradient(circle at 50% 100%, #7fdcff 38%, transparent 40%) 0 0 / 9px 6px, #1565c0; }
+.fr-film::before { background: repeating-conic-gradient(#111111 0 9deg, #f5f5f5 9deg 13deg, #111111 13deg 18deg); }
+.fr-gold::before { background: linear-gradient(135deg, #b8860b, #fff1a8, #c9952b); }
+.fr-tartan::before { background: repeating-linear-gradient(0deg, rgba(198, 40, 40, 0.75) 0 3px, transparent 3px 9px), repeating-linear-gradient(90deg, rgba(198, 40, 40, 0.75) 0 3px, transparent 3px 9px), #1b5e20; }
+.fr-flowers::before { background: radial-gradient(circle, #ffd740 30%, transparent 32%) 0 0 / 7px 7px, #66bb6a; }
+.fr-flowers::after { background-image: url(emoji/1f338.svg), url(emoji/1f338.svg), url(emoji/1f338.svg); }
+.fr-music::before { background: conic-gradient(#7c4dff, #b388ff, #7c4dff); }
+.fr-music::after { background-image: url(emoji/1f3b5.svg), url(emoji/1f3b5.svg), url(emoji/1f3b5.svg); }
+.fr-pixels::before { background: conic-gradient(#ff4081 25%, #40c4ff 0 50%, #ffd740 0 75%, #69f0ae 0) 0 0 / 8px 8px; }
+.fr-copper::before { background: conic-gradient(#7a3e1d, #e8925a, #ffd1a6, #b5602f, #5a2a10, #e8925a, #7a3e1d); }
+.fr-stars::before { background: linear-gradient(135deg, #3a4a8c, #0d1333); }
+.fr-stars::after { background-image: url(emoji/2728.svg), url(emoji/2728.svg), url(emoji/2728.svg); }
+.fr-frost::before { background: conic-gradient(#e3f6ff, #9fdcff, #ffffff, #b3e5fc, #e3f6ff); }
+.league-avatar.fr-frost { filter: drop-shadow(0 0 5px rgba(130, 210, 255, 0.9)); }
+.fr-confetti::before { background: radial-gradient(circle, #ff4081 1.6px, transparent 2px) 0 0 / 6px 6px, radial-gradient(circle, #40c4ff 1.6px, transparent 2px) 3px 3px / 6px 6px, #ffd740; }
+.fr-confetti::after { background-image: url(emoji/1f389.svg), url(emoji/1f389.svg), url(emoji/1f389.svg); }
+.fr-rainbow::before { background: conic-gradient(#ff4d4d, #ffb84d, #f9f871, #4dff88, #4dd2ff, #8b5cf6, #ff4dd2, #ff4d4d); animation: avSpin 3s linear infinite; }
+.fr-pumpkins::before { background: radial-gradient(circle, #2b1b3d 30%, transparent 32%) 0 0 / 7px 7px, #ff9a3c; }
+.fr-pumpkins::after { background-image: url(emoji/1f383.svg), url(emoji/1f383.svg), url(emoji/1f383.svg); }
+.fr-snowflakes::before { background: repeating-linear-gradient(45deg, #9fd3ff 0 4px, #ffffff 4px 8px); }
+.fr-snowflakes::after { background-image: url(emoji/2744.svg), url(emoji/2744.svg), url(emoji/2744.svg); }
+.fr-hearts::before { background: #ff2bd6; }
+.fr-hearts::after { background-image: url(emoji/1f496.svg), url(emoji/1f496.svg), url(emoji/1f496.svg); }
+
+/* Fonds (gagnés ou achetés) : remplacent la couleur unie */
+.league-avatar.bg-or { background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.75) 50%, transparent 65%) 150% 0 / 250% 100% no-repeat, linear-gradient(135deg, #b8860b, #f7d774 40%, #fff1a8 50%, #c9952b 70%, #8a6508); color: #5a3f00; animation: avShine 2.8s ease-in-out infinite; }
+.league-avatar.bg-silver { background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.8) 50%, transparent 65%) 150% 0 / 250% 100% no-repeat, linear-gradient(135deg, #8e98a8, #e8edf3 45%, #ffffff 52%, #b6c0cc 70%, #6d7787); color: #3b4556; animation: avShine 2.8s ease-in-out infinite; }
+.league-avatar.bg-bronze { background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%) 150% 0 / 250% 100% no-repeat, linear-gradient(135deg, #7a4a1e, #e0a060 45%, #f5c890 52%, #a8682f 70%, #5c3412); color: #3b2008; animation: avShine 2.8s ease-in-out infinite; }
+.league-avatar.bg-holo { background: linear-gradient(120deg, #ffd6f6, #c3f0ff, #fff6b8, #d8c8ff, #ffd6f6) 0 50% / 300% 300%; color: #6b5b95; animation: avFlow 3.5s ease-in-out infinite; }
+.league-avatar.bg-nuit-halloween { background: radial-gradient(circle at 70% 28%, #ffe9a6 0 12%, transparent 13%), radial-gradient(circle at 30% 30%, #4a2a6a, #1b0f2b 75%); }
+.league-avatar.bg-galaxy { background: radial-gradient(1.5px 1.5px at 20% 30%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 70% 20%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 55% 70%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 30% 80%, #fff 50%, transparent 51%), radial-gradient(circle at 30% 30%, #6a3cbc, #1b1340 70%); }
+.league-avatar.bg-sunset { background: linear-gradient(135deg, #ffb347, #ff4f8b); }
+.league-avatar.bg-ocean { background: linear-gradient(135deg, #2bd2ff, #2b5cff); }
+.league-avatar.bg-marble { background: linear-gradient(120deg, transparent 40%, rgba(150, 150, 160, 0.5) 42%, transparent 46%), linear-gradient(60deg, transparent 60%, rgba(150, 150, 160, 0.45) 62%, transparent 65%), #f4f4f6; color: #555; }
+.league-avatar.bg-forest { background: linear-gradient(135deg, #a8e063, #2e7d32); }
+.league-avatar.bg-neon { background: #12002b; color: #ff2bd6; text-shadow: 0 0 6px #ff2bd6; }
+.league-avatar.bg-aurora { background: linear-gradient(135deg, #43e97b, #38b6ff, #8b5cf6); }
+.league-avatar.bg-jade { background: radial-gradient(circle at 30% 30%, #9ff2c8, #1b8a5a 70%); }
+.league-avatar.bg-lavender { background: linear-gradient(135deg, #e0c3fc, #8b5cf6); }
+.league-avatar.bg-peach { background: linear-gradient(135deg, #ffd1a9, #ff7e5f); }
+.league-avatar.bg-wood { background: repeating-linear-gradient(80deg, #a0663a 0 4px, #c08552 4px 9px, #8a5530 9px 11px); }
+.league-avatar.bg-mint { background: linear-gradient(135deg, #b8f5d8, #1fbf8f); }
+.league-avatar.bg-rainbow { background: conic-gradient(#ff4d4d, #ffb84d, #f9f871, #4dff88, #4dd2ff, #8b5cf6, #ff4dd2, #ff4d4d); }
+.league-avatar.bg-cherry { background: linear-gradient(135deg, #ffc1d9, #e0245e); }
+.league-avatar.bg-ruby { background: radial-gradient(circle at 30% 30%, #ff8a9a, #b0002a 70%); }
+.league-avatar.bg-night { background: linear-gradient(135deg, #3a4a8c, #0d1333); }
+.league-avatar.bg-lava { background: linear-gradient(120deg, #ff3d00, #ffb300, #ff3d00, #b71c1c) 0 50% / 300% 300%; animation: avFlow 4s ease-in-out infinite; }
+.league-avatar.bg-boreal { background: linear-gradient(120deg, #00c9a7, #3d5afe, #b388ff, #00c9a7) 0 50% / 300% 300%; animation: avFlow 5s ease-in-out infinite; }
+.league-avatar.bg-snow { background: radial-gradient(2px 2px at 25% 30%, #fff 50%, transparent 51%), radial-gradient(2px 2px at 70% 25%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 55% 75%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 30% 70%, #fff 50%, transparent 51%), linear-gradient(135deg, #9fd3ff, #3a7bd5); }
+.league-avatar.bg-hearts { background: radial-gradient(circle at 30% 30%, #ff9ac1, #e0245e 75%); }
+@keyframes avSpin { to { transform: rotate(360deg); } }
+@keyframes avPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
+@keyframes avShine { 0% { background-position: 150% 0, 0 0; } 60%, 100% { background-position: -100% 0, 0 0; } }
+@keyframes avFlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+/* « Mon avatar » : 3 onglets (Fond · Dessin · Cadre), une seule grille qui défile */
+.avatar-tabs { display: flex; gap: 6px; margin: 4px 0 10px; flex: none; }
+.avatar-tab { flex: 1; position: relative; padding: 8px 4px; border: 2px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--muted); font: inherit; font-weight: 900; cursor: pointer; }
+.avatar-tab.is-active { border-color: var(--green); color: var(--ink); background: var(--green-tint); }
+.avatar-tab[data-notif]::after { content: attr(data-notif); position: absolute; top: -8px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--red); color: #fff; font-size: 0.7rem; line-height: 18px; }
+.avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px 8px; flex: 1 1 auto; min-height: 120px; overflow-y: auto; margin-bottom: 14px; padding: 12px 8px 12px; }
+.avatar-grid.is-frames { grid-template-columns: repeat(4, 1fr); gap: 20px 12px; padding: 18px 14px 14px; }
+.av-tile { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; padding: 0; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); font: inherit; font-size: 1.3rem; font-weight: 900; cursor: pointer; }
+.av-tile .emoji-img { width: 58%; height: 58%; }
+.av-tile .league-avatar { width: 64%; height: 64%; border-width: 2px; font-size: 0.85rem; box-shadow: none; }
+.av-tile .league-avatar.fr { --bw: 2px; --fw: 3px; }
+.av-tile.is-swatch { border-radius: 50%; }
+.av-tile.is-swatch .league-avatar { width: 84%; height: 84%; }
+.av-tile.is-active { border-color: var(--green); background: var(--green-tint); box-shadow: 0 0 0 2px var(--green); }
+.av-tile.is-locked > :not(.av-lock) { filter: grayscale(0.75); opacity: 0.45; }
+.av-tile .av-lock { position: absolute; right: -5px; bottom: -5px; font-size: 0.85rem; line-height: 1; }
+.av-tile.is-ready { border-color: #ffc800; animation: avReady 1.4s ease-in-out infinite; }
+.av-tile.is-ready > :not(.av-lock):not(.av-dot) { filter: grayscale(0.6); opacity: 0.6; }
+.av-tile.is-ready .av-lock { animation: avWiggle 0.9s ease-in-out infinite; }
+.av-tile .av-dot { position: absolute; top: -7px; right: -7px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--red); color: #fff; font-size: 0.65rem; line-height: 18px; }
+.av-tile.is-opening .av-lock { animation: avLockOff 0.45s ease-in forwards; }
+.av-tile.is-revealed { animation: avPop 0.45s ease-out; }
+.av-tile.is-shop { border-style: dashed; border-color: #ffc800; }
+.av-tile .av-price { position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); padding: 0 6px; border-radius: 8px; background: #ffc800; color: #4a3400; font-size: 0.62rem; line-height: 16px; white-space: nowrap; }
+.av-tile.is-none { font-size: 0.75rem; color: var(--muted); }
+.av-spark { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; animation: avSpark 0.6s ease-out forwards; }
+.avatar-section { grid-column: 1 / -1; margin: 2px 0 -4px; color: var(--muted); font-size: 0.8rem; font-weight: 900; text-align: left; }
+@keyframes avReady { 0%, 100% { box-shadow: 0 0 0 2px rgba(255, 200, 0, 0.25); } 50% { box-shadow: 0 0 0 6px rgba(255, 200, 0, 0.5); } }
+@keyframes avWiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-15deg); } 75% { transform: rotate(15deg); } }
+@keyframes avLockOff { to { transform: translate(14px, -26px) rotate(40deg) scale(1.3); opacity: 0; } }
+@keyframes avPop { 0% { transform: scale(0.8); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes avSpark { to { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; } }
+.avatar-btn[data-notif]::after { z-index: 2; }
+
+/* Nouvelle boutique : vitrine de la semaine (2 lignes de 2), coffre et objets utiles en lignes */
+.shop-grid.is-v2 { display: flex; flex-direction: column; gap: 12px; }
+.vitrine-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.vitrine-head h2 { margin: 0; }
+.vitrine-head span { color: var(--muted); font-weight: 800; font-size: 0.85rem; white-space: nowrap; }
+.vitrine-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 10px; margin-top: 16px; }
+.vit-cell { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 8px 12px; border: 2px solid var(--line); border-radius: 16px; text-align: center; }
+.vit-cell.is-event { border-color: #ff7a00; background: rgba(255, 122, 0, 0.07); }
+.vit-cell .vit-pill { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); padding: 1px 9px; border-radius: 9px; background: var(--red); color: #fff; font-size: 0.72rem; font-weight: 900; white-space: nowrap; }
+.vit-cell .vit-pill.is-back { background: #1899d6; }
+.vit-cell .vit-pill.is-card { background: #8b5cf6; }
+.vit-cell .vit-pill.is-event { background: #ff7a00; }
+.vit-cell .vit-art { display: flex; align-items: center; justify-content: center; height: 76px; }
+.vit-cell .vit-art .league-avatar { width: 60px; height: 60px; font-size: 1.6rem; }
+.vit-cell .vit-art .kcard { width: 52px; }
+.vit-cell b { font-size: 0.95rem; line-height: 1.15; }
+.vit-cell .vit-type { margin-top: -4px; color: var(--muted); font-size: 0.78rem; font-weight: 800; }
+.vit-cell .btn { width: 100%; margin-top: auto; padding: 9px 6px; font-size: 0.95rem; }
+.vitrine-foot { margin: 12px 0 0; color: var(--muted); font-size: 0.85rem; font-weight: 800; text-align: center; }
+.shop-lines h2 { margin: 0 0 4px; }
+.shop-line { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 2px solid var(--line); }
+.shop-line:last-child { border-bottom: 0; }
+.shop-line .sl-icon { flex: none; width: 42px; font-size: 2rem; text-align: center; line-height: 1; }
+.shop-line .sl-text { flex: 1; min-width: 0; }
+.shop-line .sl-text b { display: block; font-size: 1.05rem; }
+.shop-line .sl-text small { display: block; color: var(--muted); font-weight: 700; font-size: 0.85rem; line-height: 1.25; }
+.shop-line .sl-btns { flex: none; display: flex; flex-direction: column; gap: 8px; min-width: 96px; }
+.shop-line .sl-btns .btn { padding: 10px 10px; font-size: 0.95rem; }
+.shop-line .sl-btns .btn-violet { padding: 7px 8px; font-size: 0.85rem; }
+.ask-art { display: flex; justify-content: center; margin: 14px 0 16px; }
+.ask-art .league-avatar { width: 84px; height: 84px; font-size: 2.2rem; }
+
+/* Bac à sable (?bac=1) : pastille toujours visible */
+.bac-pill { position: fixed; left: 8px; bottom: 84px; z-index: 45; padding: 6px 12px; border: 0; border-radius: 999px; background: #8b5cf6; color: #fff; font: inherit; font-size: 0.85rem; font-weight: 900; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); cursor: pointer; }
+@media (min-width: 901px) { .bac-pill { bottom: 16px; } }
+.avatar-sheet.is-v2 .avatar-label, .avatar-sheet.is-v2 #avatarColors, .avatar-sheet.is-v2 #avatarEmojis { display: none; }
