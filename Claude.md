@@ -254,6 +254,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   jr = junior, couleurs au féminin noire = noir…). Règle de l'utilisateur : « Downey » seul refusé (nom seul OK seulement si
   c'est le nom de famille, jamais le prénom seul sauf personnage connu par son prénom) ; « ? » refusé (question reformulée
   pour demander le NOM du signe) ; Groenland : « sans compter l'Australie » ; « drapeau à damier » seul accepté.
+  Aussi (25/10) : « & » = « et », dr / pr / mr / M. / mme / mlle = docteur / professeur / monsieur / madame / mademoiselle.
+  Prénom seul RETIRÉ pour 17 personnes réelles (Céline Dion, Serena Williams, Billie Eilish…), nom seul ajouté ; personnages
+  de fiction : prénom gardé + nom ajouté (Potter, Croft, Lagaffe…). Gardés (connus par leur prénom) : Dante, Léonard, Marilyn,
+  Che, Fidel, Johnny, Zlatan, Django, Kendji, Zaho, Tycho, Pharrell. REFUSÉ par l'utilisateur : refuser une « faute de frappe »
+  qui serait la réponse d'une autre question (deux questions peuvent avoir la même réponse).
 - Boutons secondaires (`.btn-ghost`) : contour fin gris partout ; dans le bandeau de correction, contour couleur du bandeau.
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.

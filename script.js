@@ -300,6 +300,7 @@ function wordsToNumbers(words) {
    (« noire » = « noir » : la réponse attendue et la réponse tapée passent toutes deux par là, rien n'est faussé). */
 const WORD_SAME = {
     st: 'saint', ste: 'sainte', sts: 'saints', stes: 'saintes', jr: 'junior',
+    dr: 'docteur', pr: 'professeur', mr: 'monsieur', mme: 'madame', mmes: 'mesdames', mlle: 'mademoiselle', mlles: 'mesdemoiselles',
     noire: 'noir', noires: 'noir', blanche: 'blanc', blanches: 'blanc', verte: 'vert', vertes: 'vert',
     bleue: 'bleu', bleues: 'bleu', grise: 'gris', grises: 'gris', violette: 'violet', violettes: 'violet', brune: 'brun', brunes: 'brun'
 };
@@ -309,6 +310,8 @@ function normalize(str) {
         .normalize('NFD').replace(/[̀-ͯ]/g, '')
         .replace(/œ/g, 'oe').replace(/æ/g, 'ae')
         .replace(/(\d),(\d)/g, '$1.$2')              // 42,195 = 42.195
+        .replace(/&/g, ' et ')                         // « Tom & Jerry » = « Tom et Jerry » (2026-10-25)
+        .replace(/(^|\s)m\.\s/g, '$1monsieur ')       // « M. Hulot » = « Monsieur Hulot »
         .replace(/[’'\-–—]/g, ' ')
         .replace(/[^\p{L}\p{N}.\s]/gu, '')
         .replace(/\.(?!\d)|(?<!\d)\./g, '')          // un point ne reste que dans un nombre décimal

@@ -38,7 +38,7 @@ TRAINING_QUESTIONS.push(
 
     // Palier 4
     { id: 19031, theme: "Sport", d: 2.4, q: "Quel boxeur américain était surnommé « Iron Mike » ?", a: ["Tyson", "Mike Tyson"], exp: "Champion du monde des lourds à 20 ans, un record." },
-    { id: 19032, theme: "Sport", d: 2.6, q: "Quelle joueuse américaine a remporté 23 titres du Grand Chelem en simple ?", a: ["Serena Williams", "Serena"], exp: "Sa sœur Venus est aussi une grande championne." },
+    { id: 19032, theme: "Sport", d: 2.6, q: "Quelle joueuse américaine a remporté 23 titres du Grand Chelem en simple ?", a: ["Serena Williams", "Williams"], exp: "Sa sœur Venus est aussi une grande championne." },
     { id: 19033, theme: "Sport", d: 2.6, q: "Quel nom porte le Tour d’Italie cycliste ?", a: ["Le Giro", "Giro", "Giro d’Italia"], exp: "Son leader porte le maillot rose." },
     { id: 19034, theme: "Sport", d: 2.6, q: "Quel club anglais est surnommé « les Red Devils » ?", a: ["Manchester United", "Man United", "Manchester Utd"], exp: "Il joue à Old Trafford." },
     { id: 19035, theme: "Sport", d: 2.8, q: "Quelle course à la voile en solitaire autour du monde part des Sables-d’Olonne ?", a: ["Le Vendée Globe", "Vendée Globe", "Vendee Globe"], exp: "Sans escale ni assistance, tous les quatre ans." },
@@ -92,7 +92,7 @@ TRAINING_QUESTIONS.push(
     { id: 19076, theme: "Sport", d: 2.3, q: "Quel dirigeant, ancien champion de canoë, a présidé le comité des JO de Paris 2024 ?", a: ["Tony Estanguet", "Estanguet"], exp: "Triple champion olympique de canoë monoplace." },
     { id: 19077, theme: "Sport", d: 2.4, q: "Quel pilote monégasque de Ferrari a gagné le Grand Prix de Monaco en 2024 ?", a: ["Charles Leclerc", "Leclerc"], exp: "Une victoire chez lui, dans les rues de la principauté." },
     { id: 19078, theme: "Sport", d: 2.4, q: "Quelle joueuse polonaise a remporté Roland-Garros trois fois de suite, de 2022 à 2024 ?", a: ["Iga Świątek", "Swiatek", "Iga Swiatek", "Świątek"], exp: "Elle l’avait déjà gagné une première fois en 2020." },
-    { id: 19079, theme: "Sport", d: 2.4, q: "Quel basketteur des Lakers est mort dans un accident d’hélicoptère en 2020 ?", a: ["Kobe Bryant", "Kobe", "Bryant"], exp: "Cinq titres NBA, toute sa carrière à Los Angeles." },
+    { id: 19079, theme: "Sport", d: 2.4, q: "Quel basketteur des Lakers est mort dans un accident d’hélicoptère en 2020 ?", a: ["Kobe Bryant", "Bryant"], exp: "Cinq titres NBA, toute sa carrière à Los Angeles." },
     { id: 19080, theme: "Sport", d: 2.5, q: "Quelle compétition de golf oppose l’Europe aux États-Unis tous les deux ans ?", a: ["La Ryder Cup", "Ryder Cup"], exp: "Elle a eu lieu en France, près de Versailles, en 2018." },
     { id: 19081, theme: "Sport", d: 2.5, q: "Quel joueur français, capitaine en 1998, était sélectionneur des Bleus champions en 2018 ?", a: ["Didier Deschamps", "Deschamps", "DD"], exp: "Champion du monde comme joueur et comme entraîneur." },
     { id: 19082, theme: "Sport", d: 2.6, q: "Quel saut en hauteur se fait sur le dos, du nom d’un Américain champion en 1968 ?", a: ["Le Fosbury", "Fosbury", "Fosbury flop", "Rouleau dorsal"], exp: "Dick Fosbury l’a imposé aux JO de Mexico." },

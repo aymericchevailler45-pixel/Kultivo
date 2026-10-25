@@ -1,7 +1,7 @@
 /* Entraînement · Cinéma (ids 17000-17999) */
 TRAINING_QUESTIONS.push(
     // Palier 1
-    { id: 17001, theme: "Cinéma", d: 1.0, q: "Quel jeune sorcier porte une cicatrice en forme d’éclair ?", a: ["Harry Potter", "Harry"], exp: "Huit films adaptés des romans de J. K. Rowling, de 2001 à 2011." },
+    { id: 17001, theme: "Cinéma", d: 1.0, q: "Quel jeune sorcier porte une cicatrice en forme d’éclair ?", a: ["Harry Potter", "Harry", "Potter"], exp: "Huit films adaptés des romans de J. K. Rowling, de 2001 à 2011." },
     { id: 17002, theme: "Cinéma", d: 1.1, q: "Quel petit poisson-clown son père Marin cherche-t-il dans un film Pixar ?", a: ["Nemo", "Némo"], exp: "« Le Monde de Nemo », sorti en 2003." },
     { id: 17003, theme: "Cinéma", d: 1.0, q: "Quel ogre vert vit dans un marais avec un âne bavard ?", a: ["Shrek"], exp: "Son nom vient d’un mot yiddish qui signifie « peur »." },
     { id: 17004, theme: "Cinéma", d: 1.0, q: "Quel agent secret britannique porte le matricule 007 ?", a: ["James Bond", "Bond"], exp: "Créé par le romancier Ian Fleming en 1953." },
@@ -147,7 +147,7 @@ TRAINING_QUESTIONS.push(
     { id: 17130, theme: "Cinéma", d: 2.8, q: "Quel film de Luc Besson produit fait foncer un chauffeur marseillais dans une Peugeot 406 ?", a: ["Taxi"], exp: "Avec Samy Naceri, en 1998." },
     { id: 17131, theme: "Cinéma", d: 2.8, q: "Quelle ville de Normandie accueille chaque année un festival du cinéma américain ?", a: ["Deauville"], exp: "Depuis 1975, sur les célèbres planches." },
     { id: 17132, theme: "Cinéma", d: 2.9, q: "Quel acteur français mythique a joué dans « Le Quai des brumes » et « La Grande Illusion » ?", a: ["Jean Gabin", "Gabin"], exp: "« T’as d’beaux yeux, tu sais. » — « Embrassez-moi. »" },
-    { id: 17133, theme: "Cinéma", d: 3.0, q: "Quelle réalisatrice a tourné « Lost in Translation » avec Bill Murray ?", a: ["Sofia Coppola", "Sofia"], exp: "La fille de Francis Ford Coppola." },
+    { id: 17133, theme: "Cinéma", d: 3.0, q: "Quelle réalisatrice a tourné « Lost in Translation » avec Bill Murray ?", a: ["Sofia Coppola", "Coppola"], exp: "La fille de Francis Ford Coppola." },
     { id: 17134, theme: "Cinéma", d: 3.0, q: "Quel film de 2017 de Jordan Peele mêle horreur et racisme ?", a: ["Get Out"], exp: "Oscar du meilleur scénario original." },
     { id: 17135, theme: "Cinéma", d: 3.1, q: "Dans quel film Tom Hanks dit-il « Houston, nous avons un problème » ?", a: ["Apollo 13"], exp: "Une mission lunaire de 1970 qui a failli tourner au drame." },
     { id: 17136, theme: "Cinéma", d: 3.2, q: "Comment appelle-t-on le cinéma, en référence à la liste des arts ?", a: ["Le septième art", "Septième art", "7e art", "Le 7e art"], exp: "Une expression de Ricciotto Canudo, en 1919." },
@@ -161,7 +161,7 @@ TRAINING_QUESTIONS.push(
     { id: 17144, theme: "Cinéma", d: 3.8, q: "Quel acteur joue le chef cuisinier Carmy dans la série « The Bear » ?", a: ["Jeremy Allen White", "Allen White", "Jeremy White"], exp: "Une série sur un restaurant de sandwichs à Chicago." },
     { id: 17145, theme: "Cinéma", d: 4.0, q: "Quel film de 1985 d’Akira Kurosawa adapte « Le Roi Lear » au Japon médiéval ?", a: ["Ran"], exp: "« Ran » veut dire « chaos »." },
     { id: 17146, theme: "Cinéma", d: 4.0, q: "Quel film d’animation letton, sans dialogues, a gagné l’Oscar 2025 ?", a: ["Flow", "Flow, le chat qui n’avait plus peur de l’eau"], exp: "Un chat survit à une grande inondation avec d’autres animaux." },
-    { id: 17147, theme: "Cinéma", d: 4.2, q: "Quel réalisateur thaïlandais a reçu la Palme d’or 2010 pour « Oncle Boonmee » ?", a: ["Apichatpong Weerasethakul", "Weerasethakul", "Apichatpong"], exp: "Un film sur les vies antérieures." },
+    { id: 17147, theme: "Cinéma", d: 4.2, q: "Quel réalisateur thaïlandais a reçu la Palme d’or 2010 pour « Oncle Boonmee » ?", a: ["Apichatpong Weerasethakul", "Weerasethakul"], exp: "Un film sur les vies antérieures." },
     { id: 17148, theme: "Cinéma", d: 4.2, q: "Quelle actrice française a reçu l’Oscar en 1960 pour « Les Chemins de la haute ville » ?", a: ["Simone Signoret", "Signoret"], exp: "La première Française oscarisée." },
     { id: 17149, theme: "Cinéma", d: 4.4, q: "Quel opérateur des frères Lumière a inventé le travelling en filmant depuis une gondole à Venise ?", a: ["Alexandre Promio", "Promio"], exp: "En 1896, sur le Grand Canal." },
     { id: 17150, theme: "Cinéma", d: 4.6, q: "Quel réalisateur a tourné « Les Demoiselles de Rochefort » ?", a: ["Jacques Demy", "Demy"], exp: "Une comédie musicale en couleurs vives, en 1967." }
