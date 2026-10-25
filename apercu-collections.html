@@ -6,7 +6,7 @@
 <title>Aperçu collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=coll5">
+<link rel="stylesheet" href="style.css?v=coll6">
 <!-- Page d'APERÇU (2026-10-25) : les collections de la vitrine, avec les vrais objets du jeu (style.css + cosmetiques.js). -->
 <style>
     body { padding: 16px; }
@@ -35,7 +35,7 @@
 </head>
 <body>
 <div class="wrap" id="wrap"></div>
-<script src="cosmetiques.js?v=coll5"></script>
+<script src="cosmetiques.js?v=coll6"></script>
 <script>
 const AVI = Object.fromEntries(AV_ITEMS.map(it => [it.id, it]));
 const TYPE = { frame: 'Cadre', bg: 'Fond', pic: 'Emoji' };
@@ -74,7 +74,7 @@ const label = k => { const d = new Date(START); d.setDate(d.getDate() + 7 * k); 
 const seasonOf = k => VITRINE_SEASONS.find(s => (s.from <= s.to ? md(k) >= s.from && md(k) <= s.to : md(k) >= s.from || md(k) <= s.to)) || null;
 const C = Object.fromEntries(AV_COLLECTIONS.map(c => [c.id, c]));
 const plan = [];
-let next = 0, normal = 0; const last = {}, shown = [];
+let next = 0, normal = 0, afterStart = 0; const last = {}, shown = [];
 for (let k = 0; k < 24; k++) {
     const se = seasonOf(k);
     const first = se && (k === 0 || seasonOf(k - 1)?.id !== se.id);
@@ -82,7 +82,8 @@ for (let k = 0; k < 24; k++) {
     if (first) coll = AV_COLLECTIONS.find(c => c.season === se.id);
     else {
         const old = shown.filter(id => k - last[id] >= 2).sort((a, b) => last[a] - last[b]).slice(0, 2);
-        const retour = (normal % 3 === 2 && old.length > 0) || next >= COLLECTION_ORDER.length;
+        const retour = (k >= 5 && afterStart % 3 === 0 && old.length > 0) || next >= COLLECTION_ORDER.length;
+        if (k >= 5) afterStart++;
         normal++;
         if (!retour) coll = C[COLLECTION_ORDER[next++]];
         else { const from = old.length ? old : [...shown].sort((a, b) => last[a] - last[b]).slice(0, 1); coll = C[from[0]]; back = true; }

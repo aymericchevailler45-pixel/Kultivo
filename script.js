@@ -6007,6 +6007,7 @@ function vitrineSeason(k) {
     return VITRINE_SEASONS.find(se => (se.from <= se.to ? md >= se.from && md <= se.to : md >= se.from || md <= se.to)) || null;
 }
 const vitrineCache = {};
+const VITRINE_RETURNS_FROM = 5;   // 1er retour possible : le lundi 30/11/2026
 const AV_COLL = Object.fromEntries(AV_COLLECTIONS.map(c => [c.id, c]));
 /** Semaine k : une collection complète (cadre + fond + dessin). 1re semaine d'une saison : sa collection ;
     une semaine normale sur trois : une ancienne collection revient. Rejoué depuis le 26/10/2026 (rien d'enregistré). */
@@ -6014,6 +6015,7 @@ function vitrinePlan(w) {
     if (vitrineCache[w]) return vitrineCache[w];
     let next = 0;
     let normal = 0;
+    let afterStart = 0;   // semaines normales depuis le début des retours
     const last = {};
     const shown = [];   // collections déjà sorties (hors saison)
     const releasedItems = [];
@@ -6026,8 +6028,10 @@ function vitrinePlan(w) {
         if (firstOfSeason && AV_COLLECTIONS.some(c => c.season === season.id)) coll = AV_COLLECTIONS.find(c => c.season === season.id);
         else {
             // Retour une semaine normale sur trois : une collection vue il y a 2 semaines au moins (les plus anciennes d'abord)
+            // Pas de retour avant le 30/11/2026 (semaine 5) : d'abord des nouveautés ; ensuite 1 semaine normale sur 3
             const old = shown.filter(id => k - last[id] >= 2).sort((a, b) => last[a] - last[b]).slice(0, 2);
-            const retour = (normal % 3 === 2 && old.length > 0) || next >= COLLECTION_ORDER.length;
+            const retour = (k >= VITRINE_RETURNS_FROM && afterStart % 3 === 0 && old.length > 0) || next >= COLLECTION_ORDER.length;
+            if (k >= VITRINE_RETURNS_FROM) afterStart++;
             normal++;
             if (!retour) coll = AV_COLL[COLLECTION_ORDER[next++]];
             else {
