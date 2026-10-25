@@ -4708,55 +4708,80 @@ function nudgeOrderCard(idx) {
     renderOrder();
 }
 
-/* Frise (2026-10-25) : rester appuyé sur une carte placée, puis la glisser plus haut ou plus bas : elle échange sa place
-   avec la carte (ou la case vide) où on la lâche. Un simple tap la retire, comme avant. */
+/* Frise (2026-10-25) : rester appuyé sur une carte placée, puis la glisser plus haut ou plus bas : les autres cartes se
+   décalent pour lui faire de la place, et elle s'insère là où on la lâche (comme une liste qu'on réordonne).
+   La carte du coup de pouce ne bouge pas. Un simple tap retire la carte, comme avant. */
 let orderDragEnd = 0;
+/** Déplace la carte de la case `from` vers la case `to` en décalant les autres (la case verrouillée reste en place). */
+function moveOrderCard(round, from, to) {
+    const locked = round.nudged ? round.nudged.slot : -1;
+    const keys = round.items.map((_, k) => k).filter(k => k !== locked);
+    const vals = keys.map(k => round.placed[k]);
+    const a = keys.indexOf(from);
+    const b = keys.indexOf(to);
+    if (a < 0 || b < 0 || a === b) return false;
+    const [v] = vals.splice(a, 1);
+    vals.splice(b, 0, v);
+    keys.forEach((k, j) => { round.placed[k] = vals[j]; });
+    return true;
+}
 function startOrderDrag(e, slot, card) {
     if (state.phase !== 'order' || state.nudgePick === 'order') return;
     const round = state.orderRounds[state.orderIndex];
-    if (round.nudged && round.nudged.slot === slot) return;   // la carte du coup de pouce ne bouge pas
+    const locked = round.nudged ? round.nudged.slot : -1;
+    if (slot === locked) return;
     const startY = e.clientY;
+    const slots = [...$('orderSlots').children];
+    const tops = slots.map(li => li.getBoundingClientRect().top);
+    const step = slots.length > 1 ? tops[1] - tops[0] : 48;
     let dragging = false;
-    let target = null;
+    let target = slot;
     const timer = setTimeout(() => {
         dragging = true;
         card.classList.add('is-dragging');
+        $('orderSlots').classList.add('is-sorting');
         try { card.setPointerCapture(e.pointerId); } catch (err) { /* tant pis */ }
         if (navigator.vibrate) navigator.vibrate(15);
     }, 220);
+    const preview = () => {   // les autres cartes glissent d'une case pour faire la place
+        slots.forEach((li, k) => {
+            const c = li.querySelector('.order-card, .order-empty');
+            if (!c || k === slot || k === locked) return;
+            let shift = 0;
+            if (slot < target && k > slot && k <= target) shift = -step;
+            if (slot > target && k >= target && k < slot) shift = step;
+            c.style.transform = shift ? `translateY(${shift}px)` : '';
+        });
+    };
     const move = ev => {
         const dy = ev.clientY - startY;
         if (!dragging) { if (Math.abs(dy) > 10) stop(); return; }   // on fait défiler : pas de glisser
         ev.preventDefault();
         card.style.transform = `translateY(${dy}px)`;
-        const under = document.elementFromPoint(ev.clientX, ev.clientY);
-        const li = under && under.closest('#orderSlots .order-slot');
-        const to = li ? [...$('orderSlots').children].indexOf(li) : -1;
-        $('orderSlots').querySelectorAll('.order-slot').forEach((x, k) => x.classList.toggle('is-drop', k === to && to !== slot));
-        target = to;
+        const y = tops[slot] + dy + step / 2;
+        let t = 0;
+        tops.forEach((top, k) => { if (y >= top) t = k; });
+        if (t === locked) t = target;   // on ne pose pas sur la carte du coup de pouce
+        if (t !== target) { target = t; preview(); }
     };
     const stop = () => {
         clearTimeout(timer);
         window.removeEventListener('pointermove', move);
         window.removeEventListener('pointerup', up);
-        window.removeEventListener('pointercancel', stop);
+        window.removeEventListener('pointercancel', cancel);
     };
+    const cancel = () => { stop(); if (dragging) { $('orderSlots').classList.remove('is-sorting'); renderOrder(); } };
     const up = () => {
         stop();
         if (!dragging) return;
         orderDragEnd = Date.now();
-        const locked = round.nudged ? round.nudged.slot : -1;
-        if (target >= 0 && target !== slot && target !== locked) {
-            const a = round.placed[slot];
-            round.placed[slot] = round.placed[target];
-            round.placed[target] = a;
-            playSound('pair');
-        }
+        $('orderSlots').classList.remove('is-sorting');
+        if (moveOrderCard(round, slot, target)) playSound('pair');
         renderOrder();
     };
     window.addEventListener('pointermove', move, { passive: false });
     window.addEventListener('pointerup', up);
-    window.addEventListener('pointercancel', stop);
+    window.addEventListener('pointercancel', cancel);
 }
 
 /** La carte touchée va dans le premier emplacement libre. */

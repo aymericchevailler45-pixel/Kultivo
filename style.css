@@ -3169,3 +3169,4 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .order-card.is-dragging { position: relative; z-index: 5; pointer-events: none; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); transition: none; }
 .order-slot.is-drop .order-card, .order-slot.is-drop .order-empty { outline: 3px dashed var(--pink, #ec4899); outline-offset: 2px; }
 .link-btn.hint-switch { margin: 0; padding: 2px 0; }
+.order-slots.is-sorting .order-card:not(.is-dragging), .order-slots.is-sorting .order-empty { transition: transform 0.15s ease; }
