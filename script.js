@@ -2933,7 +2933,8 @@ function renderShopV2() {
     h.textContent = '🛍️ Vitrine de la semaine';
     const left = el('span');
     left.textContent = `⏳ ${vitrineTimeLeft()}`;
-    head.append(h, left);
+    head.append(h);
+    if (!AV_COLL[plan.coll]) head.append(left);   // sinon le temps restant est dans l'encadré de la collection
     const row = el('div', 'vitrine-row');
     const cell = (pill, pillCls, artNode, name, type, btnText, onBuy, disabled, owned, cellCls = '') => {
         const c = el('div', `vit-cell${cellCls ? ' ' + cellCls : ''}`);
@@ -2987,7 +2988,7 @@ function renderShopV2() {
         const nm = el('b');
         nm.textContent = `${coll.icon} Collection ${coll.name}`;
         const note = el('small');
-        note.textContent = plan.back ? 'Elle revient cette semaine !' : plan.season ? 'Seulement cette semaine' : 'Le look complet';
+        note.textContent = `${plan.back ? 'Elle revient !' : plan.season ? 'Seulement cette semaine' : 'Le look complet'} · ⏳ ${vitrineTimeLeft()}`;
         txt.append(nm, note);
         const missing = plan.items.map(id => AVI[id]).filter(it => it && !d.av.owned[it.id]);
         if (missing.length === coll.items.length) {

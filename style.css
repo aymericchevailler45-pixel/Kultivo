@@ -3121,3 +3121,8 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 }
 /* Vitrine : titre moins large sur téléphone (moins d'espace vide au-dessus de la collection) */
 @media (max-width: 480px) { .vitrine-head h2 { font-size: 1.15rem; } }
+/* Vitrine : titre sur une ligne et collection juste dessous (2026-10-25) */
+.vitrine-head { align-items: center; }
+.vitrine-head h2 { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vitrine .vitrine-look { margin-top: 6px; }
+@media (max-width: 480px) { .vitrine-head h2 { font-size: 1.15rem; } }
