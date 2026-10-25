@@ -245,6 +245,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `facts.js` (THEME_FACTS, 10 par thème = 150) : chaque icône a la sienne (`data-fact`). Décors en z-index 2
   (sinon le parcours, pleine largeur, prenait les taps). L'utilisateur veut « presque 1 anecdote par icône ». Bouton flottant
   « 📍 Mon niveau » (⬆/⬇) quand le niveau en cours est hors écran. Drapeaux zoomables (loupe) comme les photos.
+  CORRECTION VERSION 2 (2026-10-25, `judgeV2`, réglage `JUDGE_VERSION`) : lettres inversées = 1 faute, lettre voisine sur le
+  clavier AZERTY ou QWERTY = ½ (`typoCost`, `KEY_NEAR`), lettre doublée oubliée / lettre en trop à côté = ½ ; mot par mot quand
+  le nombre de mots est le même (`wordClose` : 1-3 lettres exact, 4 lettres une voisine ou une inversion, 5-8 : 1 faute, 9+ : 2),
+  sinon marge globale d'avant si aucun petit mot faux ni mot entièrement différent ; même prononciation (`soundKey`, mots de 6
+  lettres ou plus, moitié des lettres en commun) ; réponses « La » / « D » enfin acceptées (ce n'est plus effacé comme article).
+  Testé : 0 réponse d'une autre question acceptée à tort, inversions 55 % → 99 %, voisines 95 % → 99 %.
+  RETOUR EN ARRIÈRE (demandé de garder) : mettre `JUDGE_VERSION = 1` (l'ancienne fonction `judgeV1` est intacte).
   Correction : nombres en lettres = chiffres, depuis le 2026-10-23 aussi les nombres composés (« dix-sept »,
   « quatre-vingt-neuf », « mille sept cent… », `wordsToNumbers`), les ordinaux (« cinquième » = « 5e » = « 5ème »,
   `ORDINAL_WORDS`), les chiffres romains (« Louis XIV » = « Louis 14 », `romanValue` ; lettre seule : V et X seulement)

@@ -372,8 +372,9 @@ function answerWithoutGeneric(ans) {
 }
 
 /** Retourne 'exact', 'typo' (faute de frappe tolérée) ou 'wrong'.
-    `question` sert à refuser une réponse courte déjà écrite dans la question. */
-function judge(input, rawAnswers, question = '') {
+    `question` sert à refuser une réponse courte déjà écrite dans la question.
+    Version 1 (jusqu'au 25/10/2026), gardée pour pouvoir y revenir : JUDGE_VERSION = 1. */
+function judgeV1(input, rawAnswers, question = '') {
     const typed = stripArticles(normalize(input));
     if (!typed) return 'wrong';
     const numbersTyped = normalize(input).match(/\d+(?:\.\d+)?/g) || [];
@@ -404,6 +405,141 @@ function judge(input, rawAnswers, question = '') {
         const numbersAns = ans.match(/\d+(?:\.\d+)?/g) || [];
         const sameNumbers = numbersAns.join(' ') === (typed.match(/\d+(?:\.\d+)?/g) || []).join(' ');
         if (distance <= tolerance && sameNumbers) typo = true;
+    }
+    return typo ? 'typo' : 'wrong';
+}
+
+/* ---------- Correction des réponses, version 2 (2026-10-25, choix de l'utilisateur) ----------
+   Mêmes réponses acceptées qu'avant (forme courte, nombres exacts…), mais les fautes de frappe sont mieux reconnues :
+   1. deux lettres inversées = une seule faute (« Loius ») ;
+   2. une lettre VOISINE sur le clavier (AZERTY ou QWERTY) = une demi-faute (« Chirn ») ;
+   3. tolérance MOT PAR MOT quand le nombre de mots est le même : chaque mot a sa petite marge, un mot entier faux ne passe
+      pas (« Guerre de Sang Ans ») ; sinon, comme avant, sur toute la réponse ;
+   4. mots de 6 lettres ou plus qui SE PRONONCENT pareil (et ont au moins la moitié de leurs lettres en commun) : faute
+      d'orthographe tolérée (« Nietsche », « Rinocéros »).
+   Marge par mot : 1-3 lettres exact ; 4 lettres une voisine (½) ou une inversion ; 5-8 lettres 1 faute ; 9 et plus 2 fautes.
+   Tout ce qui est accepté ainsi compte comme une faute de frappe (« Accepté, mais attention à l'orthographe »). */
+const JUDGE_VERSION = 2;
+const judge = (input, rawAnswers, question = '') => (JUDGE_VERSION === 1 ? judgeV1 : judgeV2)(input, rawAnswers, question);
+
+const KEY_NEAR = (() => {
+    const near = new Set();
+    for (const rows of [['azertyuiop', 'qsdfghjklm', 'wxcvbn'], ['qwertyuiop', 'asdfghjkl', 'zxcvbnm']]) {
+        rows.forEach((row, r) => [...row].forEach((ch, i) => {
+            const add = other => { if (other && other !== ch) { near.add(ch + other); near.add(other + ch); } };
+            add(row[i - 1]); add(row[i + 1]);
+            for (const rr of [r - 1, r + 1]) {
+                const o = rows[rr];
+                if (o) { add(o[i - 1]); add(o[i]); add(o[i + 1]); }
+            }
+        }));
+    }
+    return near;
+})();
+const keysNear = (a, b) => KEY_NEAR.has(a + b);
+
+/** Fautes entre t (tapé) et a (attendu) : lettre voisine ½, inversion de 2 lettres 1, lettre en trop tapée à côté ½. */
+function typoCost(t, a) {
+    const n = t.length, m = a.length;
+    const d = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = 0; i <= n; i++) d[i][0] = i;
+    for (let j = 0; j <= m; j++) d[0][j] = j;
+    for (let i = 1; i <= n; i++) {
+        for (let j = 1; j <= m; j++) {
+            const tc = t[i - 1], ac = a[j - 1];
+            const sub = tc === ac ? 0 : keysNear(tc, ac) ? 0.5 : 1;
+            // lettre en trop : la moitié si c'est la même que sa voisine, ou une touche d'à côté (doigt qui accroche)
+            const extra = (i > 1 && (t[i - 2] === tc || keysNear(t[i - 2], tc))) || (i < n && (t[i] === tc || keysNear(t[i], tc))) ? 0.5 : 1;
+            // lettre oubliée : la moitié si c'est une lettre doublée (« apel » pour « appel »)
+            const missing = (j > 1 && a[j - 2] === ac) || (j < m && a[j] === ac) ? 0.5 : 1;
+            d[i][j] = Math.min(d[i - 1][j] + extra, d[i][j - 1] + missing, d[i - 1][j - 1] + sub);
+            if (i > 1 && j > 1 && tc === a[j - 2] && t[i - 2] === ac && tc !== ac) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+        }
+    }
+    return d[n][m];
+}
+
+/** Clé de prononciation française (simplifiée) d'un mot déjà sans accents, en minuscules. */
+function soundKey(w) {
+    let s = w;
+    s = s.replace(/eaux?$/, 'o').replace(/eau/g, 'o').replace(/au/g, 'o');
+    s = s.replace(/ph/g, 'f').replace(/pf/g, 'f').replace(/th/g, 't').replace(/rh/g, 'r');
+    s = s.replace(/tch/g, 'ch').replace(/sch/g, 'ch').replace(/sh/g, 'ch');
+    s = s.replace(/ck/g, 'k').replace(/qu/g, 'k').replace(/q/g, 'k');
+    s = s.replace(/c(?=[eiy])/g, 's').replace(/c(?!h)/g, 'k');
+    s = s.replace(/gu(?=[eiy])/g, 'g').replace(/g(?=[eiy])/g, 'j');
+    s = s.replace(/y/g, 'i').replace(/w/g, 'v').replace(/z/g, 's').replace(/x/g, 'ks');
+    s = s.replace(/h/g, (m, i) => (s[i - 1] === 'c' ? 'h' : ''));
+    s = s.replace(/[ae]i/g, 'e').replace(/(er|ez|et)$/, 'e');
+    s = s.replace(/[ae][nm](?=[^aeiouy]|$)/g, 'an').replace(/(ai|ei)?[iu][nm](?=[^aeiouy]|$)/g, 'in').replace(/o[nm](?=[^aeiouy]|$)/g, 'on');
+    s = s.replace(/(.)\1+/g, '$1');
+    s = s.replace(/e$/, '').replace(/[stxdp]$/, '');
+    return s;
+}
+/** Nombre de lettres en commun (sans tenir compte de l'ordre). */
+function commonLetters(a, b) {
+    const count = {};
+    for (const ch of a) count[ch] = (count[ch] || 0) + 1;
+    let n = 0;
+    for (const ch of b) if (count[ch] > 0) { count[ch]--; n++; }
+    return n;
+}
+/** Un mot tapé vaut-il le mot attendu (avec sa petite marge) ? */
+function wordClose(t, a) {
+    if (t === a) return true;
+    if (/\d/.test(t) || /\d/.test(a)) return false;   // jamais de marge sur un nombre
+    const len = a.length;
+    if (len <= 3) return false;
+    const cost = typoCost(t, a);
+    if (len === 4 ? cost <= 0.5 || (cost === 1 && t.length === 4 && [...t].sort().join('') === [...a].sort().join('')) : cost <= (len >= 9 ? 2 : 1)) return true;
+    // Même prononciation (mots longs seulement, et assez de lettres en commun)
+    return len >= 6 && t.length >= 5 && soundKey(t) === soundKey(a) && commonLetters(t, a) >= Math.ceil(len / 2);
+}
+/** Réponse entière proche (mot par mot si le nombre de mots est le même, sinon sur toute la réponse). */
+function answerClose(typed, ans) {
+    const tw = typed.split(' '), aw = ans.split(' ');
+    const len = ans.length;
+    const budget = len >= 9 ? 2 : len >= 5 ? 1 : len === 4 ? 0.5 : 0;   // marge sur toute la réponse (comme avant)
+    if (tw.length === aw.length) {
+        if (tw.every((w, i) => wordClose(w, aw[i]))) return true;
+        // Sinon, la marge globale d'avant… à condition qu'aucun petit mot (3 lettres ou moins) ne soit faux
+        // et qu'aucun mot ne soit entièrement différent (« Guerre de Sang Ans », « Jeanne d'Orc » : refusés)
+        let total = 0;
+        for (let i = 0; i < tw.length; i++) {
+            const c = typoCost(tw[i], aw[i]);
+            if (c > 0 && (aw[i].length <= 3 || /\d/.test(aw[i]) || c > aw[i].length / 3)) return false;
+            total += c;
+        }
+        return total <= budget;
+    }
+    return typoCost(typed, ans) <= budget;
+}
+
+function judgeV2(input, rawAnswers, question = '') {
+    // Réponse faite d'un seul « article » (la note « La », la lettre « D ») : on ne l'efface pas
+    const keep = str => { const n = normalize(str); return stripArticles(n) || n; };
+    const typed = keep(input);
+    if (!typed) return 'wrong';
+    const numbersTyped = normalize(input).match(/\d+(?:\.\d+)?/g) || [];
+    const questionWords = new Set(stripArticles(normalize(question)).split(' '));
+    let typo = false;
+    const answers = [];
+    for (const raw of rawAnswers) {
+        const ans = keep(raw);
+        if (!ans) continue;
+        answers.push(ans);
+        const short = answerWithoutGeneric(ans);
+        if (short && short.length >= 3 && !short.split(' ').every(w => questionWords.has(w))) answers.push(short);
+    }
+    for (const ans of answers) {
+        if (/^\d+(\.\d+)?$/.test(ans)) {   // nombre (date, distance…) : exact uniquement
+            if (numbersTyped.includes(ans)) return 'exact';
+            continue;
+        }
+        if (typed === ans) return 'exact';
+        const numbersAns = ans.match(/\d+(?:\.\d+)?/g) || [];
+        const sameNumbers = numbersAns.join(' ') === (typed.match(/\d+(?:\.\d+)?/g) || []).join(' ');
+        if (sameNumbers && answerClose(typed, ans)) typo = true;
     }
     return typo ? 'typo' : 'wrong';
 }
