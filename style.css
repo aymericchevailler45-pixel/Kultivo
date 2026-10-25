@@ -3151,3 +3151,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .order-card.is-nudged::after { content: ' 👆'; }
 .hint-note { width: 100%; margin: 4px 0 0; color: var(--muted); font-size: 0.8rem; font-weight: 700; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .is-nudging .order-pool .order-card, .is-nudging .pair-btn:not(:disabled) { animation: none; } }
+/* Frise : 👆 à gauche de « Vérifier » (comme 💡 dans les questions) */
+.order-actions { display: flex; gap: 10px; align-items: stretch; }
+.order-actions #orderBtn { flex: 1; }
+.order-actions .nudge-btn { flex: none; align-self: stretch; padding: 0 16px; font-size: 1.3rem; }

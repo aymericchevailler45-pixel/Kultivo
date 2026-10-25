@@ -4595,7 +4595,10 @@ function renderNudgeBtn(kind) {
     btn.hidden = false;
     const used = !!target.nudged;
     btn.classList.toggle('is-picking', state.nudgePick === kind);
-    btn.textContent = used ? '👆 Coup de pouce utilisé' : state.nudgePick === kind ? '✕ Annuler le coup de pouce' : '👆 Coup de pouce';
+    if (kind === 'order') {   // frise : petit bouton à gauche de « Vérifier », comme 💡 dans les questions
+        btn.textContent = state.nudgePick === kind ? '✕' : '👆';
+        btn.setAttribute('aria-label', used ? 'Coup de pouce déjà utilisé' : state.nudgePick === kind ? 'Annuler le coup de pouce' : 'Coup de pouce');
+    } else btn.textContent = used ? '👆 Coup de pouce utilisé' : state.nudgePick === kind ? '✕ Annuler le coup de pouce' : '👆 Coup de pouce';
     btn.disabled = used || (kind === 'order' && target.checked);
 }
 async function askNudge(kind) {
