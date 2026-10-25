@@ -5986,7 +5986,7 @@ const dayGap = (a, b) => Math.round((new Date(`${b}T12:00:00`) - new Date(`${a}T
 const vitrineWeek = () => Math.max(0, Math.floor(dayGap(VITRINE_START, weekStart()) / 7));
 function vitrineSeason(k) {
     const md = shiftDays(VITRINE_START, 7 * k).slice(5);
-    return VITRINE_SEASONS.find(se => md >= se.from && md <= se.to) || null;
+    return VITRINE_SEASONS.find(se => (se.from <= se.to ? md >= se.from && md <= se.to : md >= se.from || md <= se.to)) || null;
 }
 const vitrineCache = {};
 const AV_COLL = Object.fromEntries(AV_COLLECTIONS.map(c => [c.id, c]));
@@ -6062,7 +6062,8 @@ const AV_CHEST_CHANCE = 0.1;
 function avChestPool() {
     if (!avOn()) return [];
     const plan = vitrinePlan(vitrineWeek());
-    return plan.released.filter(id => !plan.items.includes(id) && AVI[id] && !AVI[id].season && !state.data.av.owned[id]);
+    const seasonal = new Set(AV_COLLECTIONS.filter(c => c.season).flatMap(c => c.items));
+    return plan.released.filter(id => !plan.items.includes(id) && AVI[id] && !AVI[id].season && !seasonal.has(id) && !state.data.av.owned[id]);
 }
 function avChestDrop() {
     const pool = avChestPool();

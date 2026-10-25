@@ -141,20 +141,28 @@ const AV_ITEMS = [
     { id: 'pic-invader',   type: 'pic', kind: 'shop', name: 'Envahisseur',  emoji: '👾', price: 300 },
     { id: 'pic-lollipop',  type: 'pic', kind: 'shop', name: 'Sucette',      emoji: '🍭', price: 300 },
     { id: 'pic-reindeer',  type: 'pic', kind: 'shop', name: 'Renne',        emoji: '🦌', price: 300, season: 'noel' },
-    { id: 'pic-love',      type: 'pic', kind: 'shop', name: 'Lettre d’amour', emoji: '💌', price: 300, season: 'valentin' }
+    { id: 'pic-love',      type: 'pic', kind: 'shop', name: 'Lettre d’amour', emoji: '💌', price: 300, season: 'valentin' },
+    { id: 'pic-snowman',   type: 'pic', kind: 'shop', name: 'Bonhomme de neige', emoji: '⛄', price: 300, season: 'hiver' },
+    { id: 'bg-fireworks',  type: 'bg',  kind: 'shop', name: 'Feu d’artifice', price: 600, season: 'nouvelan' },
+    { id: 'pic-champagne', type: 'pic', kind: 'shop', name: 'Coupes', emoji: '🥂', price: 300, season: 'nouvelan' },
+    { id: 'pic-envelope',  type: 'pic', kind: 'shop', name: 'Enveloppe rouge', emoji: '🧧', price: 300, season: 'chine' }
 ];
 
 // Collections (2026-10-25, choix de l'utilisateur) : chaque semaine, la vitrine montre UNE collection complète
 // (un cadre + un fond + un dessin qui vont ensemble). Une semaine sur trois : une ancienne collection revient.
 // Collections de saison : seulement à leur date (1re semaine de la période), puis l'année suivante.
 const AV_COLLECTIONS = [
-    { id: 'halloween', name: 'Halloween',    icon: '🎃', items: ['fr-pumpkins', 'bg-brume', 'pic-spider'], season: 'halloween' },
-    { id: 'noel',      name: 'Noël',         icon: '🎄', items: ['fr-snowflakes', 'bg-snow', 'pic-reindeer'], season: 'noel' },
-    { id: 'valentin',  name: 'Saint-Valentin', icon: '💖', items: ['fr-hearts', 'bg-hearts', 'pic-love'], season: 'valentin' },
+    // Collections de saison : elles sortent le 1er lundi de leur période (VITRINE_SEASONS), puis l'année suivante
+    { id: 'halloween', name: 'Halloween',        icon: '🎃', items: ['fr-pumpkins', 'bg-brume', 'pic-spider'], season: 'halloween' },
+    { id: 'hiver',     name: 'Hiver',            icon: '❄️', items: ['fr-frost', 'bg-boreal', 'pic-snowman'], season: 'hiver' },
+    { id: 'noel',      name: 'Noël',             icon: '🎄', items: ['fr-snowflakes', 'bg-snow', 'pic-reindeer'], season: 'noel' },
+    { id: 'nouvelan',  name: 'Nouvel an',        icon: '🎆', items: ['fr-confetti', 'bg-fireworks', 'pic-champagne'], season: 'nouvelan' },
+    { id: 'chine',     name: 'Nouvel an chinois', icon: '🐉', items: ['fr-scales', 'bg-lava', 'pic-dragon'], season: 'chine' },
+    { id: 'valentin',  name: 'Saint-Valentin',   icon: '💖', items: ['fr-hearts', 'bg-hearts', 'pic-love'], season: 'valentin' },
+    { id: 'printemps', name: 'Printemps',        icon: '🌸', items: ['fr-flowers', 'bg-cherry', 'pic-butterfly'], season: 'printemps' },
+    // Toute l'année
     { id: 'espace',    name: 'Espace',       icon: '🌌', items: ['fr-stars', 'bg-galaxy', 'pic-planet'] },
     { id: 'ocean',     name: 'Océan',        icon: '🌊', items: ['fr-waves', 'bg-ocean', 'pic-dolphin'] },
-    { id: 'dragon',    name: 'Dragon',       icon: '🐉', items: ['fr-scales', 'bg-lava', 'pic-dragon'] },
-    { id: 'printemps', name: 'Printemps',    icon: '🌸', items: ['fr-flowers', 'bg-cherry', 'pic-butterfly'] },
     { id: 'cinema',    name: 'Cinéma',       icon: '🎬', items: ['fr-film', 'bg-night', 'pic-clapper'] },
     { id: 'neon',      name: 'Néon',         icon: '🌃', items: ['fr-neon-pink', 'bg-neon', 'pic-disco'] },
     { id: 'retro',     name: 'Rétro gaming', icon: '👾', items: ['fr-pixels', 'bg-retro', 'pic-invader'] },
@@ -164,13 +172,18 @@ const AV_COLLECTIONS = [
     { id: 'jungle',    name: 'Jungle',       icon: '🌴', items: ['fr-wood', 'bg-forest', 'pic-parrot'] },
     { id: 'bonbons',   name: 'Bonbons',      icon: '🍬', items: ['fr-dots', 'bg-candy', 'pic-lollipop'] }
 ];
-// Ordre de sortie des collections hors saison (ajouter les nouveaux lots À LA FIN)
-const COLLECTION_ORDER = ['espace', 'ocean', 'dragon', 'printemps', 'cinema', 'neon', 'retro', 'royal', 'arcenciel', 'luxe', 'jungle', 'bonbons'];
+// Ordre de sortie des collections de toute l'année (ajouter les nouveaux lots À LA FIN)
+const COLLECTION_ORDER = ['espace', 'ocean', 'cinema', 'neon', 'retro', 'royal', 'arcenciel', 'luxe', 'jungle', 'bonbons'];
 const COLLECTION_DISCOUNT = 0.8;   // « Toute la collection » : −20 %
 
-// Périodes de saison (mois-jour du lundi) : la collection de saison sort la 1re semaine de la période
+// Périodes de saison (mois-jour du lundi) : la collection sort le 1er lundi de sa période (2026-10-25, demande de
+// l'utilisateur : au bon moment de l'année ; Noël juste avant le 25, nouvel an chinois fin janvier, printemps en mars)
 const VITRINE_SEASONS = [
     { id: 'halloween', from: '10-19', to: '11-01' },
-    { id: 'noel',      from: '12-07', to: '12-21' },
-    { id: 'valentin',  from: '02-01', to: '02-14' }
+    { id: 'hiver',     from: '11-20', to: '11-30' },
+    { id: 'noel',      from: '12-19', to: '12-25' },
+    { id: 'nouvelan',  from: '12-26', to: '01-01' },
+    { id: 'chine',     from: '01-30', to: '02-07' },
+    { id: 'valentin',  from: '02-08', to: '02-14' },
+    { id: 'printemps', from: '03-16', to: '03-29' }
 ];

@@ -6,7 +6,7 @@
 <title>Aperçu collections</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=coll1">
+<link rel="stylesheet" href="style.css?v=coll2">
 <!-- Page d'APERÇU (2026-10-25) : les collections de la vitrine, avec les vrais objets du jeu (style.css + cosmetiques.js). -->
 <style>
     body { padding: 16px; }
@@ -35,7 +35,7 @@
 </head>
 <body>
 <div class="wrap" id="wrap"></div>
-<script src="cosmetiques.js?v=coll1"></script>
+<script src="cosmetiques.js?v=coll2"></script>
 <script>
 const AVI = Object.fromEntries(AV_ITEMS.map(it => [it.id, it]));
 const TYPE = { frame: 'Cadre', bg: 'Fond', pic: 'Dessin' };
@@ -67,15 +67,15 @@ intro.className = 'card';
 intro.innerHTML = `<h2>🛍️ Les collections de la vitrine</h2><p>Chaque semaine : <b>une collection complète</b> (cadre + fond + dessin qui vont ensemble) + ta carte de la semaine. Une semaine sur trois, une ancienne collection revient. Les collections de fête ne sortent qu’à leur date. À droite de chaque ligne : le look complet. Bouton « Toute la collection » : −20 %.</p>`;
 wrap.append(intro);
 
-// Programme des 18 premières semaines (même règle que dans le jeu)
+// Programme des 24 premières semaines (même règle que dans le jeu)
 const START = new Date(2026, 9, 26);
 const md = k => { const d = new Date(START); d.setDate(d.getDate() + 7 * k); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const label = k => { const d = new Date(START); d.setDate(d.getDate() + 7 * k); return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); };
-const seasonOf = k => VITRINE_SEASONS.find(s => md(k) >= s.from && md(k) <= s.to) || null;
+const seasonOf = k => VITRINE_SEASONS.find(s => (s.from <= s.to ? md(k) >= s.from && md(k) <= s.to : md(k) >= s.from || md(k) <= s.to)) || null;
 const C = Object.fromEntries(AV_COLLECTIONS.map(c => [c.id, c]));
 const plan = [];
 let next = 0, normal = 0; const last = {}, shown = [];
-for (let k = 0; k < 18; k++) {
+for (let k = 0; k < 24; k++) {
     const se = seasonOf(k);
     const first = se && (k === 0 || seasonOf(k - 1)?.id !== se.id);
     let coll = null, back = false;
@@ -131,6 +131,21 @@ for (const c of AV_COLLECTIONS) {
     lp.insertAdjacentHTML('beforeend', `<b>Le look complet</b><small>Toute la collection</small><span class="price">${Math.round(full * COLLECTION_DISCOUNT / 10) * 10} 🪙 <s style="color:var(--muted);font-weight:700">${full}</s></span>`);
     row.append(lp);
     card.append(row);
+    if (c.id === 'espace') {   // idée de l'utilisateur : la collection Espace portée avec la fusée 🚀 (dessin à gagner) au lieu de la planète
+        const alt = document.createElement('div');
+        alt.className = 'coll-row';
+        alt.style.marginTop = '14px';
+        const box = document.createElement('div');
+        box.className = 'piece look';
+        box.style.gridColumn = '1 / -1';
+        const a2 = document.createElement('div');
+        a2.className = 'art';
+        a2.append(av({ frame: fr.id, bg: bg.id, emoji: '🚀' }));
+        box.append(a2);
+        box.insertAdjacentHTML('beforeend', '<b>Ton idée : avec la fusée 🚀 au lieu de la planète</b><small>la fusée se gagne en faisant 10 bonnes réponses dans un sprint</small>');
+        alt.append(box);
+        card.append(alt);
+    }
     wrap.append(card);
 }
 </script>

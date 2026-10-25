@@ -28,7 +28,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      dessin assortis, `AV_COLLECTIONS`, ordre `COLLECTION_ORDER` : ajouter les lots À LA FIN) + ma carte ; « Toute la
      collection » −20 % (`buyCollection`, `COLLECTION_DISCOUNT`) ; une semaine normale sur 3 = une ancienne collection revient
      (seulement si pas vue depuis ≥ 4 semaines) ; collections de fête (Halloween, Noël, Saint-Valentin) la 1re semaine de leur
-     période. 1er lot : 12 collections + 3 de fête. Aperçu : apercu-collections.html (vrais styles du jeu). Prochains lots :
+     période. Saisons (`VITRINE_SEASONS`, 25/10) : Halloween 26/10, Hiver fin nov., Noël le lundi avant le 25, Nouvel an,
+     Nouvel an chinois (Dragon), Saint-Valentin, Printemps (fin mars). 1er lot : 10 collections de toute l'année + 7 de saison
+     (il faudra le 2e lot vers février : sinon trop de retours). Aperçu : apercu-collections.html (vrais styles du jeu). Prochains lots :
      ~12 collections tous les ~4 mois, montrées d'abord sur l'aperçu. Objets pas encore rangés dans une collection (réserve) :
      cadres checker, neon-blue, stripes, parchment, zigzag, tartan, music, frost, confetti ; fonds sunset, aurora, jade,
      lavender, bronze, wood, mint, ruby, silver, boreal ; dessins butterfly…(voir cosmetiques.js).
