@@ -3066,3 +3066,11 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
     .hw-web { width: 64px; }
 }
 @media (prefers-reduced-motion: reduce) { .hw-spider, .hw-bat { animation: none; } .hw-bat { display: none; } }
+
+/* Avatar : crayon sorti du rond (il cachait les cadres) → bouton à côté du nom ; vitrine : avatar neutre ; avant → après */
+.avatar-edit-btn { flex: none; margin-left: auto; padding: 6px 10px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-size: 0.82rem; font-weight: 900; cursor: pointer; white-space: nowrap; }
+.hero-title h2 { min-width: 0; }
+.league-avatar.av-neutral { background: #c9d1dd; color: #ffffff; }
+.av-before-after { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.av-before-after .league-avatar { width: 70px; height: 70px; font-size: 1.9rem; }
+.av-before-after .av-arrow { color: var(--muted); font-size: 1.6rem; font-weight: 900; }

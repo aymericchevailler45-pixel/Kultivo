@@ -21,6 +21,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      `vitrinePlan` rejoué depuis le 26/10, `vitrineCard`, `avChestDrop`, `renderShopV2`, `renderAvatarModalV2`, `avOpenTile`,
      `buyAvItem`, `buyVitrineCard`, `avFound`, `avDress` dans `avatarEl`) ; sauvegarde `av`, `vitrine`, `vitrineSeen`,
      `playerSeed` ; fond / cadre des amis via `summary.look`. Bac à sable FAIT : `?bac=1` (`BAC`, clé `kultivo_bac`, `initBac`).
+     Retouches du 25/10 : un seul message à la fois (`showToast` remplace le précédent) ; vitrine = objet SEUL sur avatar gris
+     (`avAlone`), achat = « avant → après » (`avBeforeAfter`) ; crayon sorti du rond → bouton « ✏️ Modifier » (`avatarEditBtn`) ;
+     le VRAI lundi, une fois (`mondayFresh`) : bulles d'Halloween et objets d'avatar remis à neuf (déjà vus en démo).
      ANCIEN TEXTE : Coder la BOUTIQUE ET AVATARS (plan détaillé plus bas, version finale du 24/10) + un « bac à sable » `?bac=1` (copie de
      la vraie partie dans une sauvegarde à part, tout le nouveau actif, RIEN envoyé en ligne, bandeau 🧪, « Recommencer le
      test », « +1 000 🪙 », faux amis avec cadres) pour que l'utilisateur teste sur son téléphone avant les autres.

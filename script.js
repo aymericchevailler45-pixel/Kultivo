@@ -1039,6 +1039,7 @@ function checkBadges(silent = false) {
 
 function showToast(text) {
     const box = $('toasts');
+    box.replaceChildren();   // le nouveau message remplace le précédent (sinon ils s'empilent, 2026-10-25)
     const toast = el('div', 'toast');
     toast.textContent = text;
     box.append(toast);
@@ -2568,7 +2569,7 @@ function renderProfile() {
 
     $('profileName').textContent = cloudUser && league?.userId === cloudUser.id && league.pseudo ? league.pseudo : 'Mon profil';
     $('profileTitle').textContent = `🎖️ ${current.name} ›`;
-    $('avatarBtn').replaceChildren(avatarEl(myAvatarName(), data.avatar), el('span', 'avatar-edit'));
+    $('avatarBtn').replaceChildren(avatarEl(myAvatarName(), data.avatar));
     renderSoundBtn();
     $('profileXp').textContent = `${data.xp} XP`;
     if (next) {
@@ -2842,8 +2843,8 @@ async function buyAvItem(it) {
     const d = state.data;
     if (d.av.owned[it.id]) return;
     if (d.coins < it.price) { showToast(`Il te manque ${it.price - d.coins} 🪙.`); return; }
-    const ok = await askConfirm({ title: `Acheter « ${it.name} » ?`, art: avPreview(it),
-        text: `${AV_TYPE_NAME[it.type]} · ${it.price} 🪙 (il t’en restera ${d.coins - it.price}). Il ira tout de suite sur ton avatar.`,
+    const ok = await askConfirm({ title: `Acheter « ${it.name} » ?`, art: avBeforeAfter(it),
+        text: `${AV_TYPE_NAME[it.type]} · ${it.price} 🪙 (il t’en restera ${d.coins - it.price}). Ton avatar avant → après : il ira tout de suite dessus.`,
         yes: `Acheter · ${it.price} 🪙` });
     if (!ok || d.coins < it.price) return;
     d.coins -= it.price;
@@ -2916,7 +2917,7 @@ function renderShopV2() {
     };
     const itemCell = (it, pill, pillCls, cellCls) => {
         const owned = !!d.av.owned[it.id];
-        return cell(pill, pillCls, avPreview(it), it.name, AV_TYPE_NAME[it.type], owned ? '✓ À toi' : `${it.price} 🪙`,
+        return cell(pill, pillCls, avAlone(it), it.name, AV_TYPE_NAME[it.type], owned ? '✓ À toi' : `${it.price} 🪙`,
             owned ? null : () => buyAvItem(it), owned || d.coins < it.price, owned, cellCls);
     };
     plan.news.forEach(id => row.append(itemCell(AVI[id], 'Nouveau', '', '')));
@@ -5831,6 +5832,14 @@ function avHas(it, st) {
 /** Joueurs d'avant la mise à jour (testeurs) : pas de passe-droit, sauf la couleur et le dessin qu'ils portent. */
 function avMigrate() {
     const d = state.data;
+    // Le vrai lundi (ni démo ni bac à sable), une seule fois : on oublie ce qui a pu être vu dans une démo
+    if (!demoLundi && !BAC && todayKey() >= PATCH_DAY && !d.mondayFresh) {
+        d.mondayFresh = true;
+        EVENTS.forEach(ev => { d[ev.tip] = false; d[`${ev.tip}Page`] = false; });
+        d.av = { owned: d.av.owned || {}, opened: { ...(d.av.owned || {}) }, known: { ...(d.av.owned || {}) }, grant: {}, migrated: false };
+        d.vitrine = null;
+        d.vitrineSeen = null;
+    }
     if (d.av.migrated) return;
     d.av.migrated = true;
     const old = Object.keys(d.activeDays || {}).some(k => k < PATCH_DAY);
@@ -5884,6 +5893,25 @@ function avWear(it) {
     else if (it.type === 'pic') look.emoji = it.emoji;
     else if (it.hue !== undefined) { look.hue = it.hue; look.bg = null; }
     else look.bg = it.id;
+}
+/** Vitrine : l'objet seul, sur un avatar gris neutre (on voit tout de suite ce qu'on achète). */
+function avAlone(it) {
+    const look = { hue: 0, emoji: null, bg: null, frame: null };
+    if (it.type === 'frame') look.frame = it.id;
+    else if (it.type === 'pic') look.emoji = it.emoji;
+    else look.bg = it.id;
+    const a = avatarEl(myAvatarName(), look);
+    if (it.type !== 'bg') a.classList.add('av-neutral');
+    if (it.type === 'bg') a.textContent = '';
+    return a;
+}
+/** Confirmation d'achat : mon avatar avant → après. */
+function avBeforeAfter(it) {
+    const box = el('div', 'av-before-after');
+    const arrow = el('span', 'av-arrow');
+    arrow.textContent = '→';
+    box.append(avatarEl(myAvatarName(), avEnsureLook()), arrow, avPreview(it));
+    return box;
 }
 /** Aperçu : mon avatar avec cet objet. */
 function avPreview(it, cls = '') {
@@ -7628,6 +7656,7 @@ function bindEvents() {
         });
     });
     $('avatarBtn').addEventListener('click', openAvatarModal);
+    $('avatarEditBtn').addEventListener('click', openAvatarModal);
     document.querySelectorAll('.challenges-tab').forEach(t => t.addEventListener('click', () => setChallengesTab(t.dataset.sub)));
     $('profileTitle').addEventListener('click', openTitlesModal);
     $('closeTitlesBtn').addEventListener('click', () => { $('titlesModal').hidden = true; });
