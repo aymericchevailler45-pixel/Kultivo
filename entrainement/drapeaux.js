@@ -67,7 +67,7 @@ TRAINING_QUESTIONS.push(
     { id: 23051, theme: "Drapeaux", d: 1.0, q: "Combien de couleurs compte le drapeau français ?", a: ["3", "Trois"], exp: "Bleu, blanc, rouge, en bandes verticales." },
     { id: 23052, theme: "Drapeaux", d: 1.2, q: "Quelle feuille d’arbre figure sur le drapeau du Canada ?", a: ["L’érable", "Érable", "Erable", "Feuille d’érable"], exp: "Une feuille rouge à 11 pointes." },
     { id: 23053, theme: "Drapeaux", d: 1.2, q: "Quelle couleur occupe la bande du haut du drapeau allemand ?", a: ["Noir", "Le noir"], exp: "Noir, rouge et or, de haut en bas." },
-    { id: 23054, theme: "Drapeaux", d: 1.4, q: "Quel symbole figure au centre du drapeau d’Israël ?", a: ["L’étoile de David", "Étoile de David", "Etoile de David"], exp: "Entre deux bandes bleues, comme sur un châle de prière." },
+    { id: 23054, theme: "Drapeaux", d: 1.4, q: "Quel symbole figure au centre du drapeau d’Israël ?", a: ["L’étoile de David", "Étoile de David", "Etoile de David", "Une étoile", "Étoile", "Étoile à six branches", "Étoile juive", "Magen David"], exp: "Entre deux bandes bleues, comme sur un châle de prière." },
     { id: 23055, theme: "Drapeaux", d: 1.4, q: "Quel astre rouge est représenté au centre du drapeau du Japon ?", a: ["Le soleil", "Soleil", "Un soleil", "Un disque rouge"], exp: "Le Japon est le « pays du Soleil-Levant »." },
     { id: 23056, theme: "Drapeaux", d: 1.5, q: "Quel drapeau agite-t-on pour le vainqueur à l’arrivée d’un Grand Prix ?", a: ["À damier", "Damier", "Le damier", "Drapeau à damier"], exp: "Noir et blanc, comme un échiquier." },
     { id: 23057, theme: "Drapeaux", d: 1.6, q: "Que veut dire un drapeau « en berne » ?", a: ["Le deuil", "Deuil", "Un deuil", "Un hommage"], exp: "Il est hissé à mi-hauteur du mât." },

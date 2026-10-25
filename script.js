@@ -296,6 +296,13 @@ function wordsToNumbers(words) {
     return out;
 }
 
+/* Mots équivalents, pour toutes les questions : abréviations (« St-Pierre », « Downey Jr ») et couleurs au féminin
+   (« noire » = « noir » : la réponse attendue et la réponse tapée passent toutes deux par là, rien n'est faussé). */
+const WORD_SAME = {
+    st: 'saint', ste: 'sainte', sts: 'saints', stes: 'saintes', jr: 'junior',
+    noire: 'noir', noires: 'noir', blanche: 'blanc', blanches: 'blanc', verte: 'vert', vertes: 'vert',
+    bleue: 'bleu', bleues: 'bleu', grise: 'gris', grises: 'gris', violette: 'violet', violettes: 'violet', brune: 'brun', brunes: 'brun'
+};
 function normalize(str) {
     const words = str
         .toLowerCase()
@@ -308,6 +315,7 @@ function normalize(str) {
         .replace(/\s+/g, ' ')
         .trim()
         .split(' ')
+        .map(w => WORD_SAME[w] || w)   // st = saint, jr = junior, noire = noir… (2026-10-25, signalements)
         .map(w => {
             const ord = w.match(/^(\d+)(e|eme|ieme|er|ere|re|nd|nde)$/);   // 5e, 5ème, 1er, 2nd…
             if (ord) return `${Number(ord[1])}e`;

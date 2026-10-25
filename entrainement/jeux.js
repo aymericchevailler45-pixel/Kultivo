@@ -25,7 +25,7 @@ TRAINING_QUESTIONS.push(
     { id: 16020, theme: "Jeux", d: 1.8, q: "Quel casse-tête cubique a été inventé par un professeur hongrois en 1974 ?", a: ["Le Rubik’s Cube", "Rubik's Cube", "Rubik’s Cube", "Rubik", "Rubiks cube"], exp: "Plus de 43 trillions de combinaisons possibles." },
 
     // Palier 3
-    { id: 16021, theme: "Jeux", d: 1.8, q: "Quel jeu se joue avec cinq dés pour obtenir full, carré ou suite ?", a: ["Le Yams", "Yams", "Yahtzee", "Yam’s"], exp: "Cinq dés identiques font un « yams »." },
+    { id: 16021, theme: "Jeux", d: 1.8, q: "Quel jeu se joue avec cinq dés pour obtenir full, carré ou suite ?", a: ["Le Yams", "Yams", "Yahtzee", "Yam’s", "Yatzee", "Yathzee", "Yahtzi"], exp: "Cinq dés identiques font un « yams »." },
     { id: 16022, theme: "Jeux", d: 1.8, q: "Dans quel jeu d’enquête cherche-t-on si c’est le colonel Moutarde le coupable ?", a: ["Le Cluedo", "Cluedo"], exp: "Il faut trouver le coupable, l’arme et la pièce." },
     { id: 16023, theme: "Jeux", d: 2.0, q: "Dans quel jeu de plateau conquiert-on le monde avec ses armées ?", a: ["Risk"], exp: "Inventé par le Français Albert Lamorisse en 1957." },
     { id: 16024, theme: "Jeux", d: 2.0, q: "Dans quel jeu vidéo les personnages parlent-ils le « simlish » ?", a: ["Les Sims", "Sims", "The Sims"], exp: "Une langue inventée, sans vrai sens." },

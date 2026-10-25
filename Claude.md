@@ -250,6 +250,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `ORDINAL_WORDS`), les chiffres romains (« Louis XIV » = « Louis 14 », `romanValue` ; lettre seule : V et X seulement)
   et les décimales (« 42,195 » = « 42.195 ») ; « un / une » seuls restent des articles. Nombre attendu = exact.
   Signalements traités le 2026-10-23 (capture de la table reports envoyée par l'utilisateur).
+  Signalements traités le 2026-10-25 : mots équivalents pour TOUTES les questions (`WORD_SAME` : st = saint, ste = sainte,
+  jr = junior, couleurs au féminin noire = noir…). Règle de l'utilisateur : « Downey » seul refusé (nom seul OK seulement si
+  c'est le nom de famille, jamais le prénom seul sauf personnage connu par son prénom) ; « ? » refusé (question reformulée
+  pour demander le NOM du signe) ; Groenland : « sans compter l'Australie » ; « drapeau à damier » seul accepté.
 - Boutons secondaires (`.btn-ghost`) : contour fin gris partout ; dans le bandeau de correction, contour couleur du bandeau.
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.

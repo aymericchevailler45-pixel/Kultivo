@@ -13,7 +13,7 @@ TRAINING_QUESTIONS.push(
     { id: 15010, theme: "Littérature", d: 1.6, q: "Quel détective belge à la moustache impeccable a créé Agatha Christie ?", a: ["Hercule Poirot", "Poirot"], exp: "Il compte sur ses « petites cellules grises »." },
 
     // Palier 2
-    { id: 15011, theme: "Littérature", d: 1.6, q: "Quel naufragé de Daniel Defoe partage son île avec Vendredi ?", a: ["Robinson Crusoé", "Robinson", "Robinson Crusoe"], exp: "Inspiré d’un vrai marin resté seul quatre ans sur une île." },
+    { id: 15011, theme: "Littérature", d: 1.6, q: "Quel naufragé de Daniel Defoe partage son île avec Vendredi ?", a: ["Robinson Crusoé", "Robinson", "Robinson Crusoe", "Crusoé", "Crusoe"], exp: "Inspiré d’un vrai marin resté seul quatre ans sur une île." },
     { id: 15012, theme: "Littérature", d: 1.8, q: "Quelle pièce de Shakespeare raconte un amour impossible à Vérone ?", a: ["Roméo et Juliette", "Romeo et Juliette"], exp: "Les Montaigu et les Capulet se haïssent." },
     { id: 15013, theme: "Littérature", d: 1.8, q: "Quel comte vampire est le héros du roman de Bram Stoker ?", a: ["Dracula", "Le comte Dracula"], exp: "Publié en 1897, il vit en Transylvanie." },
     { id: 15014, theme: "Littérature", d: 2.0, q: "Quel écrivain a raconté la vie des mineurs du Nord dans « Germinal » ?", a: ["Émile Zola", "Zola", "Emile Zola"], exp: "Un des vingt romans de la saga des Rougon-Macquart." },
@@ -66,7 +66,7 @@ TRAINING_QUESTIONS.push(
     // Lot 2
     { id: 15051, theme: "Littérature", d: 1.0, q: "Quelle école de sorciers fréquente Harry Potter ?", a: ["Poudlard", "Hogwarts"], exp: "Elle compte quatre maisons, dont Gryffondor et Serpentard." },
     { id: 15052, theme: "Littérature", d: 1.0, q: "Quel chat orange de bande dessinée adore les lasagnes et déteste les lundis ?", a: ["Garfield"], exp: "Créé par l’Américain Jim Davis en 1978." },
-    { id: 15053, theme: "Littérature", d: 1.2, q: "Quels petits personnages bleus vivent dans des champignons et craignent Gargamel ?", a: ["Les Schtroumpfs", "Schtroumpfs", "Schtroumpf", "Smurfs"], exp: "Créés par le Belge Peyo en 1958." },
+    { id: 15053, theme: "Littérature", d: 1.2, q: "Quels petits personnages bleus vivent dans des champignons et craignent Gargamel ?", a: ["Les Schtroumpfs", "Schtroumpfs", "Schtroumpf", "Smurfs", "Stroumpfs", "Stroumpf", "Schtroumfs", "Schtroumf"], exp: "Créés par le Belge Peyo en 1958." },
     { id: 15054, theme: "Littérature", d: 1.2, q: "Quel petit garçon élevé par les loups est le héros du « Livre de la jungle » ?", a: ["Mowgli"], exp: "Avec l’ours Baloo et la panthère Bagheera." },
     { id: 15055, theme: "Littérature", d: 1.3, q: "Quel mage noir est l’ennemi juré d’Harry Potter ?", a: ["Voldemort", "Lord Voldemort", "Tom Jedusor", "Tom Riddle", "Celui-dont-on-ne-doit-pas-prononcer-le-nom", "Vous-savez-qui"], exp: "Son vrai nom est Tom Elvis Jedusor." },
     { id: 15056, theme: "Littérature", d: 1.4, q: "Quel héros de manga au chapeau de paille veut devenir le roi des pirates ?", a: ["Luffy", "Monkey D. Luffy", "Monkey D Luffy"], exp: "Le héros de « One Piece », manga le plus vendu de l’histoire." },

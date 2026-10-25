@@ -96,7 +96,7 @@ TRAINING_QUESTIONS.push(
     { id: 11080, theme: "Sciences", d: 2.5, q: "Quel petit hélicoptère robot a volé sur Mars en 2021 ?", a: ["Ingenuity"], exp: "Le premier vol motorisé sur une autre planète." },
     { id: 11081, theme: "Sciences", d: 2.5, q: "Quelle brebis a été le premier mammifère cloné, en 1996 ?", a: ["Dolly", "La brebis Dolly"], exp: "Née en Écosse, à partir d’une cellule adulte." },
     { id: 11082, theme: "Sciences", d: 2.6, q: "Quel est le minéral naturel le plus dur ?", a: ["Le diamant", "Diamant"], exp: "Il est fait uniquement de carbone." },
-    { id: 11083, theme: "Sciences", d: 2.6, q: "Quel squelette d’australopithèque, trouvé en Éthiopie en 1974, porte un prénom ?", a: ["Lucy"], exp: "Nommée d’après la chanson des Beatles « Lucy in the Sky with Diamonds »." },
+    { id: 11083, theme: "Sciences", d: 2.6, q: "Quel squelette d’australopithèque, trouvé en Éthiopie en 1974, porte un prénom ?", a: ["Lucy", "Lucie"], exp: "Nommée d’après la chanson des Beatles « Lucy in the Sky with Diamonds »." },
     { id: 11084, theme: "Sciences", d: 2.6, q: "Quelle particule, surnommée « particule de Dieu », a été découverte au CERN en 2012 ?", a: ["Le boson de Higgs", "Boson de Higgs", "Higgs", "Boson"], exp: "Elle explique pourquoi les particules ont une masse." },
     { id: 11085, theme: "Sciences", d: 2.7, q: "Quel médecin anglais a mis au point le tout premier vaccin, en 1796 ?", a: ["Edward Jenner", "Jenner"], exp: "Il utilisait la « vaccine », une maladie des vaches." },
     { id: 11086, theme: "Sciences", d: 2.7, q: "Quelle sonde, lancée en 1977, est l’objet humain le plus éloigné de la Terre ?", a: ["Voyager 1", "Voyager"], exp: "Elle emporte un disque d’or avec des sons de la Terre." },

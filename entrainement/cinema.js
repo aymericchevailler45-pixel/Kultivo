@@ -22,7 +22,7 @@ TRAINING_QUESTIONS.push(
     { id: 17017, theme: "Cinéma", d: 2.0, q: "Quel acteur joue Driss, aux côtés de François Cluzet, dans « Intouchables » ?", a: ["Omar Sy", "Sy"], exp: "Premier acteur noir à recevoir le César du meilleur acteur, en 2012." },
     { id: 17018, theme: "Cinéma", d: 2.0, q: "Quel film fait dire à son héros : « La vie, c’est comme une boîte de chocolats » ?", a: ["Forrest Gump", "Forest Gump"], exp: "Six Oscars en 1995, dont celui du meilleur film." },
     { id: 17019, theme: "Cinéma", d: 2.0, q: "Quel acteur comique joue le gendarme de Saint-Tropez ?", a: ["Louis de Funès", "De Funès", "Louis de Funes", "De Funes"], exp: "Six films de 1964 à 1982." },
-    { id: 17020, theme: "Cinéma", d: 2.2, q: "Quel acteur incarne Iron Man dans les films Marvel ?", a: ["Robert Downey Jr.", "Robert Downey Jr", "Robert Downey", "Downey"], exp: "De 2008 à 2019, son rôle a lancé tout l’univers Marvel au cinéma." },
+    { id: 17020, theme: "Cinéma", d: 2.2, q: "Quel acteur incarne Iron Man dans les films Marvel ?", a: ["Robert Downey Jr.", "Robert Downey Junior", "Robert Downey", "Downey Jr.", "Downey Junior"], exp: "De 2008 à 2019, son rôle a lancé tout l’univers Marvel au cinéma." },
 
     // Palier 3
     { id: 17021, theme: "Cinéma", d: 2.4, q: "Quel film de Dany Boon (2008) a attiré plus de 20 millions de spectateurs en France ?", a: ["Bienvenue chez les Ch’tis", "Bienvenue chez les Ch'tis", "Bienvenue chez les Chtis", "Les Ch’tis"], exp: "Longtemps le plus gros succès français au box-office." },
