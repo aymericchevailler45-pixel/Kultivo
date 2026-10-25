@@ -3182,8 +3182,3 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .recap-me { margin: 8px 0 0; font-weight: 800; text-align: center; }
 .recap-why { margin: 4px 0 0; color: var(--muted); font-weight: 700; font-size: 0.9rem; text-align: center; }
 .league-recap .btn { margin-top: 10px; }
-
-/* Boutique : bouton qui se confirme (1er tap → « Confirmer · X 🪙 ») */
-.btn.is-confirm { background: #ff9600; box-shadow: 0 4px 0 #cc7800; color: #ffffff; animation: confirmPulse 0.9s ease-in-out infinite; }
-@keyframes confirmPulse { 50% { transform: scale(1.04); } }
-@media (prefers-reduced-motion: reduce) { .btn.is-confirm { animation: none; } }

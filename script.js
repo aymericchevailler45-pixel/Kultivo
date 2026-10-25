@@ -3100,6 +3100,10 @@ async function buyAvItem(it) {
     const d = state.data;
     if (d.av.owned[it.id]) return;
     if (d.coins < it.price) { showToast(`Il te manque ${it.price - d.coins} 🪙.`); return; }
+    const ok = await askConfirm({ title: `Acheter « ${it.name} » ?`, art: avBeforeAfter(it),
+        text: `${AV_TYPE_NAME[it.type]} · ${it.price} 🪙 (il t’en restera ${d.coins - it.price}). Ton avatar avant → après : il ira tout de suite dessus.`,
+        yes: `Acheter · ${it.price} 🪙` });
+    if (!ok || d.coins < it.price) return;
     d.coins -= it.price;
     d.av.owned[it.id] = 1;
     d.av.opened[it.id] = 1;
@@ -3117,6 +3121,15 @@ async function buyAvItem(it) {
 async function buyCollection(items, price) {
     const d = state.data;
     if (d.coins < price) { showToast(`Il te manque ${price - d.coins} 🪙.`); return; }
+    const look = { ...avEnsureLook() };
+    items.forEach(it => { if (it.type === 'frame') look.frame = it.id; else if (it.type === 'pic') look.emoji = it.emoji; else look.bg = it.id; });
+    const art = el('div', 'av-before-after');
+    const arrow = el('span', 'av-arrow');
+    arrow.textContent = '→';
+    art.append(avatarEl(myAvatarName(), avEnsureLook()), arrow, avatarEl(myAvatarName(), look));
+    const ok = await askConfirm({ title: 'Toute la collection ?', art,
+        text: `${items.map(it => it.name).join(' + ')} · ${price} 🪙 (il t’en restera ${d.coins - price}). Tout ira sur ton avatar.`, yes: `Acheter · ${price} 🪙` });
+    if (!ok || d.coins < price) return;
     d.coins -= price;
     items.forEach(it => { d.av.owned[it.id] = 1; d.av.opened[it.id] = 1; d.av.known[it.id] = 1; avWear(it); });
     d.totals.purchases++;
@@ -3136,6 +3149,9 @@ async function buyVitrineCard() {
     const price = VITRINE_CARD_PRICE[v.rarity];
     if (!card || v.bought) return;
     if (d.coins < price) { showToast(`Il te manque ${price - d.coins} 🪙.`); return; }
+    const ok = await askConfirm({ title: `Acheter « ${card.name} » ?`, art: cardFace(card, false, false),
+        text: `Carte ${CARD_RARITIES[card.rarity].name.toLowerCase()} · ${price} 🪙 (il t’en restera ${d.coins - price}).`, yes: `Acheter · ${price} 🪙` });
+    if (!ok || d.coins < price) return;
     d.coins -= price;
     v.bought = true;
     d.totals.purchases++;
@@ -3145,34 +3161,14 @@ async function buyVitrineCard() {
     checkBadges();
 }
 
-/* Bouton qui se confirme (boutique) : 1er tap → « Confirmer · 600 🪙 » (et, pour un objet d'avatar, l'aperçu passe sur
-   MON avatar) ; 2e tap dans les 4 secondes → achat ; sinon il redevient normal. Un seul bouton armé à la fois. */
-let armedBuy = null;
-function disarmBuy() {
-    if (!armedBuy) return;
-    const { btn, text, timer, onDisarm } = armedBuy;
-    clearTimeout(timer);
-    btn.classList.remove('is-confirm');
-    btn.textContent = text;
-    if (onDisarm) onDisarm();
-    armedBuy = null;
+/** Fenêtre de confirmation d'un achat de la boutique (comme pour les objets d'avatar). */
+function askBuy(name, price, detail = '') {
+    const d = state.data;
+    if (d.coins < price) { showToast(`Il te manque ${price - d.coins} 🪙.`); return Promise.resolve(false); }
+    return askConfirm({ title: `Acheter « ${name} » ?`, text: `${detail ? detail + '\n' : ''}${price} 🪙 (il t’en restera ${d.coins - price}).`, yes: `Acheter · ${price} 🪙` });
 }
-function confirmBuy(btn, price, onBuy, { onArm = null, onDisarm = null } = {}) {
-    btn.addEventListener('click', e => {
-        e.stopPropagation();
-        if (armedBuy && armedBuy.btn === btn) { disarmBuy(); onBuy(); return; }
-        disarmBuy();
-        if (state.data.coins < price) { showToast(`Il te manque ${price - state.data.coins} 🪙.`); return; }
-        armedBuy = { btn, text: btn.textContent, onDisarm, timer: setTimeout(disarmBuy, 4000) };
-        btn.classList.add('is-confirm');
-        btn.textContent = `Confirmer · ${price} 🪙`;
-        if (onArm) onArm();
-    });
-}
-document.addEventListener('click', e => { if (armedBuy && !armedBuy.btn.contains(e.target)) disarmBuy(); });
 
 function renderShopV2() {
-    disarmBuy();
     const grid = $('shopGrid');
     grid.replaceChildren();
     grid.classList.add('is-v2');
@@ -3204,17 +3200,14 @@ function renderShopV2() {
         btn.type = 'button';
         btn.textContent = btnText;
         btn.disabled = disabled;
-        if (onBuy) confirmBuy(btn, onBuy.price, onBuy.run, onBuy.preview ? {
-            onArm: () => a.replaceChildren(onBuy.preview()),          // aperçu : mon avatar avec l'objet
-            onDisarm: () => a.replaceChildren(artNode)
-        } : {});
+        if (onBuy) btn.addEventListener('click', onBuy);
         c.append(p, a, b, t, btn);
         return c;
     };
     const itemCell = (it, pill, pillCls, cellCls) => {
         const owned = !!d.av.owned[it.id];
         return cell(pill, pillCls, avAlone(it), it.name, AV_TYPE_NAME[it.type], owned ? '✓ À toi' : `${it.price} 🪙`,
-            owned ? null : { price: it.price, run: () => buyAvItem(it), preview: () => avPreview(it) }, owned, owned, cellCls);
+            owned ? null : () => buyAvItem(it), owned || d.coins < it.price, owned, cellCls);
     };
     const coll = AV_COLL[plan.coll];
     const pill = plan.season ? VITRINE_SEASON_LABEL[plan.season] : plan.back ? 'Revient' : 'Nouveau';
@@ -3226,7 +3219,7 @@ function renderShopV2() {
         const price = VITRINE_CARD_PRICE[v.rarity];
         row.append(cell('Ta carte', 'is-card', cardFace(card, false, false), card.name,
             `Carte ${CARD_RARITIES[card.rarity].name.toLowerCase()}${v.shine ? ' · à faire briller' : ''}`,
-            v.bought ? '✓ À toi' : `${price} 🪙`, v.bought ? null : { price, run: buyVitrineCard }, v.bought, v.bought));
+            v.bought ? '✓ À toi' : `${price} 🪙`, v.bought ? null : buyVitrineCard, v.bought || d.coins < price, v.bought));
     }
     const rName = { common: 'communes', rare: 'rares', epic: 'épiques', legendary: 'légendaires' };
     const rIcon = { common: '⚪', rare: '🔵', epic: '💜', legendary: '🟡' };
@@ -3240,8 +3233,7 @@ function renderShopV2() {
         const full = { hue: 0, emoji: null, bg: null, frame: null };
         coll.items.map(id => AVI[id]).forEach(it => { if (it.type === 'frame') full.frame = it.id; else if (it.type === 'pic') full.emoji = it.emoji; else full.bg = it.id; });
         const lookAv = el('div', 'vitrine-look-art');
-        const fullAv = avatarEl(myAvatarName(), full);
-        lookAv.append(fullAv);
+        lookAv.append(avatarEl(myAvatarName(), full));
         const txt = el('div', 'vitrine-look-text');
         const nm = el('b');
         nm.textContent = `${coll.icon} Collection ${coll.name}`;
@@ -3255,10 +3247,8 @@ function renderShopV2() {
             const all = el('button', 'btn btn-violet vitrine-all');
             all.type = 'button';
             all.textContent = `Les ${missing.length} · ${price} 🪙`;
-            confirmBuy(all, price, () => buyCollection(missing, price), {
-                onArm: () => { const full = { ...avEnsureLook() }; missing.forEach(it => { if (it.type === 'frame') full.frame = it.id; else if (it.type === 'pic') full.emoji = it.emoji; else full.bg = it.id; }); lookAv.replaceChildren(avatarEl(myAvatarName(), full)); },
-                onDisarm: () => lookAv.replaceChildren(fullAv)
-            });
+            all.disabled = d.coins < price;
+            all.addEventListener('click', () => buyCollection(missing, price));
             const was = el('small', 'vitrine-was');
             was.textContent = `au lieu de ${total} 🪙`;
             txt.append(all, was);
@@ -3290,22 +3280,23 @@ function renderShopV2() {
         l.append(ic, tx, bt);
         return l;
     };
-    const mkBtn = (text, cls, disabled, onClick, price = 0) => {
+    const mkBtn = (text, cls, disabled, onClick) => {
         const b = el('button', `btn ${cls}`);
         b.type = 'button';
         b.textContent = text;
         b.disabled = disabled;
-        if (price) confirmBuy(b, price, onClick); else b.addEventListener('click', onClick);
+        b.addEventListener('click', onClick);
         return b;
     };
     chestCard.append(line('🎁', 'Coffre de cartes', `${SHOP_CHEST.size} cartes, dont au moins une rare · collection ${owned}/${CARDS.length}`,
-        [mkBtn(`${SHOP_CHEST.price} 🪙`, 'btn-green', false, () => {
+        [mkBtn(`${SHOP_CHEST.price} 🪙`, 'btn-green', d.coins < SHOP_CHEST.price, async () => {
+            if (!(await askBuy('Coffre de cartes', SHOP_CHEST.price, `${SHOP_CHEST.size} cartes, dont au moins une rare.`))) return;
             if (state.data.coins < SHOP_CHEST.price) return;
             state.data.coins -= SHOP_CHEST.price;
             openCardBoxes([{ size: SHOP_CHEST.size, rare: true }], '🎁 Coffre de cartes');
             renderHeader();
             renderShop();
-        }, SHOP_CHEST.price)]));
+        })]));
     grid.append(chestCard);
 
     // 3) Objets utiles
@@ -3317,12 +3308,18 @@ function renderShopV2() {
     SHOP.forEach(item => {
         const have = d.inv[item.id] || 0;
         const full = item.max && have + 1 > item.max;
-        const buttons = [mkBtn(`${item.price} 🪙`, 'btn-green', !!full, () => buyItem(item.id, 1), item.price)];
-        if (!item.max) buttons.push(mkBtn(`×${PACK_SIZE} · ${item.price * (PACK_SIZE - 1)} 🪙`, 'btn-violet', false, () => buyItem(item.id, PACK_SIZE), item.price * (PACK_SIZE - 1)));
+        const buttons = [mkBtn(`${item.price} 🪙`, 'btn-green', d.coins < item.price || !!full, async () => {
+            if (await askBuy(item.name, item.price, item.desc)) buyItem(item.id, 1);
+        })];
+        if (!item.max) buttons.push(mkBtn(`×${PACK_SIZE} · ${item.price * (PACK_SIZE - 1)} 🪙`, 'btn-violet', d.coins < item.price * (PACK_SIZE - 1), async () => {
+            if (await askBuy(`${item.name} ×${PACK_SIZE}`, item.price * (PACK_SIZE - 1), `${PACK_SIZE} pour le prix de ${PACK_SIZE - 1}.`)) buyItem(item.id, PACK_SIZE);
+        }));
         tools.append(line(item.icon, item.name, `${item.desc.replace(/\.$/, '')} · ${item.max ? `${have}/${item.max}` : `en stock : ${have}`}`, buttons));
     });
     tools.append(line('💧', 'Recharge de gouttes', `Toutes tes gouttes d’un coup · ${d.drops}/${DROPS_MAX}`,
-        [mkBtn(d.drops >= DROPS_MAX ? 'Plein' : `${DROPS_REFILL_PRICE} 🪙`, 'btn-green', d.drops >= DROPS_MAX, () => { if (refillDrops()) renderShop(); }, d.drops >= DROPS_MAX ? 0 : DROPS_REFILL_PRICE)]));
+        [mkBtn(d.drops >= DROPS_MAX ? 'Plein' : `${DROPS_REFILL_PRICE} 🪙`, 'btn-green', d.drops >= DROPS_MAX || d.coins < DROPS_REFILL_PRICE, async () => {
+            if (await askBuy('Recharge de gouttes', DROPS_REFILL_PRICE, `Toutes tes gouttes d’un coup (${DROPS_MAX}).`) && refillDrops()) renderShop();
+        })]));
     grid.append(tools);
 }
 

@@ -92,9 +92,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (`claimLeagueRecap` : cartes selon les amis battus, pièces selon la place) ou la raison s'il n'y en a pas ; pastille sur
   Classement tant que ce n'est pas vu. Le coffre ne s'ouvre plus tout seul. Phrase : « au moins un ami ET 100 XP ». Temps
   restant de la ligue précis (« 3 j 14 h », « 14 h 32 min »), mis à jour toutes les 30 s.
-- Boutique (25/10) : PLUS de fenêtre de confirmation d'achat ; bouton qui se confirme (`confirmBuy`, `armedBuy` : 1er tap →
-  « Confirmer · X 🪙 » orange qui pulse, 2e tap dans les 4 s = achat ; un objet d'avatar montre alors MON avatar avec l'objet).
-  Partout dans la nouvelle boutique : vitrine, collection, carte, coffre, objets utiles, recharge de gouttes.
+- Boutique (25/10) : fenêtre de confirmation pour TOUS les achats (`askBuy` : coffre, objets utiles, packs, gouttes ; les
+  objets d'avatar, la carte et la collection l'avaient déjà). Essayé puis ANNULÉ : bouton « Confirmer » sans fenêtre.
 - IDÉE pour la vraie appli Android (Capacitor) : icône qui change selon les fêtes, comme Duolingo (impossible proprement en
   appli web : Chrome met l'icône à jour seul, avec retard et un message de confirmation).
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :
