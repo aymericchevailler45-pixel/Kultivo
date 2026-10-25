@@ -3126,3 +3126,16 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .vitrine-head h2 { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .vitrine .vitrine-look { margin-top: 6px; }
 @media (max-width: 480px) { .vitrine-head h2 { font-size: 1.15rem; } }
+
+/* Parcours : numéro des niveaux spéciaux et des niveaux verrouillés (2026-10-25) */
+.node-num {
+    position: absolute; bottom: -6px; left: -6px; min-width: 26px; height: 26px; padding: 0 5px; border-radius: 13px;
+    display: grid; place-items: center; background: var(--surface); color: var(--ink); font-size: 0.8rem; font-weight: 900;
+    box-shadow: 0 0 0 2px var(--line), 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+.node.is-order .node-num, .node.is-order .node-lock { transform: rotate(-45deg); }
+.node-lock { position: absolute; top: -4px; right: -4px; font-size: 1rem; line-height: 1; }
+.node.is-locked { font-size: 1.6rem; }
+.node.is-locked .node-num { color: var(--muted); }
+/* Entraînement : palier du jour déjà gagné */
+.train-today { display: block; margin-top: 4px; font-size: 0.75rem; font-weight: 900; color: var(--green-ink); }

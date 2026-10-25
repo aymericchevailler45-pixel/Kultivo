@@ -1933,8 +1933,16 @@ function renderMap() {
             const span = el('span', 'node-icon');
             span.textContent = icon;
             btn.append(span);
+            const num = el('span', 'node-num');   // le numéro du niveau, en petit dans le coin (2026-10-25)
+            num.textContent = String(n);
+            btn.append(num);
         } else {
-            btn.textContent = locked ? '🔒' : String(n);
+            btn.textContent = String(n);   // verrouillé : le numéro reste visible, le cadenas passe dans le coin
+        }
+        if (locked) {
+            const lock = el('span', 'node-lock');
+            lock.textContent = '🔒';
+            btn.append(lock);
         }
         if (done) {   // niveau terminé : son numéro reste lisible, la coche passe dans le coin
             const check = el('span', 'node-check');
@@ -2310,7 +2318,7 @@ function openCardView(card, onBack = null, friendShiny = false) {
     $('chestStage').replaceChildren(cardFace(card, true, onBack ? friendShiny : isShiny(card)));
     const count = onBack ? 0 : (state.data.cards[card.id] || 0);
     $('chestNote').textContent = onBack ? (friendShiny ? '✨ Carte brillante' : '')
-        : card.rarity === 'master' ? '🏆 Gagnée au palier 5 de l’entraînement.'
+        : card.rarity === 'master' ? '🏆 Gagnée en réussissant le palier 5 de l’entraînement.'
         : card.rarity === 'event' ? '🎉 Carte d’événement : on ne pouvait la gagner que cette semaine-là.'
         : !count ? '' : count >= SHINY_AT ? `✨ Carte brillante (${count} exemplaires)`
         : `${count} / ${SHINY_AT} exemplaires : à ${SHINY_AT}, elle devient brillante ✨`;
@@ -2377,7 +2385,7 @@ function openLockedMaster(card) {
     const box = el('div', 'kcard is-big is-missing is-locked rarity-master');
     box.textContent = '🔒';
     $('chestStage').replaceChildren(box);
-    $('chestNote').textContent = `Atteins le palier 5 en ${card.theme}, dans Défis → Entraînement, pour la gagner.`;
+    $('chestNote').textContent = `Réussis le palier 5 en ${card.theme}, dans Défis → Entraînement, pour la gagner.`;
     $('chestBtn').textContent = 'Compris';
     $('chestModal').hidden = false;
 }
@@ -5512,8 +5520,6 @@ function trainChestBoxes(theme) {
     const boxes = [];
     for (let t = from + 1; t <= tier; t++) {
         const box = { size: 2, theme };
-        const master = masterCard(theme);
-        if (t === TRAIN_TIERS && master && !state.data.cards[master.id]) box.fixed = [master];
         boxes.push(box);
     }
     if (tier > from) state.data.trainChests[theme] = tier;
@@ -5594,13 +5600,19 @@ async function confirmTraining(theme, icon) {
     const pr = trainingProgress(theme);
     // Court : le palier, ce qu'il reste pour le suivant, et la goutte à gagner
     const lines = [`Palier ${pr.tier}/${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`];
+    const master = masterCard(theme);
+    const hasMaster = master && state.data.cards[master.id];
     if (pr.tier < TRAIN_TIERS) {
-        lines.push(!pr.ready ? `Palier ${pr.tier + 1} : ${trainingLeftText(pr)}`
+        lines.push(!pr.ready ? `Palier ${pr.tier + 1} : ${trainingLeftText(pr)}${pr.blockedToday ? ' (au plus tôt demain)' : ''}`
             : pr.blockedToday ? `🌙 Palier ${pr.tier + 1} demain`
             : `🎉 Palier ${pr.tier + 1} à la fin de cette session !`);
+    } else if (!hasMaster) {
+        lines.push(!pr.ready ? `🏆 Carte Maître : ${trainingLeftText(pr)}${pr.blockedToday ? ' (au plus tôt demain)' : ''}`
+            : pr.blockedToday ? '🌙 Carte Maître demain' : '🏆 Carte Maître à la fin de cette session !');
     } else {
         lines.push('🏆 Palier maximum');
     }
+    if (pr.blockedToday) lines.push('✅ Palier du jour déjà gagné : tu peux continuer pour t’entraîner.');
     const bonus = dropBonusText();
     if (bonus) lines.push(bonus);
     const ok = await askConfirm({ title: `${icon} ${theme}`, text: lines.join('\n'), yes: 'Commencer', no: 'Plus tard' });
@@ -5631,6 +5643,19 @@ function endTraining() {
             : `${icon} Pour passer au palier ${tier + 1} : ${trainingLeftText(pr)}.`;
     }
     const up = tier > before;
+    // Palier 5 RÉUSSI (les 2/3 de ses questions) : la carte Maître (2026-10-25 : avant, elle venait dès l'arrivée au palier 5)
+    const master = masterCard(theme);
+    const masterNow = tier >= TRAIN_TIERS && !up && pr.ready && !pr.blockedToday && master && !state.data.cards[master.id];
+    if (masterNow) {
+        state.data.trainTierDay[theme] = todayKey();
+        text = `🏆 ${theme} : palier 5 réussi ! Tu gagnes la carte Maître.`;
+        launchConfetti();
+        playSound('win');
+    } else if (tier >= TRAIN_TIERS && !up && master && !state.data.cards[master.id]) {
+        text = pr.ready && pr.blockedToday
+            ? `🌙 Bravo ! Tu as déjà gagné un palier aujourd’hui : reviens demain pour réussir le palier 5 et gagner la carte Maître.`
+            : `${icon} Pour réussir le palier 5 et gagner la carte Maître : ${trainingLeftText(pr)}.`;
+    }
     if (up) {
         // Nouveau palier : on le dit en grand (titre, texte, bouton)
         text = `${icon} ${theme} : tu passes au palier ${tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[tier - 1]}.\nLes questions vont être un peu plus difficiles.`;
@@ -5648,7 +5673,7 @@ function endTraining() {
     const dropLine = earnPracticeDrop();
     setEnd({
         emoji: up ? '🏅' : '🎯',
-        title: up ? `🎉 Palier ${tier} débloqué !` : `Entraînement · ${theme}`,
+        title: up ? `🎉 Palier ${tier} débloqué !` : masterNow ? '🏆 Palier 5 réussi !' : `Entraînement · ${theme}`,
         text,
         stats: [statXp(), statAccuracy(), statTime()],
         extra: [rewardSummary(), dropLine].filter(Boolean).join('\n'),
@@ -5660,8 +5685,9 @@ function endTraining() {
     });
     // Coffre du palier gagné (2 cartes du thème ; au palier 5, la carte Maître en plus)
     const boxes = trainChestBoxes(theme);
+    if (masterNow) boxes.push({ size: 0, fixed: [master] });
     if (boxes.length) {
-        setTimeout(() => openCardBoxes(boxes, tier >= TRAIN_TIERS ? `🏆 Coffre du Maître · ${theme}` : `🎁 Coffre du palier ${tier} · cartes ${theme}`), 900);
+        setTimeout(() => openCardBoxes(boxes, masterNow ? `🏆 Carte Maître · ${theme}` : `🎁 Coffre du palier ${tier} · cartes ${theme}`), 900);
     }
 }
 
@@ -5741,7 +5767,7 @@ function showProfileTip() {
         text: '🎖️ Tes badges : quand l’un d’eux a une pastille, touche-le pour récupérer ta récompense.'
     }, {
         target: () => firstVisible('.profile-tab[data-tab="cards"]', '.card-collection'),
-        text: '🃏 Tes cartes, gagnées dans les coffres. Chaque doublon te rapproche d’une carte brillante (1/3, 2/3…) : à 3, touche-la pour la transformer ✨. 🔒 La carte Maître se gagne au palier 5 de l’entraînement.'
+        text: '🃏 Tes cartes, gagnées dans les coffres. Chaque doublon te rapproche d’une carte brillante (1/3, 2/3…) : à 3, touche-la pour la transformer ✨. 🔒 La carte Maître se gagne en réussissant le palier 5 de l’entraînement.'
     }];
     if (!cloudUser) steps.push({
         target: () => $('cloudBtn'),
@@ -5778,7 +5804,7 @@ function showTrainingTip() {
         text: '🎯 Ici, des questions à part, différentes du parcours, pour t’entraîner sur le thème de ton choix.'
     }, {
         target: () => document.querySelector('.train-tile'),
-        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un par jour au maximum) : 🎁 un coffre de cartes du thème à chaque palier, et 🏆 la carte Maître au palier 5 !'
+        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un par jour au maximum) : 🎁 un coffre de cartes du thème à chaque palier, et 🏆 la carte Maître en réussissant le palier 5 !'
     }, {
         target: () => document.querySelector('.train-tile'),
         text: '↻ Tes erreurs reviennent dans les sessions suivantes, jusqu’à ce que tu les saches.'
@@ -5837,8 +5863,13 @@ function renderTraining() {
             line.textContent = `${pr.totalMastered} / ${pr.total} maîtrisées`;
             const master = masterCard(theme);
             const reward = el('span', 'train-master');
-            reward.textContent = master && state.data.cards[master.id] ? '🏆 Carte Maître obtenue' : '🏆 Palier 5 : carte Maître';
+            reward.textContent = master && state.data.cards[master.id] ? '🏆 Carte Maître obtenue' : '🏆 Palier 5 réussi : carte Maître';
             tile.append(label, bar, line, reward);
+            if (pr.blockedToday) {
+                const today = el('span', 'train-today');
+                today.textContent = '✅ Palier du jour gagné · suite demain';
+                tile.append(today);
+            }
             const errors = bank.filter(q => missCount(q.id) > 0).length;
             if (errors) {
                 const rev = el('span', 'train-errors');

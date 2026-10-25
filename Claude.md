@@ -43,8 +43,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      test », « +1 000 🪙 », faux amis avec cadres) pour que l'utilisateur teste sur son téléphone avant les autres.
   2. Ensuite : XP des niveaux DÉJÀ réussis qu'on refait, trop élevée selon l'utilisateur (à réduire).
   3. Lui rappeler : la limite de 25 questions (ou non) dans les révisions — à vérifier avec lui.
-  4. Lui rappeler : bug entraînement, la carte Maître se débloque en validant le palier 4 (passage AU palier 5) au lieu
-     d'avoir vraiment réussi le palier 5.
+  4. FAIT le 25/10 (tout de suite, pas lundi) : carte Maître quand le palier 5 est RÉUSSI (`masterNow` dans `endTraining`,
+     plus dans `trainChestBoxes`) ; « ✅ Palier du jour gagné · suite demain » sur la case du thème et dans `confirmTraining`.
+     Parcours : numéro visible sur les niveaux verrouillés (cadenas dans le coin, `.node-lock`) et sur paires / frises /
+     défis (`.node-num`). Limite de 25 révisions : il n'y en a pas (le compteur ne compte que les questions du parcours).
 - MISE À JOUR DU LUNDI 26/10 (préparée le 24/10, s'active SEULE ce jour-là : `PATCH_DAY`, `patched()`) : titres ×3
   (`titleList`), 1 🪙 pour 8 XP (`coinRate`), badges 15 🪙 (`coinBadge`), 75 % de cartes nouvelles (`newCardChance`),
   +30 cartes (cards.js, 1 commune + 1 rare par thème, ids xx10 / xx11 : 12 par thème, 180), collection en 2 lignes de 6
