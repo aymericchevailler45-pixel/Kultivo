@@ -67,8 +67,9 @@ const DAILY_SIZE = 10;           // questions du défi du jour
 const SPRINT_SECONDS = 60;       // durée du sprint
 // Un niveau rapporte environ 50 à 70 XP : 60 ≈ 1 niveau, 150 ≈ 2-3 niveaux, 250 ≈ 4-5 niveaux
 const GOAL_CHOICES = [
-    { xp: 60,  label: 'Tranquille', reward: 10 },
-    { xp: 150, label: 'Régulier',   reward: 25 },
+    // 26/10 : un peu plus pour les petits rythmes (sinon la boutique était hors de portée pour eux)
+    { xp: 60,  label: 'Tranquille', get reward() { return patched() ? 20 : 10; } },
+    { xp: 150, label: 'Régulier',   get reward() { return patched() ? 30 : 25; } },
     { xp: 250, label: 'Intense',    reward: 50 }
 ];
 const OLD_GOALS = { 30: 60, 50: 150, 100: 250 };   // anciens objectifs → nouveaux (même rythme choisi)
@@ -8205,7 +8206,7 @@ const PATCH_NOTES = [
     ['🎖️', 'Titres revus', 'Il faut désormais 3 fois plus d’XP pour chaque titre. Ton XP, elle, ne change pas.'],
     ['⭐', 'XP selon la difficulté', 'Une question difficile rapporte plus d’XP qu’une facile.'],
     ['📅', 'Toutes les questions du jeu', 'Défi du jour, sprint et duels piochent aussi dans les questions de l’entraînement.'],
-    ['🪙', 'Pièces rééquilibrées', '1 🪙 pour 8 XP, et 15 🪙 par badge.'],
+    ['🪙', 'Pièces rééquilibrées', '1 🪙 pour 8 XP, 15 🪙 par badge, et l’objectif du jour rapporte plus (20 / 30 / 50 🪙).'],
     ['🛍️', 'Nouvelle boutique', 'Chaque lundi, une collection assortie pour ton avatar (un cadre, un fond, un emoji), et ta carte de la semaine.'],
     ['🎨', 'Ton avatar', 'Des fonds, des emojis et des cadres à gagner en jouant (ils s’ouvrent dans Profil → ton avatar).']
 ];

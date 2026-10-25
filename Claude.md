@@ -49,6 +49,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      défis (`.node-num`). Limite de 25 révisions : il n'y en a pas (le compteur ne compte que les questions du parcours).
 - MISE À JOUR DU LUNDI 26/10 (préparée le 24/10, s'active SEULE ce jour-là : `PATCH_DAY`, `patched()`) : titres ×3
   (`titleList`), 1 🪙 pour 8 XP (`coinRate`), badges 15 🪙 (`coinBadge`), 75 % de cartes nouvelles (`newCardChance`),
+  objectif du jour 20 / 30 / 50 🪙 (au lieu de 10 / 25 / 50, getters dans `GOAL_CHOICES`),
   +30 cartes (cards.js, 1 commune + 1 rare par thème, ids xx10 / xx11 : 12 par thème, 180), collection en 2 lignes de 6
   (`--per-row`), fenêtre « ✨ Quoi de neuf ? » une fois pour les joueurs d'avant (`PATCH_NOTES`, `patchSeen`, `patchModal`).
   Démo avant la date : lien `?demo=lundi` (mise à jour + Halloween, fenêtre à chaque ouverture, rien de noté).
