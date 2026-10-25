@@ -3038,3 +3038,31 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .bac-pill { position: fixed; left: 8px; bottom: 84px; z-index: 45; padding: 6px 12px; border: 0; border-radius: 999px; background: #8b5cf6; color: #fff; font: inherit; font-size: 0.85rem; font-weight: 900; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); cursor: pointer; }
 @media (min-width: 901px) { .bac-pill { bottom: 16px; } }
 .avatar-sheet.is-v2 .avatar-label, .avatar-sheet.is-v2 #avatarColors, .avatar-sheet.is-v2 #avatarEmojis { display: none; }
+
+/* Halloween : araignées qui pendent, toiles, chauve-souris (2026-10-25) */
+.hw-spider {
+    position: absolute; top: var(--y); z-index: 1; width: 30px; pointer-events: none;
+    left: calc((100% - var(--zone-w)) / 2 * var(--k, 0.5));
+    transform-origin: 50% 0; animation: hwSwing 3.4s ease-in-out infinite alternate;
+}
+.hw-spider.right { left: calc(50% + var(--zone-w) / 2 + (100% - var(--zone-w)) / 2 * var(--k, 0.5)); }
+.hw-spider::before { content: ''; display: block; width: 2px; height: var(--len, 80px); margin: 0 auto; background: linear-gradient(rgba(90, 90, 110, 0.1), rgba(90, 90, 110, 0.85)); }
+.hw-spider .emoji-img { display: block; width: 32px; height: 32px; margin: -2px auto 0; }
+.hw-web { position: absolute; top: var(--y); z-index: 1; width: 92px; opacity: 0.5; pointer-events: none; }
+.hw-web.left { left: -14px; transform: rotate(-10deg); }
+.hw-web.right { right: -14px; transform: scaleX(-1) rotate(-10deg); }
+.hw-web .emoji-img { display: block; width: 100%; height: auto; }
+.hw-bat { position: fixed; top: 30%; left: -60px; z-index: 3; width: 38px; pointer-events: none; animation: hwBat 22s linear infinite; animation-delay: 4s; opacity: 0.85; }
+.hw-bat .emoji-img { display: block; width: 100%; height: auto; }
+@keyframes hwSwing { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+@keyframes hwBat {
+    0% { transform: translate(0, 0); } 6% { transform: translate(30vw, -40px); } 12% { transform: translate(60vw, 30px); }
+    18% { transform: translate(90vw, -20px); } 20%, 100% { transform: translate(115vw, 0); }
+}
+@media (max-width: 700px) {
+    .hw-spider { left: 14px; }
+    .hw-spider.right { left: auto; right: 14px; }
+    .hw-spider .emoji-img { width: 26px; height: 26px; }
+    .hw-web { width: 64px; }
+}
+@media (prefers-reduced-motion: reduce) { .hw-spider, .hw-bat { animation: none; } .hw-bat { display: none; } }

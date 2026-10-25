@@ -7974,6 +7974,35 @@ function armBackGuard() {
 }
 
 /** Ferme la fenêtre ouverte la plus « haute » ; renvoie true si quelque chose a été fermé. */
+/** Halloween (2026-10-25) : araignées qui pendent au bout de leur fil et toiles dans les marges du parcours,
+    et une chauve-souris qui traverse l'écran de temps en temps. Décor seulement (on ne peut pas les toucher). */
+function buildHalloweenExtras() {
+    const ev = currentEvent();
+    document.querySelectorAll('.hw-extra').forEach(n => n.remove());
+    if (!ev || ev.bank !== 'halloween') return;
+    const box = $('mapDecor');
+    const spiders = Math.round(MAX_LEVEL / 7);
+    for (let i = 0; i < spiders; i++) {
+        const sp = el('span', `hw-extra hw-spider ${i % 2 ? 'right' : 'left'}`);
+        sp.style.setProperty('--y', `${(((i + 0.25) / spiders) * 100).toFixed(1)}%`);
+        sp.style.setProperty('--len', `${50 + ((i * 37) % 90)}px`);
+        sp.style.setProperty('--k', (0.25 + 0.5 * (0.5 + 0.5 * Math.sin(i * 1.7))).toFixed(2));
+        sp.style.animationDelay = `${-((i * 0.7) % 3)}s`;
+        sp.append(emojiImg('🕷️'));
+        box.append(sp);
+    }
+    const webs = Math.round(MAX_LEVEL / 9);
+    for (let i = 0; i < webs; i++) {
+        const w = el('span', `hw-extra hw-web ${i % 2 ? 'left' : 'right'}`);
+        w.style.setProperty('--y', `${(((i + 0.6) / webs) * 100).toFixed(1)}%`);
+        w.append(emojiImg('🕸️'));
+        box.append(w);
+    }
+    const bat = el('span', 'hw-extra hw-bat');
+    bat.append(emojiImg('🦇'));
+    $('mapScreen').append(bat);
+}
+
 /** Bac à sable : pastille 🧪 toujours visible (menu : +1 000 🪙, recommencer, quitter) et quelques faux amis. */
 function initBac() {
     if (!BAC) return;
@@ -7984,6 +8013,15 @@ function initBac() {
         const more = await askConfirm({ title: '🧪 Bac à sable', text: 'Une copie de ta partie : tout ce que tu fais ici reste ici. Rien n’est envoyé en ligne, ton vrai jeu ne change pas.',
             yes: '+1 000 🪙 pour tester', no: 'Plus d’options' });
         if (more) { state.data.coins += 1000; saveData(); renderHeader(); if (!$('shopScreen').hidden) renderShop(); return; }
+        const tips = await askConfirm({ title: '🧪 Bac à sable', text: 'Revoir les bulles d’explication (Halloween, Défis, Profil, Classement) ?', yes: 'Revoir les bulles', no: 'Plus d’options' });
+        if (tips) {
+            const d = state.data;
+            EVENTS.forEach(ev => { d[ev.tip] = false; d[`${ev.tip}Page`] = false; });
+            ['tipChallenges', 'tipTraining', 'tipTraining2', 'tipProfile', 'tipLeague', 'tipLeagueIntro', 'tipDrops'].forEach(k => { d[k] = false; });
+            saveData();
+            showToast('Bulles remises : va dans Défis pour les voir.');
+            return;
+        }
         const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Fermer' });
         if (reset) { try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* tant pis */ } location.reload(); }
     });
@@ -8108,6 +8146,7 @@ function init() {
     updateNavNotifications();
     setTimeout(maybeShowPatchNotes, 1500);                  // « Quoi de neuf ? » après une mise à jour
     buildDecor($('mapDecor'), Math.round(MAX_LEVEL * 1.2));
+    buildHalloweenExtras();
     buildDecor($('lessonDecor'), 8);
     checkThemeComplete(true);   // thèmes déjà complets : notés sans fête
     checkBadges(true);   // badges déjà mérités : on les attribue sans notification
