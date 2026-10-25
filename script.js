@@ -34,6 +34,7 @@ let cloudBusy = false;
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxZnFkaHN2cGtjemFpZmdvc2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNjE2NTUsImV4cCI6MjEwNzczNzY1NX0.EGJvwXjBlSQKP2N-xTNdebuSD33IevVYe6cE7NpOZMk';
 
 // XP gagnés
+const XP_REPLAY = 2;              // 2026-10-25 : niveau DÉJÀ réussi qu'on refait (gratuit) : 2 XP par bonne réponse, pas de bonus
 const XP_FIRST_TRY = 4;          // avant: 10 | bonne réponse du premier coup (question facile, d < 2,5)
 /* Plus d'XP pour les questions difficiles (2026-10-23) : les niveaux avancés font plus d'erreurs ; sans ça, un joueur
    loin dans le parcours gagnait moins d'XP qu'un débutant → injuste pour la ligue des amis de la semaine. */
@@ -3213,7 +3214,7 @@ function openStartModal(n) {
         : info.name;
     $('modalStatsText').textContent = questionsLabel(info);
     const left = state.data.drops - 1;
-    $('modalCost').textContent = free ? '💧 Déjà réussi : gratuit'
+    $('modalCost').textContent = free ? '💧 Déjà réussi : gratuit · XP réduite'
         : `💧 −1 goutte · il t’en restera ${left}`;
     $('modalCost').hidden = false;
     $('startLevelBtn').textContent = free ? 'Commencer' : 'Commencer · −1 💧';
@@ -3387,6 +3388,8 @@ function startSession(requestedMode, level = 0) {
                : isPairs(level) ? 'pairs'
                : isOrder(level) ? 'order'
                : 'level';
+    // Niveau déjà réussi qu'on refait : XP réduite, ni bonus ni missions (sinon on gagnait la ligue en refaisant le niveau 1)
+    state.replay = ['level', 'pairs', 'order', 'challenge'].includes(mode) && !!state.data.done[level];
     const pairsMode = mode === 'pairs';
     const orderMode = mode === 'order';
 
@@ -3623,7 +3626,7 @@ function pickPair(btn) {
         grid.matched.add(i);
         if (!grid.failed.has(i)) recordPair(grid.pairs[i].key, true);   // réussie sans erreur avant
         state.done++;
-        addXp(XP_PAIR);
+        addXp(state.replay ? 1 : XP_PAIR);
         playSound(grid.matched.size === grid.pairs.length ? 'good' : 'pair');
         [sel, btn].forEach(b => { b.classList.add('is-ok'); b.disabled = true; });
         setTimeout(() => [sel, btn].forEach(b => { b.classList.remove('is-ok'); b.classList.add('is-matched'); }), 450);
@@ -4072,7 +4075,8 @@ function commit(ok) {
         // Seule une réussite du premier coup, sans indice, réduit le compteur d'erreurs
         if (firstTry && !assisted) recordResult(id, true);
         const clean = firstTry && !forced && !assisted;
-        addXp(mode === 'training' || mode === 'event' ? (clean ? XP_TRAINING : XP_RETRY) : (clean ? xpFirstTry(item.q) : XP_RETRY));
+        addXp(mode === 'training' || mode === 'event' ? (clean ? XP_TRAINING : XP_RETRY)
+            : (clean ? (state.replay ? XP_REPLAY : xpFirstTry(item.q)) : XP_RETRY));
         missionEvent('correct');
         missionEvent('theme', 1, item.q.theme);
         state.done++;
@@ -4178,6 +4182,7 @@ function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryCl
     $('endTitle').textContent = title;
     $('endText').textContent = text;
     const missions = (state.missionsJustDone || []).map(m => `🗓️ Mission réussie : ${m.text(m.goal, m.theme)} !`);
+    if (state.replay && ['level', 'pairs', 'order', 'challenge'].includes(state.mode)) missions.unshift('🔁 Niveau déjà réussi : XP réduite (2 par bonne réponse, sans bonus).');
     const unlocked = avCheck();
     if (unlocked.length) missions.push(`🎨 Débloqué pour ton avatar : ${unlocked.slice(0, 3).map(avLabel).join(', ')}${unlocked.length > 3 ? ` et ${unlocked.length - 3} autre${unlocked.length > 4 ? 's' : ''}` : ''} ! (Profil → ton avatar)`);
     state.missionsJustDone = [];
@@ -4308,17 +4313,19 @@ function endSession(win) {
         });
         $('endPrimary').className = 'btn btn-green';
     } else {
-        if (state.errors === 0) {
+        if (state.errors === 0 && !state.replay) {
             addXp(XP_FLAWLESS);
             state.data.totals.flawless++;
         }
-        if (challenge) addXp(XP_CHALLENGE_WIN);
-        missionEvent('levels');
-        if (state.errors === 0) missionEvent('flawless');
-        if (mode === 'order') missionEvent('order');
-        if (mode === 'pairs') missionEvent('pairs');
+        if (challenge && !state.replay) addXp(XP_CHALLENGE_WIN);
+        if (!state.replay) {   // un niveau refait ne compte pas pour les missions
+            missionEvent('levels');
+            if (state.errors === 0) missionEvent('flawless');
+            if (mode === 'order') missionEvent('order');
+            if (mode === 'pairs') missionEvent('pairs');
+        }
         // Après un placement : une part des pièces des niveaux sautés (sans le dire, comme les cartes des coffres)
-        const owed = Math.min(COIN_BONUS_PER_LEVEL, state.data.coinBonus);
+        const owed = state.replay ? 0 : Math.min(COIN_BONUS_PER_LEVEL, state.data.coinBonus);
         if (owed > 0) {
             state.data.coinBonus -= owed;
             state.data.coins += owed;
@@ -4547,7 +4554,7 @@ function checkOrder(round) {
     state.done++;
     state.orderRight += right;
     state.orderTotal += round.items.length;
-    if (right > 0) addXp(XP_ORDER_CARD * right);
+    if (right > 0) addXp((state.replay ? 1 : XP_ORDER_CARD) * right);
     if (right === round.items.length) {
         playSound('good');
     } else {

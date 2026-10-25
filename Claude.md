@@ -41,7 +41,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      ANCIEN TEXTE : Coder la BOUTIQUE ET AVATARS (plan détaillé plus bas, version finale du 24/10) + un « bac à sable » `?bac=1` (copie de
      la vraie partie dans une sauvegarde à part, tout le nouveau actif, RIEN envoyé en ligne, bandeau 🧪, « Recommencer le
      test », « +1 000 🪙 », faux amis avec cadres) pour que l'utilisateur teste sur son téléphone avant les autres.
-  2. Ensuite : XP des niveaux DÉJÀ réussis qu'on refait, trop élevée selon l'utilisateur (à réduire).
+  2. FAIT le 25/10 (actif tout de suite) : niveau DÉJÀ réussi qu'on refait (`state.replay`) = 2 XP par bonne réponse
+     (`XP_REPLAY`), paires / frises 1 XP, pas de bonus sans faute ni défi, ne compte pas pour les missions « niveaux »,
+     pas de pièces de placement ; annoncé dans la fenêtre de départ et sur l'écran de fin.
   3. Lui rappeler : la limite de 25 questions (ou non) dans les révisions — à vérifier avec lui.
   4. FAIT le 25/10 (tout de suite, pas lundi) : carte Maître quand le palier 5 est RÉUSSI (`masterNow` dans `endTraining`,
      plus dans `trainChestBoxes`) ; « ✅ Palier du jour gagné · suite demain » sur la case du thème et dans `confirmTraining`.
