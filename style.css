@@ -2870,7 +2870,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .league-avatar.fr::after { content: ''; position: absolute; pointer-events: none; background-repeat: no-repeat; background-position: center; background-size: contain; }
 .league-avatar.fr.fx-tag::after { width: 42%; height: 42%; right: -16%; bottom: -16%; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25)); }
 .league-avatar.fr.fx-deco::after { inset: -36%; background-size: 22% 22%; background-position: 15% 15%, 85% 15%, 50% 99%; }   /* 3 décorations à égale distance du centre */
-.league-avatar.fr.fx-laurel::after { left: -32%; right: -32%; top: 6%; bottom: -26%; background-size: 50% 100%; background-position: 0 100%, 100% 100%; }
+.league-avatar.fr.fx-laurel::after { left: -26%; right: -26%; top: 28%; bottom: -20%; background-size: 42% 100%; background-position: 0 100%, 100% 100%; }
 @media (prefers-reduced-motion: reduce) { .league-avatar.fr::before, .league-avatar[class*="bg-"] { animation: none !important; } }
 
 /* Cadres à gagner */
@@ -3103,7 +3103,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .podium-col .league-avatar.fr ~ .podium-name { position: relative; z-index: 1; }
 
 /* Vitrine : le look complet de la collection + bouton « Les 3 » de taille normale (2026-10-25) */
-.vitrine-look { display: flex; align-items: center; gap: 16px; margin-top: 14px; padding: 12px; border-radius: 16px; background: var(--bg); }
+.vitrine-look { display: flex; align-items: center; gap: 16px; margin-top: 10px; padding: 12px; border-radius: 16px; background: var(--bg); }
 .vitrine-look-art { flex: none; display: flex; align-items: center; justify-content: center; width: 92px; height: 92px; }
 .vitrine-look-art .league-avatar { width: 64px; height: 64px; font-size: 1.7rem; }
 .vitrine-look-text { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
@@ -3112,3 +3112,11 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .vitrine-look-text .vitrine-all { margin-top: 4px; padding: 8px 14px; font-size: 0.95rem; }
 .vitrine-look-text .vitrine-was { text-decoration: line-through; }
 .vitrine-look-text .vitrine-done { color: var(--green-ink); }
+
+/* Défis : 3 onglets (avec l'événement) sur une seule ligne, comme quand il n'y en avait que 2 (2026-10-25) */
+.challenges-tab { white-space: nowrap; }
+@media (max-width: 480px) {
+    .challenges-tabs:has(#eventTab:not([hidden])) .challenges-tab { flex: 1 1 auto; padding: 9px 4px; font-size: 0.85rem; }
+}
+/* Vitrine : titre moins large sur téléphone (moins d'espace vide au-dessus de la collection) */
+@media (max-width: 480px) { .vitrine-head h2 { font-size: 1.15rem; } }

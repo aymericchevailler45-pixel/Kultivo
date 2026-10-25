@@ -33,6 +33,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      (il faudra le 2e lot vers février : sinon trop de retours).
      Prix FIXES (25/10) : cadre 600, fond 600, dessin 300, collection 1 200 (`AV_PRICES`, `COLLECTION_DISCOUNT` 0,8 arrondi à 50) ;
      en haut de la vitrine : le look complet de la collection + bouton « Les 3 · 1 200 🪙 » (`.vitrine-look`).
+     Réduction SEULEMENT si on n'a aucune pièce (sinon : pièce par pièce). Les « dessins » s'appellent « Emoji » dans le jeu (25/10).
      Retour = une semaine normale sur 3, la collection vue il y a le plus longtemps (≥ 2 semaines). Aperçu : apercu-collections.html (vrais styles du jeu). Prochains lots :
      ~12 collections tous les ~4 mois, montrées d'abord sur l'aperçu. Objets pas encore rangés dans une collection (réserve) :
      cadres checker, neon-blue, stripes, parchment, zigzag, tartan, music, frost, confetti ; fonds sunset, aurora, jade,

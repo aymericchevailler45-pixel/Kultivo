@@ -1267,7 +1267,7 @@ function renderEvent() {
         steps.append(st);
     }
     const stepsText = el('p', 'event-steps-text');
-    stepsText.textContent = '🎨 Des dessins d’avatar à gagner en route, gardés pour toujours.';
+    stepsText.textContent = '🎨 Des emojis d’avatar à gagner en route, gardés pour toujours.';
     const left = pumpkinsLeft(ev);
     const pumpkins = el('p', 'event-pumpkins');
     pumpkins.textContent = left
@@ -1371,7 +1371,7 @@ function endEvent() {
     if (total > before) missionEvent('evFound', total - before);
     missionEvent('evPlay');
     const drawings = unlockEventAvatars(ev, total);
-    const drawingsText = drawings.length ? `🎨 Nouveau dessin d’avatar débloqué : ${drawings.join(' ')} ! (Profil → ton avatar)` : '';
+    const drawingsText = drawings.length ? `🎨 Nouvel emoji d’avatar débloqué : ${drawings.join(' ')} ! (Profil → ton avatar)` : '';
     saveData();
     checkBadges();
     setEnd({
@@ -2990,13 +2990,12 @@ function renderShopV2() {
         note.textContent = plan.back ? 'Elle revient cette semaine !' : plan.season ? 'Seulement cette semaine' : 'Le look complet';
         txt.append(nm, note);
         const missing = plan.items.map(id => AVI[id]).filter(it => it && !d.av.owned[it.id]);
-        if (missing.length >= 2) {
+        if (missing.length === coll.items.length) {
             const total = missing.reduce((sum, it) => sum + it.price, 0);
             const price = Math.round((total * COLLECTION_DISCOUNT) / 50) * 50;
             const all = el('button', 'btn btn-violet vitrine-all');
             all.type = 'button';
             all.textContent = `Les ${missing.length} · ${price} 🪙`;
-            all.title = `au lieu de ${total} 🪙`;
             all.disabled = d.coins < price;
             all.addEventListener('click', () => buyCollection(missing, price));
             const was = el('small', 'vitrine-was');
@@ -3006,6 +3005,10 @@ function renderShopV2() {
             const ok = el('small', 'vitrine-done');
             ok.textContent = '✓ Toute la collection est à toi';
             txt.append(ok);
+        } else {
+            const one = el('small');
+            one.textContent = 'Tu en as déjà une partie : le reste s’achète pièce par pièce.';
+            txt.append(one);
         }
         look.append(lookAv, txt);
     }
@@ -5872,14 +5875,14 @@ const AV_ALL = (() => {
         list.push({ id: `hue-${hue}`, type: 'bg', kind: level ? 'earn' : 'free', hue, name: 'Couleur unie',
                     how: `Termine le niveau ${level}`, test: st => st.maxDone >= level });
     });
-    AV_FREE_PICS.forEach(e => list.push({ id: `pic-${e}`, type: 'pic', kind: 'free', emoji: e, name: 'Dessin' }));
-    AV_EARN_PICS.forEach(([e, how, test]) => list.push({ id: `pic-${e}`, type: 'pic', kind: 'earn', emoji: e, name: 'Dessin', how, test }));
-    EVENTS.forEach(ev => (ev.rewards || []).forEach(r => list.push({ id: `pic-${r.emoji}`, type: 'pic', kind: 'earn', emoji: r.emoji, name: 'Dessin',
+    AV_FREE_PICS.forEach(e => list.push({ id: `pic-${e}`, type: 'pic', kind: 'free', emoji: e, name: 'Emoji' }));
+    AV_EARN_PICS.forEach(([e, how, test]) => list.push({ id: `pic-${e}`, type: 'pic', kind: 'earn', emoji: e, name: 'Emoji', how, test }));
+    EVENTS.forEach(ev => (ev.rewards || []).forEach(r => list.push({ id: `pic-${r.emoji}`, type: 'pic', kind: 'earn', emoji: r.emoji, name: 'Emoji',
         event: ev.id, how: `${ev.title} : trouve ${r.at} questions`, test: () => state.data.avatarExtra.includes(r.emoji) })));
     return list.concat(AV_ITEMS);
 })();
 const AVI = Object.fromEntries(AV_ALL.map(it => [it.id, it]));
-const AV_TYPE_NAME = { frame: 'Cadre', bg: 'Fond', pic: 'Dessin' };
+const AV_TYPE_NAME = { frame: 'Cadre', bg: 'Fond', pic: 'Emoji' };
 const avPicId = emoji => AV_ALL.find(it => it.type === 'pic' && it.emoji === emoji)?.id || null;
 
 /** Chiffres utiles aux conditions (badges + quelques autres). */
@@ -5939,7 +5942,7 @@ function avCheck() {
     if (fresh.length) saveData();
     return fresh;
 }
-const avLabel = it => it.type === 'pic' ? `le dessin ${it.emoji}` : `${it.type === 'frame' ? 'le cadre' : 'le fond'} ${it.hue !== undefined ? 'couleur' : `« ${it.name} »`}`;
+const avLabel = it => it.type === 'pic' ? `l’emoji ${it.emoji}` : `${it.type === 'frame' ? 'le cadre' : 'le fond'} ${it.hue !== undefined ? 'couleur' : `« ${it.name} »`}`;
 
 /** Habille un rond d'avatar avec son fond et son cadre (classes de style.css). */
 function avDress(a, look) {
@@ -6091,7 +6094,7 @@ function avChestDrop() {
     for (let i = 0; i < pool.length; i++) { r -= weights[i]; if (r <= 0) return AVI[pool[i]]; }
     return AVI[pool[pool.length - 1]];
 }
-const AV_CHEST_TEXT = '✨ 1 chance sur 10 : un cadre, un fond ou un dessin de la boutique';
+const AV_CHEST_TEXT = '✨ 1 chance sur 10 : un cadre, un fond ou un emoji de la boutique';
 /** « 🎨 Objets d'avatar : 12 / 45 » : parmi les objets déjà sortis. */
 function avCount() {
     const st = avStats();
@@ -6142,7 +6145,7 @@ function renderAvatarModalV2() {
     const tabs = $('avatarTabs');
     tabs.hidden = false;
     tabs.replaceChildren();
-    [['bg', '🎨', 'Fond'], ['pic', '🐱', 'Dessin'], ['frame', '⭕', 'Cadre']].forEach(([t, icon, label]) => {
+    [['bg', '🎨', 'Fond'], ['pic', '🐱', 'Emoji'], ['frame', '⭕', 'Cadre']].forEach(([t, icon, label]) => {
         const b = el('button', `avatar-tab${avTab === t ? ' is-active' : ''}`);
         b.type = 'button';
         const i = el('span', 'avatar-tab-icon');
@@ -6269,7 +6272,7 @@ function renderAvatarModal() {
         b.type = 'button';
         if (emoji) b.append(emojiImg(emoji));
         else b.textContent = [...name][0].toUpperCase();
-        b.setAttribute('aria-label', emoji ? 'Choisir ce dessin' : 'Mettre mon initiale');
+        b.setAttribute('aria-label', emoji ? 'Choisir cet emoji' : 'Mettre mon initiale');
         b.addEventListener('click', () => { look.emoji = emoji; renderAvatarModal(); });
         pics.append(b);
     });
@@ -8153,7 +8156,7 @@ function initBac() {
 }
 
 const PATCH_NOTES = [
-    ['🎃', 'Semaine d’Halloween jusqu’au 2 novembre', 'Dans Défis : des questions spéciales sans gouttes. 45 trouvées = une carte et un badge, et des dessins d’avatar à débloquer en route.'],
+    ['🎃', 'Semaine d’Halloween jusqu’au 2 novembre', 'Dans Défis : des questions spéciales sans gouttes. 45 trouvées = une carte et un badge, et des emojis d’avatar à débloquer en route.'],
     ['🎃', 'Citrouilles cachées', 'Chaque jour, 3 citrouilles se cachent dans les onglets du jeu : +5 🪙 chacune.'],
     ['🗓️', 'Missions d’Halloween', 'Cette semaine, les 3 missions sont aux couleurs d’Halloween.'],
     ['🃏', '30 nouvelles cartes', 'Une commune et une rare de plus par thème : 12 cartes par thème, 180 en tout.'],
@@ -8161,8 +8164,8 @@ const PATCH_NOTES = [
     ['⭐', 'XP selon la difficulté', 'Une question difficile rapporte plus d’XP qu’une facile.'],
     ['📅', 'Toutes les questions du jeu', 'Défi du jour, sprint et duels piochent aussi dans les questions de l’entraînement.'],
     ['🪙', 'Pièces rééquilibrées', '1 🪙 pour 8 XP, et 15 🪙 par badge.'],
-    ['🛍️', 'Nouvelle boutique', 'Chaque lundi, une collection assortie pour ton avatar (un cadre, un fond, un dessin), et ta carte de la semaine.'],
-    ['🎨', 'Ton avatar', 'Des fonds, des dessins et des cadres à gagner en jouant (ils s’ouvrent dans Profil → ton avatar).']
+    ['🛍️', 'Nouvelle boutique', 'Chaque lundi, une collection assortie pour ton avatar (un cadre, un fond, un emoji), et ta carte de la semaine.'],
+    ['🎨', 'Ton avatar', 'Des fonds, des emojis et des cadres à gagner en jouant (ils s’ouvrent dans Profil → ton avatar).']
 ];
 function maybeShowPatchNotes() {
     const d = state.data;
