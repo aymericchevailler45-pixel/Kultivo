@@ -3005,11 +3005,7 @@ function renderShopV2() {
             const ok = el('small', 'vitrine-done');
             ok.textContent = '✓ Toute la collection est à toi';
             txt.append(ok);
-        } else {
-            const one = el('small');
-            one.textContent = 'Tu en as déjà une partie : le reste s’achète pièce par pièce.';
-            txt.append(one);
-        }
+        }   // déjà une pièce : pas de bouton ni de texte, on achète le reste pièce par pièce
         look.append(lookAv, txt);
     }
     vit.append(head, look, row, foot);
