@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261025v">
+    <link rel="stylesheet" href="style.css?v=20261025w">
 </head>
 <body>
 
@@ -283,7 +283,7 @@
                     <span class="tag tag-pairs" id="pairsStep"></span>
                 </div>
                 <h2 class="question" id="pairsTitle"></h2>
-                <p class="pairs-help">Touche une case à gauche, puis la case qui va avec à droite.</p>
+                <p class="pairs-help" id="pairsHelp">Touche une case à gauche, puis la case qui va avec à droite.</p>
                 <!-- Une seule grille : chaque ligne a la même hauteur à gauche et à droite -->
                 <div class="pairs-grid" id="pairsGrid">
                     <p class="pairs-head" id="pairsLeftHead"></p>
@@ -291,6 +291,7 @@
                     <p class="pairs-head" id="pairsRightHead"></p>
                     <div class="pairs-sep" id="pairsSep" aria-hidden="true"><span>↔</span></div>
                 </div>
+                <button type="button" id="pairsNudge" class="btn btn-ghost nudge-btn">👆 Coup de pouce</button>
             </div>
 
             <!-- Niveau Ordre : une frise à remettre dans l'ordre -->
@@ -307,6 +308,7 @@
                     <span class="order-end" id="orderBottomLabel"></span>
                 </div>
                 <div class="order-pool" id="orderPool"></div>
+                <button type="button" id="orderNudge" class="btn btn-ghost nudge-btn">👆 Coup de pouce</button>
                 <button type="button" id="orderBtn" class="btn btn-green">Vérifier</button>
             </div>
 
@@ -568,31 +570,31 @@
     <div class="toasts" id="toasts" aria-live="polite"></div>
 
     <!-- L'ordre compte : les questions d'abord, puis la logique -->
-    <script src="questions.js?v=20261025v"></script>
-    <script src="pairs.js?v=20261025v"></script>
-    <script src="order.js?v=20261025v"></script>
-    <script src="facts.js?v=20261025v"></script>
-    <script src="entrainement/banque.js?v=20261025v"></script>
-    <script src="entrainement/histoire.js?v=20261025v"></script>
-    <script src="entrainement/sciences.js?v=20261025v"></script>
-    <script src="entrainement/geographie.js?v=20261025v"></script>
-    <script src="entrainement/technologie.js?v=20261025v"></script>
-    <script src="entrainement/musique.js?v=20261025v"></script>
-    <script src="entrainement/litterature.js?v=20261025v"></script>
-    <script src="entrainement/jeux.js?v=20261025v"></script>
-    <script src="entrainement/cinema.js?v=20261025v"></script>
-    <script src="entrainement/gastronomie.js?v=20261025v"></script>
-    <script src="entrainement/sport.js?v=20261025v"></script>
-    <script src="entrainement/arts.js?v=20261025v"></script>
-    <script src="entrainement/langue-francaise.js?v=20261025v"></script>
-    <script src="entrainement/mythologie.js?v=20261025v"></script>
-    <script src="entrainement/drapeaux.js?v=20261025v"></script>
-    <script src="entrainement/monuments.js?v=20261025v"></script>
-    <script src="cards.js?v=20261025v"></script>
-    <script src="cosmetiques.js?v=20261025v"></script>
-    <script src="levels.js?v=20261025v"></script>
-    <script src="vendor/supabase.min.js?v=20261025v"></script>
-    <script src="evenements/halloween.js?v=20261025v"></script>
-    <script src="script.js?v=20261025v"></script>
+    <script src="questions.js?v=20261025w"></script>
+    <script src="pairs.js?v=20261025w"></script>
+    <script src="order.js?v=20261025w"></script>
+    <script src="facts.js?v=20261025w"></script>
+    <script src="entrainement/banque.js?v=20261025w"></script>
+    <script src="entrainement/histoire.js?v=20261025w"></script>
+    <script src="entrainement/sciences.js?v=20261025w"></script>
+    <script src="entrainement/geographie.js?v=20261025w"></script>
+    <script src="entrainement/technologie.js?v=20261025w"></script>
+    <script src="entrainement/musique.js?v=20261025w"></script>
+    <script src="entrainement/litterature.js?v=20261025w"></script>
+    <script src="entrainement/jeux.js?v=20261025w"></script>
+    <script src="entrainement/cinema.js?v=20261025w"></script>
+    <script src="entrainement/gastronomie.js?v=20261025w"></script>
+    <script src="entrainement/sport.js?v=20261025w"></script>
+    <script src="entrainement/arts.js?v=20261025w"></script>
+    <script src="entrainement/langue-francaise.js?v=20261025w"></script>
+    <script src="entrainement/mythologie.js?v=20261025w"></script>
+    <script src="entrainement/drapeaux.js?v=20261025w"></script>
+    <script src="entrainement/monuments.js?v=20261025w"></script>
+    <script src="cards.js?v=20261025w"></script>
+    <script src="cosmetiques.js?v=20261025w"></script>
+    <script src="levels.js?v=20261025w"></script>
+    <script src="vendor/supabase.min.js?v=20261025w"></script>
+    <script src="evenements/halloween.js?v=20261025w"></script>
+    <script src="script.js?v=20261025w"></script>
 </body>
 </html>

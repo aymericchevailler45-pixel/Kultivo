@@ -78,6 +78,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (les moins chers plus souvent), ANNONCÉ sur le coffre (« ✨ 1 chance sur 10 : un cadre, un fond ou un dessin de la
   boutique »), animation spéciale, pas de cadenas pour eux ; Records : « 🎨 Objets d'avatar : X / Y » (objets déjà sortis) ;
   joueurs actuels SANS passe-droit (testeurs) : seuls leur couleur et leur dessin actuels leur sont débloqués pour de bon.
+- FAIT le 25/10 (actif tout de suite) : frises à montée douce (`orderSizes` : 4·4·4 → 4·4·5 au 36 → 4·5·5 au 46 →
+  5·5·5 → 5·5·6 au 76 → 5·6·6 au 86 → 6·6·6 dès 96) ; « 👆 Coup de pouce » des frises et des paires (`askNudge`,
+  `nudgeOrderCard`, `nudgePair` : on lit ce qu'il fait, puis on touche la carte / la case de son choix ; 1 par frise ou
+  grille ; pas d'XP pour elle ; stock 20 🪙 à la boutique (`SHOP` id `nudge`), 35 🪙 sur le moment) ; indices des questions
+  plus chers sur le moment (champ `spot` : 25 / 45 / 75 🪙) qu'en stock (15 / 30 / 50 🪙), avec une phrase qui le dit.
+- IDÉE pour la vraie appli Android (Capacitor) : icône qui change selon les fêtes, comme Duolingo (impossible proprement en
+  appli web : Chrome met l'icône à jour seul, avec retard et un message de confirmation).
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :
   1. Rajouter des cartes à la collection.
   2. Revoir le système d'XP et de pièces (déjà fait le 24/10 : XP 4/5/6 selon la difficulté ; la ligue reste « à l'effort »,

@@ -117,6 +117,18 @@ const XP_ORDER_CARD = 2;         // par carte bien placée
 const isOrder = n => n % CHALLENGE_EVERY === ORDER_AT;
 /** 4 cartes au début du parcours, 5 au milieu, 6 à la fin. */
 const orderSize = level => level < 40 ? 4 : level < 85 ? 5 : 6;
+/* Cartes de chacune des 3 frises (2026-10-25, demande de l'utilisateur : le niveau 86 passait d'un coup à 3 frises de 6) :
+   on ajoute une carte à une frise à la fois. 6-26 : 4·4·4 ; 36 : 4·4·5 ; 46 : 4·5·5 ; 56-66 : 5·5·5 ; 76 : 5·5·6 ;
+   86 : 5·6·6 ; 96 et plus : 6·6·6. */
+function orderSizes(level) {
+    if (level < 36) return [4, 4, 4];
+    if (level < 46) return [4, 4, 5];
+    if (level < 56) return [4, 5, 5];
+    if (level < 76) return [5, 5, 5];
+    if (level < 86) return [5, 5, 6];
+    if (level < 96) return [5, 6, 6];
+    return [6, 6, 6];
+}
 
 // Coffres du parcours : un coffre après chaque niveau multiple de 5 (3 cartes ; 4 après un défi, dont une rare ou mieux)
 const CHEST_EVERY = 5;
@@ -2739,11 +2751,14 @@ const PACK_SIZE = 5;   // un pack de 5 coûte le prix de 4
 
 const SHOP = [
     { id: 'hintLength', icon: '🔤', short: 'Forme',           name: 'Indice : forme',
-      desc: 'Les mots et les lettres de la réponse, en cases vides.', price: 15,  size: 'third' }, // avant: 5
+      desc: 'Les mots et les lettres de la réponse, en cases vides.', price: 15, spot: 25, size: 'third' }, // avant: 5
     { id: 'hintLetter', icon: '🅰️', short: 'Initiales',       name: 'Indice : initiales',
-      desc: 'La première lettre de chaque mot.',              price: 30, size: 'third' }, // avant: 10
+      desc: 'La première lettre de chaque mot.',              price: 30, spot: 45, size: 'third' }, // avant: 10
     { id: 'hintStart',  icon: '🔎', short: 'Plus de lettres', name: 'Indice : plus de lettres',
-      desc: 'Environ un tiers des lettres de chaque mot.',    price: 50, size: 'third' }, // avant: 20
+      desc: 'Environ un tiers des lettres de chaque mot.',    price: 50, spot: 75, size: 'third' }, // avant: 20
+    // 2026-10-25 : « coup de pouce » des frises et des paires (une carte placée / une paire révélée, au choix du joueur)
+    { id: 'nudge',      icon: '👆', short: 'Coup de pouce',   name: 'Coup de pouce',
+      desc: 'Frises et paires : place une carte ou révèle une paire de ton choix (un par frise ou par grille).', price: 20, spot: 35, size: 'third' },
     { id: 'heart',      icon: '💖', short: 'Cœur de secours', name: 'Cœur de secours',
       desc: 'Quand tu perds ton dernier cœur, le jeu te propose de l’utiliser pour continuer ta leçon.', price: 100, size: 'half' }, // avant: 30
     { id: 'freeze',     icon: '🧊', short: 'Gel de série',    name: 'Gel de série',
@@ -2822,11 +2837,17 @@ function renderHintOptions() {
         btn.type = 'button';
         btn.textContent = used ? `${item.icon} ${item.short} (déjà visible)`
             : owned > 0 ? `${item.icon} ${item.short} (en stock : ${owned})`
-            : `${item.icon} ${item.short} · ${item.price} 🪙`;
-        btn.disabled = used || (owned === 0 && state.data.coins < item.price);
+            : `${item.icon} ${item.short} · ${item.spot || item.price} 🪙`;
+        btn.disabled = used || (owned === 0 && state.data.coins < (item.spot || item.price));
         btn.addEventListener('click', () => useHint(id));
         box.append(btn);
     });
+    // Sur le moment, c'est plus cher : on le dit (en stock, acheté à la boutique : 15 / 30 / 50 🪙)
+    if (HINT_IDS.some(id => !(state.data.inv[id] || 0))) {
+        const note = el('p', 'hint-note');
+        note.textContent = `💡 Moins cher en stock, à la boutique : ${HINT_IDS.map(id => SHOP.find(i => i.id === id).price).join(' / ')} 🪙.`;
+        box.append(note);
+    }
 }
 
 function toggleHintPanel() {
@@ -2844,7 +2865,7 @@ function useHint(id) {
     const item = SHOP.find(i => i.id === id);
     const data = state.data;
     if ((data.inv[id] || 0) > 0) data.inv[id]--;
-    else if (data.coins >= item.price) data.coins -= item.price;
+    else if (data.coins >= (item.spot || item.price)) data.coins -= (item.spot || item.price);
     else return;
 
     state.hintUsed.add(id);
@@ -3606,12 +3627,37 @@ function showPairsGrid() {
         box.append(b);
     });
     $('pairsSep').style.gridArea = `2 / 2 / span ${grid.pairs.length} / 3`;
+    state.nudgePick = null;
+    refreshNudgeView('pairs');
     updateProgress();
+}
+/** Paires : la case choisie et sa paire s'allument et se relient (pas d'XP pour cette paire). */
+function nudgePair(btn) {
+    const grid = state.pairGrids[state.pairIndex];
+    const i = Number(btn.dataset.idx);
+    if (grid.matched.has(i) || !payNudge()) return;
+    grid.nudged = true;
+    state.nudgePick = null;
+    if (state.pairSel) { state.pairSel.classList.remove('is-selected'); state.pairSel = null; }
+    grid.matched.add(i);
+    state.done++;
+    const both = [...$('pairsGrid').querySelectorAll(`.pair-btn[data-idx="${i}"]`)];
+    both.forEach(b => { b.classList.add('is-ok', 'is-nudged'); b.disabled = true; });
+    setTimeout(() => both.forEach(b => { b.classList.remove('is-ok'); b.classList.add('is-matched'); }), 450);
+    playSound(grid.matched.size === grid.pairs.length ? 'good' : 'pair');
+    refreshNudgeView('pairs');
+    updateProgress();
+    if (grid.matched.size === grid.pairs.length) {
+        state.phase = 'idle';
+        const session = state.startedAt;
+        setTimeout(() => { if (state.startedAt === session && !$('studyScreen').hidden) nextPairGrid(); }, 800);
+    }
 }
 
 /** Un clic sur une case : on la sélectionne, ou on vérifie la paire avec la case de l'autre colonne. */
 function pickPair(btn) {
     if (state.phase !== 'pairs' || btn.disabled) return;
+    if (state.nudgePick === 'pairs') { nudgePair(btn); return; }
     const sel = state.pairSel;
     if (sel) sel.classList.remove('is-selected');
     if (!sel || sel.dataset.side === btn.dataset.side) {
@@ -4364,7 +4410,8 @@ function endSession(win) {
 /** 3 frises de familles (et si possible de thèmes) différentes, adaptées au niveau. */
 function buildOrderRounds(level) {
     const t = pairTarget(level);   // même difficulté visée que les niveaux Paires
-    const n = orderSize(level);
+    const sizes = orderSizes(level);
+    const n = Math.max(...sizes);
     const nearCount = f => f.items.filter(it => Math.abs(it[3] - t) <= 1.2).length;
     // Tirage pondéré : une famille avec des cartes mal placées a plus de chances de sortir
     const missedIn = f => f.items.filter(it => orderMiss(orderKey(f, it[0])) > 0).length;
@@ -4379,7 +4426,7 @@ function buildOrderRounds(level) {
         if (families.length < ORDER_ROUNDS && !families.includes(f)) families.push(f);
     }
     const progress = (level - 1) / Math.max(1, MAX_LEVEL - 1);   // 0 au début, 1 à la fin
-    return families.map(family => ({ family, items: pickOrderItems(family, t, n, progress), placed: [], checked: false }));
+    return families.map((family, i) => ({ family, items: pickOrderItems(family, t, sizes[i] || n, progress), placed: [], checked: false }));
 }
 
 /* Statistiques des cartes de frise (même principe que les paires : révisions et répétition espacée) */
@@ -4448,6 +4495,8 @@ function showOrderRound() {
     $('orderHelp').textContent = 'Touche les cartes dans l’ordre. Touche une carte placée pour la retirer.';
     $('orderTopLabel').textContent = `⬆ ${f.ends[0]}`;
     $('orderBottomLabel').textContent = `⬇ ${f.ends[1]}`;
+    state.nudgePick = null;
+    refreshNudgeView('order');
     renderOrder();
     updateProgress();
 }
@@ -4467,7 +4516,7 @@ function renderOrder() {
             li.append(num);
             const idx = round.placed[i];
             if (idx !== undefined) {
-                const card = el('button', 'order-card is-placed');
+                const card = el('button', `order-card is-placed${round.nudged && round.nudged.slot === i ? ' is-nudged' : ''}`);
                 card.type = 'button';
                 card.textContent = round.items[idx].label;
                 card.addEventListener('click', () => unplaceOrderCard(i));
@@ -4515,14 +4564,83 @@ function renderOrder() {
     }
     pool.hidden = round.checked || pool.childElementCount === 0;
 
+    renderNudgeBtn('order');
     const btn = $('orderBtn');
     btn.textContent = round.checked ? 'Continuer' : 'Vérifier';
     btn.disabled = !round.checked && round.placed.filter(x => x !== undefined).length < n;
 }
 
+/* Coup de pouce (2026-10-25) : on touche 👆, on lit ce qu'il fait, puis on touche la carte (frise) ou la case (paires)
+   de son choix : elle va à sa bonne place / sa paire est révélée. Un par frise ou par grille ; en stock (boutique, 20 🪙)
+   ou payé sur le moment (35 🪙). La carte ou la paire ainsi donnée ne rapporte pas d'XP. */
+const NUDGE = () => SHOP.find(i => i.id === 'nudge');
+function nudgeCost() {
+    const d = state.data;
+    return (d.inv.nudge || 0) > 0 ? { stock: true, text: `il t’en reste ${d.inv.nudge} en stock` } : { stock: false, price: NUDGE().spot, text: `${NUDGE().spot} 🪙 sur le moment (${NUDGE().price} 🪙 en stock, à la boutique)` };
+}
+function payNudge() {
+    const d = state.data;
+    const cost = nudgeCost();
+    if (cost.stock) d.inv.nudge--;
+    else if (d.coins >= cost.price) d.coins -= cost.price;
+    else return false;
+    saveData();
+    renderHeader();
+    return true;
+}
+function renderNudgeBtn(kind) {
+    const btn = $(kind === 'order' ? 'orderNudge' : 'pairsNudge');
+    const target = kind === 'order' ? state.orderRounds?.[state.orderIndex] : state.pairGrids?.[state.pairIndex];
+    if (!target) { btn.hidden = true; return; }
+    btn.hidden = false;
+    const used = !!target.nudged;
+    btn.classList.toggle('is-picking', state.nudgePick === kind);
+    btn.textContent = used ? '👆 Coup de pouce utilisé' : state.nudgePick === kind ? '✕ Annuler le coup de pouce' : '👆 Coup de pouce';
+    btn.disabled = used || (kind === 'order' && target.checked);
+}
+async function askNudge(kind) {
+    if (state.nudgePick === kind) { state.nudgePick = null; refreshNudgeView(kind); return; }   // annuler (rien n'est payé)
+    const cost = nudgeCost();
+    if (!cost.stock && state.data.coins < cost.price) { showToast(`Il te manque ${cost.price - state.data.coins} 🪙 (ou achète des coups de pouce à la boutique).`); return; }
+    const ok = await askConfirm({
+        title: '👆 Coup de pouce',
+        text: `${kind === 'order' ? 'Touche ensuite la carte de ton choix : elle se place toute seule à sa bonne place.' : 'Touche ensuite la case de ton choix : sa paire est révélée.'} Un seul par ${kind === 'order' ? 'frise' : 'grille'}, et il ne rapporte pas d’XP.\n${cost.stock ? `👆 ${cost.text}` : `🪙 ${cost.text}`}`,
+        yes: kind === 'order' ? 'Choisir la carte' : 'Choisir la case', no: 'Annuler'
+    });
+    if (!ok) return;
+    state.nudgePick = kind;
+    refreshNudgeView(kind);
+}
+function refreshNudgeView(kind) {
+    if (kind === 'order') {
+        $('orderHelp').textContent = state.nudgePick === 'order' ? '👆 Touche la carte à placer.' : 'Touche les cartes dans l’ordre. Touche une carte placée pour la retirer.';
+        $('orderView').classList.toggle('is-nudging', state.nudgePick === 'order');
+    } else {
+        $('pairsHelp').textContent = state.nudgePick === 'pairs' ? '👆 Touche la case dont tu veux voir la paire.' : 'Touche une case à gauche, puis la case qui va avec à droite.';
+        $('pairsView').classList.toggle('is-nudging', state.nudgePick === 'pairs');
+    }
+    renderNudgeBtn(kind);
+}
+/** Frise : la carte choisie va à sa bonne place (et y reste). */
+function nudgeOrderCard(idx) {
+    const round = state.orderRounds[state.orderIndex];
+    if (!payNudge()) return;
+    const correct = [...round.items.keys()].sort((a, b) => round.items[a].value - round.items[b].value);
+    const pos = correct.indexOf(idx);
+    const from = round.placed.indexOf(idx);
+    if (from >= 0) round.placed[from] = undefined;
+    round.placed[pos] = idx;   // l'éventuelle carte qui était là retourne dans la pioche
+    round.nudged = { slot: pos, idx };
+    state.nudgePick = null;
+    playSound('pair');
+    refreshNudgeView('order');
+    renderOrder();
+}
+
 /** La carte touchée va dans le premier emplacement libre. */
 function placeOrderCard(idx) {
     if (state.phase !== 'order') return;
+    if (state.nudgePick === 'order') { nudgeOrderCard(idx); return; }
     const round = state.orderRounds[state.orderIndex];
     let free = 0;
     while (round.placed[free] !== undefined) free++;
@@ -4532,6 +4650,9 @@ function placeOrderCard(idx) {
 
 function unplaceOrderCard(slot) {
     if (state.phase !== 'order') return;
+    const round = state.orderRounds[state.orderIndex];
+    if (state.nudgePick === 'order') { nudgeOrderCard(round.placed[slot]); return; }
+    if (round.nudged && round.nudged.slot === slot) return;   // carte placée par le coup de pouce : elle reste
     state.orderRounds[state.orderIndex].placed[slot] = undefined;
     renderOrder();
 }
@@ -4557,7 +4678,8 @@ function checkOrder(round) {
     state.done++;
     state.orderRight += right;
     state.orderTotal += round.items.length;
-    if (right > 0) addXp((state.replay ? 1 : XP_ORDER_CARD) * right);
+    const paid = right - (round.nudged ? 1 : 0);   // la carte donnée par le coup de pouce ne rapporte rien
+    if (paid > 0) addXp((state.replay ? 1 : XP_ORDER_CARD) * paid);
     if (right === round.items.length) {
         playSound('good');
     } else {
@@ -7759,6 +7881,8 @@ function bindEvents() {
     $('checkBtn').addEventListener('click', () => verify(false));
     $('skipBtn').addEventListener('click', () => verify(true));
     $('hintBtn').addEventListener('click', toggleHintPanel);
+    $('orderNudge').addEventListener('click', () => askNudge('order'));
+    $('pairsNudge').addEventListener('click', () => askNudge('pairs'));
     $('continueBtn').addEventListener('click', () => commit(state.verdict !== 'wrong'));
     $('forceBtn').addEventListener('click', () => commit(true));
     $('reviewBtn').addEventListener('click', () => openReviewModal());
