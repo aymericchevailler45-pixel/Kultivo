@@ -35,6 +35,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 // XP gagnés
 const XP_REPLAY = 2;              // 2026-10-25 : niveau DÉJÀ réussi qu'on refait (gratuit) : 2 XP par bonne réponse, pas de bonus
+const REPLAY_MISSION_WINDOW = 20;  // un niveau refait compte pour les missions s'il fait partie des 20 derniers (2026-10-25)
+const replayCountsForMissions = n => n >= state.data.unlocked - REPLAY_MISSION_WINDOW;
 const XP_FIRST_TRY = 4;          // avant: 10 | bonne réponse du premier coup (question facile, d < 2,5)
 /* Plus d'XP pour les questions difficiles (2026-10-23) : les niveaux avancés font plus d'erreurs ; sans ça, un joueur
    loin dans le parcours gagnait moins d'XP qu'un débutant → injuste pour la ligue des amis de la semaine. */
@@ -3214,7 +3216,7 @@ function openStartModal(n) {
         : info.name;
     $('modalStatsText').textContent = questionsLabel(info);
     const left = state.data.drops - 1;
-    $('modalCost').textContent = free ? '💧 Déjà réussi : gratuit · XP réduite'
+    $('modalCost').textContent = free ? `💧 Déjà réussi : gratuit · XP réduite · ${replayCountsForMissions(n) ? '✓ compte pour tes missions' : 'ne compte pas pour les missions'}`
         : `💧 −1 goutte · il t’en restera ${left}`;
     $('modalCost').hidden = false;
     $('startLevelBtn').textContent = free ? 'Commencer' : 'Commencer · −1 💧';
@@ -3390,6 +3392,7 @@ function startSession(requestedMode, level = 0) {
                : 'level';
     // Niveau déjà réussi qu'on refait : XP réduite, ni bonus ni missions (sinon on gagnait la ligue en refaisant le niveau 1)
     state.replay = ['level', 'pairs', 'order', 'challenge'].includes(mode) && !!state.data.done[level];
+    state.replayCounts = !state.replay || replayCountsForMissions(level);
     const pairsMode = mode === 'pairs';
     const orderMode = mode === 'order';
 
@@ -4182,7 +4185,7 @@ function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryCl
     $('endTitle').textContent = title;
     $('endText').textContent = text;
     const missions = (state.missionsJustDone || []).map(m => `🗓️ Mission réussie : ${m.text(m.goal, m.theme)} !`);
-    if (state.replay && ['level', 'pairs', 'order', 'challenge'].includes(state.mode)) missions.unshift('🔁 Niveau déjà réussi : XP réduite (2 par bonne réponse, sans bonus).');
+    if (state.replay && ['level', 'pairs', 'order', 'challenge'].includes(state.mode)) missions.unshift(`🔁 Niveau déjà réussi : XP réduite (2 par bonne réponse, sans bonus)${state.replayCounts ? ', mais il compte pour tes missions' : ''}.`);
     const unlocked = avCheck();
     if (unlocked.length) missions.push(`🎨 Débloqué pour ton avatar : ${unlocked.slice(0, 3).map(avLabel).join(', ')}${unlocked.length > 3 ? ` et ${unlocked.length - 3} autre${unlocked.length > 4 ? 's' : ''}` : ''} ! (Profil → ton avatar)`);
     state.missionsJustDone = [];
@@ -4318,7 +4321,7 @@ function endSession(win) {
             state.data.totals.flawless++;
         }
         if (challenge && !state.replay) addXp(XP_CHALLENGE_WIN);
-        if (!state.replay) {   // un niveau refait ne compte pas pour les missions
+        if (state.replayCounts) {   // niveau refait : compte pour les missions seulement s'il fait partie des 20 derniers
             missionEvent('levels');
             if (state.errors === 0) missionEvent('flawless');
             if (mode === 'order') missionEvent('order');
