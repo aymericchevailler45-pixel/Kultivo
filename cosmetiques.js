@@ -174,7 +174,11 @@ const AV_COLLECTIONS = [
 ];
 // Ordre de sortie des collections de toute l'année (ajouter les nouveaux lots À LA FIN)
 const COLLECTION_ORDER = ['espace', 'ocean', 'cinema', 'neon', 'retro', 'royal', 'arcenciel', 'luxe', 'jungle', 'bonbons'];
-const COLLECTION_DISCOUNT = 0.8;   // « Toute la collection » : −20 %
+// Prix FIXES (2026-10-25, demande de l'utilisateur : pour pouvoir économiser à l'avance) : cadre 500, fond 500, dessin 300,
+// « Toute la collection » 1 000 au lieu de 1 300. Les prix écrits plus haut ne servent plus pour la boutique.
+const AV_PRICES = { frame: 500, bg: 500, pic: 300 };
+AV_ITEMS.forEach(it => { if (it.kind === 'shop') it.price = AV_PRICES[it.type]; });
+const COLLECTION_DISCOUNT = 0.77;  // « Toute la collection » : environ −23 % (1 300 → 1 000), arrondi à 50
 
 // Périodes de saison (mois-jour du lundi) : la collection sort le 1er lundi de sa période (2026-10-25, demande de
 // l'utilisateur : au bon moment de l'année ; Noël juste avant le 25, nouvel an chinois fin janvier, printemps en mars)

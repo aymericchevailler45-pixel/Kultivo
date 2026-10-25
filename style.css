@@ -2869,7 +2869,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 }
 .league-avatar.fr::after { content: ''; position: absolute; pointer-events: none; background-repeat: no-repeat; background-position: center; background-size: contain; }
 .league-avatar.fr.fx-tag::after { width: 42%; height: 42%; right: -16%; bottom: -16%; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25)); }
-.league-avatar.fr.fx-deco::after { inset: -32%; background-size: 22% 22%; background-position: 4% 4%, 96% 4%, 50% 100%; }   /* petites et vers l'extérieur : le dessin reste visible */
+.league-avatar.fr.fx-deco::after { inset: -32%; background-size: 22% 22%; background-position: 18% 18%, 82% 18%, 50% 95%; }   /* 3 décorations à égale distance du centre */
 .league-avatar.fr.fx-laurel::after { left: -32%; right: -32%; top: 6%; bottom: -26%; background-size: 50% 100%; background-position: 0 100%, 100% 100%; }
 @media (prefers-reduced-motion: reduce) { .league-avatar.fr::before, .league-avatar[class*="bg-"] { animation: none !important; } }
 
@@ -3090,3 +3090,13 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .vitrine-coll { margin: 6px 0 0; font-weight: 900; font-size: 1rem; color: var(--ink); }
 .vitrine-all { margin-top: 14px; }
 .league-avatar.bg-fireworks { background: radial-gradient(circle at 28% 32%, #ffd740 0 3%, transparent 4%), radial-gradient(circle at 70% 28%, #ff4081 0 3%, transparent 4%), radial-gradient(circle at 55% 70%, #40c4ff 0 3%, transparent 4%), radial-gradient(circle at 28% 32%, transparent 10%, rgba(255, 215, 64, 0.5) 11% 13%, transparent 14%), radial-gradient(circle at 70% 28%, transparent 10%, rgba(255, 64, 129, 0.5) 11% 13%, transparent 14%), linear-gradient(160deg, #1a1446, #06051a); }
+
+/* « Mon avatar » : de la place autour de l'aperçu (cadres avec décorations), onglets sur 2 lignes (icône puis mot) */
+.avatar-sheet.is-v2 .avatar-preview { margin: 18px 0 22px; }
+.avatar-tab { display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.1; }
+.avatar-tab .avatar-tab-icon { font-size: 1.25rem; line-height: 1.2; }
+/* Podium : couronne un peu plus haut, nom pas caché par le cadre et ses décorations */
+.podium-col .league-avatar.fr { margin: 6px 0 12px; }
+.podium-col .league-avatar.fr.fx-deco, .podium-col .league-avatar.fr.fx-laurel { margin: 10px 0 18px; }
+.podium-crown { position: relative; top: -4px; }
+.podium-col .league-avatar.fr ~ .podium-name { position: relative; z-index: 1; }

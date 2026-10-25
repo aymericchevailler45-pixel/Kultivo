@@ -2983,7 +2983,7 @@ function renderShopV2() {
     const missing = plan.items.map(id => AVI[id]).filter(it => it && !d.av.owned[it.id]);
     if (missing.length >= 2) {
         const full = missing.reduce((sum, it) => sum + it.price, 0);
-        const price = Math.round((full * COLLECTION_DISCOUNT) / 10) * 10;
+        const price = Math.round((full * COLLECTION_DISCOUNT) / 50) * 50;
         const all = el('button', 'btn btn-violet btn-full vitrine-all');
         all.type = 'button';
         all.textContent = `Toute la collection · ${price} 🪙 au lieu de ${full}`;
@@ -6007,14 +6007,14 @@ function vitrinePlan(w) {
         let back = false;
         if (firstOfSeason && AV_COLLECTIONS.some(c => c.season === season.id)) coll = AV_COLLECTIONS.find(c => c.season === season.id);
         else {
-            // Retour : seulement une collection pas vue depuis 4 semaines au moins (les plus anciennes d'abord) ; sinon une nouvelle
-            const old = shown.filter(id => k - last[id] >= 4).sort((a, b) => last[a] - last[b]).slice(0, 2);
+            // Retour une semaine normale sur trois : une collection vue il y a 2 semaines au moins (les plus anciennes d'abord)
+            const old = shown.filter(id => k - last[id] >= 2).sort((a, b) => last[a] - last[b]).slice(0, 2);
             const retour = (normal % 3 === 2 && old.length > 0) || next >= COLLECTION_ORDER.length;
             normal++;
             if (!retour) coll = AV_COLL[COLLECTION_ORDER[next++]];
             else {
                 const from = old.length ? old : [...shown].sort((a, b) => last[a] - last[b]).slice(0, 1);
-                if (from.length) { coll = AV_COLL[seededShuffle([...from].sort(), `retour-${k}`)[0]]; back = true; }
+                if (from.length) { coll = AV_COLL[from[0]]; back = true; }   // celle qu'on n'a pas vue depuis le plus longtemps
             }
         }
         if (k === w) plan = { coll: coll ? coll.id : null, items: coll ? coll.items.slice() : [], back, season: coll?.season || null, released: releasedItems.slice() };
@@ -6124,10 +6124,14 @@ function renderAvatarModalV2() {
     const tabs = $('avatarTabs');
     tabs.hidden = false;
     tabs.replaceChildren();
-    [['bg', '🎨 Fond'], ['pic', '🐱 Dessin'], ['frame', '⭕ Cadre']].forEach(([t, label]) => {
+    [['bg', '🎨', 'Fond'], ['pic', '🐱', 'Dessin'], ['frame', '⭕', 'Cadre']].forEach(([t, icon, label]) => {
         const b = el('button', `avatar-tab${avTab === t ? ' is-active' : ''}`);
         b.type = 'button';
-        b.textContent = label;
+        const i = el('span', 'avatar-tab-icon');
+        i.textContent = icon;
+        const l = el('span');
+        l.textContent = label;
+        b.append(i, l);
         const n = AV_ALL.filter(it => it.type === t && it.kind !== 'free' && avHas(it, st) && !d.av.opened[it.id]).length;
         if (n) b.setAttribute('data-notif', n);
         b.addEventListener('click', () => { avTab = t; renderAvatarModalV2(); $('avatarGrid').scrollTop = 0; });
