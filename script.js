@@ -1284,7 +1284,7 @@ function renderEvent() {
     const btn = el('button', 'btn btn-green');
     btn.type = 'button';
     btn.textContent = ed.won ? 'Rejouer pour le plaisir' : 'Jouer';
-    btn.addEventListener('click', () => startSession('event'));
+    btn.addEventListener('click', openEventStart);
     actions.append(btn);
     card.append(h, p, meter, count, steps, stepsText, reward, pumpkins, actions);
     page.append(card);
@@ -1342,6 +1342,20 @@ function renderEventFriends(ev, mine) {
         card.append(more);
     }
     return card;
+}
+
+/** Fenêtre de départ de l'événement (comme pour les autres modes, 2026-10-25). */
+function openEventStart() {
+    const ev = currentEvent();
+    if (!ev) return;
+    const n = Math.min(Object.keys(eventData(ev).found).length, ev.goal);
+    state.pendingMode = 'event';
+    state.pendingLevel = null;
+    $('modalTitle').textContent = `${ev.icon} ${ev.title}`;
+    $('modalDesc').textContent = eventData(ev).won ? 'Pour le plaisir : la carte est déjà à toi !' : `${n} / ${ev.goal} questions trouvées pour la carte.`;
+    $('modalStatsText').textContent = `${EVENT_SIZE} questions · sans gouttes 💧 ni cœurs`;
+    $('modalCost').hidden = true;
+    showModal(false);
 }
 
 /** Fin d'une session de l'événement : progression, carte gagnée. */
