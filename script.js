@@ -8486,16 +8486,18 @@ function initBac() {
 }
 
 const PATCH_NOTES = [
-    ['🎃', 'Semaine d’Halloween jusqu’au 2 novembre', 'Dans Défis : des questions spéciales sans gouttes. 45 trouvées = une carte et un badge, et des emojis d’avatar à débloquer en route.'],
-    ['🎃', 'Citrouilles cachées', 'Chaque jour, 3 citrouilles se cachent dans les onglets du jeu : +5 🪙 chacune.'],
-    ['🗓️', 'Missions d’Halloween', 'Cette semaine, les 3 missions sont aux couleurs d’Halloween.'],
-    ['🃏', '30 nouvelles cartes', 'Une commune et une rare de plus par thème : 12 cartes par thème, 180 en tout.'],
-    ['🎖️', 'Titres revus', 'Il faut désormais 3 fois plus d’XP pour chaque titre. Ton XP, elle, ne change pas.'],
-    ['⭐', 'XP selon la difficulté', 'Une question difficile rapporte plus d’XP qu’une facile.'],
-    ['📅', 'Toutes les questions du jeu', 'Défi du jour, sprint et duels piochent aussi dans les questions de l’entraînement.'],
-    ['🪙', 'Pièces rééquilibrées', '1 🪙 pour 8 XP, 15 🪙 par badge, et l’objectif du jour rapporte plus (20 / 30 / 50 🪙).'],
-    ['🛍️', 'Nouvelle boutique', 'Chaque lundi, une collection assortie pour ton avatar (un cadre, un fond, un emoji), et ta carte de la semaine.'],
-    ['🎨', 'Ton avatar', 'Des fonds, des emojis et des cadres à gagner en jouant (ils s’ouvrent dans Profil → ton avatar).']
+    // Court et clair (2026-10-25) : ce que les bulles d'explication disent déjà (citrouilles, règles d'Halloween) n'est pas répété
+    ['🎃', 'Halloween, jusqu’au 2 novembre', 'Un événement spécial dans Défis, avec une carte et des emojis d’avatar à gagner.'],
+    ['🛍️', 'Nouvelle boutique', 'Chaque lundi, une collection assortie pour ton avatar (cadre, fond, emoji) et ta carte de la semaine.'],
+    ['🎨', 'Ton avatar', 'Des fonds, des emojis et des cadres à débloquer en jouant. Bouton « ✏️ Modifier » à côté de ton nom.'],
+    ['🃏', '30 nouvelles cartes', '12 cartes par thème désormais, 180 en tout.'],
+    ['🔤', 'Indices plus pratiques', 'Avec un indice, tape seulement les lettres qui manquent : elles se placent dans la grille.'],
+    ['⏳', 'Frises', 'Reste appuyé sur une carte placée pour la déplacer. Et la difficulté monte plus doucement.'],
+    ['👆', 'Coup de pouce', 'Dans les frises et les paires : place une carte ou révèle une paire de ton choix.'],
+    ['🔁', 'Niveaux déjà réussis', 'Les refaire rapporte moins d’XP. S’ils font partie de tes 20 derniers niveaux, ils comptent pour tes missions.'],
+    ['🎖️', 'Titres revus', 'Il faut plus d’XP pour chaque titre. Ton XP, elle, ne change pas.'],
+    ['🪙', 'Pièces', 'Un peu moins par niveau, plus pour l’objectif du jour. Les indices sont moins chers en stock qu’au dernier moment.'],
+    ['📅', 'Toutes les questions', 'Défi du jour, sprint et duels piochent aussi dans les questions de l’entraînement.']
 ];
 function maybeShowPatchNotes() {
     const d = state.data;
