@@ -1540,7 +1540,7 @@ function openMissionsModal() {
         });
         chest.append(btn);
     } else {
-        chest.textContent = `🎁 Les 3 missions réussies : un coffre de 3 cartes en plus.${avChestPool().length ? ` ${AV_CHEST_TEXT}.` : ''}`;
+        chest.textContent = `🎁 Les 3 missions réussies : un coffre de 3 cartes en plus.${avChestLine()}`;
     }
     body.append(chest);
     const days = 7 - ((new Date().getDay() + 6) % 7);   // jours restants, lundi compris
@@ -6092,6 +6092,16 @@ function avChestDrop() {
     return AVI[pool[pool.length - 1]];
 }
 const AV_CHEST_TEXT = '✨ 1 chance sur 10 : un cadre, un fond ou un emoji de la boutique';
+/** 1re semaine où un coffre peut donner un objet (la même pour tous) : la phrase y est marquée « Nouveau ». */
+function avChestFirstWeek() {
+    const seasonal = new Set(AV_COLLECTIONS.filter(c => c.season).flatMap(c => c.items));
+    for (let w = 0; w <= vitrineWeek(); w++) {
+        const plan = vitrinePlan(w);
+        if (plan.released.some(id => !plan.items.includes(id) && AVI[id] && !AVI[id].season && !seasonal.has(id))) return w;
+    }
+    return -1;
+}
+const avChestLine = () => (avChestPool().length ? ` ${avChestFirstWeek() === vitrineWeek() ? '🆕 Nouveau ! ' : ''}${AV_CHEST_TEXT}.` : '');
 /** « 🎨 Objets d'avatar : 12 / 45 » : parmi les objets déjà sortis. */
 function avCount() {
     const st = avStats();
@@ -7069,7 +7079,7 @@ function renderLeague() {
         : myIndex === 0 ? (rows[0].xp > 0 ? '🏆 Tu es en tête : garde ta place jusqu’à lundi !' : 'Personne n’a encore joué cette semaine : à toi de commencer !')
         : `Tu es ${myIndex + 1}e · encore ${rows[myIndex - 1].xp - rows[myIndex].xp + 1} XP pour dépasser ${rows[myIndex - 1].pseudo} !`;
     para(rank, tip, 'league-tip');
-    para(rank, `🎁 Lundi : un coffre si tu bats au moins un ami.${avChestPool().length ? ` ${AV_CHEST_TEXT}.` : ''}`, 'muted league-sub');
+    para(rank, `🎁 Lundi : un coffre si tu bats au moins un ami.${avChestLine()}`, 'muted league-sub');
 
     renderDuelsCard(grid);
 
