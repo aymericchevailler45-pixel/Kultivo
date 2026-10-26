@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aperçu cartes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=cartes1">
+<!-- Page d'APERÇU (2026-10-26) : nouveaux styles de cartes, à choisir avant de les mettre dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .wrap > .card { min-width: 0; }
+    .card > h2 { margin: 0 0 2px; }
+    .card > p.lead { margin: 0 0 14px; color: var(--muted); font-weight: 700; }
+    .row-big { display: flex; gap: 14px; overflow-x: auto; padding: 6px 2px 14px; scroll-snap-type: x mandatory; }
+    .row-big > * { flex: none; scroll-snap-align: start; }
+    .row-small { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 6px; max-width: 330px; }   /* taille réelle sur téléphone */
+    .row-small .kcard { padding: 2px; border-width: 2px; border-radius: 9px; }
+    .row-small .kcard .emoji-img { width: 1.7rem; height: 1.7rem; }
+    .sub { margin: 8px 0 4px; font-weight: 900; font-size: 0.85rem; color: var(--muted); }
+
+    /* Couleurs de rareté (mêmes que le jeu) */
+    .c { --r: var(--r-common); --r2: #6f7b93; --glow: rgba(154, 166, 189, .35); }
+    .c.rare { --r: var(--r-rare); --r2: #0e6fa3; --glow: rgba(24, 153, 214, .35); }
+    .c.epic { --r: var(--r-epic); --r2: #5b2fc9; --glow: rgba(139, 92, 246, .4); }
+    .c.legendary { --r: var(--r-legendary); --r2: #c47a00; --glow: rgba(255, 179, 0, .5); }
+    .c.master { --r: var(--r-master); --r2: #2c6b00; --glow: rgba(70, 163, 2, .45); }
+    .c.event { --r: var(--r-event); --r2: #b34f00; --glow: rgba(255, 122, 0, .45); }
+    .c .emoji-img { display: block; }
+
+    /* ---------- A : carte à collectionner (cadre, bandeau, fenêtre d'image, gemmes) ---------- */
+    .a { width: 210px; border-radius: 16px; padding: 7px; background: linear-gradient(160deg, var(--r), var(--r2)); box-shadow: 0 6px 0 var(--r2), 0 0 26px var(--glow); color: var(--ink); }
+    .a-in { border-radius: 11px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; }
+    .a-top { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: color-mix(in srgb, var(--r) 18%, var(--surface)); font-size: 0.72rem; font-weight: 900; color: var(--r2); text-transform: uppercase; letter-spacing: .05em; }
+    .a-art { position: relative; height: 128px; display: grid; place-items: center; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--r) 30%, #fff) 0, color-mix(in srgb, var(--r) 12%, var(--surface)) 55%, var(--surface) 100%); border-block: 2px solid color-mix(in srgb, var(--r) 35%, transparent); }
+    .a-art .emoji-img { width: 84px; height: 84px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.18)); }
+    .a-name { margin: -14px auto 0; position: relative; z-index: 1; padding: 5px 14px; border-radius: 10px; background: linear-gradient(160deg, var(--r), var(--r2)); color: #fff; font-weight: 900; font-size: 0.95rem; text-align: center; max-width: 88%; box-shadow: 0 3px 6px rgba(0,0,0,.15); }
+    .a-text { margin: 10px 12px 6px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--r) 7%, var(--bg)); font-size: 0.78rem; font-weight: 700; line-height: 1.35; color: var(--ink); min-height: 62px; }
+    .a-foot { display: flex; justify-content: space-between; align-items: center; padding: 4px 12px 8px; font-size: 0.7rem; font-weight: 900; color: var(--muted); }
+    .gems { letter-spacing: 2px; color: var(--r); font-size: .8rem; }
+    .a.small { width: auto; padding: 4px; border-radius: 10px; box-shadow: 0 3px 0 var(--r2); }
+    .a.small .a-in { border-radius: 7px; aspect-ratio: 3 / 4; justify-content: center; }
+    .a.small .a-art { height: auto; flex: 1; border: 0; }
+    .a.small .a-art .emoji-img { width: 60%; height: auto; }
+
+    /* ---------- B : premium (fond de la couleur, halo, panneau vitré, reflet pour les hautes raretés) ---------- */
+    .b { position: relative; width: 210px; min-height: 300px; border-radius: 18px; padding: 14px 12px 12px; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #fff;
+        background: radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--r) 55%, #fff) 0, var(--r) 38%, var(--r2) 100%); box-shadow: 0 8px 22px var(--glow), inset 0 0 0 2px rgba(255,255,255,.35); }
+    .b::before { content: ''; position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 50% 28%, rgba(255,255,255,.07) 0 10deg, transparent 10deg 20deg); pointer-events: none; }
+    .b.legendary::after, .b.master::after, .b.event::after { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.45) 45%, transparent 60%); background-size: 260% 100%; animation: shine 3.2s ease-in-out infinite; pointer-events: none; }
+    .b-rar { position: relative; align-self: stretch; display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; opacity: .95; }
+    .b-art { position: relative; width: 120px; height: 120px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.22); box-shadow: 0 0 0 6px rgba(255,255,255,.12), inset 0 0 20px rgba(255,255,255,.35); }
+    .b-art .emoji-img { width: 78px; height: 78px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.25)); }
+    .b-name { position: relative; font-weight: 900; font-size: 1.05rem; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,.25); }
+    .b-text { position: relative; align-self: stretch; margin-top: auto; padding: 9px 10px; border-radius: 12px; background: rgba(255,255,255,.9); color: var(--ink); font-size: 0.78rem; font-weight: 700; line-height: 1.35; }
+    .b.small { width: auto; min-height: 0; aspect-ratio: 3 / 4; padding: 6px; border-radius: 11px; justify-content: center; }
+    .b.small .b-art { width: 72%; height: auto; aspect-ratio: 1; box-shadow: 0 0 0 3px rgba(255,255,255,.12); }
+    .b.small .b-art .emoji-img { width: 62%; height: auto; }
+
+    /* ---------- C : moderne (moitié haute colorée à motif du thème, bas blanc, pastille de rareté) ---------- */
+    .cc { width: 210px; border-radius: 18px; overflow: hidden; background: var(--surface); border: 2px solid color-mix(in srgb, var(--r) 45%, var(--line)); box-shadow: 0 6px 16px var(--glow); display: flex; flex-direction: column; }
+    .cc-top { position: relative; height: 150px; display: grid; place-items: center;
+        background: radial-gradient(circle, rgba(255,255,255,.18) 1.5px, transparent 2px) 0 0 / 14px 14px, linear-gradient(150deg, var(--r), var(--r2)); }
+    .cc-top .emoji-img { width: 90px; height: 90px; filter: drop-shadow(0 8px 10px rgba(0,0,0,.25)); }
+    .cc-pill { position: absolute; left: 10px; bottom: -11px; padding: 3px 10px; border-radius: 999px; background: var(--surface); color: var(--r2); font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+    .cc-theme { position: absolute; top: 8px; right: 10px; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.25); color: #fff; font-size: 0.68rem; font-weight: 900; }
+    .cc-body { padding: 18px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .cc-name { font-weight: 900; font-size: 1.05rem; line-height: 1.15; }
+    .cc-text { font-size: 0.8rem; font-weight: 700; line-height: 1.35; color: var(--muted); }
+    .cc.small { width: auto; border-radius: 11px; box-shadow: none; aspect-ratio: 3 / 4; }
+    .cc.small .cc-top { height: 100%; border-radius: 0; background-size: 9px 9px, auto; }
+    .cc.small .cc-top .emoji-img { width: 58%; height: auto; }
+
+    @keyframes shine { 0% { background-position: 150% 0; } 60%, 100% { background-position: -100% 0; } }
+    @media (prefers-reduced-motion: reduce) { .b::after { animation: none !important; } }
+    .now .kcard.is-big { animation: none; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap"></div>
+<script src="cards.js?v=cartes1"></script>
+<script>
+const emojiImg = e => {
+    let cps = [...e].map(c => c.codePointAt(0));
+    if (!cps.includes(0x200D)) cps = cps.filter(cp => cp !== 0xFE0F);
+    const img = document.createElement('img');
+    img.className = 'emoji-img';
+    img.src = `emoji/${cps.map(cp => cp.toString(16)).join('-')}.svg`;
+    return img;
+};
+const R = { common: 'Commune', rare: 'Rare', epic: 'Épique', legendary: 'Légendaire', master: 'Maître', event: 'Événement' };
+const GEMS = { common: '◆', rare: '◆◆', epic: '◆◆◆', legendary: '◆◆◆◆', master: '★', event: '🎃' };
+const pick = id => CARDS.find(c => c.id === id);
+const SAMPLE = [pick('ge1'), pick('sc5'), pick('ar6'), pick('hi7'), pick('myM'),
+    { id: 'ev-halloween-2026', theme: 'Halloween 2026', icon: '🎃', name: 'Citrouille 2026', rarity: 'event', text: 'Gagnée pendant la semaine d’Halloween 2026.' }].filter(Boolean);
+const SMALL = [...SAMPLE, ...['li1', 'je5', 'ci6', 'mu7', 'sp3', 'dr9'].map(pick).filter(Boolean)].slice(0, 12);
+const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt !== undefined) n.textContent = txt; return n; };
+const num = c => { const all = CARDS.filter(x => x.theme === c.theme); const i = all.indexOf(c); return i >= 0 ? `${i + 1}/${all.length}` : '★'; };
+
+// Style actuel (celui du jeu)
+function now(c) {
+    const box = el('div', `kcard rarity-${c.rarity} is-big`);
+    const art = el('div', 'kcard-art'); art.append(emojiImg(c.icon));
+    box.append(art, el('div', 'kcard-name', c.name), el('div', 'kcard-meta', `${R[c.rarity]} · ${c.theme}`), el('p', 'kcard-text', c.text));
+    return box;
+}
+function nowSmall(c) {
+    const box = el('div', `kcard rarity-${c.rarity}`);
+    const art = el('div', 'kcard-art'); art.append(emojiImg(c.icon));
+    box.append(art);
+    return box;
+}
+function A(c, small) {
+    const box = el('div', `c a ${c.rarity}${small ? ' small' : ''}`);
+    const inn = el('div', 'a-in');
+    const art = el('div', 'a-art'); art.append(emojiImg(c.icon));
+    if (small) { inn.append(art); box.append(inn); return box; }
+    const top = el('div', 'a-top'); top.append(el('span', '', c.theme), el('span', '', num(c)));
+    const foot = el('div', 'a-foot'); foot.append(el('span', '', R[c.rarity]), el('span', 'gems', GEMS[c.rarity]));
+    inn.append(top, art, el('div', 'a-name', c.name), el('p', 'a-text', c.text), foot);
+    box.append(inn);
+    return box;
+}
+function B(c, small) {
+    const box = el('div', `c b ${c.rarity}${small ? ' small' : ''}`);
+    const art = el('div', 'b-art'); art.append(emojiImg(c.icon));
+    if (small) { box.append(art); return box; }
+    const rar = el('div', 'b-rar'); rar.append(el('span', '', R[c.rarity]), el('span', '', c.theme));
+    box.append(rar, art, el('div', 'b-name', c.name), el('p', 'b-text', c.text));
+    return box;
+}
+function C(c, small) {
+    const box = el('div', `c cc ${c.rarity}${small ? ' small' : ''}`);
+    const top = el('div', 'cc-top'); top.append(emojiImg(c.icon));
+    if (small) { box.append(top); return box; }
+    top.append(el('span', 'cc-pill', R[c.rarity]), el('span', 'cc-theme', c.theme));
+    const body = el('div', 'cc-body'); body.append(el('div', 'cc-name', c.name), el('p', 'cc-text', c.text));
+    box.append(top, body);
+    return box;
+}
+const wrap = document.getElementById('wrap');
+const intro = el('article', 'card');
+intro.innerHTML = '<h2>🃏 Nouveaux styles de cartes</h2><p class="lead">Le dessin et la petite phrase restent. Fais défiler chaque ligne vers la gauche pour voir les 6 raretés (commune, rare, épique, légendaire, Maître, événement). En dessous : les mêmes en petit, comme dans la collection.</p>';
+wrap.append(intro);
+[
+    ['Aujourd’hui', 'Le style actuel du jeu.', now, nowSmall, 'now'],
+    ['A · Carte à collectionner', 'Cadre de la couleur de la rareté, bandeau du thème avec le numéro (3/12), fenêtre d’image, nom sur un ruban, gemmes de rareté.', A, c => A(c, true), ''],
+    ['B · Premium', 'Toute la carte à la couleur de la rareté, halo autour du dessin, phrase dans un panneau blanc. Reflet animé pour légendaire, Maître et événement.', B, c => B(c, true), ''],
+    ['C · Moderne', 'Haut coloré à petits points avec le dessin en grand, bas blanc avec le nom et la phrase, pastille de rareté.', C, c => C(c, true), '']
+].forEach(([title, lead, big, small, cls]) => {
+    const card = el('article', `card ${cls}`);
+    card.append(el('h2', '', title), el('p', 'lead', lead));
+    const rb = el('div', 'row-big');
+    SAMPLE.forEach(c => rb.append(big(c)));
+    const sub = el('p', 'sub', 'Dans la collection (taille réelle sur téléphone) :');
+    const rs = el('div', 'row-small');
+    SMALL.forEach(c => rs.append(small(c)));
+    card.append(rb, sub, rs);
+    wrap.append(card);
+});
+</script>
+</body>
+</html>
