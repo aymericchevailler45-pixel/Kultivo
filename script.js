@@ -531,27 +531,69 @@ function answerClose(typed, ans) {
     return typoCost(typed, ans) <= budget;
 }
 
+/* Règles du 2026-10-26 (signalements, choix de l'utilisateur) :
+   - rébus d'EXPRESSION : « avoir » / « être » au début ne comptent pas (« avoir une langue de vipère ») ;
+   - nom de personne (2-3 mots qui commencent tous par une majuscule) : nom avant le prénom accepté (« Khan Kubilaï ») ;
+     les autres réponses gardent l'ordre de leurs mots ;
+   - un « de / du / des » AJOUTÉ entre deux mots qui se suivent dans la réponse change le sens : refusé
+     (« avoir peur du bleu » n'est pas « avoir une peur bleue »). En oublier un reste permis (« tunnel sous Manche »). */
+const LINK_WORDS = new Set(['de', 'du', 'des', 'd']);
+const NAME_PARTICLES = new Set(['de', 'du', 'des', 'd', 'la', 'le', 'van', 'von', 'der', 'da', 'di', 'del', 'y']);
+/** Pour chaque paire de mots qui se suivent (sans les articles) : y a-t-il un « de / du / des » entre les deux ? */
+function linkGaps(norm) {
+    const content = [], links = [];
+    let link = false;
+    for (const w of norm.split(' ')) {
+        if (ARTICLES.has(w)) { if (LINK_WORDS.has(w) && content.length) link = true; continue; }
+        if (content.length) links.push(link);
+        content.push(w);
+        link = false;
+    }
+    return { content, links };
+}
+/** La réponse tapée ajoute-t-elle un « de / du / des » là où la réponse attendue n'en a pas ? */
+function addsLink(typedNorm, ansNorm) {
+    const t = linkGaps(typedNorm), a = linkGaps(ansNorm);
+    if (t.content.length !== a.content.length || t.content.length < 2) return false;
+    return t.links.some((l, i) => l && !a.links[i]);
+}
+/** Réponse qui ressemble à un nom de personne : 2 ou 3 mots, tous avec une majuscule (hors particules « de », « van »…). */
+function looksLikeName(raw) {
+    const words = raw.replace(/[’']/g, ' ').split(/\s+/).filter(Boolean);
+    const main = words.filter(w => !NAME_PARTICLES.has(w.toLowerCase()));
+    return main.length >= 2 && main.length <= 3 && main.every(w => /^\p{Lu}/u.test(w));
+}
+const dropLeadingVerb = str => { const w = str.split(' '); return w.length > 1 && (w[0] === 'avoir' || w[0] === 'etre') ? w.slice(1).join(' ') : str; };
+
 function judgeV2(input, rawAnswers, question = '') {
     // Réponse faite d'un seul « article » (la note « La », la lettre « D ») : on ne l'efface pas
-    const keep = str => { const n = normalize(str); return stripArticles(n) || n; };
+    const expression = /expression.*rébus/i.test(question);
+    const full = str => (expression ? dropLeadingVerb(normalize(str)) : normalize(str));
+    const keep = str => { const n = full(str); return stripArticles(n) || n; };
     const typed = keep(input);
     if (!typed) return 'wrong';
+    const typedFull = full(input);
     const numbersTyped = normalize(input).match(/\d+(?:\.\d+)?/g) || [];
     const questionWords = new Set(stripArticles(normalize(question)).split(' '));
     let typo = false;
-    const answers = [];
+    const answers = [];   // [réponse sans articles, réponse complète (pour les « de / du »)]
     for (const raw of rawAnswers) {
         const ans = keep(raw);
         if (!ans) continue;
-        answers.push(ans);
+        answers.push([ans, full(raw)]);
         const short = answerWithoutGeneric(ans);
-        if (short && short.length >= 3 && !short.split(' ').every(w => questionWords.has(w))) answers.push(short);
+        if (short && short.length >= 3 && !short.split(' ').every(w => questionWords.has(w))) answers.push([short, short]);
+        if (!expression && looksLikeName(raw)) {   // nom avant le prénom : « Sartre Jean-Paul », « Khan Kubilaï »
+            const w = ans.split(' ');
+            if (w.length >= 2) { const turned = [w[w.length - 1], ...w.slice(0, -1)].join(' '); answers.push([turned, turned]); }
+        }
     }
-    for (const ans of answers) {
+    for (const [ans, ansFull] of answers) {
         if (/^\d+(\.\d+)?$/.test(ans)) {   // nombre (date, distance…) : exact uniquement
             if (numbersTyped.includes(ans)) return 'exact';
             continue;
         }
+        if (addsLink(typedFull, ansFull)) continue;
         if (typed === ans) return 'exact';
         const numbersAns = ans.match(/\d+(?:\.\d+)?/g) || [];
         const sameNumbers = numbersAns.join(' ') === (typed.match(/\d+(?:\.\d+)?/g) || []).join(' ');

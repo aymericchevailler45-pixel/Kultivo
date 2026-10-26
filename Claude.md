@@ -302,6 +302,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   de fiction : prénom gardé + nom ajouté (Potter, Croft, Lagaffe…). Gardés (connus par leur prénom) : Dante, Léonard, Marilyn,
   Che, Fidel, Johnny, Zlatan, Django, Kendji, Zaho, Tycho, Pharrell. REFUSÉ par l'utilisateur : refuser une « faute de frappe »
   qui serait la réponse d'une autre question (deux questions peuvent avoir la même réponse).
+  Signalements du 26/10 (choix de l'utilisateur) : nom de personne (2-3 mots tous avec majuscule, `looksLikeName`) accepté
+  nom AVANT prénom (« Khan Kubilaï ») ; sinon JAMAIS de mots inversés ; rébus d'expression : « avoir » / « être » au début
+  ignorés (`dropLeadingVerb`) ; un « de / du / des » AJOUTÉ entre deux mots qui se suivent = refusé (`addsLink` : « avoir peur
+  du bleu » ≠ « peur bleue »). Règle de contenu : titres d'œuvres → accepter le titre français ET le titre original (anglais…) ;
+  noms souvent dits dans une autre langue (Día de los Muertos…) → les accepter aussi. Testé : 0 réponse perdue, 0 nouvelle
+  réponse d'une autre question acceptée.
 - Boutons secondaires (`.btn-ghost`) : contour fin gris partout ; dans le bandeau de correction, contour couleur du bandeau.
 - Entrée dans une leçon : la touche est « consommée » (preventDefault) pour ne pas cliquer un bouton qui prend le focus.
 - Page profil : titre, records, réussite par thème, badges.

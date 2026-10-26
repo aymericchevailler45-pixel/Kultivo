@@ -22,7 +22,7 @@ TRAINING_QUESTIONS.push(
     { id: 13017, theme: "Technologie", d: 2.0, q: "Quels frères américains ont fait voler le premier avion motorisé en 1903 ?", a: ["Wright", "Les frères Wright", "Frères Wright"], exp: "Le premier vol a duré 12 secondes." },
     { id: 13018, theme: "Technologie", d: 2.0, q: "Quel avion supersonique franco-britannique a volé de 1976 à 2003 ?", a: ["Le Concorde", "Concorde"], exp: "Il reliait Paris à New York en 3 h 30." },
     { id: 13019, theme: "Technologie", d: 2.0, q: "Quelle plateforme de diffusion de jeux vidéo en direct appartient à Amazon ?", a: ["Twitch"], exp: "Rachetée en 2014 pour près d’un milliard de dollars." },
-    { id: 13020, theme: "Technologie", d: 2.0, q: "Quel moteur de recherche de Microsoft concurrence Google ?", a: ["Bing"], exp: "Lancé en 2009." },
+    { id: 13020, theme: "Technologie", d: 2.0, q: "Quel moteur de recherche de Microsoft (pas son navigateur) concurrence Google ?", a: ["Bing"], exp: "Lancé en 2009." },
 
     // Palier 3
     { id: 13021, theme: "Technologie", d: 2.2, q: "Combien de bits compte un octet ?", a: ["8", "Huit"], exp: "Un bit vaut 0 ou 1." },
