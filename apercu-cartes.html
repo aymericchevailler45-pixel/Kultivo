@@ -6,7 +6,7 @@
 <title>Aperçu cartes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=cartes1">
+<link rel="stylesheet" href="style.css?v=cartes2">
 <!-- Page d'APERÇU (2026-10-26) : nouveaux styles de cartes, à choisir avant de les mettre dans le jeu. -->
 <style>
     body { padding: 16px; }
@@ -73,6 +73,19 @@
     .cc.small .cc-top { height: 100%; border-radius: 0; background-size: 9px 9px, auto; }
     .cc.small .cc-top .emoji-img { width: 58%; height: auto; }
 
+    /* C v2 (2026-10-26) : numéro en haut à gauche, thème en haut à droite, halo de couleur autour, version brillante */
+    .cc { box-shadow: 0 6px 0 color-mix(in srgb, var(--r2) 70%, transparent), 0 0 26px var(--glow); position: relative; }
+    .cc-num { position: absolute; top: 8px; left: 10px; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.25); color: #fff; font-size: 0.68rem; font-weight: 900; }
+    .cc.shiny::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+        background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.8) 44%, rgba(255,140,230,.45) 50%, rgba(120,220,255,.45) 56%, transparent 70%);
+        background-size: 250% 100%; animation: cardShine2 3.2s linear infinite; }
+    .cc.shiny { border-color: #ffb3ec; box-shadow: 0 6px 0 color-mix(in srgb, var(--r2) 70%, transparent), 0 0 26px var(--glow), 0 0 0 3px rgba(255, 140, 230, .45); }
+    .cc .spark { position: absolute; z-index: 2; top: 30px; right: 10px; font-size: 1.2rem; }
+    .cc.small .spark { top: 1px; right: 3px; font-size: 0.7rem; }
+    .cc .copies { position: absolute; z-index: 2; right: 3px; bottom: 2px; padding: 0 4px; border-radius: 6px; background: rgba(0,0,0,.45); color: #fff; font-size: 0.58rem; font-weight: 900; }
+    .cc.small { box-shadow: 0 3px 0 color-mix(in srgb, var(--r2) 70%, transparent), 0 0 8px var(--glow); }
+    .cc.small.shiny { box-shadow: 0 3px 0 color-mix(in srgb, var(--r2) 70%, transparent), 0 0 8px var(--glow), 0 0 0 2px rgba(255, 140, 230, .6); }
+    @keyframes cardShine2 { 0% { background-position: 150% 0; } 100% { background-position: -100% 0; } }
     @keyframes shine { 0% { background-position: 150% 0; } 60%, 100% { background-position: -100% 0; } }
     @media (prefers-reduced-motion: reduce) { .b::after { animation: none !important; } }
     .now .kcard.is-big { animation: none; }
@@ -80,7 +93,7 @@
 </head>
 <body>
 <div class="wrap" id="wrap"></div>
-<script src="cards.js?v=cartes1"></script>
+<script src="cards.js?v=cartes2"></script>
 <script>
 const emojiImg = e => {
     let cps = [...e].map(c => c.codePointAt(0));
@@ -131,11 +144,12 @@ function B(c, small) {
     box.append(rar, art, el('div', 'b-name', c.name), el('p', 'b-text', c.text));
     return box;
 }
-function C(c, small) {
-    const box = el('div', `c cc ${c.rarity}${small ? ' small' : ''}`);
+function C(c, small, shiny = false, copies = 0) {
+    const box = el('div', `c cc ${c.rarity}${small ? ' small' : ''}${shiny ? ' shiny' : ''}`);
     const top = el('div', 'cc-top'); top.append(emojiImg(c.icon));
-    if (small) { box.append(top); return box; }
-    top.append(el('span', 'cc-pill', R[c.rarity]), el('span', 'cc-theme', c.theme));
+    if (shiny) box.append(el('span', 'spark', '✨'));
+    if (small) { box.append(top); if (copies) box.append(el('span', 'copies', `${copies}/3`)); return box; }
+    top.append(el('span', 'cc-num', num(c)), el('span', 'cc-pill', R[c.rarity] + (shiny ? ' · Brillante' : '')), el('span', 'cc-theme', c.theme));
     const body = el('div', 'cc-body'); body.append(el('div', 'cc-name', c.name), el('p', 'cc-text', c.text));
     box.append(top, body);
     return box;
@@ -144,11 +158,26 @@ const wrap = document.getElementById('wrap');
 const intro = el('article', 'card');
 intro.innerHTML = '<h2>🃏 Nouveaux styles de cartes</h2><p class="lead">Le dessin et la petite phrase restent. Fais défiler chaque ligne vers la gauche pour voir les 6 raretés (commune, rare, épique, légendaire, Maître, événement). En dessous : les mêmes en petit, comme dans la collection.</p>';
 wrap.append(intro);
+// C · Moderne, version 2 : en tête de page
+{
+    const card = el('article', 'card');
+    card.append(el('h2', '', '✅ C · Moderne (ton choix, version 2)'),
+        el('p', 'lead', 'Numéro de la carte en haut à gauche (« 3/12 »), thème en haut à droite, halo de la couleur de la rareté autour de la carte (comme aujourd’hui).'));
+    const rb = el('div', 'row-big');
+    SAMPLE.forEach(c => rb.append(C(c)));
+    card.append(rb, el('p', 'sub', '✨ Les mêmes en BRILLANTES (3 exemplaires) : reflet arc-en-ciel qui passe sur toute la carte, contour rose, étoile ✨ :'));
+    const rs2 = el('div', 'row-big');
+    SAMPLE.slice(0, 4).forEach(c => rs2.append(C(c, false, true)));
+    card.append(rs2, el('p', 'sub', 'Dans la collection (taille réelle) : normales avec « 1/3 », « 2/3 », puis brillantes ✨ :'));
+    const rs = el('div', 'row-small');
+    SMALL.forEach((c, i) => rs.append(C(c, true, i % 4 === 3, i % 4 === 3 ? 0 : (i % 2) + 1)));
+    card.append(rs);
+    wrap.append(card);
+}
 [
     ['Aujourd’hui', 'Le style actuel du jeu.', now, nowSmall, 'now'],
     ['A · Carte à collectionner', 'Cadre de la couleur de la rareté, bandeau du thème avec le numéro (3/12), fenêtre d’image, nom sur un ruban, gemmes de rareté.', A, c => A(c, true), ''],
     ['B · Premium', 'Toute la carte à la couleur de la rareté, halo autour du dessin, phrase dans un panneau blanc. Reflet animé pour légendaire, Maître et événement.', B, c => B(c, true), ''],
-    ['C · Moderne', 'Haut coloré à petits points avec le dessin en grand, bas blanc avec le nom et la phrase, pastille de rareté.', C, c => C(c, true), '']
 ].forEach(([title, lead, big, small, cls]) => {
     const card = el('article', `card ${cls}`);
     card.append(el('h2', '', title), el('p', 'lead', lead));
