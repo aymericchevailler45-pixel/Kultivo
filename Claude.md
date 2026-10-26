@@ -97,7 +97,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - Cartes au style « moderne » (2026-10-26, choix de l'utilisateur, aperçu : apercu-cartes.html) : `cardFace` (classe
   `kcard-v2`) = haut de la couleur de la rareté à petits points avec le dessin, numéro « 5/12 » à gauche (`cardNumber`),
   thème à droite, pastille de rareté ; bas blanc avec le nom et la phrase ; halo de la couleur autour. Brillante : reflet
-  arc-en-ciel + ✨, PAS de contour rose (refusé). En petit (collection, coffres) : seulement le haut. À faire valider en jeu.
+  arc-en-ciel + ✨, PAS de contour rose (refusé). En petit (collection, coffres) : seulement le haut.
+  RETIRÉ du vrai jeu le 26/10 (« trop lourd visuellement dans la collection ») : `cardFace` = `cardFaceV1` (ancien style) ;
+  le style moderne `cardFaceV2` reste visible SEULEMENT dans le bac à sable (?bac=1), à retravailler avec l'utilisateur.
 - IDÉE pour la vraie appli Android (Capacitor) : icône qui change selon les fêtes, comme Duolingo (impossible proprement en
   appli web : Chrome met l'icône à jour seul, avec retard et un message de confirmation).
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :

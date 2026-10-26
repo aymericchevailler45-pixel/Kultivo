@@ -2451,6 +2451,32 @@ function closeChest() {
 }
 
 /** Une carte : cadre de la couleur de sa rareté, image, nom (et, en grand, thème et anecdote). */
+/** Carte, style d'origine (remis le 2026-10-26 : le style « moderne » faisait trop chargé dans la collection).
+    Le style moderne (`cardFaceV2`) reste visible dans le bac à sable (?bac=1), pour le retravailler. */
+function cardFaceV1(card, big = false, shiny = false) {
+    const box = el('div', `kcard rarity-${card.rarity}${big ? ' is-big' : ''}${shiny ? ' is-shiny' : ''}`);
+    const art = el('div', 'kcard-art');
+    art.append(emojiImg(card.icon));
+    const name = el('div', 'kcard-name');
+    name.textContent = card.name;
+    box.append(art, name);
+    if (shiny) {
+        const star = el('span', 'kcard-sparkle');
+        star.textContent = '✨';
+        box.append(star);
+    }
+    if (big) {
+        const meta = el('div', 'kcard-meta');
+        meta.textContent = card.rarity === 'master' ? `Carte Maître · ${card.theme}`
+            : `${CARD_RARITIES[card.rarity].name}${shiny ? ' · Brillante' : ''} · ${card.theme}`;
+        const text = el('p', 'kcard-text');
+        text.textContent = card.text;
+        box.append(meta, text);
+    }
+    return box;
+}
+const cardFace = (card, big = false, shiny = false) => (BAC ? cardFaceV2 : cardFaceV1)(card, big, shiny);
+
 /** Numéro de la carte dans son thème (« 5/12 »), dans l'ordre de la collection (communes… puis Maître). */
 function cardNumber(card) {
     const order = Object.keys(CARD_RARITIES);
@@ -2461,7 +2487,7 @@ function cardNumber(card) {
 /* Cartes, style « moderne » (2026-10-26, choix de l'utilisateur) : haut de la couleur de la rareté à petits points avec le
    dessin en grand (numéro à gauche, thème à droite, pastille de rareté), bas blanc avec le nom et la phrase.
    En petit (collection) : seulement le haut. Brillante : reflet arc-en-ciel + ✨ (le contour reste celui de la rareté). */
-function cardFace(card, big = false, shiny = false) {
+function cardFaceV2(card, big = false, shiny = false) {
     const box = el('div', `kcard kcard-v2 rarity-${card.rarity}${big ? ' is-big' : ''}${shiny ? ' is-shiny' : ''}`);
     const top = el('div', 'kcard-top');
     const art = el('div', 'kcard-art');

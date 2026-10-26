@@ -3219,5 +3219,5 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .kcard-v2 .kcard-text { margin: 0; color: var(--muted); font-size: 0.85rem; font-weight: 700; line-height: 1.35; }
 .kcard-v2.is-big .kcard-sparkle { top: 8px; right: 10px; font-size: 1.2rem; }
 /* Dos de la carte dans les coffres : même taille et même arrondi */
-.flip.is-big { width: 230px; }
-.flip.is-big .flip-back { border-radius: 18px; }
+.flip.is-big:has(.kcard-v2) { width: 230px; }
+.flip.is-big:has(.kcard-v2) .flip-back { border-radius: 18px; }
