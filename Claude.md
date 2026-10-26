@@ -122,6 +122,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   arc-en-ciel + ✨, PAS de contour rose (refusé). En petit (collection, coffres) : seulement le haut.
   RETIRÉ du vrai jeu le 26/10 (« trop lourd visuellement dans la collection ») : `cardFace` = `cardFaceV1` (ancien style) ;
   le style moderne `cardFaceV2` reste visible SEULEMENT dans le bac à sable (?bac=1), à retravailler avec l'utilisateur.
+  26/10 (suite) : l'utilisateur aime le style moderne EN GRAND, pas dans la collection → bac à sable : moderne en grand
+  seulement, ancien style en petit (collection, coffres, boutique). À valider avant de le mettre dans le vrai jeu.
 - IDÉE pour la vraie appli Android (Capacitor) : icône qui change selon les fêtes, comme Duolingo (impossible proprement en
   appli web : Chrome met l'icône à jour seul, avec retard et un message de confirmation).
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :

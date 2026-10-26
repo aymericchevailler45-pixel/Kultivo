@@ -2494,7 +2494,8 @@ function cardFaceV1(card, big = false, shiny = false) {
     }
     return box;
 }
-const cardFace = (card, big = false, shiny = false) => (BAC ? cardFaceV2 : cardFaceV1)(card, big, shiny);
+// Bac à sable (26/10, avis de l'utilisateur) : style moderne seulement en grand ; en petit (collection, coffres) l'ancien, plus léger
+const cardFace = (card, big = false, shiny = false) => (BAC && big ? cardFaceV2 : cardFaceV1)(card, big, shiny);
 
 /** Numéro de la carte dans son thème (« 5/12 »), dans l'ordre de la collection (communes… puis Maître). */
 function cardNumber(card) {
