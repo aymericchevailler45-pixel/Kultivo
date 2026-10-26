@@ -8,7 +8,7 @@ TRAINING_QUESTIONS.push(
     { id: 16005, theme: "Jeux", d: 1.0, q: "Quelle petite créature jaune électrique est la mascotte des Pokémon ?", a: ["Pikachu"], exp: "Son nom mêle « pika » (étincelle) et « chu » (le cri d’une souris)." },
     { id: 16006, theme: "Jeux", d: 1.0, q: "Combien de faces compte un dé classique ?", a: ["6", "Six"], exp: "Deux faces opposées font toujours 7." },
     { id: 16007, theme: "Jeux", d: 1.2, q: "Dans quel jeu forme-t-on des mots croisés avec des lettres qui rapportent des points ?", a: ["Le Scrabble", "Scrabble"], exp: "Le « mot compte triple » peut changer une partie." },
-    { id: 16008, theme: "Jeux", d: 1.2, q: "Dans quel jeu faut-il aligner quatre jetons de sa couleur ?", a: ["Puissance 4", "Puissance quatre"], exp: "Les jetons tombent dans une grille verticale." },
+    { id: 16008, theme: "Jeux", d: 1.2, q: "Dans quel jeu faut-il aligner quatre jetons de sa couleur ?", a: ["Puissance 4", "Puissance quatre", "Connect Four", "Connect 4"], exp: "Les jetons tombent dans une grille verticale." },
     { id: 16009, theme: "Jeux", d: 1.2, q: "Quel jeu de boules se joue avec un petit « cochonnet » ?", a: ["La pétanque", "Pétanque", "Petanque", "Les boules"], exp: "Née à La Ciotat en 1907." },
     { id: 16010, theme: "Jeux", d: 1.4, q: "Quelle pièce des échecs se déplace en forme de L ?", a: ["Le cavalier", "Cavalier"], exp: "La seule pièce qui peut sauter par-dessus les autres." },
 
@@ -17,7 +17,7 @@ TRAINING_QUESTIONS.push(
     { id: 16012, theme: "Jeux", d: 1.4, q: "Comment appelle-t-on la fin d’une partie d’échecs où le roi ne peut plus s’échapper ?", a: ["Échec et mat", "Mat", "Echec et mat"], exp: "Du persan « shâh mât » : le roi est mort, ou le roi est pris au piège." },
     { id: 16013, theme: "Jeux", d: 1.4, q: "Quel frère de Mario porte une casquette verte ?", a: ["Luigi"], exp: "Il est plus grand et saute plus haut que son frère." },
     { id: 16014, theme: "Jeux", d: 1.6, q: "Quel héros vêtu de vert part sauver la princesse dans « The Legend of Zelda » ?", a: ["Link"], exp: "Beaucoup croient à tort qu’il s’appelle Zelda." },
-    { id: 16015, theme: "Jeux", d: 1.6, q: "Quel jeu fait deviner le personnage de l’adversaire par des questions fermées ?", a: ["Qui est-ce ?", "Qui est-ce", "Qui est ce"], exp: "« Est-ce que ton personnage porte des lunettes ? »" },
+    { id: 16015, theme: "Jeux", d: 1.6, q: "Quel jeu fait deviner le personnage de l’adversaire par des questions fermées ?", a: ["Qui est-ce ?", "Qui est-ce", "Qui est ce", "Guess Who", "Guess Who ?"], exp: "« Est-ce que ton personnage porte des lunettes ? »" },
     { id: 16016, theme: "Jeux", d: 1.6, q: "Dans quel jeu fait-on deviner des mots en les dessinant ?", a: ["Pictionary"], exp: "Il est interdit d’écrire des lettres ou des chiffres." },
     { id: 16017, theme: "Jeux", d: 1.6, q: "Quelle est la pièce la plus puissante aux échecs ?", a: ["La dame", "Dame", "La reine", "Reine"], exp: "Elle se déplace en ligne droite et en diagonale." },
     { id: 16018, theme: "Jeux", d: 1.6, q: "Quelle aventurière pille les tombeaux dans « Tomb Raider » ?", a: ["Lara Croft", "Lara", "Croft"], exp: "Incarnée au cinéma par Angelina Jolie." },
@@ -26,7 +26,7 @@ TRAINING_QUESTIONS.push(
 
     // Palier 3
     { id: 16021, theme: "Jeux", d: 1.8, q: "Quel jeu se joue avec cinq dés pour obtenir full, carré ou suite ?", a: ["Le Yams", "Yams", "Yahtzee", "Yam’s", "Yatzee", "Yathzee", "Yahtzi"], exp: "Cinq dés identiques font un « yams »." },
-    { id: 16022, theme: "Jeux", d: 1.8, q: "Dans quel jeu d’enquête cherche-t-on si c’est le colonel Moutarde le coupable ?", a: ["Le Cluedo", "Cluedo"], exp: "Il faut trouver le coupable, l’arme et la pièce." },
+    { id: 16022, theme: "Jeux", d: 1.8, q: "Dans quel jeu d’enquête cherche-t-on si c’est le colonel Moutarde le coupable ?", a: ["Le Cluedo", "Cluedo", "Clue"], exp: "Il faut trouver le coupable, l’arme et la pièce." },
     { id: 16023, theme: "Jeux", d: 2.0, q: "Dans quel jeu de plateau conquiert-on le monde avec ses armées ?", a: ["Risk"], exp: "Inventé par le Français Albert Lamorisse en 1957." },
     { id: 16024, theme: "Jeux", d: 2.0, q: "Dans quel jeu vidéo les personnages parlent-ils le « simlish » ?", a: ["Les Sims", "Sims", "The Sims"], exp: "Une langue inventée, sans vrai sens." },
     { id: 16025, theme: "Jeux", d: 2.0, q: "Combien de cartes compte un jeu classique, sans les jokers ?", a: ["52", "Cinquante-deux"], exp: "Quatre couleurs de treize cartes." },
@@ -77,7 +77,7 @@ TRAINING_QUESTIONS.push(
     { id: 16061, theme: "Jeux", d: 1.6, q: "Quel jeu fait deviner des mots en 5 essais, avec des cases vertes et jaunes ?", a: ["Wordle"], exp: "Racheté par le « New York Times » en 2022." },
     { id: 16062, theme: "Jeux", d: 1.6, q: "Quel jeu de plateau fait poser des wagons pour relier des villes ?", a: ["Les Aventuriers du rail", "Aventuriers du rail", "Ticket to Ride"], exp: "Un classique familial depuis 2004." },
     { id: 16063, theme: "Jeux", d: 1.7, q: "Quel jeu de société demande de trouver une combinaison secrète de pions de couleur ?", a: ["Le Mastermind", "Mastermind"], exp: "Pions noirs : bien placés ; pions blancs : bonne couleur mal placée." },
-    { id: 16064, theme: "Jeux", d: 1.8, q: "Quel jeu fait couler les navires de l’adversaire en annonçant « B4 » ou « touché » ?", a: ["La bataille navale", "Bataille navale"], exp: "Le porte-avions fait cinq cases." },
+    { id: 16064, theme: "Jeux", d: 1.8, q: "Quel jeu fait couler les navires de l’adversaire en annonçant « B4 » ou « touché » ?", a: ["La bataille navale", "Bataille navale", "Battleship"], exp: "Le porte-avions fait cinq cases." },
     { id: 16065, theme: "Jeux", d: 1.8, q: "Quel jeu vidéo de Rockstar se déroule à Los Santos, sorti en 2013 ?", a: ["GTA V", "GTA 5", "Grand Theft Auto V", "GTA"], exp: "L’un des jeux les plus vendus de l’histoire." },
     { id: 16066, theme: "Jeux", d: 1.8, q: "Quel marsupial orange tourne sur lui-même dans les jeux de PlayStation ?", a: ["Crash Bandicoot", "Crash"], exp: "La mascotte de la première PlayStation." },
     { id: 16067, theme: "Jeux", d: 1.9, q: "Quel jeu de grille de 9 × 9 cases demande de placer les chiffres de 1 à 9 ?", a: ["Le sudoku", "Sudoku"], exp: "Un nom japonais, mais un jeu d’origine américaine." },

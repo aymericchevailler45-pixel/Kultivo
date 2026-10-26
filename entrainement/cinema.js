@@ -7,7 +7,7 @@ TRAINING_QUESTIONS.push(
     { id: 17004, theme: "Cinéma", d: 1.0, q: "Quel agent secret britannique porte le matricule 007 ?", a: ["James Bond", "Bond"], exp: "Créé par le romancier Ian Fleming en 1953." },
     { id: 17005, theme: "Cinéma", d: 1.2, q: "Quelle statuette dorée récompense les meilleurs films à Hollywood ?", a: ["L’Oscar", "Oscar", "Les Oscars"], exp: "Remise depuis 1929 par l’Académie des arts et sciences du cinéma." },
     { id: 17006, theme: "Cinéma", d: 1.2, q: "Quel seigneur sith respire bruyamment sous son masque noir ?", a: ["Dark Vador", "Vador", "Darth Vader", "Anakin Skywalker"], exp: "« Je suis ton père »… une des répliques les plus célèbres du cinéma." },
-    { id: 17007, theme: "Cinéma", d: 1.2, q: "Quelle princesse Disney perd une pantoufle de verre au bal ?", a: ["Cendrillon"], exp: "Le dessin animé de 1950 a sauvé le studio Disney de la faillite." },
+    { id: 17007, theme: "Cinéma", d: 1.2, q: "Quelle princesse Disney perd une pantoufle de verre au bal ?", a: ["Cendrillon", "Cinderella"], exp: "Le dessin animé de 1950 a sauvé le studio Disney de la faillite." },
     { id: 17008, theme: "Cinéma", d: 1.4, q: "Quel acteur incarne le pirate Jack Sparrow ?", a: ["Johnny Depp", "Depp"], exp: "Dans « Pirates des Caraïbes », à partir de 2003." },
     { id: 17009, theme: "Cinéma", d: 1.4, q: "Quel super-héros vient de la planète Krypton ?", a: ["Superman", "Clark Kent"], exp: "Sa seule faiblesse : la kryptonite." },
     { id: 17010, theme: "Cinéma", d: 1.6, q: "Quel petit robot nettoie une Terre abandonnée dans un film Pixar de 2008 ?", a: ["WALL-E", "Wall-E", "Walle"], exp: "Il tombe amoureux d’un robot nommé EVE." },
