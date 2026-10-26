@@ -3033,6 +3033,9 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .shop-line .sl-btns .btn-violet { padding: 7px 8px; font-size: 0.85rem; }
 .ask-art { display: flex; justify-content: center; margin: 14px 0 16px; }
 .ask-art .league-avatar { width: 84px; height: 84px; font-size: 2.2rem; }
+/* Carte dans la fenêtre d'achat : petite carte de taille fixe (sinon elle prenait toute la largeur et la fenêtre débordait) */
+.ask-art .kcard { width: 110px; flex: none; }
+.ask-art .kcard .kcard-art .emoji-img { width: 3.6rem; height: 3.6rem; }
 
 /* Bac à sable (?bac=1) : pastille toujours visible */
 .bac-pill { position: fixed; left: 6px; bottom: 84px; z-index: 45; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: #8b5cf6; color: #fff; font: inherit; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); cursor: pointer; opacity: 0.85; }
