@@ -18,8 +18,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?
   2. Écrire sous la barre du palier 5 « encore N questions pour la carte Maître » (proposé, pas encore validé) ?
-  3. Style des cartes : le style « moderne » (`cardFaceV2`, visible seulement dans le bac à sable) a été jugé trop lourd dans
-     la collection → à retravailler ensemble dans le bac à sable (ex. petites cartes plus légères), ancien style remis.
+  3. (RÉGLÉ le 26/10) Style des cartes : moderne en grand, ancien en petit, dans le vrai jeu.
 - À faire ensuite / plus tard : analyser les réponses du questionnaire et les signalements ; vue `questions_les_plus_ratees`
   (Supabase) ; 2e lot de collections vers février ; plus de questions d'entraînement + paliers 6-10 ; pièces ×2 (« Heure
   dorée ») ; paires Halloween ; « Qui suis-je ? » ; Noël ; liste AVANT DE PUBLIER. Refusé : apprendre des joueurs (liste des
@@ -123,7 +122,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   RETIRÉ du vrai jeu le 26/10 (« trop lourd visuellement dans la collection ») : `cardFace` = `cardFaceV1` (ancien style) ;
   le style moderne `cardFaceV2` reste visible SEULEMENT dans le bac à sable (?bac=1), à retravailler avec l'utilisateur.
   26/10 (suite) : l'utilisateur aime le style moderne EN GRAND, pas dans la collection → bac à sable : moderne en grand
-  seulement, ancien style en petit (collection, coffres, boutique). À valider avant de le mettre dans le vrai jeu.
+  seulement, ancien style en petit (collection, coffres, boutique). VALIDÉ et mis dans le vrai jeu le 26/10 (`cardFace`).
 - IDÉE pour la vraie appli Android (Capacitor) : icône qui change selon les fêtes, comme Duolingo (impossible proprement en
   appli web : Chrome met l'icône à jour seul, avec retard et un message de confirmation).
 - À FAIRE « tout à l'heure » (noté le 2026-10-24, demande de l'utilisateur) :
