@@ -12,6 +12,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   refusés pour les personnes réelles ; récap « Résultat de la semaine dernière » de la ligue ; fenêtres de confirmation pour
   TOUS les achats (le bouton « Confirmer » sans fenêtre a été annulé) ; objectif du jour 20/30/50 🪙 ; questionnaire Google
   Forms écrit pour les testeurs (texte dans la conversation, l'utilisateur le crée lui-même).
+- FAIT le 26/10 : niveaux refaits plafonnés à 60 XP PAR JOUR en tout (`REPLAY_XP_DAY`, `replayXp`, sauvegarde `replayDay`),
+  et un niveau refait ne compte qu'UNE fois par jour pour les missions (bonnes réponses comprises) ; affiché au départ et à la fin.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

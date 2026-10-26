@@ -36,7 +36,23 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 // XP gagnés
 const XP_REPLAY = 2;              // 2026-10-25 : niveau DÉJÀ réussi qu'on refait (gratuit) : 2 XP par bonne réponse, pas de bonus
 const REPLAY_MISSION_WINDOW = 20;  // un niveau refait compte pour les missions s'il fait partie des 20 derniers (2026-10-25)
-const replayCountsForMissions = n => n >= state.data.unlocked - REPLAY_MISSION_WINDOW;
+const REPLAY_XP_DAY = 60;           // 2026-10-26 : les niveaux refaits rapportent au plus 60 XP par jour en tout (sinon on refaisait le 1 en boucle)
+/** Niveaux refaits aujourd'hui : XP déjà gagnés et niveaux déjà comptés pour les missions (remis à zéro chaque jour). */
+function replayToday() {
+    const today = todayKey();
+    if (state.data.replayDay.day !== today) state.data.replayDay = { day: today, xp: 0, levels: {} };
+    return state.data.replayDay;
+}
+const replayXpLeft = () => Math.max(0, REPLAY_XP_DAY - replayToday().xp);
+/** XP d'un niveau refait : coupés au plafond du jour (les autres parties ne changent pas). */
+function replayXp(amount) {
+    if (!state.replay) return amount;
+    const gain = Math.min(amount, replayXpLeft());
+    replayToday().xp += gain;
+    return gain;
+}
+// Un niveau refait compte pour les missions s'il fait partie des 20 derniers, et une seule fois par jour
+const replayCountsForMissions = n => n >= state.data.unlocked - REPLAY_MISSION_WINDOW && !replayToday().levels[n];
 const XP_FIRST_TRY = 4;          // avant: 10 | bonne réponse du premier coup (question facile, d < 2,5)
 /* Plus d'XP pour les questions difficiles (2026-10-23) : les niveaux avancés font plus d'erreurs ; sans ça, un joueur
    loin dans le parcours gagnait moins d'XP qu'un débutant → injuste pour la ligue des amis de la semaine. */
@@ -614,6 +630,7 @@ function defaultData() {
         duelsSeen: {},                   // duels dont le résultat a été vu (pièces données une seule fois)
         duelAnswers: {},                 // duels : graine -> mes réponses tapées (pour les revoir)
         duelsViewed: {},                 // résultats de duels déjà regardés (sinon pastille)
+        replayDay: { day: null, xp: 0, levels: {} },   // niveaux refaits aujourd'hui : XP gagnés (plafond), niveaux comptés pour les missions
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -632,6 +649,8 @@ function normalizeData(data) {
     for (const k of ['owned', 'opened', 'known', 'grant']) data.av[k] = data.av[k] || {};
     if (typeof data.playerSeed !== 'string') data.playerSeed = Math.random().toString(36).slice(2, 10);
     data.avatarNew = data.avatarNew === true;
+    const rd = data.replayDay;
+    data.replayDay = rd && typeof rd === 'object' ? { day: rd.day || null, xp: Number(rd.xp) || 0, levels: rd.levels || {} } : { day: null, xp: 0, levels: {} };
     // Gouttes : les joueurs d'avant commencent avec le plein
     if (typeof data.drops !== 'number' || !(data.drops >= 0)) data.drops = DROPS_MAX;
     data.drops = Math.min(DROPS_MAX, Math.floor(data.drops));
@@ -3509,7 +3528,8 @@ function openStartModal(n) {
         : info.name;
     $('modalStatsText').textContent = questionsLabel(info);
     const left = state.data.drops - 1;
-    $('modalCost').textContent = free ? `💧 Déjà réussi : gratuit · XP réduite · ${replayCountsForMissions(n) ? '✓ compte pour tes missions' : 'ne compte pas pour les missions'}`
+    const xpLeft = replayXpLeft();
+    $('modalCost').textContent = free ? `💧 Déjà réussi : gratuit · ${xpLeft > 0 ? `XP réduite, encore ${xpLeft} XP possibles aujourd’hui` : 'plus d’XP aujourd’hui (revient demain)'} · ${replayCountsForMissions(n) ? '✓ compte pour tes missions' : replayToday().levels[n] ? 'déjà compté pour tes missions aujourd’hui' : 'ne compte pas pour les missions'}`
         : `💧 −1 goutte · il t’en restera ${left}`;
     $('modalCost').hidden = false;
     $('startLevelBtn').textContent = free ? 'Commencer' : 'Commencer · −1 💧';
@@ -3686,6 +3706,7 @@ function startSession(requestedMode, level = 0) {
     // Niveau déjà réussi qu'on refait : XP réduite, ni bonus ni missions (sinon on gagnait la ligue en refaisant le niveau 1)
     state.replay = ['level', 'pairs', 'order', 'challenge'].includes(mode) && !!state.data.done[level];
     state.replayCounts = !state.replay || replayCountsForMissions(level);
+    state.replayLevel = level;
     const pairsMode = mode === 'pairs';
     const orderMode = mode === 'order';
 
@@ -3947,7 +3968,7 @@ function pickPair(btn) {
         grid.matched.add(i);
         if (!grid.failed.has(i)) recordPair(grid.pairs[i].key, true);   // réussie sans erreur avant
         state.done++;
-        addXp(state.replay ? 1 : XP_PAIR);
+        addXp(state.replay ? replayXp(1) : XP_PAIR);
         playSound(grid.matched.size === grid.pairs.length ? 'good' : 'pair');
         [sel, btn].forEach(b => { b.classList.add('is-ok'); b.disabled = true; });
         setTimeout(() => [sel, btn].forEach(b => { b.classList.remove('is-ok'); b.classList.add('is-matched'); }), 450);
@@ -4402,9 +4423,11 @@ function commit(ok) {
         if (firstTry && !assisted) recordResult(id, true);
         const clean = firstTry && !forced && !assisted;
         addXp(mode === 'training' || mode === 'event' ? (clean ? XP_TRAINING : XP_RETRY)
-            : (clean ? (state.replay ? XP_REPLAY : xpFirstTry(item.q)) : XP_RETRY));
-        missionEvent('correct');
-        missionEvent('theme', 1, item.q.theme);
+            : replayXp(clean ? (state.replay ? XP_REPLAY : xpFirstTry(item.q)) : XP_RETRY));
+        if (state.replayCounts) {   // niveau refait déjà compté aujourd'hui : ses bonnes réponses ne comptent plus pour les missions
+            missionEvent('correct');
+            missionEvent('theme', 1, item.q.theme);
+        }
         state.done++;
         if (forced) renderHearts();   // « J'avais juste » : le cœur n'est plus menacé, il arrête de clignoter
     } else {
@@ -4508,7 +4531,9 @@ function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryCl
     $('endTitle').textContent = title;
     $('endText').textContent = text;
     const missions = (state.missionsJustDone || []).map(m => `🗓️ Mission réussie : ${m.text(m.goal, m.theme)} !`);
-    if (state.replay && ['level', 'pairs', 'order', 'challenge'].includes(state.mode)) missions.unshift(`🔁 Niveau déjà réussi : XP réduite (2 par bonne réponse, sans bonus)${state.replayCounts ? ', mais il compte pour tes missions' : ''}.`);
+    if (state.replay && ['level', 'pairs', 'order', 'challenge'].includes(state.mode)) missions.unshift(replayXpLeft() > 0
+        ? `🔁 Niveau déjà réussi : XP réduite (2 par bonne réponse, sans bonus), encore ${replayXpLeft()} XP possibles aujourd’hui${state.replayCounts ? ' ; il compte pour tes missions' : ''}.`
+        : `🔁 Niveau déjà réussi : plus d’XP pour les niveaux refaits aujourd’hui (${REPLAY_XP_DAY} XP par jour, ça revient demain)${state.replayCounts ? ' ; il compte pour tes missions' : ''}.`);
     const unlocked = avCheck();
     if (unlocked.length) missions.push(`🎨 Débloqué pour ton avatar : ${unlocked.slice(0, 3).map(avLabel).join(', ')}${unlocked.length > 3 ? ` et ${unlocked.length - 3} autre${unlocked.length > 4 ? 's' : ''}` : ''} ! (Profil → ton avatar)`);
     state.missionsJustDone = [];
@@ -4644,7 +4669,8 @@ function endSession(win) {
             state.data.totals.flawless++;
         }
         if (challenge && !state.replay) addXp(XP_CHALLENGE_WIN);
-        if (state.replayCounts) {   // niveau refait : compte pour les missions seulement s'il fait partie des 20 derniers
+        if (state.replayCounts) {   // niveau refait : compte pour les missions s'il fait partie des 20 derniers, une fois par jour
+            if (state.replay) replayToday().levels[state.replayLevel] = 1;
             missionEvent('levels');
             if (state.errors === 0) missionEvent('flawless');
             if (mode === 'order') missionEvent('order');
@@ -5036,7 +5062,7 @@ function checkOrder(round) {
     state.orderRight += right;
     state.orderTotal += round.items.length;
     const paid = right - (round.nudged ? 1 : 0);   // la carte donnée par le coup de pouce ne rapporte rien
-    if (paid > 0) addXp((state.replay ? 1 : XP_ORDER_CARD) * paid);
+    if (paid > 0) addXp(state.replay ? replayXp(paid) : XP_ORDER_CARD * paid);
     if (right === round.items.length) {
         playSound('good');
     } else {
