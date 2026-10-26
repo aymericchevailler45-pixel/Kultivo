@@ -6140,8 +6140,10 @@ function pickTrainingCards(theme) {
     // 3) Nouveautés : palier en cours d'abord, puis paliers d'avant
     take(shuffle((tiers[cur - 1] || []).filter(q => !seen(q))), TRAIN_SESSION);
     take(shuffle(open.filter(q => !seen(q))), TRAIN_SESSION);
-    // 4) Plus rien de neuf : on s'exerce sur le palier en cours (les moins sues d'abord), puis le reste
-    take(shuffle(tiers[cur - 1] || []).sort((a, b) => streakOf(a.id) - streakOf(b.id)), TRAIN_SESSION);
+    // 4) Plus rien de neuf : on s'exerce sur le palier en cours (les moins sues d'abord), puis le reste.
+    //    Palier 5 réussi (2026-10-26) : les 150 questions du thème à égalité, les moins sues d'abord (vers la médaille d'or)
+    const allDone = cur >= TRAIN_TIERS && trainingProgress(theme).ready;
+    take(shuffle(allDone ? open : tiers[cur - 1] || []).sort((a, b) => streakOf(a.id) - streakOf(b.id)), TRAIN_SESSION);
     take(shuffle(open), TRAIN_SESSION);
     return shuffle(picked).map(q => ({ q, review: seen(q) }));
 }
