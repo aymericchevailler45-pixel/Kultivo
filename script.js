@@ -1157,7 +1157,7 @@ function themeStats() {
             if ((s.streak || 0) >= 3) t.mastered++;
         }
     });
-    return Object.values(map).sort((a, b) => b.total - a.total || a.theme.localeCompare(b.theme, 'fr'));
+    return Object.values(map).sort((a, b) => byThemeName(a.theme, b.theme));
 }
 
 function badgeStats() {
@@ -1813,6 +1813,8 @@ const THEME_DECOR = [
     { theme: 'Drapeaux', icon: '🚩' },
     { theme: 'Monuments', icon: '🏛️' }
 ];
+// Thèmes rangés par ordre alphabétique à l'écran (2026-10-26, Entraînement, Profil → Thèmes, collection)
+const byThemeName = (a, b) => a.localeCompare(b, 'fr');
 const DECOR_ICONS = THEME_DECOR.map(t => t.icon);   // décors de l'écran de leçon (sur ordinateur)
 
 /** Bulle d'anecdote près de l'icône touchée (chaque icône a son anecdote attitrée). */
@@ -2675,7 +2677,7 @@ function renderCollection() {
         hint.textContent = 'Ouvre les coffres 🎁 du parcours pour gagner tes premières cartes.';
         grid.append(hint);
     }
-    const themes = [...new Set(CARDS.map(c => c.theme))];
+    const themes = [...new Set(CARDS.map(c => c.theme))].sort(byThemeName);
     for (const theme of themes) {
         const order = Object.keys(CARD_RARITIES);   // communes, rares, épique, légendaire, puis Maître
         const cards = CARDS.filter(c => c.theme === theme).sort((x, y) => order.indexOf(x.rarity) - order.indexOf(y.rarity));
@@ -6379,7 +6381,7 @@ function showTrainingTip() {
 function renderTraining() {
     const grid = $('trainingGrid');
     grid.replaceChildren();
-    THEME_DECOR.forEach(({ theme, icon }) => {
+    [...THEME_DECOR].sort((a, b) => byThemeName(a.theme, b.theme)).forEach(({ theme, icon }) => {
         const bank = trainingBank(theme);
         const tile = el('button', `train-tile${bank.length ? '' : ' is-soon'}`);
         tile.type = 'button';
