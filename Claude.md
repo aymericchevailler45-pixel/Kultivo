@@ -3,7 +3,27 @@
 Quiz de culture générale façon Duolingo, 100 % navigateur (HTML/CSS/JS), sans serveur.
 Propriétaire : francophone. Répondre en français, expliquer simplement, pas de jargon inutile.
 
-## OÙ ON EN EST (2026-10-23, avant compactage)
+## OÙ ON EN EST (2026-10-26, avant compactage)
+- Fait du 24 au 26/10 (détails plus bas dans ce mémo) : mise à jour du 26/10 activée seule (`PATCH_DAY`) avec « Quoi de neuf ? » ;
+  boutique par collections + vitrine + carte de la semaine + objets d'avatar (cosmetiques.js) ; bac à sable `?bac=1` ;
+  frises douces + coup de pouce ; indices tapés dans la grille ; frises réordonnables au doigt ; niveaux refaits (XP réduite,
+  missions si 20 derniers niveaux) ; carte Maître au palier 5 RÉUSSI ; numéros sur le parcours ; correction des réponses v2
+  (`judgeV2`, retour possible `JUDGE_VERSION = 1`) ; mots équivalents (st, jr, &, Dr, couleurs au féminin) ; prénoms seuls
+  refusés pour les personnes réelles ; récap « Résultat de la semaine dernière » de la ligue ; fenêtres de confirmation pour
+  TOUS les achats (le bouton « Confirmer » sans fenêtre a été annulé) ; objectif du jour 20/30/50 🪙 ; questionnaire Google
+  Forms écrit pour les testeurs (texte dans la conversation, l'utilisateur le crée lui-même).
+- EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
+  1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
+     palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?
+  2. Écrire sous la barre du palier 5 « encore N questions pour la carte Maître » (proposé, pas encore validé) ?
+  3. Style des cartes : le style « moderne » (`cardFaceV2`, visible seulement dans le bac à sable) a été jugé trop lourd dans
+     la collection → à retravailler ensemble dans le bac à sable (ex. petites cartes plus légères), ancien style remis.
+- À faire ensuite / plus tard : analyser les réponses du questionnaire et les signalements ; vue `questions_les_plus_ratees`
+  (Supabase) ; 2e lot de collections vers février ; plus de questions d'entraînement + paliers 6-10 ; pièces ×2 (« Heure
+  dorée ») ; paires Halloween ; « Qui suis-je ? » ; Noël ; liste AVANT DE PUBLIER. Refusé : apprendre des joueurs (liste des
+  réponses refusées proches), refuser une faute de frappe égale à la réponse d'une autre question.
+
+## OÙ ON EN ÉTAIT LE 2026-10-23
 - Fait récemment : gouttes 💧, 170 niveaux en une seule courbe, placement (8 étapes, cartes / XP / pièces rattrapés),
   remise à zéro générale, correction des nombres (5e, Louis XIV, dix-sept, 42,195), amis sur le parcours, missions de la
   semaine, événement Halloween (26/10 → 02/11, démo `?demo=halloween`), statistiques anonymes, duels entre amis
