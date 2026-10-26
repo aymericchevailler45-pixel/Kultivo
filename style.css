@@ -3182,3 +3182,42 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .recap-me { margin: 8px 0 0; font-weight: 800; text-align: center; }
 .recap-why { margin: 4px 0 0; color: var(--muted); font-weight: 700; font-size: 0.9rem; text-align: center; }
 .league-recap .btn { margin-top: 10px; }
+
+/* ============================================================
+   Cartes, style « moderne » (2026-10-26) — remplace l'ancien rendu (classe kcard-v2)
+   ============================================================ */
+.kcard-v2 { --r2: color-mix(in srgb, var(--r) 62%, #000); --glow: color-mix(in srgb, var(--r) 40%, transparent);
+    justify-content: flex-start; gap: 0; padding: 0; overflow: hidden; background: var(--surface);
+    border: 2px solid color-mix(in srgb, var(--r) 55%, var(--line)); border-radius: 12px;
+    box-shadow: 0 3px 0 var(--r2), 0 0 10px var(--glow); }
+.kcard-v2.rarity-legendary, .kcard-v2.rarity-master, .kcard-v2.rarity-event { background: var(--surface); }
+.kcard-v2 .kcard-top { position: relative; flex: 1 1 auto; align-self: stretch; display: grid; place-items: center; min-height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 1.5px, transparent 2px) 0 0 / 10px 10px, linear-gradient(150deg, var(--r), var(--r2)); }
+.kcard-v2 .kcard-art .emoji-img { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25)); }
+.kcard-v2 .kcard-name { padding: 4px 3px 5px; }
+.kcard-v2.is-shiny::after { z-index: 1; }
+.kcard-v2 .kcard-sparkle { z-index: 2; }
+@media (max-width: 600px) {
+    .kcard-v2:not(.is-big) { padding: 0; border-width: 2px; border-radius: 9px; box-shadow: 0 2px 0 var(--r2), 0 0 6px var(--glow); }
+}
+/* En grand */
+.kcard-v2.is-big { width: 230px; min-height: 0; padding: 0; border-width: 2px; border-radius: 18px;
+    box-shadow: 0 6px 0 var(--r2), 0 0 28px var(--glow); }
+.kcard-v2.is-big .kcard-top { flex: none; height: 160px; background-size: 14px 14px, auto; }
+.kcard-v2.is-big .kcard-art .emoji-img { width: 5.6rem; height: 5.6rem; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.25)); }
+.kcard-v2 .kcard-num, .kcard-v2 .kcard-theme { position: absolute; top: 9px; padding: 2px 8px; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.25); color: #ffffff; font-size: 0.7rem; font-weight: 900; }
+.kcard-v2 .kcard-num { left: 10px; }
+.kcard-v2 .kcard-theme { right: 10px; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kcard-v2.is-shiny.is-big .kcard-theme { right: 38px; }
+.kcard-v2 .kcard-meta { position: absolute; left: 10px; bottom: -11px; z-index: 2; padding: 3px 10px; border-radius: 999px;
+    background: var(--surface); color: var(--r2); font-size: 0.7rem; letter-spacing: 0.05em; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12); }
+.kcard-v2.rarity-common .kcard-meta { color: var(--muted); }
+.kcard-v2.rarity-legendary .kcard-meta { color: var(--gold-deep); }
+.kcard-v2 .kcard-body { align-self: stretch; display: flex; flex-direction: column; gap: 6px; padding: 20px 14px 14px; text-align: left; }
+.kcard-v2.is-big .kcard-name { padding: 0; font-size: 1.1rem; font-weight: 900; line-height: 1.15; }
+.kcard-v2 .kcard-text { margin: 0; color: var(--muted); font-size: 0.85rem; font-weight: 700; line-height: 1.35; }
+.kcard-v2.is-big .kcard-sparkle { top: 8px; right: 10px; font-size: 1.2rem; }
+/* Dos de la carte dans les coffres : même taille et même arrondi */
+.flip.is-big { width: 230px; }
+.flip.is-big .flip-back { border-radius: 18px; }

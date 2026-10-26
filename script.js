@@ -2451,25 +2451,47 @@ function closeChest() {
 }
 
 /** Une carte : cadre de la couleur de sa rareté, image, nom (et, en grand, thème et anecdote). */
+/** Numéro de la carte dans son thème (« 5/12 »), dans l'ordre de la collection (communes… puis Maître). */
+function cardNumber(card) {
+    const order = Object.keys(CARD_RARITIES);
+    const list = CARDS.filter(c => c.theme === card.theme).sort((a, b) => order.indexOf(a.rarity) - order.indexOf(b.rarity));
+    const i = list.indexOf(card);
+    return i >= 0 ? `${i + 1}/${list.length}` : '★';
+}
+/* Cartes, style « moderne » (2026-10-26, choix de l'utilisateur) : haut de la couleur de la rareté à petits points avec le
+   dessin en grand (numéro à gauche, thème à droite, pastille de rareté), bas blanc avec le nom et la phrase.
+   En petit (collection) : seulement le haut. Brillante : reflet arc-en-ciel + ✨ (le contour reste celui de la rareté). */
 function cardFace(card, big = false, shiny = false) {
-    const box = el('div', `kcard rarity-${card.rarity}${big ? ' is-big' : ''}${shiny ? ' is-shiny' : ''}`);
+    const box = el('div', `kcard kcard-v2 rarity-${card.rarity}${big ? ' is-big' : ''}${shiny ? ' is-shiny' : ''}`);
+    const top = el('div', 'kcard-top');
     const art = el('div', 'kcard-art');
     art.append(emojiImg(card.icon));
-    const name = el('div', 'kcard-name');
-    name.textContent = card.name;
-    box.append(art, name);
+    top.append(art);
+    box.append(top);
     if (shiny) {
         const star = el('span', 'kcard-sparkle');
         star.textContent = '✨';
         box.append(star);
     }
     if (big) {
-        const meta = el('div', 'kcard-meta');
-        meta.textContent = card.rarity === 'master' ? `Carte Maître · ${card.theme}`
-            : `${CARD_RARITIES[card.rarity].name}${shiny ? ' · Brillante' : ''} · ${card.theme}`;
+        const num = el('span', 'kcard-num');
+        num.textContent = cardNumber(card);
+        const theme = el('span', 'kcard-theme');
+        theme.textContent = card.theme;
+        const meta = el('span', 'kcard-meta');
+        meta.textContent = card.rarity === 'master' ? 'Carte Maître' : `${CARD_RARITIES[card.rarity].name}${shiny ? ' · Brillante' : ''}`;
+        top.append(num, theme, meta);
+        const body = el('div', 'kcard-body');
+        const name = el('div', 'kcard-name');
+        name.textContent = card.name;
         const text = el('p', 'kcard-text');
         text.textContent = card.text;
-        box.append(meta, text);
+        body.append(name, text);
+        box.append(body);
+    } else {
+        const name = el('div', 'kcard-name');   // visible seulement sur grand écran (masqué sur téléphone)
+        name.textContent = card.name;
+        box.append(name);
     }
     return box;
 }
