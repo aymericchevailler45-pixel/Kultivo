@@ -39,6 +39,8 @@
     .fb.on { transform: none; }
     .fb.bad { background: #ffdfe0; }
     .fb-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 1.1rem; font-weight: 900; color: #58a700; }
+    /* Pastilles posées SUR le bord du bandeau (position absolue) : le bandeau garde exactement sa taille */
+    .stickers { position: absolute; right: 12px; top: -15px; display: flex; gap: 6px; pointer-events: none; }
     .fb.bad .fb-head { color: #ea2b2b; }
     .combo { padding: 3px 10px; border-radius: 999px; background: #ff9600; color: #fff; font-size: .85rem; font-weight: 900; box-shadow: 0 3px 0 #c46a00; }
     .combo.pop { animation: comboPop .55s cubic-bezier(.2,1.8,.4,1); }
@@ -97,6 +99,9 @@
     .ringtxt { position: absolute; left: 12px; width: 58px; top: 50%; transform: translateY(-50%); text-align: center; font-weight: 900; font-size: .8rem; }
     .goalbox b { display: block; font-weight: 900; }
     .goalbox span { font-weight: 700; font-size: .82rem; color: var(--muted); }
+    .goalbox .claimed { display: none; font-weight: 900; font-size: .85rem; color: #58a700; }
+    .goalbox.got .claim { display: none; }
+    .goalbox.got .claimed { display: inline; }
     .claim { margin-top: 6px; padding: 6px 12px; border: 0; border-radius: 10px; background: #ffc800; box-shadow: 0 3px 0 #d9a400; color: #7a4e00; font: inherit; font-weight: 900; font-size: .85rem; opacity: 0; transform: scale(.6); transition: .35s cubic-bezier(.2,1.6,.4,1); }
     .goalbox.done .claim { opacity: 1; transform: none; }
 
@@ -131,6 +136,21 @@
     .monthcard span { font-weight: 700; font-size: .8rem; opacity: .9; }
     .monthcard .em { font-size: 1.8rem; }
     .fake { margin-top: 12px; height: 70px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); }
+    .phead { padding: 12px; border-radius: 16px; background: var(--surface); border: 2px solid var(--line); }
+    .phead .row { display: flex; align-items: center; gap: 10px; }
+    .pav { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: hsl(150 60% 45%); color: #fff; font-weight: 900; font-size: 1.4rem; }
+    .phead h4 { margin: 0; font-size: 1.05rem; font-weight: 900; }
+    .ppill { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 3px 9px; border-radius: 999px; border: 2px solid var(--line); font-weight: 900; font-size: .75rem; }
+    .monthpill { position: relative; display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; padding: 7px 12px; border: 0; border-radius: 999px;
+        background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; font: inherit; font-weight: 900; font-size: .85rem; box-shadow: 0 3px 0 #6d3fd1; cursor: pointer; }
+    .monthpill .dot { position: absolute; top: -5px; right: -5px; width: 16px; height: 16px; border-radius: 50%; background: #ff4b4b; color: #fff; font-size: .62rem; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--surface); }
+    .ptabs { display: flex; gap: 4px; margin-top: 12px; }
+    .ptabs span { flex: 1; padding: 6px 2px; border-radius: 10px; text-align: center; font-weight: 800; font-size: .72rem; color: var(--muted); background: var(--surface); border: 2px solid var(--line); }
+    .ptabs span.on { color: #58a700; border-color: #58cc02; }
+    .recs { margin-top: 10px; padding: 10px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); font-weight: 800; font-size: .82rem; }
+    .recs b { display: block; margin-bottom: 6px; }
+    .recs .m { display: inline-block; margin: 0 4px 4px 0; padding: 4px 9px; border-radius: 999px; background: #f3e8ff; color: #6d3fd1; }
+    .map-friend-mock { position: absolute; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 900; font-size: .9rem; box-shadow: 0 0 0 3px #fff, 0 3px 8px rgba(0,0,0,.18); }
     .story { position: absolute; inset: 0; display: flex; flex-direction: column; color: #fff; opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 5; }
     .story.on { opacity: 1; pointer-events: auto; }
     .story .prog { display: flex; gap: 4px; padding: 10px 10px 0; }
@@ -162,17 +182,17 @@
         <p class="lead">À 3, 5, 7, 10 bonnes réponses d'affilée, une pastille orange saute dans le bandeau vert. Le son monte d'une note à chaque bonne réponse de suite. Une erreur remet le combo à zéro.</p>
         <div class="phone">
             <div class="lesson"><div class="bar"><i id="cBar"></i></div><div class="q" id="cQ">Quelle est la capitale du Japon ?</div><div class="ans">Tokyo</div></div>
-            <div class="fb" id="cFb"><div class="fb-head"><span id="cHead">✅ Bonne réponse !</span><span class="combo" id="cCombo" hidden></span><span class="flash" id="cFlash" hidden>⚡ Éclair !</span></div><button class="p-btn" type="button">Continuer</button></div>
+            <div class="fb" id="cFb"><div class="stickers"><span class="combo" id="cCombo" hidden></span><span class="flash" id="cFlash" hidden>⚡ Éclair !</span></div><div class="fb-head"><span id="cHead">✅ Bonne réponse !</span></div><button class="p-btn" type="button">Continuer</button></div>
         </div>
         <div class="btns"><button class="btn btn-ghost" type="button" id="cGood">✅ Bonne réponse</button><button class="btn btn-ghost" type="button" id="cBad">❌ Erreur</button><button class="btn btn-ghost" type="button" id="cFast">⚡ Bonne et rapide</button></div>
-        <p class="where">Où : dans le bandeau de correction, à côté de « Bonne réponse ». Rien de plus : pas d'XP en plus, juste le plaisir.</p>
+        <p class="where">Où : les pastilles sont posées SUR le bord haut du bandeau, à droite (comme un autocollant) : le bandeau garde exactement la même taille qu'aujourd'hui, avec ou sans pastille. Pas d'XP en plus, juste le plaisir.</p>
     </article>
 
     <!-- 6 -->
     <article class="card">
         <h2>6 · Éclair ⚡</h2>
         <p class="lead">Si tu réponds juste en moins de 3 secondes (sans indice), une pastille bleue « ⚡ Éclair ! » apparaît au même endroit que le combo. Essaie le bouton « ⚡ Bonne et rapide » du téléphone au-dessus.</p>
-        <p class="where">Où : dans le bandeau vert de la bonne réponse, à côté du combo. Pas pendant le sprint (tout y est rapide) ni pour les drapeaux / rébus faciles à lire ? À voir avec toi. Pas d'XP en plus non plus.</p>
+        <p class="where">Où : sur le bord du bandeau vert, à côté du combo. Partout (drapeaux compris) SAUF le sprint, le défi du jour et les duels (ceux-là se jouent déjà au chrono). Pas d'XP en plus.</p>
     </article>
 
     <!-- 2 -->
@@ -186,8 +206,10 @@
                 <div class="node cur" style="left:70px;top:150px">13</div>
                 <div class="node done" style="left:130px;top:262px">12</div>
                 <div class="node done" style="left:60px;top:370px">11</div>
-                <div class="mapk" id="mK" style="left:160px;top:136px"></div>
-                <div class="say" id="mSay" style="left:120px;top:92px"></div>
+                <div class="mapk" id="mK" style="left:4px;top:146px;width:62px;height:62px"></div>
+                <div class="say" id="mSay" style="left:10px;top:92px"></div>
+                <div class="map-friend-mock" style="left:146px;top:158px;background:hsl(210 70% 55%)">L</div>
+                <div class="map-friend-mock" style="left:170px;top:158px;background:hsl(330 70% 55%)">M</div>
             </div>
         </div>
         <div class="btns" id="mBtns">
@@ -196,7 +218,7 @@
             <button class="btn btn-ghost" type="button" data-m="halloween">🎃 Halloween</button>
             <button class="btn btn-ghost" type="button" data-m="noel">🎄 Noël</button>
         </div>
-        <p class="where">Où : sur la carte du parcours, juste à droite (ou à gauche) du niveau en cours, sans cacher les décors. Le soir (après 20 h) si tu n'as pas joué : il dort, « zzz », et dit « Ta série de 12 jours t'attend… ». Pendant les fêtes : chapeau de sorcière, bonnet de Noël. Ses phrases changent à chaque tap (encouragements, anecdotes courtes, rappel de l'objectif du jour).</p>
+        <p class="where">Où : à GAUCHE du niveau en cours. Tes amis restent à DROITE comme aujourd'hui (L et M sur l'exemple) : on ne se gêne pas, même si vous êtes au même niveau. Quand le niveau en cours est collé au bord gauche du chemin, Kulti passe juste en dessous. Le soir (après 20 h) si tu n'as pas joué : il dort, « zzz », et dit « Ta série de 12 jours t'attend… ». Pendant les fêtes : chapeau de sorcière, bonnet de Noël. Ses phrases changent à chaque tap (encouragements, anecdotes courtes, rappel de l'objectif du jour).</p>
     </article>
 
     <!-- 3 -->
@@ -221,7 +243,7 @@
     <article class="card">
         <h2>4 · Objectif du jour atteint</h2>
         <p class="lead">Aujourd'hui : quand ta partie fait atteindre ton objectif du jour (ex. 150 XP), il n'y a qu'une ligne de texte sur l'écran de fin, « 🎯 Objectif atteint ! Va dans Défis pour ta récompense ». Facile à rater.</p>
-        <p class="lead">L'idée : sur l'écran de fin, une petite case avec un anneau qui se remplit de 120 à 150 XP, devient doré avec un « ding », et un bouton « Réclamer 30 🪙 » directement là (plus besoin d'aller dans Défis).</p>
+        <p class="lead">L'idée : sur l'écran de fin, une petite case avec un anneau qui se remplit de TES vrais chiffres (XP avant la partie → XP après), devient doré avec un « ding », et un bouton « Réclamer 30 🪙 » directement là.</p>
         <div class="phone">
             <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div>
             <div class="endm">
@@ -230,13 +252,19 @@
                 <div class="goalbox" id="gBox">
                     <svg class="ring" viewBox="0 0 60 60"><circle class="bg" cx="30" cy="30" r="25"/><circle class="fg" id="gRing" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="31"/></svg>
                     <div class="ringtxt" id="gTxt">80 %</div>
-                    <div><b id="gTitle">Objectif du jour</b><span id="gSub">120 / 150 XP</span><br><button class="claim" type="button">Réclamer 30 🪙</button></div>
+                    <div><b id="gTitle">Objectif du jour</b><span id="gSub">120 / 150 XP</span><br><button class="claim" type="button" id="gClaim">Réclamer 30 🪙</button><span class="claimed">✓ +30 🪙 reçues</span></div>
                 </div>
-                <button class="p-btn" type="button" style="margin-top:8px">Continuer</button>
+                <button class="p-btn" type="button" style="margin-top:8px" id="gCont">Continuer</button>
             </div>
+            <div class="tabs"><div class="on">🗺️<span>Parcours</span></div><div>🏆<span>Défis</span><i class="dot" id="gDot" hidden>1</i></div><div>🥇<span>Classement</span></div><div>🛒<span>Boutique</span></div><div>👤<span>Profil</span></div></div>
         </div>
-        <div class="btns"><button class="btn btn-ghost" type="button" data-play="G">▶ Rejouer</button></div>
-        <p class="where">Où : sur l'écran de fin, seulement le jour où l'objectif est atteint par cette partie (sinon rien ne change).</p>
+        <div class="btns">
+            <button class="btn btn-ghost" type="button" data-g="120,150">▶ 120 → 150 XP</button>
+            <button class="btn btn-ghost" type="button" data-g="132,181">▶ 132 → 181 XP (dépasse)</button>
+            <button class="btn btn-ghost" type="button" data-g="95,150">▶ 95 → 150 XP</button>
+        </div>
+        <p class="where">L'anneau part de ton XP d'avant la partie et monte jusqu'à ton XP d'après. Si tu dépasses (181 / 150), l'anneau s'arrête plein et doré, et le chiffre réel reste écrit : « 181 / 150 XP ». Seulement la partie qui fait passer l'objectif (les suivantes du jour : rien).</p>
+        <p class="where">La pastille rouge de l'onglet Défis : si tu touches « Réclamer » ici, pas de pastille (c'est déjà pris). Si tu fais « Continuer » sans réclamer, la pastille rouge s'allume sur Défis, comme aujourd'hui, et tu la réclames là-bas.</p>
     </article>
 
     <!-- 5 -->
@@ -260,13 +288,18 @@
         <div class="phone" id="rPhone">
             <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div>
             <div class="prof">
-                <div class="monthcard" id="rCard"><span class="em">📅</span><div><b>Ton mois d'octobre est prêt !</b><span>Touche pour voir ton récap</span></div></div>
-                <div class="fake"></div><div class="fake"></div>
+                <div class="phead">
+                    <div class="row"><div class="pav">M</div><div><h4>Moi</h4><span class="ppill">🏅 Lettré ›</span></div></div>
+                    <button class="monthpill" type="button" id="rCard">📅 Ton mois d'octobre <i class="dot">1</i></button>
+                </div>
+                <div class="ptabs"><span>🏅 Badges</span><span>🃏 Cartes</span><span class="on">📊 Records</span><span>📈 Thèmes</span></div>
+                <div class="recs"><b>📅 Mes récaps du mois</b><span class="m">Septembre</span><span class="m">Octobre</span></div>
             </div>
             <div class="tabs"><div>🗺️<span>Parcours</span></div><div>🏆<span>Défis</span></div><div>🥇<span>Classement</span></div><div>🛒<span>Boutique</span></div><div class="on">👤<span>Profil</span><i class="dot">1</i></div></div>
             <div class="story" id="rStory"><div class="prog" id="rProg"></div><div class="x" id="rX">✕</div><div class="slide" id="rSlide"></div><div class="hint">Touche à droite : suivant · à gauche : retour</div></div>
         </div>
-        <p class="where">« Pastille rouge » = le petit rond rouge avec un 1 sur l'onglet Profil (comme pour les cartes à réveiller). Pas de fenêtre qui s'ouvre toute seule : tu vois la pastille, tu vas dans Profil, la carte violette « Ton mois d'octobre est prêt ! » est tout en haut ; tu la touches quand tu veux. Elle reste jusqu'à la fin du mois, et on peut revoir les anciens mois.</p>
+        <p class="where">Plutôt qu'une grande carte : un petit bouton violet « 📅 Ton mois d'octobre » dans la case du haut du Profil (sous ton pseudo et ton titre), avec la pastille rouge tant que tu ne l'as pas vu (+ pastille sur l'onglet Profil). Une fois vu : le bouton reste 7 jours (pour le revoir ou le montrer), puis disparaît.</p>
+        <p class="where">Pour toujours : dans l'onglet « 📊 Records », une ligne « 📅 Mes récaps du mois » avec tous les mois passés (on peut revoir septembre, octobre…).</p>
         <p class="where">Écrans (6) : questions répondues · XP gagnés · ton meilleur thème · ta plus longue série · la question que tu as le plus ratée · cartes gagnées, puis « À novembre ! ».</p>
     </article>
 </div>
@@ -379,15 +412,31 @@ function playT() {
 
 // ---------- 4 · Objectif du jour ----------
 $('gK').append(K('content'));
-function playG() {
+const GOAL = 150;
+let gTimer = null;
+function playG(from = 120, to = 150) {
     const box = $('gBox'), ring = $('gRing');
-    box.classList.remove('done'); ring.style.transition = 'none'; ring.style.strokeDashoffset = 157 * 0.2;
-    $('gTxt').textContent = '80 %'; $('gTitle').textContent = 'Objectif du jour'; $('gSub').textContent = '120 / 150 XP';
+    clearInterval(gTimer);
+    box.classList.remove('done', 'got'); $('gDot').hidden = true;
+    ring.style.transition = 'none'; ring.style.strokeDashoffset = 157 * (1 - from / GOAL);
+    $('gTxt').textContent = `${Math.round(from / GOAL * 100)} %`; $('gTitle').textContent = 'Objectif du jour'; $('gSub').textContent = `${from} / ${GOAL} XP`;
     void ring.offsetWidth; ring.style.transition = '';
-    setTimeout(() => { ring.style.strokeDashoffset = 0; }, 500);
-    let v = 120; const t = setInterval(() => { v = Math.min(150, v + 2); $('gSub').textContent = `${v} / 150 XP`; $('gTxt').textContent = `${Math.round(v / 1.5)} %`; if (v >= 150) clearInterval(t); }, 60);
-    setTimeout(() => { box.classList.add('done'); $('gTxt').textContent = '🎯'; $('gTitle').textContent = 'Objectif atteint !'; tone(1319, 0, 0.5, 'sine', 0.14); tone(1760, 0.05, 0.7, 'sine', 0.08); }, 1750);
+    const ms = 1200;
+    setTimeout(() => { ring.style.strokeDashoffset = 157 * (1 - Math.min(1, to / GOAL)); }, 500);
+    let v = from; const step = Math.max(1, Math.round((to - from) / 20));
+    setTimeout(() => {
+        gTimer = setInterval(() => {
+            v = Math.min(to, v + step);
+            $('gSub').textContent = `${v} / ${GOAL} XP`;
+            if (v < GOAL) $('gTxt').textContent = `${Math.round(v / GOAL * 100)} %`;
+            if (v >= GOAL && !box.classList.contains('done')) { box.classList.add('done'); $('gTxt').textContent = '🎯'; $('gTitle').textContent = 'Objectif atteint !'; tone(1319, 0, 0.5, 'sine', 0.14); tone(1760, 0.05, 0.7, 'sine', 0.08); }
+            if (v >= to) clearInterval(gTimer);
+        }, ms / 20);
+    }, 500);
 }
+$('gClaim').onclick = () => { $('gBox').classList.add('got'); tone(988, 0, 0.1, 'triangle', 0.12); tone(1319, 0.08, 0.2, 'triangle', 0.12); };
+$('gCont').onclick = () => { if ($('gBox').classList.contains('done') && !$('gBox').classList.contains('got')) $('gDot').hidden = false; };
+document.querySelectorAll('[data-g]').forEach(b => b.onclick = () => { const [a, z] = b.dataset.g.split(',').map(Number); playG(a, z); });
 
 // ---------- 5 · Gel ----------
 function playG2() {
@@ -424,13 +473,14 @@ function showSlide(i) {
     clearTimeout(sTimer);
     sTimer = setTimeout(() => { if (si < SLIDES.length - 1) showSlide(si + 1); }, 5000);
 }
-$('rCard').onclick = () => { $('rStory').classList.add('on'); document.querySelector('#rPhone .dot').hidden = true; showSlide(0); };
+$('rCard').onclick = () => { $('rStory').classList.add('on'); document.querySelectorAll('#rPhone .dot').forEach(d => { d.hidden = true; }); showSlide(0); };
+document.querySelectorAll('#rPhone .recs .m').forEach(m => { m.style.cursor = 'pointer'; m.onclick = () => $('rCard').onclick(); });
 $('rX').onclick = e => { e.stopPropagation(); clearTimeout(sTimer); $('rStory').classList.remove('on'); };
 $('rSlide').onclick = e => { const r = e.currentTarget.getBoundingClientRect(); showSlide(si + (e.clientX - r.left > r.width / 3 ? 1 : -1)); };
 
-document.querySelectorAll('[data-play]').forEach(b => b.onclick = () => ({ T: playT, G: playG, G2: playG2 })[b.dataset.play]());
+document.querySelectorAll('[data-play]').forEach(b => b.onclick = () => ({ T: playT, G2: playG2 })[b.dataset.play]());
 document.querySelectorAll('.ov .p-btn').forEach(b => b.onclick = () => b.closest('.ov').classList.remove('on'));
-setTimeout(() => { playT(); playG(); playG2(); }, 600);
+setTimeout(() => { playT(); playG(132, 181); playG2(); }, 600);
 </script>
 </body>
 </html>
