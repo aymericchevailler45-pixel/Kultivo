@@ -144,12 +144,21 @@
     .monthpill { position: relative; display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; padding: 7px 12px; border: 0; border-radius: 999px;
         background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; font: inherit; font-weight: 900; font-size: .85rem; box-shadow: 0 3px 0 #6d3fd1; cursor: pointer; }
     .monthpill .dot { position: absolute; top: -5px; right: -5px; width: 16px; height: 16px; border-radius: 50%; background: #ff4b4b; color: #fff; font-size: .62rem; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--surface); }
+    .xprow { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .xprow b { font-size: 1.1rem; font-weight: 900; }
+    .xpbar { height: 10px; margin-top: 8px; border-radius: 8px; background: var(--line); overflow: hidden; }
+    .xpbar i { display: block; width: 62%; height: 100%; border-radius: 8px; background: #58cc02; }
+    .xpleft { margin: 6px 0 0; font-weight: 700; font-size: .78rem; color: var(--muted); }
+    .monthpill { width: 100%; justify-content: center; }
+    .pbtns { display: flex; gap: 6px; margin-top: 10px; }
+    .pbtns span { flex: 1; padding: 7px 4px; border-radius: 12px; border: 2px solid var(--line); text-align: center; font-weight: 800; font-size: .75rem; color: var(--muted); }
     .ptabs { display: flex; gap: 4px; margin-top: 12px; }
     .ptabs span { flex: 1; padding: 6px 2px; border-radius: 10px; text-align: center; font-weight: 800; font-size: .72rem; color: var(--muted); background: var(--surface); border: 2px solid var(--line); }
     .ptabs span.on { color: #58a700; border-color: #58cc02; }
     .recs { margin-top: 10px; padding: 10px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); font-weight: 800; font-size: .82rem; }
     .recs b { display: block; margin-bottom: 6px; }
     .recs .m { display: inline-block; margin: 0 4px 4px 0; padding: 4px 9px; border-radius: 999px; background: #f3e8ff; color: #6d3fd1; }
+    .dec { position: absolute; width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center; background: var(--surface); border: 2px solid var(--line); box-shadow: 0 3px 0 var(--line); font-size: 1.1rem; }
     .map-friend-mock { position: absolute; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 900; font-size: .9rem; box-shadow: 0 0 0 3px #fff, 0 3px 8px rgba(0,0,0,.18); }
     .story { position: absolute; inset: 0; display: flex; flex-direction: column; color: #fff; opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 5; }
     .story.on { opacity: 1; pointer-events: auto; }
@@ -201,16 +210,11 @@
         <p class="lead">Kulti est assis à côté de ton niveau en cours (il te suit quand tu avances). Touche-le : il dit une petite phrase. Il change selon le moment :</p>
         <div class="phone" id="mPhone">
             <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div>
-            <div class="map" id="mMap">
-                <div class="node lock" style="left:150px;top:40px">14</div>
-                <div class="node cur" style="left:70px;top:150px">13</div>
-                <div class="node done" style="left:130px;top:262px">12</div>
-                <div class="node done" style="left:60px;top:370px">11</div>
-                <div class="mapk" id="mK" style="left:4px;top:146px;width:62px;height:62px"></div>
-                <div class="say" id="mSay" style="left:10px;top:92px"></div>
-                <div class="map-friend-mock" style="left:146px;top:158px;background:hsl(210 70% 55%)">L</div>
-                <div class="map-friend-mock" style="left:170px;top:158px;background:hsl(330 70% 55%)">M</div>
-            </div>
+            <div class="map" id="mMap"></div>
+        </div>
+        <div class="btns" id="mSide">
+            <button class="btn btn-ghost is-on" type="button" data-side="left">◀ Niveau en cours à gauche du chemin</button>
+            <button class="btn btn-ghost" type="button" data-side="right">Niveau en cours à droite ▶</button>
         </div>
         <div class="btns" id="mBtns">
             <button class="btn btn-ghost is-on" type="button" data-m="jour">☀️ La journée</button>
@@ -218,7 +222,7 @@
             <button class="btn btn-ghost" type="button" data-m="halloween">🎃 Halloween</button>
             <button class="btn btn-ghost" type="button" data-m="noel">🎄 Noël</button>
         </div>
-        <p class="where">Où : à GAUCHE du niveau en cours. Tes amis restent à DROITE comme aujourd'hui (L et M sur l'exemple) : on ne se gêne pas, même si vous êtes au même niveau. Quand le niveau en cours est collé au bord gauche du chemin, Kulti passe juste en dessous. Le soir (après 20 h) si tu n'as pas joué : il dort, « zzz », et dit « Ta série de 12 jours t'attend… ». Pendant les fêtes : chapeau de sorcière, bonnet de Noël. Ses phrases changent à chaque tap (encouragements, anecdotes courtes, rappel de l'objectif du jour).</p>
+        <p class="where">Où : Kulti se met toujours du côté du MILIEU de l'écran (là où il y a de la place), jamais vers le bord : les décors à anecdotes (dans les marges) restent libres. Niveau à gauche du chemin → Kulti à sa droite ; niveau à droite → Kulti à sa gauche. Tes amis (L, M) prennent alors l'autre côté du niveau, au lieu d'être toujours à droite. Essaie les deux boutons ci-dessus. Le soir (après 20 h) si tu n'as pas joué : il dort, « zzz », et dit « Ta série de 12 jours t'attend… ». Pendant les fêtes : chapeau de sorcière, bonnet de Noël. Ses phrases changent à chaque tap (encouragements, anecdotes courtes, rappel de l'objectif du jour).</p>
     </article>
 
     <!-- 3 -->
@@ -289,8 +293,12 @@
             <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div>
             <div class="prof">
                 <div class="phead">
-                    <div class="row"><div class="pav">M</div><div><h4>Moi</h4><span class="ppill">🏅 Lettré ›</span></div></div>
+                    <div class="row"><div class="pav">M</div><div><h4>Moi</h4><span class="ppill">✏️ Modifier</span></div></div>
+                    <div class="xprow"><b>2 340 XP</b><span class="ppill">🏅 Lettré ›</span></div>
+                    <div class="xpbar"><i></i></div>
+                    <p class="xpleft">Encore 1 260 XP pour devenir « Érudit ».</p>
                     <button class="monthpill" type="button" id="rCard">📅 Ton mois d'octobre <i class="dot">1</i></button>
+                    <div class="pbtns"><span>🔊 Son activé</span><span>☁️ Mon compte</span></div>
                 </div>
                 <div class="ptabs"><span>🏅 Badges</span><span>🃏 Cartes</span><span class="on">📊 Records</span><span>📈 Thèmes</span></div>
                 <div class="recs"><b>📅 Mes récaps du mois</b><span class="m">Septembre</span><span class="m">Octobre</span></div>
@@ -298,7 +306,7 @@
             <div class="tabs"><div>🗺️<span>Parcours</span></div><div>🏆<span>Défis</span></div><div>🥇<span>Classement</span></div><div>🛒<span>Boutique</span></div><div class="on">👤<span>Profil</span><i class="dot">1</i></div></div>
             <div class="story" id="rStory"><div class="prog" id="rProg"></div><div class="x" id="rX">✕</div><div class="slide" id="rSlide"></div><div class="hint">Touche à droite : suivant · à gauche : retour</div></div>
         </div>
-        <p class="where">Plutôt qu'une grande carte : un petit bouton violet « 📅 Ton mois d'octobre » dans la case du haut du Profil (sous ton pseudo et ton titre), avec la pastille rouge tant que tu ne l'as pas vu (+ pastille sur l'onglet Profil). Une fois vu : le bouton reste 7 jours (pour le revoir ou le montrer), puis disparaît.</p>
+        <p class="where">Plutôt qu'une grande carte : un bouton violet « 📅 Ton mois d'octobre » dans la case du haut du Profil, sous la barre d'XP et « Encore … XP », au-dessus de « Son activé » et « Mon compte », avec la pastille rouge tant que tu ne l'as pas vu (+ pastille sur l'onglet Profil). Une fois vu : le bouton reste 7 jours (pour le revoir ou le montrer), puis disparaît.</p>
         <p class="where">Pour toujours : dans l'onglet « 📊 Records », une ligne « 📅 Mes récaps du mois » avec tous les mois passés (on peut revoir septembre, octobre…).</p>
         <p class="where">Écrans (6) : questions répondues · XP gagnés · ton meilleur thème · ta plus longue série · la question que tu as le plus ratée · cartes gagnées, puis « À novembre ! ».</p>
     </article>
@@ -362,7 +370,27 @@ const SAYS = {
     halloween: ['Bouh ! 🎃 Tu as trouvé la citrouille du jour ?', 'Encore 12 questions d’Halloween pour la carte !'],
     noel: ['Joyeux Noël ! 🎄', 'Le défi de Noël t’attend dans Défis 🎁']
 };
-let mode = 'jour', sayIdx = 0, sayTimer = null;
+let mode = 'jour', sayIdx = 0, sayTimer = null, side = 'left';
+const MAP_W = 288, NODE_W = 64;
+function drawMap() {
+    const map = $('mMap');
+    // Chemin en zigzag ; le niveau en cours (13) est à gauche ou à droite du milieu
+    const cx = side === 'left' ? 124 : 164;
+    const nodes = [[14, side === 'left' ? 160 : 120, 30, 'lock'], [13, cx, 150, 'cur'], [12, side === 'left' ? 168 : 112, 270, 'done'], [11, side === 'left' ? 120 : 160, 380, 'done']];
+    const decors = [[6, 70, '🔬'], [244, 120, '🎬'], [6, 230, '📜'], [244, 300, '🎼'], [6, 400, '⚽']];
+    let html = decors.map(([x, y, e]) => `<div class="dec" style="left:${x}px;top:${y}px">${e}</div>`).join('');
+    html += nodes.map(([n, x, y, c]) => `<div class="node ${c}" style="left:${x - NODE_W / 2}px;top:${y}px">${n}</div>`).join('');
+    // Kulti du côté du milieu de l'écran, les amis de l'autre côté
+    const kultiRight = cx < MAP_W / 2;
+    const kx = kultiRight ? cx + NODE_W / 2 + 4 : cx - NODE_W / 2 - 4 - 60;
+    const fx = kultiRight ? cx - NODE_W / 2 - 4 - 44 : cx + NODE_W / 2 + 4;
+    html += `<div class="mapk" id="mK" style="left:${kx}px;top:146px;width:60px;height:60px"></div>`;
+    html += `<div class="map-friend-mock" style="left:${fx}px;top:162px;width:30px;height:30px;font-size:.8rem;background:hsl(210 70% 55%)">L</div><div class="map-friend-mock" style="left:${fx + 14}px;top:162px;width:30px;height:30px;font-size:.8rem;background:hsl(330 70% 55%)">M</div>`;
+    html += `<div class="say" id="mSay" style="left:${kultiRight ? kx - 40 : kx - 50}px;top:96px"></div>`;
+    map.innerHTML = html;
+    $('mK').onclick = kultiTap;
+    drawK();
+}
 function drawK() {
     const box = $('mK');
     const face = mode === 'soir' ? 'dort' : mode === 'jour' ? 'content' : 'clin';
@@ -372,20 +400,25 @@ function drawK() {
     $('mMap').classList.toggle('night', mode === 'soir');
     $('mSay').classList.remove('on');
 }
-$('mK').onclick = () => {
+function kultiTap() {
     const s = $('mSay'), list = SAYS[mode];
     s.textContent = list[sayIdx++ % list.length];
     s.classList.add('on');
     clearTimeout(sayTimer); sayTimer = setTimeout(() => s.classList.remove('on'), 2600);
     tone(880, 0, 0.08, 'triangle', 0.1); tone(1175, 0.07, 0.1, 'triangle', 0.1);
-};
+}
+document.querySelectorAll('[data-side]').forEach(b => b.onclick = () => {
+    side = b.dataset.side;
+    document.querySelectorAll('[data-side]').forEach(x => x.classList.toggle('is-on', x === b));
+    drawMap();
+});
 document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
     mode = b.dataset.m; sayIdx = 0;
     document.querySelectorAll('[data-m]').forEach(x => x.classList.toggle('is-on', x === b));
-    drawK(); setTimeout(() => $('mK').click(), 300);
+    drawK(); setTimeout(kultiTap, 300);
 });
-drawK();
-setTimeout(() => $('mK').click(), 900);
+drawMap();
+setTimeout(kultiTap, 900);
 
 // ---------- 3 · Nouveau titre ----------
 $('tK0').append(K('content'));
