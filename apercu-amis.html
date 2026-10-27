@@ -210,7 +210,12 @@
                 </div>
             </div>
         </div>
-        <div class="choice"><b>Pour que vous soyez VRAIMENT ensemble (Max voit aussi « Quête avec toi »)</b><p>Le tirage se fait en ligne (Supabase) : le premier de vous deux qui ouvre Défis le lundi est mis avec un ami encore libre ; l'autre retrouve le même duo. Il faudra lancer un petit fichier SQL (comme pour les duels). Si tous tes amis sont déjà pris : tu rejoins un duo à trois (pas de joueur seul). Sans ami : la ligne n'apparaît pas.</p></div>
+        <div class="choice"><b>Tout le monde a un partenaire, chaque semaine (deux joueurs exactement, jamais à trois)</b>
+            <p>Le lundi, à la 1re ouverture de Défis, le tirage (fait en ligne, sur Supabase) cherche dans cet ordre :</p>
+            <p>1️⃣ <b>Un ami libre</b>, qui a joué la semaine d'avant (pour ne pas tomber sur un ami qui ne joue plus). Il voit aussi « Quête avec toi ».</p>
+            <p>2️⃣ Sinon (pas d'ami, ou tous déjà en duo) : <b>un autre joueur de Kultivo</b> lui aussi sans partenaire, tiré au hasard. Tu vois son pseudo et son avatar ; à la fin de la semaine, bouton « Ajouter en ami ». C'est comme ça qu'on se fait de nouveaux amis.</p>
+            <p>3️⃣ Personne de libre pour l'instant : « 🔎 Recherche d'un partenaire… » ; dès qu'un autre joueur ouvre Défis, vous êtes mis ensemble. Si personne n'arrive en 24 h (possible au début, quand il y a peu de joueurs) : <b>Kulti devient ton partenaire</b> pour la semaine (il ajoute chaque jour où tu joues un peu d'XP, comme un vrai joueur moyen).</p>
+            <p>Seule condition : avoir un compte (la quête se joue en ligne). Sans compte : « 🤝 Crée un compte pour la quête en duo ». Il faudra lancer un fichier SQL une fois (comme pour les duels).</p></div>
         <div class="choice"><b>Plus tard : les « bandes »</b><p>Des groupes d'amis (clans) avec un nom, et des défis de bande. Noté pour plus tard.</p></div>
     </article>
 

@@ -2431,7 +2431,7 @@ function placeMapKulti() {
     const btn = el('button', `map-kulti ${right ? 'is-right' : 'is-left'}`);
     btn.type = 'button';
     btn.setAttribute('aria-label', 'Kulti, la mascotte');
-    btn.append(kultiEl(sleepy ? 'dort' : ev ? 'clin' : 'content', sleepy ? '' : 'kulti-blink kulti-float', false, ev ? ev.bank : null));
+    btn.append(kultiEl(sleepy ? 'dort' : 'content', sleepy ? '' : 'kulti-blink kulti-float', false, ev ? ev.bank : null));
     if (sleepy) {
         const z = el('span', 'map-kulti-zzz');
         z.innerHTML = '<i>Z</i><i>z</i><i>z</i>';
@@ -9744,6 +9744,19 @@ function init() {
         else if (demo === 'gel-ok') setTimeout(() => checkStreakDanger({ streak: 12, missed: 1, freeze: 2 }), 1500);
         else setTimeout(checkStreakDanger, 1500);   // série en danger après un jour manqué ?
     }
+    hideSplash();
+}
+// Écran de chargement : on le laisse au moins ~1,1 s (le temps de l'animation), puis la barre se remplit et il s'efface
+function hideSplash() {
+    const sp = $('splash');
+    if (!sp) return;
+    const wait = Math.max(0, 1100 - (Date.now() - (window.splashAt || 0)));
+    setTimeout(() => {
+        const fill = $('splashFill');
+        if (fill) sp.style.setProperty('--w', `${fill.getBoundingClientRect().width / fill.parentNode.getBoundingClientRect().width * 100}%`);
+        sp.classList.add('is-ready');
+        setTimeout(() => { sp.classList.add('is-out'); setTimeout(() => sp.remove(), 380); }, 280);
+    }, wait);
 }
 
 document.addEventListener('DOMContentLoaded', init);

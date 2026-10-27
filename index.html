@@ -16,9 +16,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261027f">
+    <link rel="stylesheet" href="style.css?v=20261027g">
 </head>
 <body>
+
+    <!-- ÉCRAN DE CHARGEMENT (2026-10-27, version 1 choisie par l'utilisateur) : logo au milieu, Kulti qui court sur la barre.
+         Retiré par `hideSplash` à la fin de `init` (sécurité : 8 s au plus). -->
+    <div class="splash" id="splash" aria-hidden="true">
+        <img class="splash-logo" src="icons/logo.svg" alt="" width="120" height="120">
+        <div class="splash-name">Kultivo</div>
+        <div class="splash-track"><i id="splashFill"><span class="splash-rider" id="splashRider"></span></i></div>
+    </div>
+    <script>
+        window.splashAt = Date.now();
+        (function () {
+            var sp = document.getElementById('splash');
+            ['📜', '🔬', '🌍', '💡', '🎼', '📚', '🎲', '🎬', '🧀', '⚽', '🎨', '🗣️', '⚡', '🚩', '🏛️'].forEach(function (ico, i) {
+                var spot = [[8, 6], [70, 4], [38, 12], [84, 22], [4, 30], [60, 30], [20, 46], [86, 48], [6, 64], [74, 66], [40, 78], [88, 84], [14, 88], [58, 92], [30, 62]][i];
+                var e = document.createElement('span');
+                e.className = 'splash-ico'; e.textContent = ico;
+                e.style.left = spot[0] + '%'; e.style.top = spot[1] + '%';
+                e.style.animationDuration = (2.5 + (i % 4) * 0.6) + 's';
+                sp.insertBefore(e, sp.firstChild);
+            });
+            setTimeout(function () { var x = document.getElementById('splash'); if (x) x.remove(); }, 8000);
+        })();
+    </script>
+    <script src="kulti.js?v=20261027g"></script>
+    <script>document.getElementById('splashRider').append(kultiEl('content', 'kulti-blink'));</script>
 
     <!-- BARRE DU HAUT (visible hors leçon) -->
     <header class="topbar" id="topbar">
@@ -578,32 +603,31 @@
     <div class="toasts" id="toasts" aria-live="polite"></div>
 
     <!-- L'ordre compte : les questions d'abord, puis la logique -->
-    <script src="questions.js?v=20261027f"></script>
-    <script src="pairs.js?v=20261027f"></script>
-    <script src="order.js?v=20261027f"></script>
-    <script src="facts.js?v=20261027f"></script>
-    <script src="entrainement/banque.js?v=20261027f"></script>
-    <script src="entrainement/histoire.js?v=20261027f"></script>
-    <script src="entrainement/sciences.js?v=20261027f"></script>
-    <script src="entrainement/geographie.js?v=20261027f"></script>
-    <script src="entrainement/technologie.js?v=20261027f"></script>
-    <script src="entrainement/musique.js?v=20261027f"></script>
-    <script src="entrainement/litterature.js?v=20261027f"></script>
-    <script src="entrainement/jeux.js?v=20261027f"></script>
-    <script src="entrainement/cinema.js?v=20261027f"></script>
-    <script src="entrainement/gastronomie.js?v=20261027f"></script>
-    <script src="entrainement/sport.js?v=20261027f"></script>
-    <script src="entrainement/arts.js?v=20261027f"></script>
-    <script src="entrainement/langue-francaise.js?v=20261027f"></script>
-    <script src="entrainement/mythologie.js?v=20261027f"></script>
-    <script src="entrainement/drapeaux.js?v=20261027f"></script>
-    <script src="entrainement/monuments.js?v=20261027f"></script>
-    <script src="cards.js?v=20261027f"></script>
-    <script src="cosmetiques.js?v=20261027f"></script>
-    <script src="kulti.js?v=20261027f"></script>
-    <script src="levels.js?v=20261027f"></script>
-    <script src="vendor/supabase.min.js?v=20261027f"></script>
-    <script src="evenements/halloween.js?v=20261027f"></script>
-    <script src="script.js?v=20261027f"></script>
+    <script src="questions.js?v=20261027g"></script>
+    <script src="pairs.js?v=20261027g"></script>
+    <script src="order.js?v=20261027g"></script>
+    <script src="facts.js?v=20261027g"></script>
+    <script src="entrainement/banque.js?v=20261027g"></script>
+    <script src="entrainement/histoire.js?v=20261027g"></script>
+    <script src="entrainement/sciences.js?v=20261027g"></script>
+    <script src="entrainement/geographie.js?v=20261027g"></script>
+    <script src="entrainement/technologie.js?v=20261027g"></script>
+    <script src="entrainement/musique.js?v=20261027g"></script>
+    <script src="entrainement/litterature.js?v=20261027g"></script>
+    <script src="entrainement/jeux.js?v=20261027g"></script>
+    <script src="entrainement/cinema.js?v=20261027g"></script>
+    <script src="entrainement/gastronomie.js?v=20261027g"></script>
+    <script src="entrainement/sport.js?v=20261027g"></script>
+    <script src="entrainement/arts.js?v=20261027g"></script>
+    <script src="entrainement/langue-francaise.js?v=20261027g"></script>
+    <script src="entrainement/mythologie.js?v=20261027g"></script>
+    <script src="entrainement/drapeaux.js?v=20261027g"></script>
+    <script src="entrainement/monuments.js?v=20261027g"></script>
+    <script src="cards.js?v=20261027g"></script>
+    <script src="cosmetiques.js?v=20261027g"></script>
+    <script src="levels.js?v=20261027g"></script>
+    <script src="vendor/supabase.min.js?v=20261027g"></script>
+    <script src="evenements/halloween.js?v=20261027g"></script>
+    <script src="script.js?v=20261027g"></script>
 </body>
 </html>

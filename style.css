@@ -3429,3 +3429,26 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .recap-share-actions .btn { flex: 1; }
 .recap-share-go { background: linear-gradient(135deg, #8b5cf6, #ec4899); box-shadow: 0 4px 0 #6d3fd1; color: #fff; }
 .recap-share-close { background: var(--surface); }
+
+/* Écran de chargement (2026-10-27, version 1) : fond vert, icônes des thèmes en transparence, logo qui saute, Kulti sur la barre */
+.splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    padding: 20px; text-align: center; color: #fff; overflow: hidden; background: linear-gradient(170deg, #5fd40a, #46a302); }
+.splash.is-out { animation: splashOut .35s ease forwards; pointer-events: none; }
+@keyframes splashOut { to { opacity: 0; transform: scale(1.04); } }
+.splash-ico { position: absolute; font-size: 1.7rem; opacity: .18; animation: splashDrift 3s ease-in-out infinite alternate; }
+@keyframes splashDrift { from { transform: translateY(0) rotate(-8deg); } to { transform: translateY(-14px) rotate(8deg); } }
+.splash-logo { position: relative; z-index: 1; width: 120px; height: 120px; border-radius: 32px;
+    box-shadow: 0 8px 0 rgba(0,0,0,.18), 0 0 0 6px rgba(255,255,255,.25); animation: splashHop .9s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes splashHop { 0% { transform: translateY(80px) scale(.3); opacity: 0; } 60% { transform: translateY(-14px) scale(1.08); opacity: 1; } 100% { transform: none; } }
+.splash-name { position: relative; z-index: 1; font-size: 2.3rem; font-weight: 900; animation: splashPop .5s .4s both; }
+@keyframes splashPop { 0% { transform: scale(.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.splash-track { position: relative; z-index: 1; width: min(74%, 320px); height: 12px; margin-top: 34px; border-radius: 8px; background: rgba(255,255,255,.3); }
+/* La barre avance seule jusqu'à 85 %, puis se remplit quand le jeu est prêt (`hideSplash`) ; Kulti est collé au bout */
+.splash-track > i { position: relative; display: block; height: 100%; width: 0; border-radius: 8px; background: #fff; animation: splashLoad 1.4s ease-out .2s forwards; }
+.splash.is-ready .splash-track > i { animation: splashLoadEnd .25s ease-out forwards; }
+@keyframes splashLoad { to { width: 85%; } }
+@keyframes splashLoadEnd { from { width: var(--w, 85%); } to { width: 100%; } }
+.splash-rider { position: absolute; right: -24px; bottom: 6px; width: 48px; height: 48px; }
+.splash-rider .kulti { animation: splashRide .45s ease-in-out infinite; }
+@keyframes splashRide { 0%, 100% { transform: none; } 30% { transform: translateY(-14px) scaleY(1.04); } 50% { transform: translateY(0) scaleY(.94); } }
+@media (prefers-reduced-motion: reduce) { .splash-ico, .splash-rider .kulti { animation: none; } }
