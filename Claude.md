@@ -16,6 +16,15 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   et un niveau refait ne compte qu'UNE fois par jour pour les missions (bonnes réponses comprises) ; affiché au départ et à la fin.
 - FAIT le 26/10 : entraînement, palier 5 RÉUSSI → les sessions piochent dans les 150 questions du thème à égalité (les moins
   sues d'abord, `pickTrainingCards`), au lieu de tourner sur les 30 du palier 5 (vers la médaille d'or). Thèmes par ordre alphabétique.
+- DÉCIDÉ le 27/10 (aperçu : apercu-serie.html, PAS encore dans le jeu ; prochaine étape : bac à sable puis jeu) :
+  ANIMATION DU JOUR DE SÉRIE = mélange C + A : fond sombre, petites flammes qui montent, roulette RAPIDE de numéros au hasard
+  (jusqu'à 2 × la série, min 99) qui ralentit et s'arrête sur la série, « 🔥 jours de série d'affilée ! », puis la semaine
+  L→D (jours joués cochés, case du jour qui s'allume avec la flamme), bouton Continuer ; une fois par jour, fin de la 1re
+  partie qui compte. Chiffre qui rétrécit à 4 chiffres. Son (réglage `sound`) : tic-tic qui ralentit + « Embrasement »
+  (souffle + cloches) ; les TROMPETTES seulement pour les caps (7, 30, 50, 100, 200, 365, puis chaque 100).
+  MASCOTTE « Kulti » (cerveau du logo avec yeux / bouche, 7 humeurs) : parle dans les bulles d'explication (bouche qui bouge
+  pendant que le texte s'écrit) ; remplace le grand dessin des écrans de fin (content / fier / déçu + cœur brisé 💔 qui tombe
+  à côté quand le niveau est raté) ; inquiet dans la fenêtre « série en danger » ; se présente au 1er lancement. Logo inchangé.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?
