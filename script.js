@@ -6236,7 +6236,7 @@ function endTraining() {
     const dropLine = earnPracticeDrop();
     setEnd({
         emoji: up ? '🏅' : '🎯',
-        title: up ? `🎉 Palier ${tier} débloqué !` : masterNow ? '🏆 Palier 5 réussi !' : `Entraînement · ${theme}`,
+        title: up ? `Palier ${tier} débloqué !` : masterNow ? 'Palier 5 réussi !' : `Entraînement · ${theme}`,
         text,
         stats: [statXp(), statAccuracy(), statTime()],
         extra: [rewardSummary(), dropLine].filter(Boolean).join('\n'),
@@ -6426,7 +6426,7 @@ function renderTraining() {
             line.textContent = `${pr.totalMastered} / ${pr.total} maîtrisées`;
             const master = masterCard(theme);
             const reward = el('span', 'train-master');
-            reward.textContent = master && state.data.cards[master.id] ? '🏆 Carte Maître obtenue' : '🏆 Palier 5 réussi : carte Maître';
+            reward.textContent = master && state.data.cards[master.id] ? '🏆 Carte Maître obtenue' : '🏆 Carte Maître à gagner au palier 5';
             tile.append(label, bar, line, reward);
             if (pr.blockedToday) {
                 const today = el('span', 'train-today');

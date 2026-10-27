@@ -910,6 +910,14 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .end p  { margin: 0; max-width: 40ch; color: var(--muted); font-weight: 600; font-size: 1.1rem; }
 .end-emoji { font-size: 5rem; line-height: 1; }
 .end .actions { width: 100%; max-width: 340px; margin-top: 12px; }
+/* Téléphone (2026-10-27) : écran de fin un peu plus serré, pour que les boutons tiennent sans faire défiler */
+@media (max-width: 600px) {
+    .end { gap: 10px; padding: 12px 0; }
+    .end-emoji { font-size: 3.8rem; }
+    .end h2 { font-size: 1.65rem; }
+    .end p { font-size: 1rem; }
+    .end .actions { margin-top: 6px; }
+}
 
 /* ============================================================
    POPUP DE DÉMARRAGE DE NIVEAU
