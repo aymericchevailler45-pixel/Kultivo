@@ -117,8 +117,42 @@
     @keyframes load { to { width: 100%; } }
     .tip { max-width: 240px; padding: 10px 12px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); font-weight: 700; font-size: .85rem; color: var(--muted); }
     .tip b { color: var(--ink); }
+    /* Quête dans Défis, comme la ligne des missions, qui se déroule */
+    .mrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 12px 14px; border: 2px solid var(--line); border-radius: 16px;
+        background: var(--surface); color: var(--ink); font: inherit; font-weight: 800; font-size: .88rem; cursor: pointer; text-align: left; }
+    .mrow .arr { color: var(--muted); transition: transform .2s; }
+    .mrow.open .arr { transform: rotate(90deg); }
+    .mdrop { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
+    .mdrop.open { max-height: 260px; }
+    .mdrop .p-card { margin-top: 8px; }
+    .goalmini { padding: 10px 12px; border-radius: 16px; background: var(--surface); border: 2px solid var(--line); font-weight: 800; font-size: .85rem; }
+    .goalmini .bar { height: 8px; margin-top: 6px; border-radius: 6px; background: var(--line); overflow: hidden; }
+    .goalmini .bar i { display: block; width: 60%; height: 100%; background: #ff9600; }
+    /* Liste d'idées de défis */
+    .ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+    .idea { padding: 12px; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); }
+    .idea b { display: block; font-weight: 900; }
+    .idea p { margin: 4px 0 0; color: var(--muted); font-weight: 700; font-size: .85rem; }
+    .idea .tag { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: var(--bg); font-size: .72rem; font-weight: 900; color: var(--muted); }
+    /* Écran de chargement v2 */
+    .sp2 { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; text-align: center;
+        background: linear-gradient(170deg, #5fd40a, #46a302); color: #fff; overflow: hidden; }
+    .sp2 .ico { position: absolute; font-size: 1.7rem; opacity: .18; filter: grayscale(.2); animation: drift var(--d) ease-in-out infinite alternate; }
+    @keyframes drift { from { transform: translateY(0) rotate(-8deg); } to { transform: translateY(-14px) rotate(8deg); } }
+    .sp2 .logo2 { position: relative; z-index: 1; width: 120px; height: 120px; border-radius: 32px; box-shadow: 0 8px 0 rgba(0,0,0,.18), 0 0 0 6px rgba(255,255,255,.25); animation: hop .9s cubic-bezier(.3,1.6,.5,1) both; }
+    .sp2 .name { position: relative; z-index: 1; font-size: 2.3rem; font-weight: 900; animation: pop .5s .4s both; }
+    .sp2 .track { position: relative; z-index: 1; width: 74%; height: 12px; margin-top: 34px; border-radius: 8px; background: rgba(255,255,255,.3); }
+    .sp2 .track i { display: block; height: 100%; width: 0; border-radius: 8px; background: #fff; animation: load 2s ease-out .3s forwards; }
+    .sp2 .rider { position: absolute; bottom: 6px; left: 0; width: 48px; height: 48px; margin-left: -24px; animation: ride 2s ease-out .3s forwards; }
+    @keyframes ride { from { left: 0; } to { left: 100%; } }
+    .sp2 .rider .kulti { animation: hop2 .45s ease-in-out infinite; }
+    .sp2 .kbig { position: relative; z-index: 1; width: 130px; height: 130px; animation: hop .9s cubic-bezier(.3,1.6,.5,1) both; }
+    .sp2 .brand { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; animation: pop .5s .4s both; }
+    .sp2 .brand img { width: 46px; height: 46px; border-radius: 13px; box-shadow: 0 0 0 3px rgba(255,255,255,.35); }
+    .sp2 .brand span { font-size: 2.2rem; font-weight: 900; }
+    .sp2 .track.plain { margin-top: 18px; }
 </style>
-<script src="kulti.js?v=amis1"></script>
+<script src="kulti.js?v=amis2"></script>
 </head>
 <body>
 <div class="wrap">
@@ -143,18 +177,6 @@
                 <p class="cap">Liste d'amis : la pastille 🔥🤝 = jours d'affilée ensemble. Contour orange = vous avez déjà joué tous les deux aujourd'hui.</p>
             </div>
             <div>
-                <div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Profil de Léa</b></div>
-                    <div class="p-body"><div class="p-card">
-                        <div class="duo"><div class="av" style="background:hsl(150 60% 45%)">M</div><span class="flame">🔥</span><div class="av" style="background:hsl(330 70% 55%)">L</div></div>
-                        <div class="big">12 jours ensemble</div>
-                        <div class="small">Votre record : 18 jours</div>
-                        <div class="days"><span class="both">L</span><span class="both">M</span><span class="both">M</span><span class="both">J</span><span class="both">V</span><span class="one" title="Léa n'a pas encore joué">S</span><span>D</span></div>
-                        <p class="small" style="margin-top:8px">Aujourd'hui : tu as joué ✓ · Léa pas encore… Encourage-la !</p>
-                    </div></div>
-                </div>
-                <p class="cap">Dans le profil de l'ami : la flamme à deux, les jours de la semaine (orange = vous deux, clair = un seul des deux).</p>
-            </div>
-            <div>
                 <div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b></div>
                     <div class="p-body" style="align-items:center;text-align:center;padding-top:40px">
                         <div style="width:90px;height:90px" id="endK"></div>
@@ -163,54 +185,33 @@
                         <button class="p-btn" type="button" style="margin-top:10px">Continuer</button>
                     </div>
                 </div>
-                <p class="cap">Écran de fin : une ligne quand ta partie fait gagner un jour (l'ami avait déjà joué aujourd'hui). Pas de fenêtre en plus.</p>
+                <p class="cap">Écran de fin : une seule petite ligne, avec les autres lignes du bas (pièces, missions…), seulement le jour où ta partie fait gagner un jour (l'ami avait déjà joué). Elle ne fait pas défiler l'écran : s'il y a déjà beaucoup de lignes, elle ne s'affiche pas (la pastille de la liste suffit).</p>
             </div>
         </div>
-        <p class="where">Les gels de série protègent aussi la série d'amis (un gel utilisé par l'un des deux sauve le jour). Pas de récompense en pièces : c'est pour la motivation. Badges possibles plus tard (30, 100 jours ensemble).</p>
+        <p class="where">Rien dans le profil de l'ami (déjà assez chargé). Les gels de série protègent aussi la série d'amis. Pas de récompense en pièces : c'est pour la motivation.</p>
     </article>
 
     <!-- 2 · Quête d'amis -->
     <article class="card">
-        <h2>2 · Quête d'amis 🎯🤝</h2>
-        <p class="lead">« Avec quel ami ? » : trois façons possibles. Choisis celle que tu préfères :</p>
-        <div class="btns" id="qBtns">
-            <button class="btn btn-ghost is-on" type="button" data-q="bande">A · Avec toute la bande</button>
-            <button class="btn btn-ghost" type="button" data-q="choix">B · Avec l'ami que je choisis</button>
-            <button class="btn btn-ghost" type="button" data-q="tirage">C · Un ami tiré au sort</button>
-        </div>
-        <div class="phone" style="margin-top:12px;height:430px"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Classement</b></div><div class="p-body" id="qBody"></div></div>
-        <div class="choice" id="qText"></div>
-    </article>
-
-    <!-- 5 · Réactions de duel -->
-    <article class="card">
-        <h2>5 · Réactions dans les duels 😂</h2>
-        <p class="lead">Les DEUX peuvent réagir, une fois chacun par duel, quand ils voient le résultat :</p>
-        <div class="row2">
-            <div>
-                <div class="phone" id="dPhone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Duel</b></div>
-                    <div class="p-body" style="padding-top:30px;align-items:center;text-align:center">
-                        <div style="width:80px;height:80px" id="dK"></div>
-                        <div class="score">7 – 5</div>
-                        <p class="small" style="margin:0">Tu gagnes contre Léa ! +20 🪙</p>
-                        <p style="margin:12px 0 4px;font-weight:900">Une réaction pour Léa ?</p>
-                        <div class="reacts" id="dReacts"><button type="button">😂</button><button type="button">😱</button><button type="button">👏</button><button type="button">🔥</button><button type="button">😤</button></div>
-                        <p class="small" id="dSent" style="min-height:1.2em"></p>
-                    </div>
-                </div>
-                <p class="cap">Celui qui répond au duel : sur son écran de fin. Celui qui l'a lancé : en ouvrant le résultat (dans Classement → Duels).</p>
-            </div>
-            <div>
-                <div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Duels avec Léa</b></div>
-                    <div class="p-body"><div class="p-card"><h4>⚔️ Historique</h4>
-                        <div class="frow"><span>🏆</span><div class="nm">7 – 5<small>hier</small></div><span class="fs">Léa : 😱</span></div>
-                        <div class="frow"><span>😅</span><div class="nm">4 – 6<small>lundi</small></div><span class="fs">Léa : 😂 · Toi : 😤</span></div>
-                        <div class="frow"><span>🤝</span><div class="nm">5 – 5<small>samedi</small></div><span class="fs off">—</span></div>
+        <h2>2 · Quête d'amis 🎯🤝 : un ami au hasard</h2>
+        <p class="lead">Chaque lundi, le jeu te met en duo avec un de tes amis, au hasard. Dans Défis, sous l'objectif du jour, une ligne comme les missions de la semaine ; on la touche, elle se déroule.</p>
+        <div class="phone" style="height:470px"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Défis</b></div>
+            <div class="p-body">
+                <div class="goalmini">🎯 Objectif du jour · 90 / 150 XP<div class="bar"><i></i></div></div>
+                <button class="mrow" type="button">🗓️ Missions de la semaine<span class="arr">✓✓○ ›</span></button>
+                <div>
+                    <button class="mrow" type="button" id="qRow">🤝 Quête avec Max · 640 / 1 500 XP<span class="arr">›</span></button>
+                    <div class="mdrop" id="qDrop"><div class="p-card">
+                        <div class="qhead"><span>640 / 1 500 XP à vous deux</span><span>⏳ 3 j</span></div>
+                        <div class="qbar"><i style="width:25%;background:#58cc02"></i><i style="width:18%;background:#3b82f6"></i></div>
+                        <div class="qlegend"><span style="--c:#58cc02">Toi 380</span><span style="--c:#3b82f6">Max 260</span></div>
+                        <div class="chest">🎁 Réussie : un coffre de 2 cartes pour chacun</div>
                     </div></div>
                 </div>
-                <p class="cap">Les réactions restent dans l'historique des duels, à côté du score. Une pastille rouge quand l'ami a réagi.</p>
             </div>
         </div>
+        <div class="choice"><b>Pour que vous soyez VRAIMENT ensemble (Max voit aussi « Quête avec toi »)</b><p>Le tirage se fait en ligne (Supabase) : le premier de vous deux qui ouvre Défis le lundi est mis avec un ami encore libre ; l'autre retrouve le même duo. Il faudra lancer un petit fichier SQL (comme pour les duels). Si tous tes amis sont déjà pris : tu rejoins un duo à trois (pas de joueur seul). Sans ami : la ligne n'apparaît pas.</p></div>
+        <div class="choice"><b>Plus tard : les « bandes »</b><p>Des groupes d'amis (clans) avec un nom, et des défis de bande. Noté pour plus tard.</p></div>
     </article>
 
     <!-- 6 · Défi de Kulti -->
@@ -230,24 +231,38 @@
         </div>
         <div class="btns"><button class="btn btn-ghost" type="button" id="kReset">↺ Recommencer l'exemple</button></div>
         <p class="where">Le thème change chaque jour : de préférence un thème où tu te trompes souvent (pour progresser), sinon au hasard. Questions déjà vues de ton niveau. Pas d'XP de ligue (pour rester juste), seulement les pièces. Ça donne une raison de toucher Kulti chaque jour.</p>
+        <p class="sub" style="margin:14px 0 8px;font-weight:900">D'autres idées de défis (un différent chaque jour, tiré parmi ceux-là) :</p>
+        <div class="ideas">
+            <div class="idea"><b>🎯 3 d'un thème, sans faute</b><p>Celui de l'exemple : 3 questions d'un thème où tu as du mal.</p><span class="tag">facile</span></div>
+            <div class="idea"><b>⏱️ Contre la montre</b><p>5 bonnes réponses en 45 secondes.</p><span class="tag">rapide</span></div>
+            <div class="idea"><b>✅❌ Vrai ou faux de Kulti</b><p>Kulti affirme 5 choses (« Le Nil est plus long que l'Amazone ») : vrai ou faux ? 4 justes sur 5.</p><span class="tag">nouveau format</span></div>
+            <div class="idea"><b>🤔 Kulti s'est trompé !</b><p>Il donne une mauvaise réponse à une question : à toi de taper la bonne.</p><span class="tag">rigolo</span></div>
+            <div class="idea"><b>🔁 La revanche</b><p>3 questions que tu as ratées ces derniers jours : prouve que tu les sais maintenant.</p><span class="tag">révision</span></div>
+            <div class="idea"><b>🚩 Drapeau mystère</b><p>Un drapeau difficile, un seul essai.</p><span class="tag">1 question</span></div>
+            <div class="idea"><b>🧩 Rébus du jour</b><p>Un rébus, avec un indice si tu bloques (mais moins de pièces).</p><span class="tag">1 question</span></div>
+            <div class="idea"><b>🧠 La question pointue</b><p>Une question très dure (difficulté 4,5 et plus) : +30 🪙 si tu trouves.</p><span class="tag">difficile</span></div>
+            <div class="idea"><b>⏳ Frise express</b><p>4 cartes à ranger dans l'ordre, du premier coup.</p><span class="tag">frise</span></div>
+            <div class="idea"><b>🔗 Paires express</b><p>4 paires à associer sans erreur.</p><span class="tag">paires</span></div>
+            <div class="idea"><b>📅 Devine l'année</b><p>« En quelle année… ? » : juste à 5 ans près = gagné.</p><span class="tag">nouveau format</span></div>
+        </div>
     </article>
 
     <!-- 8 · Écran de chargement -->
     <article class="card">
         <h2>8 · Écran de chargement</h2>
-        <p class="lead">Au lancement du jeu, pendant qu'il se prépare (environ 1 seconde, jamais plus que nécessaire). Deux styles :</p>
+        <p class="lead">Ton choix : le A (fond vert, qui saute) avec la barre de chargement du B. En plus : les icônes des thèmes en transparence dans le fond, et le vrai logo avec le K. Deux façons de mettre le logo ET Kulti :</p>
         <div class="row2">
             <div>
-                <div class="phone"><div class="splash spA" id="spA"><div class="kk" id="spAk"></div><div class="name">Kultivo</div><div class="dots"><i></i><i></i><i></i></div></div></div>
-                <p class="cap">A · Fond vert, Kulti surgit en sautant puis rebondit doucement, « Kultivo », trois points qui sautillent.</p>
+                <div class="phone"><div class="sp2" id="spV1"><img class="logo2" src="icons/logo.svg" alt=""><div class="name">Kultivo</div><div class="track"><i></i><div class="rider" id="spRider"></div></div></div></div>
+                <p class="cap">1 · Le LOGO au milieu (avec le K), et Kulti qui court sur la barre de chargement pendant qu'elle se remplit.</p>
             </div>
             <div>
-                <div class="phone"><div class="splash spB" id="spB"><img src="icons/logo.svg" alt=""><div class="name">Kultivo</div><div class="lbar"><i></i></div><div class="tip"><b>Le savais-tu ?</b><br>Le miel ne se périme jamais.</div></div></div>
-                <p class="cap">B · Fond clair, le logo, une barre de chargement et une anecdote différente à chaque lancement.</p>
+                <div class="phone"><div class="sp2" id="spV2"><div class="kbig" id="spKbig"></div><div class="brand"><img src="icons/logo.svg" alt=""><span>Kultivo</span></div><div class="track plain"><i></i></div></div></div>
+                <p class="cap">2 · Kulti en grand au milieu, et le logo à côté du nom « Kultivo », comme une signature.</p>
             </div>
         </div>
         <div class="btns"><button class="btn btn-ghost" type="button" id="spReplay">▶ Rejouer</button></div>
-        <p class="where">Sur téléphone, Android montre déjà une seconde son propre écran (le logo sur fond vert, réglé dans l'appli installée) ; le nôtre prend le relais juste après, sans saut : fond vert pour A, donc le passage est invisible. Si le jeu est déjà prêt, il ne dure que le temps de l'animation d'entrée (0,8 s).</p>
+        <p class="where">Android montre déjà une seconde son propre écran vert avec le logo au lancement : le nôtre prend le relais sur le même vert, sans saut. La barre suit le vrai chargement (questions, sauvegarde) ; s'il est déjà prêt, l'écran ne dure que le temps de l'animation (≈ 1 s).</p>
     </article>
 </div>
 
@@ -255,52 +270,10 @@
 const $ = id => document.getElementById(id);
 const K = (face, cls = 'kulti-blink kulti-float') => kultiEl(face, cls);
 $('endK').append(K('fier'));
-$('dK').append(K('fier'));
 
-// ---------- 2 · Quête : trois variantes ----------
-const Q = {
-    bande: {
-        html: `<div class="p-card"><h4>🎯 Quête de la bande</h4><div class="qhead"><span>2 140 / 3 000 XP</span><span>⏳ 3 j</span></div>
-            <div class="qbar"><i style="width:28%;background:#58cc02"></i><i style="width:22%;background:#ec4899"></i><i style="width:14%;background:#3b82f6"></i><i style="width:7%;background:#f59e0b"></i></div>
-            <div class="qlegend"><span style="--c:#58cc02">Toi 840</span><span style="--c:#ec4899">Léa 660</span><span style="--c:#3b82f6">Max 420</span><span style="--c:#f59e0b">Sam 220</span></div>
-            <div class="chest">🎁 Réussie : un coffre de 2 cartes pour chacun</div></div>`,
-        text: `<b>A · Avec toute la bande (mon conseil)</b><p>Un seul objectif pour toi et TOUS tes amis, la même semaine. Il grandit avec le nombre d'amis (≈ 750 XP par personne). Chacun voit sa part dans la barre. Pas besoin de choisir ni d'attendre une réponse ; personne n'est laissé de côté. Il faut au moins 1 ami.</p>`
-    },
-    choix: {
-        html: `<div class="p-card"><h4>🎯 Quête avec Léa</h4><div class="qhead"><span>980 / 1 500 XP</span><span>⏳ 3 j</span></div>
-            <div class="qbar"><i style="width:38%;background:#58cc02"></i><i style="width:27%;background:#ec4899"></i></div>
-            <div class="qlegend"><span style="--c:#58cc02">Toi 570</span><span style="--c:#ec4899">Léa 410</span></div>
-            <div class="chest">🎁 Réussie : un coffre de 2 cartes pour chacun</div></div>
-            <div class="p-card"><h4>Semaine prochaine</h4><p class="small" style="text-align:left;margin:0 0 8px">Choisis ton partenaire avant lundi :</p><button class="p-btn" type="button">Choisir un ami</button></div>`,
-        text: `<b>B · Avec l'ami que je choisis</b><p>Chaque semaine, tu invites UN ami ; il doit accepter. Plus personnel, mais il faut attendre sa réponse, et quelqu'un peut se retrouver sans partenaire (ou être demandé par plusieurs).</p>`
-    },
-    tirage: {
-        html: `<div class="p-card"><h4>🎯 Quête avec Max</h4><p class="small" style="text-align:left;margin:0 0 6px">Le hasard vous a réunis cette semaine !</p><div class="qhead"><span>640 / 1 500 XP</span><span>⏳ 3 j</span></div>
-            <div class="qbar"><i style="width:25%;background:#58cc02"></i><i style="width:18%;background:#3b82f6"></i></div>
-            <div class="qlegend"><span style="--c:#58cc02">Toi 380</span><span style="--c:#3b82f6">Max 260</span></div>
-            <div class="chest">🎁 Réussie : un coffre de 2 cartes pour chacun</div></div>`,
-        text: `<b>C · Un ami tiré au sort chaque lundi</b><p>Le jeu forme des duos tout seul. Surprise chaque semaine, mais : avec un nombre impair d'amis, quelqu'un est seul (ou dans un trio) ; et on peut tomber sur un ami qui ne joue plus.</p>`
-    }
-};
-function showQ(k) {
-    $('qBody').innerHTML = Q[k].html;
-    $('qText').innerHTML = Q[k].text;
-    document.querySelectorAll('[data-q]').forEach(b => b.classList.toggle('is-on', b.dataset.q === k));
-}
-document.querySelectorAll('[data-q]').forEach(b => b.onclick = () => showQ(b.dataset.q));
-showQ('bande');
-
-// ---------- 5 · Réactions ----------
-document.querySelectorAll('#dReacts button').forEach(b => b.onclick = () => {
-    if (document.querySelector('#dReacts .sent')) return;   // une seule réaction par duel
-    b.classList.add('sent');
-    const f = document.createElement('span');
-    f.className = 'flyemo'; f.textContent = b.textContent;
-    const r = b.getBoundingClientRect(), p = $('dPhone').getBoundingClientRect();
-    f.style.left = `${r.left - p.left + 4}px`; f.style.top = `${r.top - p.top - 10}px`;
-    $('dPhone').append(f); setTimeout(() => f.remove(), 1300);
-    $('dSent').textContent = `${b.textContent} envoyé à Léa !`;
-});
+// ---------- 2 · Quête : la ligne se déroule ----------
+$('qRow').onclick = () => { $('qRow').classList.toggle('open'); $('qDrop').classList.toggle('open'); };
+setTimeout(() => $('qRow').click(), 800);
 
 // ---------- 6 · Défi de Kulti ----------
 function resetK() {
@@ -333,16 +306,22 @@ $('kReset').onclick = resetK;
 resetK();
 
 // ---------- 8 · Écran de chargement ----------
+const ICONS = ['📜', '🔬', '🌍', '💡', '🎼', '📚', '🎲', '🎬', '🧀', '⚽', '🎨', '🗣️', '⚡', '🚩', '🏛️'];
+function sprinkle(sp) {
+    sp.querySelectorAll('.ico').forEach(i => i.remove());
+    const spots = [[8, 6], [70, 4], [38, 12], [84, 22], [4, 30], [60, 30], [20, 46], [86, 48], [6, 64], [74, 66], [40, 78], [88, 84], [14, 88], [58, 92], [30, 62]];
+    spots.forEach(([x, y], i) => {
+        const s = document.createElement('span');
+        s.className = 'ico'; s.textContent = ICONS[i % ICONS.length];
+        s.style.left = `${x}%`; s.style.top = `${y}%`;
+        s.style.setProperty('--d', `${2.5 + (i % 4) * 0.6}s`);
+        sp.prepend(s);
+    });
+}
 function playSplash() {
-    const a = $('spAk');
-    a.replaceChildren(K('content', 'kulti-blink'));
-    a.classList.remove('again'); void a.offsetWidth;
-    a.style.animation = 'none'; void a.offsetWidth; a.style.animation = '';
-    setTimeout(() => a.classList.add('again'), 900);
-    const spA = $('spA'), spB = $('spB');
-    [spA, spB].forEach(s => { const c = s.cloneNode(true); s.replaceWith(c); });
-    $('spAk').replaceChildren(K('content', 'kulti-blink'));
-    setTimeout(() => $('spAk').classList.add('again'), 900);
+    ['spV1', 'spV2'].forEach(id => { const s = $(id), c = s.cloneNode(true); s.replaceWith(c); sprinkle(c); });
+    $('spRider').replaceChildren(K('content', 'kulti-blink'));
+    $('spKbig').replaceChildren(K('content', 'kulti-blink'));
 }
 $('spReplay').onclick = playSplash;
 playSplash();

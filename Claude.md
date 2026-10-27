@@ -42,6 +42,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
      « stories » ; bouton violet sous la barre d'XP du Profil `#monthRecapBtn`, pastille tant que pas vu puis 7 jours ;
      Records → « 📅 Mes récaps du mois »). 1er récap : octobre, le 1er novembre. Bac à sable : options pour tout voir.
   8. Kulti personnalisable (accessoires) : pour plus tard.
+- EN DISCUSSION le 27/10 (aperçu : apercu-amis.html) : série d'amis (pastille 🔥🤝 dans la liste d'amis + ligne sur l'écran
+  de fin SEULEMENT si ça tient sans défiler ; RIEN dans le profil de l'ami) ; quête d'amis = UN AMI AU HASARD chaque lundi
+  (tirage en ligne pour que les deux voient le même duo, trio si besoin), ligne dans Défis comme les missions qui se DÉROULE ;
+  défi de Kulti (idées de formats proposées) ; écran de chargement = A (vert) + barre de chargement + icônes des thèmes en
+  transparence + logo avec le K (2 versions). Refusé / plus tard : réactions de duel (oublié), cadeaux entre amis (plus tard),
+  badges secrets (pas fan), « bandes » / clans avec défis de bande (plus tard).
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?
