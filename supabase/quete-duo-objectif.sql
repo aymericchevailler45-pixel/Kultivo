@@ -1,19 +1,25 @@
 -- ============================================================
--- KULTIVO — QUÊTE EN DUO : OBJECTIF ADAPTÉ AUX JOUEURS (2026-10-27) — à lancer UNE fois après quete-duo.sql
+-- KULTIVO — QUÊTE EN DUO : OBJECTIF ADAPTÉ AUX JOUEURS (2026-10-27) — à lancer après quete-duo.sql
+-- (peut être relancé sans risque : il remplace les fonctions)
 -- Cette semaine (lundi 26/10/2026) : 5 000 XP pour tout le monde.
--- Ensuite : objectif = (XP de la semaine d'avant du joueur + celle de son partenaire) × 1,1, arrondi à 500,
--- entre 1 500 et 10 000. Un joueur sans semaine d'avant compte pour 1 000. Avec Kulti : le double de ses XP à lui.
+-- Ensuite : objectif = moyenne des 3 dernières semaines du joueur + celle de son partenaire, arrondi à 500,
+-- entre 1 500 et 10 000. Seules les semaines jouées comptent dans la moyenne ; aucune semaine jouée = 1 000.
+-- Avec Kulti : le double de la moyenne du joueur. Les XP par semaine viennent du résumé envoyé par le jeu
+-- (scores.summary -> 'weeks' : { "lundi": xp } des 3 semaines finies).
 -- ============================================================
 
 update public.quests set goal = 5000 where week = date '2026-10-26';
 
--- XP de la semaine d'avant d'un joueur (1 000 s'il n'a pas joué / pas de score)
+-- Moyenne des 3 dernières semaines jouées d'un joueur (1 000 s'il n'en a aucune)
 create or replace function public.quest_level(p_user uuid, p_week date) returns int
 language sql stable security definer set search_path = public as $$
-  select coalesce(nullif(greatest(
-    (select case when s.prev_week = p_week - 7 then s.prev_week_xp
-                 when s.week = p_week - 7 then s.week_xp else 0 end
-     from public.scores s where s.user_id = p_user), 0), 0), 1000);
+  select coalesce(round(avg(v))::int, 1000)
+  from (
+    select (s.summary -> 'weeks' ->> to_char(p_week - k, 'YYYY-MM-DD'))::int as v
+    from public.scores s, unnest(array[7, 14, 21]) as k
+    where s.user_id = p_user
+  ) w
+  where v > 0;
 $$;
 
 create or replace function public.quest_goal(p_a uuid, p_b uuid, p_week date) returns int
@@ -23,7 +29,7 @@ declare
 begin
   if p_week = date '2026-10-26' then return 5000; end if;
   total := public.quest_level(p_a, p_week) + case when p_b is null then public.quest_level(p_a, p_week) else public.quest_level(p_b, p_week) end;
-  return least(10000, greatest(1500, round(total * 1.1 / 500.0)::int * 500));
+  return least(10000, greatest(1500, round(total / 500.0)::int * 500));
 end $$;
 
 -- Tirage : même règle qu'avant, l'objectif est calculé quand le duo est formé

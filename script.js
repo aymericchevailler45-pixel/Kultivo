@@ -2055,34 +2055,20 @@ async function questLoad(force = false) {
     if (!$('questModal').hidden) openQuestModal();
 }
 
-/** Ligne de la quête sur 2 lignes : « 🤝 Quête en duo avec Léa » puis petite barre + « 1 128 / 5 000 XP » (›) */
+/** Ligne compacte sous les missions : 🤝 Quête entre duo · 640 / 5 000 (›) */
 function renderQuestRow() {
     const row = $('questRow');
     if (!row) return;
-    const main = el('span', 'quest-row-main');
-    const title = el('span', 'missions-label');
-    const sub = el('span', 'quest-row-sub');
+    const label = el('span', 'missions-label');
+    label.textContent = '🤝 Quête entre duo';
+    const right = el('span', 'missions-dots');
     row.hidden = false;
-    title.textContent = '🤝 Quête en duo';
-    if (!cloudUser) sub.textContent = 'Crée un compte pour jouer à deux';
-    else if (!league?.pseudo) sub.textContent = 'Choisis un pseudo pour jouer à deux';
+    if (!cloudUser) right.textContent = 'Crée un compte';
+    else if (!league?.pseudo) right.textContent = 'Choisis un pseudo';
     else if (!questReady || !quest) { row.hidden = true; return; }
-    else if (quest.waiting) sub.textContent = '🔎 Recherche d’un partenaire…';
-    else {
-        title.textContent = `🤝 Quête en duo avec ${quest.kulti ? 'Kulti' : quest.partner.pseudo}`;
-        const bar = el('span', 'quest-row-bar');
-        const pct = x => `${Math.min(100, (x / quest.goal) * 100)}%`;
-        const f1 = el('i', 'is-me');
-        f1.style.width = pct(quest.mine);
-        const f2 = el('i', 'is-mate');
-        f2.style.width = pct(Math.min(quest.theirs, Math.max(0, quest.goal - quest.mine)));
-        bar.append(f1, f2);
-        const txt = el('span', 'quest-row-num');
-        txt.textContent = questReached(quest) ? '✓ Réussie !' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)} XP`;
-        sub.append(bar, txt);
-    }
-    main.append(title, sub);
-    row.replaceChildren(main, rowArrow());
+    else if (quest.waiting) right.textContent = '🔎 Recherche…';
+    else right.textContent = questReached(quest) ? '✓ Réussie' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)}`;
+    row.replaceChildren(label, right, rowArrow());
     const n = questsToClaim();
     if (n > 0) row.setAttribute('data-notif', n);
     else row.removeAttribute('data-notif');
@@ -7917,7 +7903,8 @@ function profileSummary() {
         badges: Object.keys(d.badges).filter(id => d.badges[id]),
         cards: Object.keys(d.cards).filter(id => d.cards[id]),
         shiny: Object.keys(d.shinyCards || {}).filter(id => (d.cards[id] || 0) >= SHINY_AT),   // cartes brillantes
-        daily: d.daily[todayKey()] ? { day: todayKey(), grid: d.daily[todayKey()].grid } : null   // défi du jour, question par question
+        daily: d.daily[todayKey()] ? { day: todayKey(), grid: d.daily[todayKey()].grid } : null,   // défi du jour, question par question
+        weeks: Object.fromEntries([7, 14, 21].map(k => [shiftDays(weekStart(), -k), weekXp(shiftDays(weekStart(), -k))]))   // objectif de la quête en duo
     };
 }
 
