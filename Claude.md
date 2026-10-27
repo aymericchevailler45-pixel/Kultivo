@@ -48,6 +48,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   défi de Kulti (idées de formats proposées) ; écran de chargement = A (vert) + barre de chargement + icônes des thèmes en
   transparence + logo avec le K (2 versions). Refusé / plus tard : réactions de duel (oublié), cadeaux entre amis (plus tard),
   badges secrets (pas fan), « bandes » / clans avec défis de bande (plus tard).
+  RÉPONSES du 27/10 : série d'amis OK ; défi de Kulti OK (un format différent chaque jour parmi les idées) ; écran de
+  chargement version 1 FAIT (`#splash` en tête de index.html, kulti.js chargé juste après, `hideSplash` à la fin de `init`,
+  manifest background_color vert) ; Kulti du parcours : plus de clin d'œil pendant les événements (le chapeau reste).
+  Quête : PAS de trio ; chacun doit avoir un partenaire : 1) ami libre actif la semaine d'avant, 2) sinon un autre joueur
+  seul tiré au hasard (« Ajouter en ami » en fin de semaine), 3) personne en 24 h → Kulti partenaire ; compte obligatoire.
+  Proposé sur l'aperçu, en attente de son accord.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?
