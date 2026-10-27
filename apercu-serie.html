@@ -104,6 +104,44 @@
     .banner { position: absolute; left: 10px; right: 10px; top: 52px; padding: 9px 12px; border-radius: 12px; background: #fff4e3; border: 2px solid #ffc46b; color: #b35900; font-weight: 900; font-size: .9rem; text-align: center; transform: translateY(-20px); opacity: 0; transition: .35s; }
     .banner.on { transform: none; opacity: 1; }
 
+    /* E · Mélange C + A (2026-10-27, choix de l'utilisateur) */
+    .ovE { background: radial-gradient(circle at 50% 45%, #3a1d00, #120a02); color: #fff; overflow: hidden; gap: 10px; }
+    .ovE .digits { position: relative; z-index: 1; font-size: 6rem; font-weight: 900; height: 6.6rem; line-height: 6.6rem; overflow: hidden; color: #ffb238;
+        text-shadow: 0 0 24px rgba(255,150,0,.8); -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent); mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent); }
+    .ovE .digits .roll { display: flex; flex-direction: column; }
+    .ovE .digits .roll span { height: 6.6rem; }
+    .ovE .digits.stop { animation: stopPop .5s cubic-bezier(.2,1.8,.4,1); -webkit-mask-image: none; mask-image: none; }
+    @keyframes stopPop { 40% { transform: scale(1.25); text-shadow: 0 0 40px rgba(255,180,0,1); } }
+    .ovE .lbl { position: relative; z-index: 1; font-size: 1.15rem; font-weight: 900; opacity: 0; transform: translateY(8px); transition: .35s; }
+    .ovE .lbl.on { opacity: 1; transform: none; }
+    .ovE .week { position: relative; z-index: 1; margin-top: 8px; opacity: 0; transform: translateY(10px); transition: .35s; }
+    .ovE .week.on { opacity: 1; transform: none; }
+    .ovE .day { color: rgba(255,255,255,.75); }
+    .ovE .dot { background: rgba(255,255,255,.12); color: #fff; }
+    .ovE .dot.done { background: #ff9600; }
+    .ovE .dot.today { position: relative; background: rgba(255,255,255,.12); box-shadow: 0 0 0 2px rgba(255,150,0,.6) inset; }
+    .ovE .dot.today img { opacity: 0; }
+    .ovE .dot.today.lit { animation: litE .55s cubic-bezier(.2,1.6,.4,1) forwards; }
+    .ovE .dot.today.lit img { animation: fadeIn .2s .1s forwards; }
+    .ovE .dot.today.lit .spark { animation: spark .6s ease-out .1s forwards; }
+    @keyframes litE { 0% { transform: scale(.6); } 100% { transform: scale(1.2); background: #ff9600; box-shadow: 0 0 0 5px rgba(255,150,0,.3); } }
+    .ovE .rise { position: absolute; bottom: -40px; width: 28px; height: 28px; opacity: 0; }
+    .ovE.on .rise { animation: rise var(--d) ease-in var(--w) infinite; }
+    .ovE .cont .p-btn { background: #ff9600; box-shadow: 0 4px 0 #c46a00; position: relative; z-index: 1; }
+
+    /* Humeurs en situation */
+    .p-end .mas-end { width: 110px; height: 110px; }
+    .p-end .mas-end svg { width: 100%; height: 100%; }
+    .p-btn.ghost { background: var(--surface); color: var(--muted); box-shadow: none; border: 2px solid var(--line); }
+    .dlg { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(10,16,32,.55); }
+    .dlg .box { width: 100%; padding: 16px; border-radius: 20px; background: var(--surface); text-align: center; }
+    .dlg .box .mas-end { width: 90px; height: 90px; margin: 0 auto 4px; }
+    .dlg h3 { margin: 0 0 6px; font-size: 1.15rem; font-weight: 900; }
+    .dlg p { margin: 0 0 12px; color: var(--muted); font-weight: 700; font-size: .88rem; }
+    .moods { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; }
+    .moods > div { flex: none; }
+    .moods .cap { margin: 6px 0 0; max-width: 300px; font-weight: 800; font-size: .82rem; color: var(--muted); }
+
     /* ---------- Mascotte ---------- */
     .brain { display: block; overflow: visible; }
     .faces { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
@@ -149,6 +187,25 @@
         <p class="lead">Aperçu à juger : rien n'est encore dans le jeu. Chaque animation se rejoue avec son bouton.</p>
         <p class="lead" style="margin:0">Quand ? Une seule fois par jour, à la fin de la PREMIÈRE partie qui compte pour la série (niveau, révision, entraînement…), juste avant l'écran de fin.</p>
     </article>
+
+    <article class="card" style="border-color:#ff9600">
+        <h2>✅ Ton mélange C + A</h2>
+        <p class="lead">La roulette tourne vite avec plein de numéros au hasard, ralentit et s'arrête sur le bon chiffre ; puis le message, et la semaine : les jours déjà joués s'allument, puis celui d'aujourd'hui avec la flamme.</p>
+        <div class="moods">
+            <div>
+                <div class="phone"><div class="ov ovE" id="ovE1"><div class="digits"><div class="roll"></div></div><div class="lbl">🔥 jours de série d’affilée !</div><div class="week"></div><div class="cont"><button class="p-btn" type="button">Continuer</button></div></div></div>
+                <p class="cap">Série de 7 jours, aujourd'hui dimanche.</p>
+            </div>
+            <div>
+                <div class="phone"><div class="ov ovE" id="ovE2"><div class="digits"><div class="roll"></div></div><div class="lbl">🔥 jours de série d’affilée !</div><div class="week"></div><div class="cont"><button class="p-btn" type="button">Continuer</button></div></div></div>
+                <p class="cap">Série de 42 jours, aujourd'hui mercredi (jeudi à dimanche encore à venir).</p>
+            </div>
+        </div>
+        <button class="btn btn-ghost replay" type="button" data-spin="1">▶ Rejouer</button>
+        <p class="sub">Pour un seul jour (la toute première fois) : « 🔥 jour de série ! », au singulier.</p>
+    </article>
+
+    <h2 style="margin:8px 4px 0;font-size:1rem;color:var(--muted)">Les 4 premières idées (pour comparer)</h2>
 
     <article class="card">
         <h2>A · La flamme en grand</h2>
@@ -213,7 +270,12 @@
         <h2>🧠 Le cerveau de Kultivo, avec un visage</h2>
         <p class="lead">Le même cerveau que le logo, avec des yeux et une bouche. Il cligne des yeux. Plusieurs humeurs selon le moment :</p>
         <div class="faces" id="faces"></div>
-        <p class="sub">Un nom ? Idées : Kulti, Neuro, Cervo, Brainy… (à toi de choisir, ou pas de nom)</p>
+    </article>
+
+    <article class="card">
+        <h2>🎭 Où mettre ses humeurs</h2>
+        <p class="lead">Idée : il REMPLACE le grand dessin qu'il y a déjà (🎉, 😢, 🏅…). Rien de plus à l'écran, pas de fenêtre en plus.</p>
+        <div class="moods" id="moodsSit"></div>
     </article>
 
     <article class="card">
@@ -366,8 +428,64 @@ const LOGOS = [
 const logos = document.getElementById('logos');
 for (const [label, svg] of LOGOS) logos.insertAdjacentHTML('beforeend', `<div class="logo-c"><svg viewBox="0 0 512 512">${svg}</svg><div class="mini"><svg viewBox="0 0 512 512">${svg}</svg><svg viewBox="0 0 512 512">${svg}</svg></div><span>${label}</span></div>`);
 
+// ---------- E : mélange C + A ----------
+const DAYS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+function weekE(todayIdx) {
+    return DAYS.map((d, i) => `<div class="day"><div class="dot ${i < todayIdx ? 'done' : i === todayIdx ? 'today' : ''}">${i < todayIdx ? '✓' : ''}${i === todayIdx ? `<img src="emoji/1f525.svg" alt="">` + Array.from({ length: 8 }, (_, k) => `<i class="spark" style="--a:${k * 45}deg"></i>`).join('') : ''}</div>${d}</div>`).join('');
+}
+for (const id of ['ovE1', 'ovE2']) {
+    const ov = document.getElementById(id);
+    for (let i = 0; i < 14; i++) {
+        const img = document.createElement('img');
+        img.className = 'rise'; img.src = 'emoji/1f525.svg'; img.alt = '';
+        img.style.left = `${5 + Math.random() * 85}%`;
+        img.style.setProperty('--d', `${2 + Math.random() * 2}s`);
+        img.style.setProperty('--w', `${Math.random() * 2}s`);
+        ov.prepend(img);
+    }
+}
+function spin(id, target, todayIdx) {
+    const ov = document.getElementById(id);
+    const digits = ov.querySelector('.digits'), roll = ov.querySelector('.roll'), lbl = ov.querySelector('.lbl'), week = ov.querySelector('.week');
+    digits.classList.remove('stop'); lbl.classList.remove('on'); week.classList.remove('on');
+    week.innerHTML = weekE(todayIdx);
+    // Plein de numéros au hasard, puis le bon (jamais le bon juste avant, pour qu'on sente l'arrêt)
+    const max = Math.max(99, target * 2);
+    const nums = Array.from({ length: 34 }, () => { let n; do n = 1 + Math.floor(Math.random() * max); while (n === target); return n; });
+    nums.push(target);
+    roll.innerHTML = nums.map(n => `<span>${n}</span>`).join('');
+    ov.classList.add('on');
+    const h = roll.firstElementChild.getBoundingClientRect().height;
+    roll.getAnimations().forEach(a => a.cancel());
+    roll.animate([{ transform: 'translateY(0)' }, { transform: `translateY(${-(nums.length - 1) * h}px)` }],
+        { duration: 2300, easing: 'cubic-bezier(.12,.8,.22,1)', fill: 'forwards' });
+    (ov._timers || []).forEach(clearTimeout);
+    ov._timers = [
+        setTimeout(() => digits.classList.add('stop'), 2300),
+        setTimeout(() => lbl.classList.add('on'), 2450),
+        setTimeout(() => week.classList.add('on'), 2750),
+        // les jours déjà joués d'abord (déjà orange), puis celui d'aujourd'hui s'allume
+        setTimeout(() => week.querySelector('.dot.today').classList.add('lit'), 3250)
+    ];
+}
+function spinAll() { spin('ovE1', 7, 6); spin('ovE2', 42, 2); }
+document.querySelector('[data-spin]').addEventListener('click', spinAll);
+
+// ---------- Humeurs en situation ----------
+const SIT = [
+    ['content', '<h3>Niveau terminé !</h3><p>+36 XP · 6 bonnes réponses sur 7</p>', 'Continuer', 'Niveau réussi : content (à la place du 🎉).'],
+    ['fier', '<h3>Sans faute !</h3><p>+46 XP · bonus sans faute</p>', 'Continuer', 'Sans faute, palier gagné, record du sprint : fier (à la place du 🏅).'],
+    ['triste', '<h3>Niveau raté</h3><p>Plus de cœurs… Tu y étais presque !</p>', 'Réessayer', 'Niveau raté : déçu (à la place du 💔).'],
+];
+const sit = document.getElementById('moodsSit');
+for (const [face, html, btn, cap] of SIT) {
+    sit.insertAdjacentHTML('beforeend', `<div><div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">7</span></div><div class="p-end"><div class="mas-end">${brainSVG(face, 'blink float')}</div>${html}<button class="p-btn" type="button" style="margin-top:14px">${btn}</button><button class="p-btn ghost" type="button">Retour au parcours</button></div></div><p class="cap">${cap}</p></div>`);
+}
+sit.insertAdjacentHTML('beforeend', `<div><div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div><div class="dlg"><div class="box"><div class="mas-end">${brainSVG('inquiet', 'blink float')}</div><h3>🔥 Ta série est en danger !</h3><p>Tu as manqué hier. Un gel de série la sauve : 200 🪙.</p><button class="p-btn" type="button">Acheter · 200 🪙</button><button class="p-btn ghost" type="button" style="margin-top:8px">Non merci</button></div></div></div><p class="cap">Série en danger (la fenêtre existe déjà à l'ouverture du jeu) : inquiet, au-dessus du titre.</p></div>`);
+sit.insertAdjacentHTML('beforeend', `<div><div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b></div><div class="p-end" style="padding-top:60px"><div class="mas-end">${brainSVG('clin', 'blink float')}</div><h3>Bienvenue sur Kultivo !</h3><p>Moi, c'est Kulti. Je t'accompagne pour cultiver ta culture G.</p><button class="p-btn" type="button" style="margin-top:14px">C'est parti</button></div></div><p class="cap">Premier lancement : il se présente (clin d'œil).</p></div>`);
+
 // Démarrage : tout joue une fois
-setTimeout(() => { play('A'); play('B'); play('C'); play('D'); talk(); }, 500);
+setTimeout(() => { spinAll(); play('A'); play('B'); play('C'); play('D'); talk(); }, 500);
 </script>
 </body>
 </html>
