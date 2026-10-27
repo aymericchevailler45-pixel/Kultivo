@@ -2708,8 +2708,13 @@ const KULTI_DEFIS = {
     revanche: { icon: '🔁', coins: 15, text: () => '3 questions que tu as ratées : prouve que tu les sais maintenant, sans faute.' },
     flag: { icon: '🚩', coins: 10, text: () => 'Un drapeau difficile, un seul essai.' },
     rebus: { icon: '🧩', coins: 10, text: () => 'Un rébus, un seul essai.' },
-    pointue: { icon: '🧠', coins: 30, text: () => 'Une question très dure, un seul essai.' }
+    pointue: { icon: '🧠', coins: 20, text: () => 'Une question très dure, un seul essai.' },
+    tf: { icon: '✅', coins: 15, need: 4, text: () => '5 affirmations : vrai ou faux ? 4 bonnes réponses sur 5 pour gagner.' },
+    annee: { icon: '📅', coins: 15, need: 2, text: () => '3 dates à trouver, à 5 ans près. 2 justes sur 3 pour gagner.' },
+    frise: { icon: '⏳', coins: 15, text: () => '4 cartes à remettre dans l’ordre, du premier coup.' },
+    paires: { icon: '🔗', coins: 10, text: () => '4 paires à associer, sans aucune erreur.' }
 };
+const kultiNeed = (kind, total) => KULTI_DEFIS[kind].need || total;   // bonnes réponses nécessaires
 
 /** Questions « de mon niveau » : déjà vues, sinon celles des niveaux déjà ouverts. */
 function kultiPool() {
@@ -2744,7 +2749,7 @@ function kultiToday() {
     const rnd = mulberry32(hashString(`kulti-${todayKey()}-${d.playerSeed}${BAC ? Date.now() : ''}`));
     const pool = kultiPool();
     const all = allQuestionsPool();
-    const kinds = ['theme', 'chrono', 'wrong', 'pointue', 'flag', 'rebus'];
+    const kinds = ['theme', 'chrono', 'wrong', 'pointue', 'flag', 'rebus', 'tf', 'annee', 'frise', 'paires'];
     if (kultiMissed().length >= 3) kinds.push('revanche', 'revanche');
     if (!all.some(q => q.flag)) kinds.splice(kinds.indexOf('flag'), 1);
     if (!all.some(q => q.rebus)) kinds.splice(kinds.indexOf('rebus'), 1);
@@ -2767,6 +2772,22 @@ function kultiItems(k) {
     if (k.kind === 'revanche') return shuffle(kultiMissed()).slice(0, 3).map(q => ({ q, review: true }));
     if (k.kind === 'flag') return weakFirst(all.filter(q => q.flag && q.d >= 3)).slice(0, 1).map(one);
     if (k.kind === 'rebus') return shuffle(all.filter(q => q.rebus)).slice(0, 1).map(one);
+    if (k.kind === 'tf') return shuffle(KULTI_TF.map((t, i) => [t, i])).slice(0, 5).map(([[text, truth, exp], i]) => one({
+        id: `ktf-${i}`, theme: '🧠 Kulti', d: 2, q: text, a: [truth ? 'Vrai' : 'Faux'], exp, tf: true, kulti: true }));
+    if (k.kind === 'annee') return shuffle(KULTI_YEARS.map((t, i) => [t, i])).slice(0, 3).map(([[text, year, exp], i]) => one({
+        id: `kyr-${i}`, theme: '🧠 Kulti', d: 2.5, q: text, a: [String(year)], exp, year, kulti: true }));
+    if (k.kind === 'frise') {   // une frise de 4 cartes, à la difficulté du joueur
+        const t = pairTarget(Math.min(state.data.unlocked, MAX_LEVEL));
+        const fams = ORDER_FAMILIES.filter(f => f.items.filter(it => Math.abs(it[3] - t) <= 1.2).length >= 4);
+        const family = shuffle(fams.length ? fams : ORDER_FAMILIES)[0];
+        return [{ family, items: pickOrderItems(family, t, 4, (state.data.unlocked - 1) / Math.max(1, MAX_LEVEL - 1)), placed: [], checked: false }];
+    }
+    if (k.kind === 'paires') {   // une grille de 4 paires
+        const t = pairTarget(Math.min(state.data.unlocked, MAX_LEVEL));
+        const fams = PAIR_FAMILIES.filter(f => f.pairs.filter(p => Math.abs(p[2] - t) <= 1.2).length >= PAIRS_PER_GRID);
+        const family = shuffle(fams.length ? fams : PAIR_FAMILIES)[0];
+        return [{ family, pairs: pickPairs(family, t).slice(0, 4), matched: new Set(), failed: new Set(), order: null }];
+    }
     if (k.kind === 'pointue') return weakFirst(all.filter(q => q.d >= 4.5 && !isMastered(q.id))).slice(0, 1).map(one);
     // « Kulti s'est trompé » : sa mauvaise réponse = la réponse d'une autre question qui commence pareil
     // (« Quel pays… », « Qui a… », « En quelle année… ») : une réponse du même genre, jamais absurde
@@ -2807,7 +2828,10 @@ async function openKultiDefi() {
 function endKulti() {
     const k = kultiToday();
     const def = KULTI_DEFIS[k.kind];
-    const won = k.kind === 'chrono' ? state.correct >= KULTI_CHRONO_GOAL : state.correct === state.total;
+    const won = k.kind === 'chrono' ? state.correct >= KULTI_CHRONO_GOAL
+        : k.kind === 'frise' ? state.orderTotal > 0 && state.orderRight === state.orderTotal
+        : k.kind === 'paires' ? state.errors === 0 && state.pairGrids[0]?.matched.size === state.pairGrids[0]?.pairs.length
+        : state.correct >= kultiNeed(k.kind, state.total);
     k.done = true;
     k.won = won;
     if (won) {
@@ -2824,7 +2848,7 @@ function endKulti() {
         text: won ? `+${def.coins} 🪙 · Reviens demain pour un nouveau défi.`
             : k.kind === 'chrono' ? `${state.correct} / ${KULTI_CHRONO_GOAL} bonnes réponses. Retente demain : j’aurai un nouveau défi pour toi !`
             : 'Retente demain : j’aurai un nouveau défi pour toi !',
-        extra: k.kind === 'chrono' ? `⏱️ ${Math.min(seconds, KULTI_CHRONO_SECONDS)} s` : state.grid.join(''),
+        extra: k.kind === 'chrono' ? `⏱️ ${Math.min(seconds, KULTI_CHRONO_SECONDS)} s` : ['frise', 'paires'].includes(k.kind) ? '' : state.grid.join(''),
         primary: 'Retour au parcours',
         primaryClass: 'btn-green',
         onPrimary: returnToMap
@@ -4712,14 +4736,15 @@ function startSession(requestedMode, level = 0) {
     state.replay = ['level', 'pairs', 'order', 'challenge'].includes(mode) && !!state.data.done[level];
     state.replayCounts = !state.replay || replayCountsForMissions(level);
     state.replayLevel = level;
-    const pairsMode = mode === 'pairs';
-    const orderMode = mode === 'order';
+    if (mode === 'kulti') state.kultiKind = kultiToday().kind;
+    const pairsMode = mode === 'pairs' || (mode === 'kulti' && state.kultiKind === 'paires');
+    const orderMode = mode === 'order' || (mode === 'kulti' && state.kultiKind === 'frise');
 
     let items;
     if (pairsMode) {
-        items = buildPairGrids(level);   // ici, items = les grilles
+        items = mode === 'kulti' ? state.kultiItems || [] : buildPairGrids(level);   // ici, items = les grilles
     } else if (orderMode) {
-        items = buildOrderRounds(level); // ici, items = les frises
+        items = mode === 'kulti' ? state.kultiItems || [] : buildOrderRounds(level); // ici, items = les frises
     } else if (mode === 'daily') {
         if (state.data.daily[todayKey()]) return;   // déjà fait aujourd'hui
         items = dailyQuestions(todayKey()).map(q => ({ q, review: false }));
@@ -4736,7 +4761,6 @@ function startSession(requestedMode, level = 0) {
         items = duelQuestions(state.duel.seed).map(q => ({ q, review: false }));
     } else if (mode === 'kulti') {
         items = state.kultiItems || [];
-        state.kultiKind = kultiToday().kind;
     } else if (mode === 'event') {
         const ev = currentEvent();
         if (!ev) return;
@@ -4759,7 +4783,7 @@ function startSession(requestedMode, level = 0) {
 
     const hasHearts = mode === 'level' || mode === 'challenge' || pairsMode || orderMode;
     // Défis et niveaux Ordre : 2 cœurs (une frise fausse coûte un cœur : on peut en rater une seule)
-    const heartsMax = mode === 'challenge' || orderMode ? CHALLENGE_HEARTS : HEARTS_MAX;
+    const heartsMax = mode === 'kulti' ? 1 : mode === 'challenge' || orderMode ? CHALLENGE_HEARTS : HEARTS_MAX;
     Object.assign(state, {
         mode, level,
         returnTo: mode === 'duel' ? 'league' : ['daily', 'sprint', 'training', 'event'].includes(mode) ? 'challenges' : 'map',
@@ -4899,7 +4923,7 @@ function showPairsGrid() {
     $('pairsTag').textContent = f.theme;
     $('pairsLeftHead').textContent = f.left;
     $('pairsRightHead').textContent = f.right;
-    $('pairsStep').textContent = `Grille ${state.pairIndex + 1}/${state.pairGrids.length}`;
+    $('pairsStep').textContent = state.mode === 'kulti' ? '🔗 Défi de Kulti' : `Grille ${state.pairIndex + 1}/${state.pairGrids.length}`;
     $('pairsTitle').textContent = f.title;
 
     const make = (side, i, text) => {
@@ -4979,7 +5003,7 @@ function pickPair(btn) {
         grid.matched.add(i);
         if (!grid.failed.has(i)) recordPair(grid.pairs[i].key, true);   // réussie sans erreur avant
         state.done++;
-        addXp(state.replay ? replayXp(1) : XP_PAIR);
+        if (state.mode !== 'kulti') addXp(state.replay ? replayXp(1) : XP_PAIR);   // défi de Kulti : pas d'XP
         playSound(grid.matched.size === grid.pairs.length ? 'good' : 'pair');
         [sel, btn].forEach(b => { b.classList.add('is-ok'); b.disabled = true; });
         setTimeout(() => [sel, btn].forEach(b => { b.classList.remove('is-ok'); b.classList.add('is-matched'); }), 450);
@@ -5245,6 +5269,8 @@ function showCard() {
     const ev = state.mode === 'event' ? EVENTS.find(e => e.id === state.eventId) : null;
     tag.textContent = ev ? `${ev.icon} ${ev.name}`
                     : state.mode === 'duel' ? `⚔️ Duel · ${state.done + 1}/${state.total}`
+                    : state.mode === 'kulti' && state.kultiKind === 'tf' ? `✅ Vrai ou faux · ${state.done + 1}/${state.total}`
+                    : state.mode === 'kulti' && state.kultiKind === 'annee' ? `📅 Devine l’année · ${state.done + 1}/${state.total}`
                     : state.mode === 'kulti' ? (state.kultiKind === 'chrono' ? `⏱️ Défi de Kulti · ${state.correct}/${KULTI_CHRONO_GOAL}` : `🎯 Défi de Kulti${state.total > 1 ? ` · ${state.done + 1}/${state.total}` : ''}`)
                     : state.mode === 'daily' ? `Défi du jour · ${state.done + 1}/${state.total}`
                     : state.mode === 'sprint' ? 'Sprint'
@@ -5299,13 +5325,20 @@ function showCard() {
     input.classList.remove('is-ok', 'is-wrong');
 
     $('answerActions').hidden = false;
+    const tf = !!item.q.tf;   // défi de Kulti « Vrai ou faux » : deux boutons au lieu de la zone de réponse
+    input.hidden = tf;
+    $('tfActions').hidden = !tf;
+    if (tf) $('answerActions').hidden = true;
+    input.inputMode = item.q.year !== undefined ? 'numeric' : 'text';
+    input.placeholder = item.q.year !== undefined ? 'Année' : 'Ta réponse';
     $('pairsView').hidden = true;
     $('orderView').hidden = true;
     $('cardView').hidden = false;
     $('endView').hidden = true;
     hideFeedback();
     updateProgress();
-    input.focus();
+    if (!tf) input.focus();
+    else input.blur();
     // Le clavier reste souvent ouvert d'une question à l'autre : on ajuste AVANT que l'écran soit redessiné
     // (calcul immédiat, pas après coup), puis la question apparaît en fondu rapide.
     updateKeyboardMode();   // nouvelle question : mode compact AVANT l'affichage (taille clavier connue)
@@ -5327,7 +5360,12 @@ function verify(skipped = false) {
     if (!skipped) {
         const answer = typedAnswer();
         if (!input.value.trim()) { shake(gridTyping() ? $('hintList') : input); return; }
-        verdict = judge(answer, state.current.q.a, state.current.q.q);
+        const year = state.current.q.year;
+        if (year !== undefined) {   // « Devine l'année » : juste à 5 ans près
+            const n = parseInt(answer.replace(/[^0-9]/g, ''), 10);
+            state.yearGap = Math.abs(n - year);
+            verdict = Number.isNaN(n) ? 'wrong' : state.yearGap === 0 ? 'exact' : state.yearGap <= 5 ? 'near' : 'wrong';
+        } else verdict = judge(answer, state.current.q.a, state.current.q.q);
         state.lastTyped = answer.trim();
     }
 
@@ -5340,6 +5378,7 @@ function verify(skipped = false) {
     input.classList.add(ok ? 'is-ok' : 'is-wrong');
     if (gridTyping()) { state.gridFinal = input.value; input.classList.remove('is-grid-typing'); input.value = state.lastTyped; renderHintGrid(); }
     $('answerActions').hidden = true;
+    $('tfActions').hidden = true;
     $('hintPanel').hidden = true;
     // Combo (bonnes réponses du 1er coup, sans indice, d'affilée) et « ⚡ Éclair ! » (juste en moins de 3 s)
     const clean = ok && !skipped && !state.failedIds.has(state.current.q.id) && state.hintUsed.size === 0;
@@ -5376,6 +5415,7 @@ function showFeedback(verdict, skipped) {
     $('feedbackTitle').textContent =
         verdict === 'exact' ? 'Bonne réponse !' :
         verdict === 'typo'  ? "Accepté, mais attention à l'orthographe" :
+        verdict === 'near'  ? `À ${plural(state.yearGap, 'an', 'ans')} près : c’est bon !` :
         skipped             ? 'Voici la réponse' :
                               'Pas tout à fait';
     $('feedbackAnswer').textContent = `Réponse : ${q.a[0]}`;
@@ -5428,13 +5468,14 @@ function commit(ok) {
 
     // Défi de Kulti : un seul essai par question, sans XP ; sans faute (fin à la 1re erreur), ou 5 bonnes avant la fin du chrono
     if (mode === 'kulti') {
-        recordResult(id, ok);
+        if (!item.q.kulti) recordResult(id, ok);   // vrai / faux et années : pas dans les révisions
         if (ok) state.correct++;
         state.grid.push(ok ? '🟩' : '🟥');
         state.done++;
         hideFeedback();
         const chrono = state.kultiKind === 'chrono';
-        if (chrono ? state.correct >= KULTI_CHRONO_GOAL || !state.queue.length : !ok || !state.queue.length) endSession(true);
+        const lost = state.done - state.correct > state.total - kultiNeed(state.kultiKind, state.total);   // plus moyen de gagner
+        if (chrono ? state.correct >= KULTI_CHRONO_GOAL || !state.queue.length : lost || !state.queue.length) endSession(true);
         else showCard();
         return;
     }
@@ -5669,6 +5710,7 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
 
 function endSession(win) {
     stopTimer();
+    if (state.mode === 'kulti') win = true;   // défi de Kulti : toujours l'écran du défi (réussi ou raté)
     queueStats(win ? 'won' : 'lost');
     state.phase = 'over';
     $('cardView').hidden = true;
@@ -5918,7 +5960,7 @@ function showOrderRound() {
     $('orderView').hidden = false;
     hideFeedback();
     $('orderTag').textContent = f.theme;
-    $('orderStep').textContent = `Frise ${state.orderIndex + 1}/${state.orderRounds.length}`;
+    $('orderStep').textContent = state.mode === 'kulti' ? '⏳ Défi de Kulti' : `Frise ${state.orderIndex + 1}/${state.orderRounds.length}`;
     $('orderTitle').textContent = `${f.title} : ${f.prompt.charAt(0).toLowerCase()}${f.prompt.slice(1)}`;
     $('orderHelp').textContent = 'Touche les cartes dans l’ordre. Reste appuyé sur une carte placée pour la déplacer, touche-la pour la retirer.';
     $('orderTopLabel').textContent = `⬆ ${f.ends[0]}`;
@@ -6020,7 +6062,7 @@ function payNudge() {
 function renderNudgeBtn(kind) {
     const btn = $(kind === 'order' ? 'orderNudge' : 'pairsNudge');
     const target = kind === 'order' ? state.orderRounds?.[state.orderIndex] : state.pairGrids?.[state.pairIndex];
-    if (!target) { btn.hidden = true; return; }
+    if (!target || state.mode === 'kulti') { btn.hidden = true; return; }   // pas de coup de pouce dans le défi de Kulti
     btn.hidden = false;
     const used = !!target.nudged;
     btn.classList.toggle('is-picking', state.nudgePick === kind);
@@ -6187,7 +6229,7 @@ function checkOrder(round) {
     state.orderRight += right;
     state.orderTotal += round.items.length;
     const paid = right - (round.nudged ? 1 : 0);   // la carte donnée par le coup de pouce ne rapporte rien
-    if (paid > 0) addXp(state.replay ? replayXp(paid) : XP_ORDER_CARD * paid);
+    if (paid > 0 && state.mode !== 'kulti') addXp(state.replay ? replayXp(paid) : XP_ORDER_CARD * paid);
     if (right === round.items.length) {
         playSound('good');
     } else {
@@ -9701,6 +9743,9 @@ function bindEvents() {
     window.addEventListener('resize', updateEventBanner);
     $('missionsRow').addEventListener('click', openMissionsModal);
     $('closeMissionsBtn').addEventListener('click', () => { $('missionsModal').hidden = true; });
+    for (const [btnId, word] of [['tfTrue', 'Vrai'], ['tfFalse', 'Faux']]) {
+        $(btnId).addEventListener('click', () => { if (state.phase !== 'answering') return; $('userInput').value = word; verify(); });
+    }
     $('questRow').addEventListener('click', questClick);
     $('closeQuestBtn').addEventListener('click', () => { $('questModal').hidden = true; });
     $('questModal').addEventListener('click', e => { if (e.target === $('questModal')) $('questModal').hidden = true; });

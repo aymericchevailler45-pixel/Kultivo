@@ -76,8 +76,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
     joueur ; formats : 3 d'un thème faible sans faute 15 🪙, chrono 5 bonnes en 45 s 15 🪙, « Kulti s'est trompé » 10 🪙
     (fausse réponse = réponse d'une question qui commence pareil), revanche (3 ratées) 15 🪙, drapeau 10, rébus 10,
     question pointue (d ≥ 4,5) 30 🪙. Un seul essai, fin à la 1re erreur, ni XP ni gouttes ni cœurs ni indices,
-    ne compte PAS pour la série. Bac à sable : nouveau défi à chaque tap. Restent à faire (contenu à écrire) : Vrai ou faux,
-    Devine l'année, frise express, paires express.
+    ne compte PAS pour la série. Bac à sable : nouveau défi à chaque tap. Question très dure : 20 🪙 (pas 30, choix de l'utilisateur).
+    Ajoutés le 27/10 : Vrai ou faux (5 affirmations, 4 justes, boutons `#tfActions`, 15 🪙) et Devine l'année (3 dates à
+    5 ans près, 2 justes, verdict `near`, 15 🪙) avec un contenu PROPRE à Kulti dans `kulti-defis.js` (`KULTI_TF` 88,
+    `KULTI_YEARS` 75, pas dans les révisions) ; frise express (4 cartes, 1 cœur, 15 🪙) et paires express (4 paires sans
+    erreur, 10 🪙) dans les écrans habituels. Les autres formats reprennent les questions du jeu.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

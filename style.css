@@ -3483,3 +3483,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .friend-streak.is-today { border-color: #ff9600; }
 .friend-streak.is-off { background: var(--line); color: var(--muted); }
 .friend-streak + .friend-go { margin-left: 6px; }
+/* Défi de Kulti « Vrai ou faux » : deux grands boutons */
+.tf-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tf-actions[hidden] { display: none; }
+.tf-actions .btn { font-size: 1.15rem; padding: 16px 10px; }
