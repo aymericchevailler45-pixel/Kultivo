@@ -65,6 +65,19 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Écran de chargement : styles dans index.html, feuilles de style chargées APRÈS lui (sinon écran blanc avant).
   Écran blanc + logo d'Android au lancement = celui de l'appli installée (ancien background_color) : passe au vert
   quand Chrome met l'appli à jour (quelques jours), impossible à supprimer.
+- FAIT le 27/10 (suite, demandé par l'utilisateur) :
+  · Partage du récap du mois ouvert à TOUS (`RECAP_SHARE = true`).
+  · Série d'amis 🔥🤝 : `myPlayedDays` (60 jours, gels compris) envoyés dans `summary.days`, `friendStreak(f)` = jours
+    d'affilée où les deux ont joué ; pastille dans la liste d'amis (`.friend-streak`, contour orange = les deux ont joué
+    aujourd'hui, « 🤝 0 » grisé) ; ligne « 🔥🤝 Série avec X : N jours ! » sur l'écran de fin (`friendStreakLine`) à la
+    1re partie du jour, série ≥ 2, seulement s'il y a ≤ 1 autre ligne et retirée si l'écran devait défiler. Rien dans le profil.
+  · Défi de Kulti (`KULTI_DEFIS`, `kultiToday`, `kultiItems`, `openKultiDefi`, `endKulti`, mode `kulti`, sauvegarde `kulti`) :
+    pastille orange « ! » sur Kulti (parcours, dès le niveau 3, Kulti réveillé tant que pas fait) ; 1 par jour, tiré par
+    joueur ; formats : 3 d'un thème faible sans faute 15 🪙, chrono 5 bonnes en 45 s 15 🪙, « Kulti s'est trompé » 10 🪙
+    (fausse réponse = réponse d'une question qui commence pareil), revanche (3 ratées) 15 🪙, drapeau 10, rébus 10,
+    question pointue (d ≥ 4,5) 30 🪙. Un seul essai, fin à la 1re erreur, ni XP ni gouttes ni cœurs ni indices,
+    ne compte PAS pour la série. Bac à sable : nouveau défi à chaque tap. Restent à faire (contenu à écrire) : Vrai ou faux,
+    Devine l'année, frise express, paires express.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

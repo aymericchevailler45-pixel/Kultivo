@@ -661,6 +661,7 @@ function defaultData() {
         coinBonus: 0,                    // pièces encore dues pour les niveaux sautés par le placement
         missions: null,                  // missions de la semaine : { week, progress, claimed, chest }
         questDone: {},                   // quête en duo : lundi -> coffre ouvert
+        kulti: null,                     // défi de Kulti du jour : { day, kind, theme, done, won }
         events: {},                      // événements : id -> { found, won, pumpkins: { day, got } }
         avatarExtra: [],                 // dessins d'avatar gagnés pendant les événements (gardés pour toujours)
         avatarNew: false,                // un dessin vient d'être gagné : pastille sur l'avatar du Profil
@@ -2638,7 +2639,8 @@ function placeMapKulti() {
     const stop = document.querySelector(`.stop[data-level="${n}"]`);
     if (!stop) return;
     const right = (parseFloat(stop.style.getPropertyValue('--x')) || 0) <= 0;   // niveau à gauche (ou au milieu) → Kulti à droite
-    const sleepy = kultiSleepy();
+    const pending = kultiPending();   // défi du jour pas encore fait : Kulti est réveillé, avec une pastille
+    const sleepy = kultiSleepy() && !pending;
     const ev = currentEvent();
     const btn = el('button', `map-kulti ${right ? 'is-right' : 'is-left'}`);
     btn.type = 'button';
@@ -2649,7 +2651,12 @@ function placeMapKulti() {
         z.innerHTML = '<i>Z</i><i>z</i><i>z</i>';
         btn.append(z);
     }
-    btn.addEventListener('click', e => { e.stopPropagation(); kultiSay(btn); });
+    if (pending) {
+        const b = el('span', 'map-kulti-badge');
+        b.textContent = '!';
+        btn.append(b);
+    }
+    btn.addEventListener('click', e => { e.stopPropagation(); if (kultiPending() || BAC) openKultiDefi(); else kultiSay(btn); });
     if (right) stop.classList.add('has-kulti-right');
     stop.append(btn);
 }
@@ -2686,6 +2693,176 @@ function kultiSay(btn) {
         Math.min(9000, Math.max(4000, 1500 + text.length * 50)));
 }
 let kultiSayTimer = null;
+
+/* ---------- Le défi de Kulti (2026-10-27, aperçu : apercu-amis.html) ----------
+   Une fois par jour, une pastille « ! » sur Kulti (parcours). Un tap : un mini-défi, différent selon les jours,
+   gratuit (ni goutte ni cœurs), un seul essai, des pièces si réussi (pas d'XP : la ligue reste juste).
+   Bac à sable : un nouveau défi à chaque fois qu'on le touche après l'avoir fait. */
+const KULTI_CHRONO_GOAL = 5;
+const KULTI_CHRONO_SECONDS = 45;
+const KULTI_FROM_LEVEL = 3;   // pas pendant les tout premiers niveaux
+const KULTI_DEFIS = {
+    theme: { icon: '🎯', coins: 15, text: k => `3 questions de ${k.theme}, sans faute.` },
+    chrono: { icon: '⏱️', coins: 15, text: () => `${KULTI_CHRONO_GOAL} bonnes réponses en ${KULTI_CHRONO_SECONDS} secondes.` },
+    wrong: { icon: '🤔', coins: 10, text: () => 'Je me suis trompé à une question… À toi de donner la bonne réponse !' },
+    revanche: { icon: '🔁', coins: 15, text: () => '3 questions que tu as ratées : prouve que tu les sais maintenant, sans faute.' },
+    flag: { icon: '🚩', coins: 10, text: () => 'Un drapeau difficile, un seul essai.' },
+    rebus: { icon: '🧩', coins: 10, text: () => 'Un rébus, un seul essai.' },
+    pointue: { icon: '🧠', coins: 30, text: () => 'Une question très dure, un seul essai.' }
+};
+
+/** Questions « de mon niveau » : déjà vues, sinon celles des niveaux déjà ouverts. */
+function kultiPool() {
+    const d = state.data;
+    const all = allQuestionsPool();
+    const seen = all.filter(q => d.stats[q.id]);
+    return seen.length >= 40 ? seen : all.filter(q => d.stats[q.id] || (q.id < 4000 && (q.niveau || 999) <= d.unlocked));
+}
+const kultiMissed = () => allQuestionsPool().filter(q => missCount(q.id) > 0 && streakOf(q.id) === 0 && !isLater(q.id));
+const kultiPlain = q => !q.photo && !q.flag && !q.rebus;
+
+/** Thème où l'on se trompe le plus (au moins 5 questions vues), sinon au hasard. */
+function kultiWeakTheme(rnd, pool) {
+    const by = {};
+    for (const q of pool) {
+        const s = state.data.stats[q.id];
+        if (!s || !kultiPlain(q)) continue;
+        const t = by[q.theme] || (by[q.theme] = { n: 0, miss: 0 });
+        t.n++;
+        t.miss += s.miss ? 1 : 0;
+    }
+    const weak = Object.entries(by).filter(([, t]) => t.n >= 5).sort((a, b) => b[1].miss / b[1].n - a[1].miss / a[1].n);
+    if (weak.length && rnd() < 0.7) return weak[Math.floor(rnd() * Math.min(3, weak.length))][0];
+    const themes = [...new Set(pool.filter(kultiPlain).map(q => q.theme))];
+    return themes[Math.floor(rnd() * themes.length)];
+}
+
+/** Le défi du jour de Kulti (tiré une fois par jour, propre à chaque joueur). */
+function kultiToday() {
+    const d = state.data;
+    if (d.kulti?.day === todayKey()) return d.kulti;
+    const rnd = mulberry32(hashString(`kulti-${todayKey()}-${d.playerSeed}${BAC ? Date.now() : ''}`));
+    const pool = kultiPool();
+    const all = allQuestionsPool();
+    const kinds = ['theme', 'chrono', 'wrong', 'pointue', 'flag', 'rebus'];
+    if (kultiMissed().length >= 3) kinds.push('revanche', 'revanche');
+    if (!all.some(q => q.flag)) kinds.splice(kinds.indexOf('flag'), 1);
+    if (!all.some(q => q.rebus)) kinds.splice(kinds.indexOf('rebus'), 1);
+    let kind = kinds[Math.floor(rnd() * kinds.length)];
+    if (kind === d.kulti?.kind) kind = kinds[(kinds.indexOf(kind) + 1) % kinds.length];   // pas deux jours pareils
+    d.kulti = { day: todayKey(), kind, theme: kind === 'theme' ? kultiWeakTheme(rnd, pool) : null, done: false, won: false };
+    saveData();
+    return d.kulti;
+}
+const kultiPending = () => state.data.unlocked >= KULTI_FROM_LEVEL && !kultiToday().done;
+
+/** Questions du défi. */
+function kultiItems(k) {
+    const pool = kultiPool();
+    const all = allQuestionsPool();
+    const weakFirst = list => shuffle(list).sort((a, b) => streakOf(a.id) - streakOf(b.id));
+    const one = q => ({ q, review: false });
+    if (k.kind === 'theme') return weakFirst(pool.filter(q => q.theme === k.theme && kultiPlain(q))).slice(0, 3).map(one);
+    if (k.kind === 'chrono') return shuffle(pool.filter(q => kultiPlain(q) && q.d <= 3)).slice(0, 40).map(one);
+    if (k.kind === 'revanche') return shuffle(kultiMissed()).slice(0, 3).map(q => ({ q, review: true }));
+    if (k.kind === 'flag') return weakFirst(all.filter(q => q.flag && q.d >= 3)).slice(0, 1).map(one);
+    if (k.kind === 'rebus') return shuffle(all.filter(q => q.rebus)).slice(0, 1).map(one);
+    if (k.kind === 'pointue') return weakFirst(all.filter(q => q.d >= 4.5 && !isMastered(q.id))).slice(0, 1).map(one);
+    // « Kulti s'est trompé » : sa mauvaise réponse = la réponse d'une autre question qui commence pareil
+    // (« Quel pays… », « Qui a… », « En quelle année… ») : une réponse du même genre, jamais absurde
+    const head = q => {
+        const w = q.q.toLowerCase().replace(/[’']/g, ' ').split(/\s+/);
+        return w.slice(0, ['dans', 'en', 'de', 'à', 'au', 'sur', 'par', 'pour', 'avec'].includes(w[0]) ? 3 : 2).join(' ');
+    };
+    const plain = all.filter(o => kultiPlain(o) && !/^(quel|quelle|quels|quelles) est\b/i.test(o.q));
+    for (const q of shuffle(pool.filter(kultiPlain))) {
+        const h = head(q);
+        if (/^((quel|quelle|quels|quelles) (est|sont)|comment .*|qu .*|que .*)$/.test(h)) continue;   // trop vague (« Quel est… »)
+        const same = plain.filter(o => o.id !== q.id && head(o) === h);
+        const decoy = shuffle(same.filter(o => o.theme === q.theme)).concat(shuffle(same))
+            .map(o => o.a[0]).find(a => a.length <= 30 && judge(a, q.a, q.q) === 'wrong');
+        if (decoy) return [{ q: { ...q, q: `J’ai répondu « ${decoy} »… c’est faux ! ${q.q}` }, review: false }];
+    }
+    return [];
+}
+
+async function openKultiDefi() {
+    if (BAC && kultiToday().done) state.data.kulti = null;   // bac à sable : un autre défi pour essayer tous les formats
+    const k = kultiToday();
+    const def = KULTI_DEFIS[k.kind];
+    const go = await askConfirm({
+        art: kultiEl('parle', 'kulti-blink kulti-float kulti-talking'),
+        title: '🎯 Le défi de Kulti',
+        text: `${def.icon} ${def.text(k)}\nRéussi : +${def.coins} 🪙. Gratuit, sans cœurs, un seul essai aujourd’hui !`,
+        yes: 'C’est parti !',
+        no: 'Plus tard'
+    });
+    if (!go) return;
+    state.kultiItems = kultiItems(k);
+    if (!state.kultiItems.length) { k.done = true; saveData(); placeMapKulti(); showToast('Kulti n’a pas trouvé de défi aujourd’hui. À demain !'); return; }
+    startSession('kulti');
+}
+
+/** Fin du défi : pièces si réussi, rien sinon. Un seul essai par jour. */
+function endKulti() {
+    const k = kultiToday();
+    const def = KULTI_DEFIS[k.kind];
+    const won = k.kind === 'chrono' ? state.correct >= KULTI_CHRONO_GOAL : state.correct === state.total;
+    k.done = true;
+    k.won = won;
+    if (won) {
+        state.data.coins += def.coins;
+        launchConfetti();
+    }
+    saveData();
+    renderHeader();
+    const seconds = Math.round((Date.now() - state.startedAt) / 1000);
+    setEnd({
+        emoji: won ? '🏆' : '🎯',
+        face: won ? 'fier' : 'triste',
+        title: won ? 'Défi relevé !' : 'Raté pour aujourd’hui',
+        text: won ? `+${def.coins} 🪙 · Reviens demain pour un nouveau défi.`
+            : k.kind === 'chrono' ? `${state.correct} / ${KULTI_CHRONO_GOAL} bonnes réponses. Retente demain : j’aurai un nouveau défi pour toi !`
+            : 'Retente demain : j’aurai un nouveau défi pour toi !',
+        extra: k.kind === 'chrono' ? `⏱️ ${Math.min(seconds, KULTI_CHRONO_SECONDS)} s` : state.grid.join(''),
+        primary: 'Retour au parcours',
+        primaryClass: 'btn-green',
+        onPrimary: returnToMap
+    });
+}
+
+/* ---------- Série d'amis 🔥🤝 (2026-10-27) ----------
+   Avec chaque ami : nombre de jours d'affilée où vous avez joué TOUS LES DEUX (gels de série compris).
+   Les jours joués de l'ami viennent de son résumé (`summary.days`, 60 derniers jours). */
+const FRIEND_DAYS = 60;
+function myPlayedDays() {
+    const d = state.data;
+    const out = [];
+    for (let i = 0; i < FRIEND_DAYS; i++) {
+        const k = shiftDays(todayKey(), -i);
+        if ((d.activeDays[k] || 0) > 0 || d.frozenDays[k]) out.push(k);
+    }
+    return out;
+}
+/** { n: jours d'affilée ensemble, today: déjà joué tous les deux aujourd'hui } ; null si l'ami a une vieille version. */
+function friendStreak(f) {
+    if (!Array.isArray(f.summary?.days)) return null;
+    const theirs = new Set(f.summary.days);
+    const mine = new Set(myPlayedDays());
+    const both = k => mine.has(k) && theirs.has(k);
+    const today = todayKey();
+    let k = both(today) ? today : shiftDays(today, -1);
+    let n = 0;
+    while (both(k) && n < FRIEND_DAYS) { n++; k = shiftDays(k, -1); }
+    return { n, today: both(today) };
+}
+/** Ligne de l'écran de fin, le jour où ma 1re partie fait gagner un jour à une série d'amis (la plus longue). */
+function friendStreakLine() {
+    if (!league?.friends?.length || state.dayXpStart > 0 || dayXpNow() <= 0) return '';
+    const best = league.friends.map(f => ({ f, s: friendStreak(f) }))
+        .filter(x => x.s?.today && x.s.n >= 2).sort((a, b) => b.s.n - a.s.n)[0];
+    return best ? `🔥🤝 Série avec ${best.f.pseudo} : ${best.s.n} jours !` : '';
+}
 
 /* ---------- 7 · Ton mois sur Kultivo (2026-10-27) ----------
    Le 1er du mois : récap du mois passé, en « stories ». Bouton violet dans l'en-tête du Profil (sous l'XP), pastille rouge
@@ -2867,7 +3044,7 @@ function closeRecap() {
 /* Partage du récap, façon Spotify Wrapped (2026-10-27, à essayer d'abord dans le bac à sable : `RECAP_SHARE`) :
    une image au format story (1080 × 1920) dessinée dans un canvas — logo, « Mon mois d'octobre », Kulti fier, 6 cases de
    chiffres (pas la « bête noire »), pseudo et lien du jeu — puis le menu de partage du téléphone (ou un téléchargement). */
-const RECAP_SHARE = BAC;
+const RECAP_SHARE = true;   // ouvert à tous le 27/10 (essayé dans le bac à sable)
 const GAME_URL = 'https://aymericchevailler45-pixel.github.io/Kultivo/';
 const loadImg = src => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; });
 async function drawRecapImage(m) {
@@ -4557,6 +4734,9 @@ function startSession(requestedMode, level = 0) {
     } else if (mode === 'duel') {
         if (!state.duel) return;
         items = duelQuestions(state.duel.seed).map(q => ({ q, review: false }));
+    } else if (mode === 'kulti') {
+        items = state.kultiItems || [];
+        state.kultiKind = kultiToday().kind;
     } else if (mode === 'event') {
         const ev = currentEvent();
         if (!ev) return;
@@ -4618,7 +4798,8 @@ function startSession(requestedMode, level = 0) {
     });
 
     $('hearts').hidden = !hasHearts;
-    $('timer').hidden = mode !== 'sprint';
+    const chrono = mode === 'kulti' && state.kultiKind === 'chrono';
+    $('timer').hidden = mode !== 'sprint' && !chrono;
     renderHearts();
     $('endView').hidden = true;
     showScreen('study');
@@ -4626,7 +4807,7 @@ function startSession(requestedMode, level = 0) {
     if (pairsMode) showPairsGrid();
     else if (orderMode) showOrderRound();
     else showCard();
-    if (mode === 'sprint') startTimer();
+    if (mode === 'sprint' || chrono) startTimer();
 }
 
 /* ---------- Niveaux Paires ---------- */
@@ -4960,9 +5141,10 @@ function returnToMap() {
 
 let timerId = null;
 
+const timerSeconds = () => (state.mode === 'kulti' ? KULTI_CHRONO_SECONDS : SPRINT_SECONDS);
 function startTimer() {
     stopTimer();
-    state.endsAt = Date.now() + SPRINT_SECONDS * 1000;
+    state.endsAt = Date.now() + timerSeconds() * 1000;
     tickTimer();
     timerId = setInterval(tickTimer, 200);
 }
@@ -4983,7 +5165,7 @@ function tickTimer() {
     if (left <= 0 && state.phase !== 'over') {
         stopTimer();
         $('quitModal').hidden = true;   // le sprint se termine même si la popup « Quitter ? » est ouverte
-        state.lastAnswer = countLastSprintAnswer();
+        state.lastAnswer = state.mode === 'sprint' ? countLastSprintAnswer() : null;
         hideFeedback();
         endSession(true);
     }
@@ -5037,6 +5219,8 @@ function updateProgress() {
     if (state.mode === 'sprint') {
         const left = Math.max(0, state.endsAt - Date.now());
         pct = Math.round((1 - left / (SPRINT_SECONDS * 1000)) * 100);
+    } else if (state.mode === 'kulti' && state.kultiKind === 'chrono') {
+        pct = Math.round((state.correct / KULTI_CHRONO_GOAL) * 100);
     } else if (state.mode === 'placement') {
         pct = Math.round((state.placeStep / PLACEMENT_STEPS) * 100);
     } else {
@@ -5057,10 +5241,11 @@ function showCard() {
     $('reviewTag').hidden = !item.review;
 
     const tag = $('challengeTag');
-    tag.hidden = !['challenge', 'daily', 'sprint', 'placement', 'event', 'duel'].includes(state.mode);
+    tag.hidden = !['challenge', 'daily', 'sprint', 'placement', 'event', 'duel', 'kulti'].includes(state.mode);
     const ev = state.mode === 'event' ? EVENTS.find(e => e.id === state.eventId) : null;
     tag.textContent = ev ? `${ev.icon} ${ev.name}`
                     : state.mode === 'duel' ? `⚔️ Duel · ${state.done + 1}/${state.total}`
+                    : state.mode === 'kulti' ? (state.kultiKind === 'chrono' ? `⏱️ Défi de Kulti · ${state.correct}/${KULTI_CHRONO_GOAL}` : `🎯 Défi de Kulti${state.total > 1 ? ` · ${state.done + 1}/${state.total}` : ''}`)
                     : state.mode === 'daily' ? `Défi du jour · ${state.done + 1}/${state.total}`
                     : state.mode === 'sprint' ? 'Sprint'
                     : state.mode === 'placement' ? `Placement · étape ${state.placeStep + 1}/${PLACEMENT_STEPS}`
@@ -5106,7 +5291,7 @@ function showCard() {
     $('hintList').replaceChildren();
     $('hintList').hidden = true;
     $('hintPanel').hidden = true;
-    $('hintBtn').hidden = ['daily', 'sprint', 'placement', 'duel'].includes(state.mode);
+    $('hintBtn').hidden = ['daily', 'sprint', 'placement', 'duel', 'kulti'].includes(state.mode);
 
     const input = $('userInput');
     input.value = '';
@@ -5212,7 +5397,7 @@ function showFeedback(verdict, skipped) {
     cont.classList.toggle('btn-red', !ok);
 
     // Défi du jour et sprint : pas de « J'avais juste », pour que les scores restent comparables
-    const strict = state.mode === 'daily' || state.mode === 'sprint' || state.mode === 'duel';
+    const strict = state.mode === 'daily' || state.mode === 'sprint' || state.mode === 'duel' || state.mode === 'kulti';
     $('forceBtn').hidden = ok || skipped || strict;
 
     box.classList.add('show');
@@ -5238,6 +5423,19 @@ function commit(ok) {
     if (mode === 'placement') {
         hideFeedback();
         placementAnswer(ok);
+        return;
+    }
+
+    // Défi de Kulti : un seul essai par question, sans XP ; sans faute (fin à la 1re erreur), ou 5 bonnes avant la fin du chrono
+    if (mode === 'kulti') {
+        recordResult(id, ok);
+        if (ok) state.correct++;
+        state.grid.push(ok ? '🟩' : '🟥');
+        state.done++;
+        hideFeedback();
+        const chrono = state.kultiKind === 'chrono';
+        if (chrono ? state.correct >= KULTI_CHRONO_GOAL || !state.queue.length : !ok || !state.queue.length) endSession(true);
+        else showCard();
         return;
     }
 
@@ -5455,7 +5653,12 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     const unlocked = avCheck();
     if (unlocked.length) missions.push(`🎨 Débloqué pour ton avatar : ${unlocked.slice(0, 3).map(avLabel).join(', ')}${unlocked.length > 3 ? ` et ${unlocked.length - 3} autre${unlocked.length > 4 ? 's' : ''}` : ''} ! (Profil → ton avatar)`);
     state.missionsJustDone = [];
-    $('endExtra').textContent = [extra, ...missions].filter(Boolean).join('\n');
+    // Série d'amis : une petite ligne, seulement s'il y a peu d'autres lignes (et retirée si l'écran devait défiler)
+    const fsLine = missions.length + (extra ? 1 : 0) <= 1 ? friendStreakLine() : '';
+    $('endExtra').textContent = [extra, ...missions, fsLine].filter(Boolean).join('\n');
+    if (fsLine) requestAnimationFrame(() => {
+        if (document.documentElement.scrollHeight > window.innerHeight + 2) $('endExtra').textContent = [extra, ...missions].filter(Boolean).join('\n');
+    });
     $('endPrimary').textContent = primary;
     $('endPrimary').className = `btn ${primaryClass || (secondary ? 'btn-red' : 'btn-green')}`;
     $('endSecondary').hidden = !secondary;
@@ -5494,7 +5697,7 @@ function endSession(win) {
     }
 
     $('progressBar').style.width = '100%';
-    bumpStreak();
+    if (mode !== 'kulti') bumpStreak();   // le défi de Kulti (1 à 5 questions) ne compte pas pour la série
     let celebrate = mode !== 'review';   // confettis (pas pour une simple révision)
 
     if (mode === 'training') {
@@ -5506,6 +5709,9 @@ function endSession(win) {
     } else if (mode === 'duel') {
         celebrate = false;
         endDuel();
+    } else if (mode === 'kulti') {
+        celebrate = false;
+        endKulti();
     } else if (mode === 'review') {
         state.data.totals.reviews++;
         addXp(XP_REVIEW_WIN);
@@ -7911,6 +8117,7 @@ function profileSummary() {
         cards: Object.keys(d.cards).filter(id => d.cards[id]),
         shiny: Object.keys(d.shinyCards || {}).filter(id => (d.cards[id] || 0) >= SHINY_AT),   // cartes brillantes
         daily: d.daily[todayKey()] ? { day: todayKey(), grid: d.daily[todayKey()].grid } : null,   // défi du jour, question par question
+        days: myPlayedDays(),   // série d'amis 🔥🤝
         weeks: Object.fromEntries([7, 14, 21].map(k => [shiftDays(weekStart(), -k), weekXp(shiftDays(weekStart(), -k))]))   // objectif de la quête en duo
     };
 }
@@ -8654,6 +8861,13 @@ function renderLeague() {
                 : s ? `🎖️ ${s.title}${s.streak > 0 ? ` · 🔥 ${s.streak}` : ''}` : 'Ami';
             name.append(strong, info);
             li.append(avatarEl(f.pseudo, f.look, 'is-small'), name);
+            const fs = f.pending ? null : friendStreak(f);
+            if (fs) {   // série d'amis : jours d'affilée ensemble (contour orange = déjà joué tous les deux aujourd'hui)
+                const pill = el('span', `friend-streak${fs.today ? ' is-today' : ''}${fs.n ? '' : ' is-off'}`);
+                pill.textContent = fs.n ? `🔥🤝 ${fs.n}` : '🤝 0';
+                pill.title = `Série avec ${f.pseudo} : jours d’affilée où vous avez joué tous les deux`;
+                li.append(pill);
+            }
             if (f.pending) {
                 const x = el('button', 'icon-btn league-remove');
                 x.type = 'button';
@@ -9810,7 +10024,7 @@ function initBac() {
     const me = { id: 'bac-moi' };
     cloudUser = me;
     const fake = (id, pseudo, hue, emoji, bg, frame, xp, found) => ({ id, link: id, pseudo, look: { hue, emoji, bg, frame }, week: weekStart(), week_xp: xp,
-        prev_week: null, prev_week_xp: 0, streak: 5, summary: { title: 'Curieux', xp: xp * 3, streak: 5, unlocked: 30, levels: 29, badges: [], cards: [], event: { id: 'halloween-2026', found } } });
+        prev_week: null, prev_week_xp: 0, streak: 5, summary: { days: Array.from({ length: found % 7 + 3 }, (_, i) => shiftDays(todayKey(), -i)), title: 'Curieux', xp: xp * 3, streak: 5, unlocked: 30, levels: 29, badges: [], cards: [], event: { id: 'halloween-2026', found } } });
     league = { userId: 'bac-moi', pseudo: (loadLeagueCache() || {}).pseudo || 'Moi', incoming: [], outgoing: [], duels: [],
         friends: [fake('bac1', 'Léa', 330, '🦉', 'bg-galaxy', 'fr-laurel-gold', 420, 31), fake('bac2', 'Tom', 15, null, null, 'fr-flame', 260, 12),
                   fake('bac3', 'Inès', 200, '🦄', 'bg-or', 'fr-diamond', 180, 45), fake('bac4', 'Noé', 120, '🐢', 'bg-ocean', 'fr-checker', 90, 5)] };

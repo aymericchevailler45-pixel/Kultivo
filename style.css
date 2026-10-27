@@ -3470,3 +3470,16 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .quest-row-bar .is-mate { background: #3b82f6; }
 .quest-row-num { white-space: nowrap; }
 #questTitle { font-size: 1.35rem; white-space: nowrap; }
+
+/* Défi de Kulti : pastille « ! » sur Kulti (parcours) */
+.map-kulti-badge { position: absolute; top: -4px; right: -4px; display: grid; place-items: center; width: 22px; height: 22px;
+    border-radius: 50%; background: #ff9600; color: #fff; font-size: .85rem; font-weight: 900; box-shadow: 0 0 0 2px var(--surface);
+    animation: kultiBadge 1.6s ease-in-out infinite; }
+@keyframes kultiBadge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+@media (prefers-reduced-motion: reduce) { .map-kulti-badge { animation: none; } }
+/* Série d'amis dans la liste d'amis */
+.friend-streak { flex: none; margin-left: auto; padding: 3px 9px; border: 2px solid transparent; border-radius: 999px;
+    background: #fff4e5; color: #c25e00; font-size: .85rem; font-weight: 900; white-space: nowrap; }
+.friend-streak.is-today { border-color: #ff9600; }
+.friend-streak.is-off { background: var(--line); color: var(--muted); }
+.friend-streak + .friend-go { margin-left: 6px; }
