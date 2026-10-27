@@ -204,7 +204,7 @@
                 <p class="cap">Série de 42 jours, aujourd'hui mercredi (jeudi à dimanche encore à venir).</p>
             </div>
         </div>
-        <button class="btn btn-ghost replay" type="button" data-spin="1">▶ Rejouer</button>
+        <button class="btn btn-ghost replay" type="button" data-spin="1">▶ Rejouer avec le son 🔊</button>
         <p class="sub">Pour un seul jour (la toute première fois) : « 🔥 jour de série ! », au singulier.</p>
     </article>
 
@@ -471,8 +471,32 @@ function spin(id, target, todayIdx) {
         setTimeout(() => week.querySelector('.dot.today').classList.add('lit'), 3250)
     ];
 }
-function spinAll() { spin('ovE1', 7, 6); spin('ovE2', 42, 2); }
-document.querySelector('[data-spin]').addEventListener('click', spinAll);
+// Sons (mêmes sons synthétisés que le jeu, pas de fichier) : tic-tic de roulette qui ralentit, fanfare à l'arrêt, « pop » du jour
+let actx = null;
+function tone(freq, start, dur, type = 'sine', vol = 0.16, endFreq) {
+    try {
+        actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+        if (actx.state === 'suspended') actx.resume();
+        const now = actx.currentTime, osc = actx.createOscillator(), g = actx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now + start);
+        if (endFreq) osc.frequency.exponentialRampToValueAtTime(endFreq, now + start + dur);
+        g.gain.setValueAtTime(0.0001, now + start);
+        g.gain.exponentialRampToValueAtTime(vol, now + start + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+        osc.connect(g).connect(actx.destination);
+        osc.start(now + start); osc.stop(now + start + dur + 0.02);
+    } catch (e) { /* pas de son */ }
+}
+function streakSounds() {
+    // tic-tic de plus en plus espacés, comme une roue qui ralentit (≈ 2,3 s)
+    let at = 0, gap = 0.035;
+    while (at < 2.2) { tone(1500, at, 0.025, 'triangle', 0.07); at += gap; gap *= 1.09; }
+    [[523, 0], [659, .1], [784, .2], [1047, .3]].forEach(([f, s]) => tone(f, 2.3 + s, s === .3 ? .4 : .12));   // fanfare à l'arrêt
+    tone(600, 3.25, 0.18, 'sine', 0.18, 1300);   // « pop » quand le jour s'allume
+}
+function spinAll(sound) { spin('ovE1', 7, 6); spin('ovE2', 42, 2); if (sound) streakSounds(); }
+document.querySelector('[data-spin]').addEventListener('click', () => spinAll(true));
 
 // ---------- Humeurs en situation ----------
 const SIT = [
