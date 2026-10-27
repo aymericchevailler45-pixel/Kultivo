@@ -673,6 +673,9 @@ function defaultData() {
         duelAnswers: {},                 // duels : graine -> mes réponses tapées (pour les revoir)
         duelsViewed: {},                 // résultats de duels déjà regardés (sinon pastille)
         replayDay: { day: null, xp: 0, levels: {} },   // niveaux refaits aujourd'hui : XP gagnés (plafond), niveaux comptés pour les missions
+        monthStats: {},                  // récap du mois : 'AAAA-MM' -> { answers, right, themes, missed, cards, bigCards }
+        monthStatsInit: false,           // le mois en cours a été rempli une fois avec l'historique (2026-10-27)
+        recapSeen: {},                   // récaps du mois déjà regardés : 'AAAA-MM' -> jour où on l'a vu
         reports: []                      // signalements en attente d'envoi (Supabase plus tard) : [{ id, q, typed, reason… }]
     };
 }
@@ -691,6 +694,9 @@ function normalizeData(data) {
     for (const k of ['owned', 'opened', 'known', 'grant']) data.av[k] = data.av[k] || {};
     if (typeof data.playerSeed !== 'string') data.playerSeed = Math.random().toString(36).slice(2, 10);
     data.avatarNew = data.avatarNew === true;
+    if (!data.monthStats || typeof data.monthStats !== 'object') data.monthStats = {};
+    if (!data.recapSeen || typeof data.recapSeen !== 'object') data.recapSeen = {};
+    if (!data.monthStatsInit) backfillMonthStats(data);
     const rd = data.replayDay;
     data.replayDay = rd && typeof rd === 'object' ? { day: rd.day || null, xp: Number(rd.xp) || 0, levels: rd.levels || {} } : { day: null, xp: 0, levels: {} };
     // Gouttes : les joueurs d'avant commencent avec le plein
@@ -844,6 +850,7 @@ function recordResult(id, ok) {
 
     state.data.totals.tries++;
     if (ok) state.data.totals.right++;
+    noteMonthAnswer(id, ok);
     saveData();
 }
 
@@ -877,6 +884,7 @@ function dayXpNow() {
 function addXp(amount) {
     if (amount <= 0) return;
     const data = state.data;
+    const titleBefore = titleFor(data.xp).current.name;
     const today = todayKey();
     if (data.dayXp.day !== today) data.dayXp = { day: today, xp: 0 };
 
@@ -893,6 +901,8 @@ function addXp(amount) {
     data.coins += coinGain;
     state.sessionCoins += coinGain;
 
+    const t = titleFor(data.xp);
+    if (t.current.name !== titleBefore) state.pendingTitle = { from: state.pendingTitle?.from || titleBefore, to: t.current.name, next: t.next };
     if (before < data.goal && data.dayXp.xp >= data.goal) {
         data.goalDays[today] = true;
         state.goalReached = true;
@@ -914,15 +924,13 @@ function titleFor(xp) {
 function rewardSummary() {
     const lines = [];
     if (state.sessionCoins > 0) lines.push(`+${state.sessionCoins} 🪙`);
-    if (state.goalReached) lines.push('🎯 Objectif atteint ! Va dans Défis pour ta récompense.');
-    return lines.join('\n');
+    return lines.join('\n');   // l'objectif atteint a sa propre case sur l'écran de fin (`renderEndGoal`)
 }
 
 /** Texte « +45 XP » (et objectif atteint) affiché à la fin d'une leçon. */
 function xpSummary() {
     const lines = [];
     if (state.sessionXp > 0) lines.push(`+${state.sessionXp} XP   +${state.sessionCoins} 🪙`);
-    if (state.goalReached) lines.push('🎯 Objectif atteint ! Va dans Défis pour ta récompense.');
     return lines.join('\n');
 }
 
@@ -956,15 +964,106 @@ function bumpStreak() {
     const alive = missed <= 0 || (missed !== Infinity && data.inv.freeze >= missed);
     if (alive && missed > 0) {
         data.inv.freeze -= missed;
-        for (let i = 1; i <= missed; i++) data.frozenDays[daysAgoKey(i)] = true;   // pour le calendrier
-        showToast(`🧊 ${plural(missed, 'gel de série utilisé', 'gels de série utilisés')} : ta série est sauvée !`);
+        for (let i = 1; i <= missed; i++) data.frozenDays[daysAgoKey(i)] = true;   // pour le calendrier (l'animation du gel suit)
     }
     data.streak = alive ? data.streak + 1 : 1;
     data.lastDay = todayKey();
     data.activeDays[data.lastDay] = data.activeDays[data.lastDay] || 0;
     data.best.streak = Math.max(data.best.streak, data.streak);
     saveData();
-    setTimeout(() => showStreakAnim(data.streak), 120);   // nouveau jour de série : l'animation, par-dessus l'écran de fin
+    // Nouveau jour de série : les animations, par-dessus l'écran de fin (gel utilisé d'abord, puis la roulette)
+    if (alive && missed > 0) celebrate(() => showFreezeAnim(data.streak));
+    celebrate(() => showStreakAnim(data.streak));
+}
+
+/* Petites fêtes à la suite (2026-10-27) : gel utilisé → jour de série → nouveau titre. Chacune appelle nextCelebration()
+   quand on la ferme. */
+const celebrations = [];
+let celebrating = false;
+function celebrate(fn) {
+    celebrations.push(fn);
+    if (!celebrating) { celebrating = true; setTimeout(nextCelebration, 120); }
+}
+function nextCelebration() {
+    const fn = celebrations.shift();
+    if (!fn) { celebrating = false; return; }
+    fn();
+}
+
+/** Fenêtre plein écran des petites fêtes (série, gel, titre) : un seul calque réutilisé. */
+function celebrationLayer(id, cls) {
+    let ov = $(id);
+    if (!ov) {
+        ov = el('div', cls);
+        ov.id = id;
+        ov.setAttribute('role', 'dialog');
+        document.body.append(ov);
+    }
+    ov.replaceChildren();
+    ov.classList.remove('is-on', 'is-closing');
+    ov.hidden = false;
+    requestAnimationFrame(() => ov.classList.add('is-on'));
+    return ov;
+}
+function closeCelebrationLayer(id) {
+    const ov = $(id);
+    if (!ov || ov.hidden) return false;
+    ov.classList.add('is-closing');
+    setTimeout(() => { ov.hidden = true; ov.classList.remove('is-on', 'is-closing'); ov.replaceChildren(); nextCelebration(); }, 250);
+    return true;
+}
+
+/* ---------- 5 · Gel de série utilisé : la flamme se fige dans la glace, la glace éclate, la flamme repart ---------- */
+let freezeTimers = [];
+function showFreezeAnim(streak) {
+    const ov = celebrationLayer('freezeAnim', 'freeze-anim');
+    const ice = el('div', 'freeze-ice');
+    const fire = el('img');
+    fire.src = 'emoji/1f525.svg';
+    fire.alt = '';
+    const block = el('div', 'freeze-block');
+    ice.append(fire, block);
+    for (let i = 0; i < 10; i++) { const s = el('i', 'freeze-shard'); s.style.setProperty('--a', `${i * 36}deg`); ice.append(s); }
+    const txt = el('div', 'freeze-text');
+    const h = el('h3');
+    h.textContent = '🧊 Série sauvée !';
+    const p = el('p');
+    p.textContent = `Un gel de série t’a protégé. Ta série de ${plural(streak, 'jour', 'jours')} continue.`;
+    txt.append(h, p);
+    ov.append(ice, txt);
+    const done = () => { freezeTimers.forEach(clearTimeout); closeCelebrationLayer('freezeAnim'); };
+    ov.onclick = done;
+    freezeTimers = [
+        setTimeout(() => { ov.classList.add('is-frozen'); playSound('freeze'); }, 400),
+        setTimeout(() => { ov.classList.remove('is-frozen'); ov.classList.add('is-thawed'); playSound('thaw'); }, 1800),
+        setTimeout(done, 3600)
+    ];
+}
+
+/* ---------- 3 · Nouveau titre : écran vert, Kulti fier, l'ancien titre se retourne, confettis ---------- */
+function showTitleAnim({ from, to, next }) {
+    const ov = celebrationLayer('titleAnim', 'title-anim');
+    const k = el('div', 'title-kulti');
+    k.append(kultiEl('fier', 'kulti-blink kulti-float'));
+    const small = el('small');
+    small.textContent = 'Nouveau titre !';
+    const flip = el('div', 'title-flip');
+    const inner = el('div', 'title-flip-in');
+    const old = el('div', 'title-face is-old');
+    old.textContent = from;
+    const neu = el('div', 'title-face is-new');
+    neu.textContent = to;
+    inner.append(old, neu);
+    flip.append(inner);
+    const nx = el('div', 'title-next');
+    nx.textContent = next ? `Prochain : « ${next.name} » à ${next.xp.toLocaleString('fr-FR')} XP` : 'Tu as atteint le plus haut titre !';
+    const btn = el('button', 'btn title-continue');
+    btn.type = 'button';
+    btn.textContent = 'Super !';
+    btn.addEventListener('click', () => closeCelebrationLayer('titleAnim'));
+    ov.append(k, small, flip, nx, btn);
+    playSound('title');
+    setTimeout(launchConfetti, 700);
 }
 
 /* ---------- Animation du jour de série (2026-10-27, choix de l'utilisateur : mélange C + A de apercu-serie.html) ----------
@@ -1066,7 +1165,7 @@ function closeStreakAnim() {
     if (!ov || ov.hidden) return;
     streakTimers.forEach(clearTimeout);
     ov.classList.add('is-closing');
-    setTimeout(() => { ov.hidden = true; ov.classList.remove('is-on', 'is-closing'); ov.replaceChildren(); }, 250);
+    setTimeout(() => { ov.hidden = true; ov.classList.remove('is-on', 'is-closing'); ov.replaceChildren(); nextCelebration(); }, 250);
 }
 
 /** À l'ouverture de l'appli, après un ou plusieurs jours sans jouer : la série sera-t-elle sauvée ?
@@ -2032,7 +2131,7 @@ function updateNavNotifications() {
     const shinies = pendingShinyCount();   // cartes à 3/3 à rendre brillantes
     const setNotif = (target, n) => n > 0 ? target.setAttribute('data-notif', n) : target.removeAttribute('data-notif');
     const avNew = avOn() ? avReadyCount : (data.avatarNew ? 1 : 0);
-    setNotif(profileBtn, unclaimedBadges + shinies + avNew);
+    setNotif(profileBtn, unclaimedBadges + shinies + avNew + recapUnseen());
     setNotif($('avatarBtn'), avNew);
     setNotif(document.querySelector('.nav-btn[data-screen="shop"]'), avOn() && data.vitrineSeen !== weekStart() ? 1 : 0);
     setNotif(badgesTab, unclaimedBadges);
@@ -2307,10 +2406,229 @@ function renderMap() {
     }
 
     renderMapFriends();
+    placeMapKulti();
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
     setTimeout(updateToCurrentBtn, 50);
     if (!state.data.tipChest && readyChests().length) maybeShowChestTip();
     else if (!state.data.tipReviews && currentReviewsLabel()) maybeShowReviewsTip();
+}
+
+/* ---------- 2 · Kulti sur le parcours (2026-10-27) ----------
+   Assis à côté du niveau en cours, du côté du MILIEU de l'écran (les décors à anecdotes sont dans les marges) ;
+   un ami au même niveau se met de l'autre côté. Le soir (20 h et plus) sans avoir joué : il dort. Fêtes : chapeau.
+   Tap = une petite phrase (dans la bulle des anecdotes). */
+let kultiSayIdx = 0;
+const kultiSleepy = () => new Date().getHours() >= 20 && state.data.lastDay !== todayKey();
+function placeMapKulti() {
+    document.querySelectorAll('.map-kulti').forEach(k => k.remove());
+    document.querySelectorAll('.stop.has-kulti-right').forEach(s => s.classList.remove('has-kulti-right'));
+    const n = Math.min(state.data.unlocked, MAX_LEVEL);
+    const stop = document.querySelector(`.stop[data-level="${n}"]`);
+    if (!stop) return;
+    const right = (parseFloat(stop.style.getPropertyValue('--x')) || 0) <= 0;   // niveau à gauche (ou au milieu) → Kulti à droite
+    const sleepy = kultiSleepy();
+    const ev = currentEvent();
+    const btn = el('button', `map-kulti ${right ? 'is-right' : 'is-left'}`);
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Kulti, la mascotte');
+    btn.append(kultiEl(sleepy ? 'dort' : ev ? 'clin' : 'content', sleepy ? '' : 'kulti-blink kulti-float', false, ev ? ev.bank : null));
+    if (sleepy) {
+        const z = el('span', 'map-kulti-zzz');
+        z.innerHTML = '<i>Z</i><i>z</i><i>z</i>';
+        btn.append(z);
+    }
+    btn.addEventListener('click', e => { e.stopPropagation(); kultiSay(btn); });
+    if (right) stop.classList.add('has-kulti-right');
+    stop.append(btn);
+}
+function kultiLines() {
+    const d = state.data, streak = currentStreak();
+    if (kultiSleepy()) return [streak > 0 ? `Zzz… Ta série de ${plural(streak, 'jour', 'jours')} t’attend… 🔥` : 'Zzz… Un petit niveau avant de dormir ?', 'Un petit niveau avant de dormir ?'];
+    const lines = [`Allez, le niveau ${Math.min(d.unlocked, MAX_LEVEL)} t’attend !`];
+    const xp = dayXpNow();
+    lines.push(xp < d.goal ? `Plus que ${d.goal - xp} XP pour ton objectif du jour 🎯` : 'Objectif du jour atteint, bravo ! 🎯');
+    if (streak >= 2) lines.push(`Tu es sur une série de ${plural(streak, 'jour', 'jours')} 🔥`);
+    const ev = currentEvent();
+    if (ev) lines.push(`${ev.icon} L’événement ${ev.name} t’attend dans Défis !`);
+    const themes = typeof THEME_FACTS !== 'undefined' ? Object.keys(THEME_FACTS) : [];
+    if (themes.length) {
+        const facts = THEME_FACTS[themes[Math.floor(Math.random() * themes.length)]];
+        if (facts && facts.length) lines.push(`Le savais-tu ? ${facts[Math.floor(Math.random() * facts.length)]}`);
+    }
+    return lines;
+}
+function kultiSay(btn) {
+    const lines = kultiLines();
+    $('factTitle').textContent = '🧠 Kulti';
+    $('factText').textContent = lines[kultiSayIdx++ % lines.length].replace(/« /g, '« ').replace(/ ([»:!?])/g, ' $1');
+    const bubble = $('factBubble');
+    bubble.hidden = false;
+    const r = btn.getBoundingClientRect();
+    const top = r.bottom + 10 + bubble.offsetHeight < window.innerHeight - 90 ? r.bottom + 10 : r.top - 10 - bubble.offsetHeight;
+    bubble.style.top = `${Math.max(70, top)}px`;
+    playSound('tap');
+}
+
+/* ---------- 7 · Ton mois sur Kultivo (2026-10-27) ----------
+   Le 1er du mois : récap du mois passé, en « stories ». Bouton violet dans l'en-tête du Profil (sous l'XP), pastille rouge
+   tant qu'il n'est pas vu, puis encore 7 jours ; pour toujours dans Records → « 📅 Mes récaps du mois ». */
+const MONTH_NAMES = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+function monthKeyOf(key) { return key.slice(0, 7); }   // fonctions déclarées (pas « const ») : utilisées dès le chargement de la sauvegarde
+const monthName = m => MONTH_NAMES[Number(m.slice(5, 7)) - 1];
+const monthOf = m => (/^[aeiouéèêh]/.test(monthName(m)) ? 'd’' : 'de ') + monthName(m);   // « d’octobre », « de mars »
+function shiftMonth(m, k) { const d = new Date(Number(m.slice(0, 4)), Number(m.slice(5, 7)) - 1 + k, 1); return dayKey(d).slice(0, 7); }
+function monthStat(m = monthKeyOf(todayKey()), data = state.data) {
+    const all = data.monthStats;
+    if (!all[m]) all[m] = { answers: 0, right: 0, themes: {}, missed: {}, cards: 0, bigCards: 0 };
+    return all[m];
+}
+var QUESTION_INDEX = null;   // « var » : la sauvegarde est lue (normalizeData) avant cette ligne
+function anyQuestion(id) {
+    if (!QUESTION_INDEX) {
+        QUESTION_INDEX = new Map();
+        const banks = [QUESTIONS, typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS,
+            ...Object.values(window.EVENT_BANKS || {}).filter(Array.isArray)];
+        banks.forEach(list => list.forEach(q => QUESTION_INDEX.set(q.id, q)));
+    }
+    return QUESTION_INDEX.get(Number(id)) || null;
+}
+function noteMonthAnswer(id, ok, data = state.data) {
+    const ms = monthStat(undefined, data);
+    ms.answers++;
+    if (ok) ms.right++;
+    const q = anyQuestion(id);
+    if (q) { const t = ms.themes[q.theme] || (ms.themes[q.theme] = [0, 0]); t[1]++; if (ok) t[0]++; }
+    if (!ok) ms.missed[id] = (ms.missed[id] || 0) + 1;
+}
+/** Une seule fois : le mois de chaque réponse passée (date de la dernière réponse) reçoit ses chiffres, pour que le
+    1er récap (octobre 2026) soit complet (toutes les parties datent d'après la remise à zéro du 20/10). */
+function backfillMonthStats(data) {
+    data.monthStatsInit = true;
+    for (const [id, s] of Object.entries(data.stats || {})) {
+        if (!s || !s.last || !s.tries) continue;
+        const m = monthKeyOf(dayKey(new Date(s.last)));
+        const ms = monthStat(m, data);
+        ms.answers += s.tries;
+        ms.right += s.right || 0;
+        const q = anyQuestion(id);
+        if (q) { const t = ms.themes[q.theme] || (ms.themes[q.theme] = [0, 0]); t[1] += s.tries; t[0] += s.right || 0; }
+        const wrong = s.tries - (s.right || 0);
+        if (wrong > 0) ms.missed[id] = (ms.missed[id] || 0) + wrong;
+    }
+    const owned = Object.keys(data.cards || {}).filter(id => data.cards[id] > 0);
+    const ms = monthStat(monthKeyOf(todayKey()), data);
+    ms.cards += owned.length;
+    ms.bigCards += owned.filter(id => { const c = CARDS.find(x => x.id === id); return c && ['epic', 'legendary', 'master', 'event'].includes(c.rarity); }).length;
+}
+/** Chiffres du mois `m` pour le récap (XP, meilleur jour et série d'après le calendrier). */
+function monthRecap(m) {
+    const d = state.data, ms = d.monthStats[m] || { answers: 0, right: 0, themes: {}, missed: {}, cards: 0, bigCards: 0 };
+    const days = Object.entries(d.activeDays).filter(([k]) => monthKeyOf(k) === m);
+    const xp = days.reduce((s, [, v]) => s + (v || 0), 0);
+    const best = days.reduce((b, [k, v]) => (v > (b ? b[1] : 0) ? [k, v] : b), null);
+    // Plus longue série du mois : jours joués ou sauvés par un gel, d'affilée
+    let longest = 0, run = 0;
+    const start = new Date(Number(m.slice(0, 4)), Number(m.slice(5, 7)) - 1, 1);
+    for (let k = new Date(start); monthKeyOf(dayKey(k)) === m; k.setDate(k.getDate() + 1)) {
+        const key = dayKey(k);
+        run = d.activeDays[key] !== undefined || d.frozenDays[key] ? run + 1 : 0;
+        longest = Math.max(longest, run);
+    }
+    const themes = Object.entries(ms.themes).filter(([, [, n]]) => n >= 5).map(([t, [r, n]]) => [t, r / n]).sort((a, b) => b[1] - a[1]);
+    const worst = Object.entries(ms.missed).sort((a, b) => b[1] - a[1]).find(([id, n]) => n >= 2 && anyQuestion(id));
+    return { m, xp, best, longest, answers: ms.answers, right: ms.right, theme: themes[0] || null,
+        worst: worst ? { q: anyQuestion(worst[0]), n: worst[1] } : null, cards: ms.cards, bigCards: ms.bigCards };
+}
+/** Mois terminés qui ont un récap (on a gagné de l'XP), du plus récent au plus ancien. */
+function recapMonths() {
+    const now = monthKeyOf(todayKey());
+    const months = new Set(Object.keys(state.data.activeDays).filter(k => (state.data.activeDays[k] || 0) > 0).map(monthKeyOf));
+    return [...months].filter(m => m < now && m >= '2026-10').sort().reverse();
+}
+/** Le récap à mettre en avant (mois dernier) : pas encore vu, ou vu il y a moins de 7 jours. */
+function recapToShow() {
+    const m = shiftMonth(monthKeyOf(todayKey()), -1);
+    if (!recapMonths().includes(m)) return null;
+    const seen = state.data.recapSeen[m];
+    if (seen && shiftDays(seen, 7) <= todayKey()) return null;
+    return { m, unseen: !seen };
+}
+const recapUnseen = () => { const r = recapToShow(); return r && r.unseen ? 1 : 0; };
+function renderMonthRecapBtn() {
+    const btn = $('monthRecapBtn');
+    const r = recapToShow();
+    btn.hidden = !r;
+    if (!r) return;
+    btn.textContent = `📅 Ton mois ${monthOf(r.m)}`;
+    if (r.unseen) btn.setAttribute('data-notif', 1); else btn.removeAttribute('data-notif');
+    btn.onclick = () => openRecap(r.m);
+}
+
+let recapTimer = null, recapSlides = [], recapIdx = 0;
+function recapSlidesFor(m) {
+    const r = monthRecap(m);
+    const fmt = n => n.toLocaleString('fr-FR');
+    const slides = [{ bg: 'linear-gradient(160deg,#8b5cf6,#ec4899)', face: 'clin', h: `Ton mois ${monthOf(m)}`, p: 'On fait le bilan ? 👀' }];
+    if (r.answers > 0) slides.push({ bg: 'linear-gradient(160deg,#1cb0f6,#3b6cf6)', big: fmt(r.answers), h: r.answers > 1 ? 'questions répondues' : 'question répondue',
+        p: `dont ${fmt(r.right)} justes (${Math.round(r.right / r.answers * 100)} %)` });
+    if (r.xp > 0) slides.push({ bg: 'linear-gradient(160deg,#58cc02,#2f8f00)', big: fmt(r.xp), h: 'XP gagnés',
+        p: r.best ? `Ton meilleur jour : le ${Number(r.best[0].slice(8, 10))} ${monthName(m)}, ${fmt(r.best[1])} XP` : '' });
+    if (r.theme) {
+        const icon = (THEME_DECOR.find(t => t.theme === r.theme[0]) || {}).icon || '⭐';
+        slides.push({ bg: 'linear-gradient(160deg,#ff9600,#e8590c)', big: icon, h: `Ton thème star : ${r.theme[0]}`, p: `${Math.round(r.theme[1] * 100)} % de bonnes réponses` });
+    }
+    if (r.longest > 0) slides.push({ bg: 'linear-gradient(160deg,#ff4b4b,#b8125b)', big: `🔥 ${r.longest}`, h: r.longest > 1 ? 'jours de série d’affilée' : 'jour de série',
+        p: 'ta plus longue série du mois' });
+    if (r.worst) slides.push({ bg: 'linear-gradient(160deg,#334155,#0f172a)', face: 'triste', h: 'Ta bête noire',
+        p: `« ${r.worst.q.q} » ratée ${r.worst.n} fois… C’était : ${r.worst.q.a[0]} 😅` });
+    if (r.cards > 0) slides.push({ bg: 'linear-gradient(160deg,#ffc800,#f59e0b)', big: `🃏 ${r.cards}`, h: r.cards > 1 ? 'cartes gagnées' : 'carte gagnée',
+        p: `${r.bigCards ? `dont ${r.bigCards} épique${r.bigCards > 1 ? 's' : ''} ou mieux ! ` : ''}Ta collection : ${Object.keys(state.data.cards).filter(id => state.data.cards[id] > 0).length} / ${CARDS.length}` });
+    slides.push({ bg: 'linear-gradient(160deg,#8b5cf6,#ec4899)', face: 'fier', h: `À ${monthName(shiftMonth(m, 1))} !`, p: 'Bravo pour ce mois 💪' });
+    return slides;
+}
+function openRecap(m) {
+    recapSlides = recapSlidesFor(m);
+    if (!state.data.recapSeen[m]) { state.data.recapSeen[m] = todayKey(); saveData(); }
+    let ov = $('recapStory');
+    if (!ov) {
+        ov = el('div', 'recap-story');
+        ov.id = 'recapStory';
+        ov.setAttribute('role', 'dialog');
+        ov.innerHTML = '<div class="recap-prog"></div><button type="button" class="recap-x" aria-label="Fermer">✕</button><div class="recap-slide"></div><p class="recap-hint">Touche à droite : suivant · à gauche : retour</p>';
+        document.body.append(ov);
+        ov.querySelector('.recap-x').addEventListener('click', e => { e.stopPropagation(); closeRecap(); });
+        ov.querySelector('.recap-slide').addEventListener('click', e => {
+            const r = e.currentTarget.getBoundingClientRect();
+            const next = e.clientX - r.left > r.width / 3;
+            if (next && recapIdx >= recapSlides.length - 1) closeRecap(); else showRecapSlide(recapIdx + (next ? 1 : -1));
+        });
+    }
+    ov.hidden = false;
+    showRecapSlide(0);
+    renderMonthRecapBtn();
+    updateNavNotifications();
+}
+function showRecapSlide(i) {
+    recapIdx = Math.max(0, Math.min(recapSlides.length - 1, i));
+    const s = recapSlides[recapIdx], ov = $('recapStory');
+    ov.style.background = s.bg;
+    ov.querySelector('.recap-prog').innerHTML = recapSlides.map((_, k) => `<i class="${k < recapIdx ? 'is-done' : k === recapIdx ? 'is-cur' : ''}"><b></b></i>`).join('');
+    const sl = ov.querySelector('.recap-slide');
+    sl.replaceChildren();
+    if (s.face) { const k = el('div', 'recap-kulti'); k.append(kultiEl(s.face, 'kulti-blink kulti-float')); sl.append(k); }
+    if (s.big) { const b = el('div', 'recap-big'); b.textContent = s.big; sl.append(b); }
+    const h = el('h3');
+    h.textContent = s.h;
+    const p = el('p');
+    p.textContent = s.p;
+    sl.append(h, p);
+    clearTimeout(recapTimer);
+    if (recapIdx < recapSlides.length - 1) recapTimer = setTimeout(() => showRecapSlide(recapIdx + 1), 5000);
+}
+function closeRecap() {
+    clearTimeout(recapTimer);
+    const ov = $('recapStory');
+    if (ov) ov.hidden = true;
 }
 
 /** Avatars des amis à côté du niveau où ils en sont (d'après leur résumé : `unlocked`). Tap = leur profil.
@@ -2422,6 +2740,7 @@ function openCardBoxes(boxes, title, avItem = null) {
         }
         for (const card of picked) {
             const isNew = !data.cards[card.id];
+            if (isNew) { const ms = monthStat(); ms.cards++; if (['epic', 'legendary', 'master', 'event'].includes(card.rarity)) ms.bigCards++; }
             data.cards[card.id] = (data.cards[card.id] || 0) + 1;
             const coins = isNew ? 0 : CARD_RARITIES[card.rarity].dupCoins;
             data.coins += coins;
@@ -2888,15 +3207,7 @@ function renderChallenges() {
         claimBtn.textContent = `🎁 Récupérer ${reward} 🪙`;
         claimBtn.style.marginTop = '10px';
         
-        claimBtn.addEventListener('click', () => {
-            data.claimedGoals[today] = true;
-            data.coins += reward;
-            saveData();
-            renderHeader();
-            renderChallenges(); // Met à jour l'écran pour cacher le bouton
-            // + une carte à collectionner (même fenêtre que les coffres)
-            openCardBoxes([{ size: GOAL_CARDS }], `🎯 +${reward} 🪙 et une carte !`);
-        });
+        claimBtn.addEventListener('click', () => { claimGoalReward(); renderChallenges(); });
         
         hintBox.append(claimBtn);
     } else {
@@ -3029,6 +3340,23 @@ function renderProfile() {
         li.append(left, right);
         list.append(li);
     });
+    const months = recapMonths();
+    if (months.length) {   // « 📅 Mes récaps du mois » : tous les mois passés, pour toujours
+        const li = el('li', 'records-recaps');
+        const left = el('span');
+        left.textContent = '📅 Mes récaps du mois';
+        const right = el('div', 'records-recap-list');
+        months.forEach(m => {
+            const b = el('button', 'records-recap');
+            b.type = 'button';
+            b.textContent = monthName(m).replace(/^./, c => c.toUpperCase());
+            b.addEventListener('click', () => openRecap(m));
+            right.append(b);
+        });
+        li.append(left, right);
+        list.append(li);
+    }
+    renderMonthRecapBtn();
 
     // Réussite par thème
     const bars = $('themeBars');
@@ -3928,6 +4256,8 @@ function startSession(requestedMode, level = 0) {
         sessionXp: 0,
         sessionCoins: 0,
         goalReached: false,
+        dayXpStart: dayXpNow(),   // pour l'anneau de l'objectif du jour sur l'écran de fin
+        combo: 0,                 // bonnes réponses d'affilée (pastille « 🔥 5 d'affilée ! »)
         placeStep: 0,
         placeRight: 0,
         placeWrong: 0,
@@ -4369,6 +4699,7 @@ function updateProgress() {
 function showCard() {
     const item = state.queue[0];
     state.current = item;
+    state.cardShownAt = Date.now();   // pour « ⚡ Éclair ! »
     state.verdict = null;
     state.phase = 'answering';
 
@@ -4475,9 +4806,28 @@ function verify(skipped = false) {
     if (gridTyping()) { state.gridFinal = input.value; input.classList.remove('is-grid-typing'); input.value = state.lastTyped; renderHintGrid(); }
     $('answerActions').hidden = true;
     $('hintPanel').hidden = true;
+    // Combo (bonnes réponses du 1er coup, sans indice, d'affilée) et « ⚡ Éclair ! » (juste en moins de 3 s)
+    const clean = ok && !skipped && !state.failedIds.has(state.current.q.id) && state.hintUsed.size === 0;
+    state.combo = clean ? (state.combo || 0) + 1 : ok ? state.combo || 0 : 0;
+    const comboShow = clean && (COMBO_STEPS.includes(state.combo) || (state.combo > 10 && state.combo % 5 === 0));
+    const flash = clean && !['sprint', 'daily', 'duel'].includes(state.mode) && Date.now() - (state.cardShownAt || 0) < FLASH_MS;
+    renderStickers(comboShow ? state.combo : 0, flash);
     showFeedback(verdict, skipped);
     updateKeyboardMode();   // correction : retour à la taille normale
-    playSound(ok ? 'good' : 'bad');
+    const semis = clean ? Math.min(state.combo - 1, 8) * 2 : 0;
+    playSound(ok ? 'good' : 'bad', semis);
+    if (comboShow) playSound('combo', semis);
+    if (flash) playSound('flash');
+}
+
+/* Pastilles posées SUR le bord haut du bandeau de correction (position absolue : le bandeau garde sa taille). 2026-10-27 */
+const COMBO_STEPS = [3, 5, 7, 10];
+const FLASH_MS = 3000;
+function renderStickers(combo, flash) {
+    const box = $('fbStickers');
+    box.replaceChildren();
+    if (combo) { const c = el('span', 'fb-sticker is-combo'); c.textContent = `🔥 ${combo} d’affilée !`; box.append(c); }
+    if (flash) { const f = el('span', 'fb-sticker is-flash'); f.textContent = '⚡ Éclair !'; box.append(f); }
 }
 
 function showFeedback(verdict, skipped) {
@@ -4670,12 +5020,75 @@ function showRescueOption() {
     info.hidden = !state.canRescue;
 }
 
+/** Récompense de l'objectif du jour : pièces + une carte (même fenêtre que les coffres). Depuis Défis ou l'écran de fin. */
+function claimGoalReward() {
+    const data = state.data, today = todayKey();
+    if (data.claimedGoals[today] || dayXpNow() < data.goal) return false;
+    const reward = (GOAL_CHOICES.find(c => c.xp === data.goal) || GOAL_CHOICES[1]).reward;
+    data.claimedGoals[today] = true;
+    data.coins += reward;
+    saveData();
+    renderHeader();
+    openCardBoxes([{ size: GOAL_CARDS }], `🎯 +${reward} 🪙 et une carte !`);
+    return true;
+}
+
+/* 4 · Objectif du jour atteint PAR CETTE PARTIE (2026-10-27) : sur l'écran de fin, l'anneau monte de l'XP d'avant la partie
+   à celle d'après (vrais chiffres, s'arrête plein si on dépasse), devient doré avec un « ding », bouton « Réclamer » sur place.
+   Pas réclamé ici → la pastille de Défis s'allume comme avant. */
+let goalAnim = null;
+function renderEndGoal() {
+    const box = $('endGoal');
+    cancelAnimationFrame(goalAnim);
+    box.hidden = !state.goalReached;
+    box.replaceChildren();
+    box.classList.remove('is-done', 'is-got');
+    if (!state.goalReached) return;
+    const data = state.data, goal = data.goal;
+    const from = Math.min(state.dayXpStart || 0, goal), to = dayXpNow();
+    const reward = (GOAL_CHOICES.find(c => c.xp === goal) || GOAL_CHOICES[1]).reward;
+    const R = 25, C = 2 * Math.PI * R;
+    box.innerHTML = `<svg class="end-goal-ring" viewBox="0 0 60 60" aria-hidden="true"><circle class="bg" cx="30" cy="30" r="${R}"/><circle class="fg" cx="30" cy="30" r="${R}" stroke-dasharray="${C.toFixed(1)}"/></svg>`;
+    const pct = el('span', 'end-goal-pct');
+    const info = el('div', 'end-goal-info');
+    const title = el('b');
+    title.textContent = 'Objectif du jour';
+    const sub = el('span');
+    const claim = el('button', 'end-goal-claim');
+    claim.type = 'button';
+    claim.textContent = `Réclamer ${reward} 🪙`;
+    const got = el('span', 'end-goal-got');
+    got.textContent = `✓ +${reward} 🪙 reçues`;
+    if (data.claimedGoals[todayKey()]) box.classList.add('is-got');
+    claim.addEventListener('click', () => { if (claimGoalReward()) { box.classList.add('is-got'); updateNavNotifications(); } });
+    info.append(title, sub, claim, got);
+    box.append(pct, info);
+    const fg = box.querySelector('.fg');
+    const draw = v => {
+        fg.style.strokeDashoffset = (C * (1 - Math.min(1, v / goal))).toFixed(1);
+        sub.textContent = `${Math.round(v)} / ${goal} XP`;
+        pct.textContent = v >= goal ? '🎯' : `${Math.round(v / goal * 100)} %`;
+    };
+    draw(from);
+    const t0 = performance.now() + 500, dur = 1200;
+    const step = now => {
+        const k = Math.max(0, Math.min(1, (now - t0) / dur));
+        const v = from + (to - from) * (1 - Math.pow(1 - k, 3));
+        draw(v);
+        if (v >= goal && !box.classList.contains('is-done')) { box.classList.add('is-done'); title.textContent = 'Objectif atteint !'; playSound('ding'); }
+        if (k < 1) goalAnim = requestAnimationFrame(step);
+    };
+    goalAnim = requestAnimationFrame(step);
+}
+
 /* ---------- Fin de leçon ---------- */
 
 // Kulti remplace le grand dessin de l'écran de fin (2026-10-27) : réussi = content, exploit = fier, raté = déçu + cœur brisé
 const END_FACES = { '🎉': 'content', '🏆': 'fier', '🏅': 'fier', '💔': 'triste' };
 function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, primaryClass, onPrimary, secondary, onSecondary }) {
     renderEndStats(stats);
+    renderEndGoal();
+    if (state.pendingTitle) { const t = state.pendingTitle; state.pendingTitle = null; celebrate(() => showTitleAnim(t)); }
     const mood = face || END_FACES[emoji];
     $('endEmoji').classList.toggle('is-kulti', !!mood);
     if (mood) $('endEmoji').replaceChildren(kultiEl(mood, 'kulti-blink kulti-float', emoji === '💔'));
@@ -8404,12 +8817,20 @@ const SOUNDS = {
     pair: [[740, 0, 0.1]],
     bad:  [[220, 0, 0.2, 'square', 150]],
     win:  [[523, 0, 0.12], [659, 0.12, 0.12], [784, 0.24, 0.12], [1047, 0.36, 0.35]],
-    lose: [[392, 0, 0.18, 'triangle'], [330, 0.18, 0.18, 'triangle'], [262, 0.36, 0.4, 'triangle']]
+    lose: [[392, 0, 0.18, 'triangle'], [330, 0.18, 0.18, 'triangle'], [262, 0.36, 0.4, 'triangle']],
+    combo: [[1320, 0.2, 0.25, 'triangle']],   // petite note en plus quand la pastille du combo saute
+    flash: [[2000, 0.02, 0.06, 'square']],    // « ⚡ Éclair ! »
+    ding: [[1319, 0, 0.5], [1760, 0.05, 0.7]],   // objectif du jour atteint
+    title: [[523, 0.6, 0.15, 'triangle'], [659, 0.68, 0.15, 'triangle'], [784, 0.76, 0.15, 'triangle'], [1047, 0.9, 0.9]],
+    freeze: [[1800, 0, 0.3], [2400, 0.05, 0.4]],
+    thaw: [[300, 0, 0.12, 'square'], [784, 0.3, 0.6], [988, 0.35, 0.6], [1175, 0.4, 0.6]],
+    tap: [[880, 0, 0.08, 'triangle'], [1175, 0.07, 0.1, 'triangle']]
 };
 let audioCtx = null;
 
-function playSound(name) {
+function playSound(name, semis = 0) {
     if (!state.data.sound) return;
+    const pitch = Math.pow(2, semis / 12);   // combo : le son monte d'une note à chaque bonne réponse de suite
     if (name === 'bad' && navigator.vibrate) navigator.vibrate(70);   // petite vibration sur Android
     try {
         audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
@@ -8419,8 +8840,8 @@ function playSound(name) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = type;
-            osc.frequency.setValueAtTime(freq, now + start);
-            if (endFreq) osc.frequency.exponentialRampToValueAtTime(endFreq, now + start + dur);
+            osc.frequency.setValueAtTime(freq * pitch, now + start);
+            if (endFreq) osc.frequency.exponentialRampToValueAtTime(endFreq * pitch, now + start + dur);
             const volume = type === 'square' ? 0.05 : 0.16;   // le son « carré » est plus agressif
             gain.gain.setValueAtTime(0.0001, now + start);
             gain.gain.exponentialRampToValueAtTime(volume, now + start + 0.01);
@@ -8822,7 +9243,7 @@ function bindEvents() {
         if (badge) badge.dataset.event ? showEventFact(badge) : showFact(badge.dataset.theme, badge);
     });
     document.addEventListener('pointerdown', e => {
-        if (!$('factBubble').hidden && !e.target.closest('.decor-badge')) $('factBubble').hidden = true;
+        if (!$('factBubble').hidden && !e.target.closest('.decor-badge') && !e.target.closest('.map-kulti')) $('factBubble').hidden = true;
     });
 
     // Sauvegarde en ligne
@@ -9021,6 +9442,10 @@ function initBac() {
         }
         const anim = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir l’animation du jour de série (avec ta série actuelle) ?', yes: 'Voir l’animation', no: 'Plus d’options' });
         if (anim) { showStreakAnim(state.data.streak || 1); return; }
+        const more2 = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir les autres petites fêtes ?', yes: 'Récap du mois en cours', no: 'Plus d’options' });
+        if (more2) { recapSlides = []; openRecap(monthKeyOf(todayKey())); return; }
+        const more3 = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le gel de série puis le nouveau titre ?', yes: 'Gel + titre', no: 'Plus d’options' });
+        if (more3) { celebrate(() => showFreezeAnim(state.data.streak || 1)); const t = titleFor(state.data.xp); celebrate(() => showTitleAnim({ from: 'Curieux', to: t.current.name, next: t.next })); return; }
         const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Fermer' });
         if (reset) { try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* tant pis */ } location.reload(); }
     });
@@ -9086,6 +9511,8 @@ function closePatchNotes() {
 function closeTopOverlay() {
     const open = id => !$(id).hidden;
     if ($('streakAnim') && !$('streakAnim').hidden) { closeStreakAnim(); return true; }
+    if (closeCelebrationLayer('titleAnim') || closeCelebrationLayer('freezeAnim')) return true;
+    if ($('recapStory') && !$('recapStory').hidden) { closeRecap(); return true; }
     if (open('askModal')) { $('askNo').click(); return true; }
     if (open('photoZoom')) {
         $('photoZoom').hidden = true;

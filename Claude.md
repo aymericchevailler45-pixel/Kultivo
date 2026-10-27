@@ -27,6 +27,21 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   MASCOTTE « Kulti » (cerveau du logo avec yeux / bouche, 7 humeurs) : parle dans les bulles d'explication (bouche qui bouge
   pendant que le texte s'écrit) ; remplace le grand dessin des écrans de fin (content / fier / déçu + cœur brisé 💔 qui tombe
   à côté quand le niveau est raté) ; inquiet dans la fenêtre « série en danger » ; se présente au 1er lancement. Logo inchangé.
+- FAIT le 27/10 (aperçu : apercu-idees.html) : « petites fêtes » dans le vrai jeu :
+  1. combo 🔥 3/5/7/10 d'affilée (1er coup, sans indice) + 6. « ⚡ Éclair ! » (< 3 s, pas sprint / défi du jour / duel) :
+     pastilles posées SUR le bord du bandeau (`#fbStickers`, `renderStickers`), le bandeau ne change pas de taille ; son qui monte
+     (`playSound(name, semis)`) ;
+  2. Kulti sur le parcours (`placeMapKulti`) : côté du MILIEU de l'écran (d'après `--x`), un ami au même niveau passe de l'autre
+     côté (`.has-kulti-right`), amis ailleurs toujours à droite ; dort le soir (≥ 20 h, pas joué) ; chapeau d'événement
+     (`KULTI_HATS[ev.bank]`) ; tap = phrase dans la bulle des anecdotes (`kultiSay`) ;
+  3. nouveau titre (`state.pendingTitle` dans addXp → `showTitleAnim` après l'écran de fin) ;
+  4. objectif du jour atteint : case avec anneau (XP avant → après, vrais chiffres) + « Réclamer » sur place (`renderEndGoal`,
+     `claimGoalReward`) ; pas réclamé → pastille Défis comme avant ;
+  5. gel utilisé : animation glace (`showFreezeAnim`) avant la roulette ; file `celebrate` / `nextCelebration` (gel → série → titre) ;
+  7. récap du mois (`monthStats` rempli par `recordResult` / coffres, `backfillMonthStats` une fois pour octobre ; `openRecap`
+     « stories » ; bouton violet sous la barre d'XP du Profil `#monthRecapBtn`, pastille tant que pas vu puis 7 jours ;
+     Records → « 📅 Mes récaps du mois »). 1er récap : octobre, le 1er novembre. Bac à sable : options pour tout voir.
+  8. Kulti personnalisable (accessoires) : pour plus tard.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

@@ -9,7 +9,13 @@ const KULTI_FACES = {
     clin: { eyes: 'wink', mouth: 'M14.6 20.2 Q17.6 23.4 20.6 20.2', cheeks: true },
     surpris: { eyes: 'big', mouth: 'o' },
     inquiet: { eyes: 'worried', mouth: 'M14.8 22 Q17.6 19.6 20.4 22' },
-    triste: { eyes: 'sad', mouth: 'M14.8 22.2 Q17.6 19.8 20.4 22.2' }
+    triste: { eyes: 'sad', mouth: 'M14.8 22.2 Q17.6 19.8 20.4 22.2' },
+    dort: { eyes: 'closed', mouth: 'o' }
+};
+// Chapeaux des fêtes (clé = `bank` de l'événement) : posés sur le cerveau, même repère 36 × 36
+const KULTI_HATS = {
+    halloween: '<svg class="kulti-hat" viewBox="0 0 36 36" aria-hidden="true"><ellipse cx="16" cy="6.2" rx="10" ry="2.2" fill="#2c1a3d"/><path d="M10.5 6 Q14 -2 17.5 -7 Q20 -9.5 23.5 -8 Q20.5 -6.5 20.5 -3 L22 6 Z" fill="#3b2352"/><rect x="11.2" y="3.4" width="10.4" height="2.2" rx=".6" fill="#ff8a00"/><rect x="15.2" y="3.1" width="2.6" height="2.8" rx=".4" fill="#ffd36b"/></svg>',
+    noel: '<svg class="kulti-hat" viewBox="0 0 36 36" aria-hidden="true"><path d="M8.5 7 Q12 -4 22 -5 Q28 -4.5 28.5 2 L27 7 Z" fill="#e0242f"/><rect x="7.5" y="5.2" width="21" height="3.4" rx="1.7" fill="#fff"/><circle cx="28.4" cy="1.6" r="2.4" fill="#fff"/></svg>'
 };
 const KULTI_EYE_L = [13, 14.8], KULTI_EYE_R = [22.2, 14.8];
 // Zone du visage : couleur du cerveau en fondu, pour que les plis ne traversent pas les yeux
@@ -42,10 +48,10 @@ function kultiSVG(face) {
     const cheeks = f.cheeks ? '<ellipse cx="10.6" cy="19.4" rx="1.6" ry="1" fill="#ff7f9b" opacity=".55"/><ellipse cx="24.6" cy="19.4" rx="1.6" ry="1" fill="#ff7f9b" opacity=".55"/>' : '';
     return `<svg class="kulti-svg" viewBox="0 0 36 36" aria-hidden="true">${KULTI_BRAIN}${KULTI_PATCH}<g class="kulti-eyes">${kultiEyes(f.eyes)}</g>${cheeks}${kultiMouth(f.mouth, f.fill)}</svg>`;
 }
-/** Kulti dans un <span class="kulti …"> ; `heart` : cœur brisé qui tombe à côté (niveau raté). */
-function kultiEl(face, cls = '', heart = false) {
+/** Kulti dans un <span class="kulti …"> ; `heart` : cœur brisé qui tombe à côté (niveau raté) ; `hat` : clé de KULTI_HATS. */
+function kultiEl(face, cls = '', heart = false, hat = null) {
     const span = document.createElement('span');
     span.className = `kulti${cls ? ' ' + cls : ''}`;
-    span.innerHTML = kultiSVG(face) + (heart ? '<img class="kulti-heart" src="emoji/1f494.svg" alt="">' : '');
+    span.innerHTML = kultiSVG(face) + (hat && KULTI_HATS[hat] ? KULTI_HATS[hat] : '') + (heart ? '<img class="kulti-heart" src="emoji/1f494.svg" alt="">' : '');
     return span;
 }

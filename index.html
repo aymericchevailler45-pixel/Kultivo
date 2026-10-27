@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261027c">
+    <link rel="stylesheet" href="style.css?v=20261027d">
 </head>
 <body>
 
@@ -164,6 +164,7 @@
                             <div class="meter-fill" id="titleBar"></div>
                         </div>
                         <p class="muted" id="profileNext"></p>
+                        <button type="button" id="monthRecapBtn" class="month-recap-btn" hidden></button>
                         <div class="hero-toggles">
                             <button type="button" id="soundBtn" class="sound-toggle"></button>
                             <button type="button" id="cloudBtn" class="sound-toggle" hidden></button>
@@ -321,6 +322,7 @@
                 <p id="endText"></p>
                 <div class="end-stats" id="endStats" hidden></div>
                 <p class="end-extra" id="endExtra"></p>
+                <div class="end-goal" id="endGoal" hidden></div>
                 <div class="actions">
                     <button type="button" id="endRescue" class="btn btn-green" hidden></button>
                     <p class="end-rescue-info" id="endRescueInfo" hidden></p>
@@ -534,6 +536,7 @@
 
     <!-- BANDEAU DE CORRECTION -->
     <div id="feedback" class="feedback" aria-live="polite">
+        <div class="fb-stickers" id="fbStickers" aria-hidden="true"></div>
         <div class="feedback-inner">
             <div class="feedback-text">
                 <p class="feedback-title" id="feedbackTitle"></p>
@@ -575,32 +578,32 @@
     <div class="toasts" id="toasts" aria-live="polite"></div>
 
     <!-- L'ordre compte : les questions d'abord, puis la logique -->
-    <script src="questions.js?v=20261027c"></script>
-    <script src="pairs.js?v=20261027c"></script>
-    <script src="order.js?v=20261027c"></script>
-    <script src="facts.js?v=20261027c"></script>
-    <script src="entrainement/banque.js?v=20261027c"></script>
-    <script src="entrainement/histoire.js?v=20261027c"></script>
-    <script src="entrainement/sciences.js?v=20261027c"></script>
-    <script src="entrainement/geographie.js?v=20261027c"></script>
-    <script src="entrainement/technologie.js?v=20261027c"></script>
-    <script src="entrainement/musique.js?v=20261027c"></script>
-    <script src="entrainement/litterature.js?v=20261027c"></script>
-    <script src="entrainement/jeux.js?v=20261027c"></script>
-    <script src="entrainement/cinema.js?v=20261027c"></script>
-    <script src="entrainement/gastronomie.js?v=20261027c"></script>
-    <script src="entrainement/sport.js?v=20261027c"></script>
-    <script src="entrainement/arts.js?v=20261027c"></script>
-    <script src="entrainement/langue-francaise.js?v=20261027c"></script>
-    <script src="entrainement/mythologie.js?v=20261027c"></script>
-    <script src="entrainement/drapeaux.js?v=20261027c"></script>
-    <script src="entrainement/monuments.js?v=20261027c"></script>
-    <script src="cards.js?v=20261027c"></script>
-    <script src="cosmetiques.js?v=20261027c"></script>
-    <script src="kulti.js?v=20261027c"></script>
-    <script src="levels.js?v=20261027c"></script>
-    <script src="vendor/supabase.min.js?v=20261027c"></script>
-    <script src="evenements/halloween.js?v=20261027c"></script>
-    <script src="script.js?v=20261027c"></script>
+    <script src="questions.js?v=20261027d"></script>
+    <script src="pairs.js?v=20261027d"></script>
+    <script src="order.js?v=20261027d"></script>
+    <script src="facts.js?v=20261027d"></script>
+    <script src="entrainement/banque.js?v=20261027d"></script>
+    <script src="entrainement/histoire.js?v=20261027d"></script>
+    <script src="entrainement/sciences.js?v=20261027d"></script>
+    <script src="entrainement/geographie.js?v=20261027d"></script>
+    <script src="entrainement/technologie.js?v=20261027d"></script>
+    <script src="entrainement/musique.js?v=20261027d"></script>
+    <script src="entrainement/litterature.js?v=20261027d"></script>
+    <script src="entrainement/jeux.js?v=20261027d"></script>
+    <script src="entrainement/cinema.js?v=20261027d"></script>
+    <script src="entrainement/gastronomie.js?v=20261027d"></script>
+    <script src="entrainement/sport.js?v=20261027d"></script>
+    <script src="entrainement/arts.js?v=20261027d"></script>
+    <script src="entrainement/langue-francaise.js?v=20261027d"></script>
+    <script src="entrainement/mythologie.js?v=20261027d"></script>
+    <script src="entrainement/drapeaux.js?v=20261027d"></script>
+    <script src="entrainement/monuments.js?v=20261027d"></script>
+    <script src="cards.js?v=20261027d"></script>
+    <script src="cosmetiques.js?v=20261027d"></script>
+    <script src="kulti.js?v=20261027d"></script>
+    <script src="levels.js?v=20261027d"></script>
+    <script src="vendor/supabase.min.js?v=20261027d"></script>
+    <script src="evenements/halloween.js?v=20261027d"></script>
+    <script src="script.js?v=20261027d"></script>
 </body>
 </html>
