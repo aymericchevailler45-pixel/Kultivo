@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aperçu petites fêtes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=idees1">
+<!-- Page d'APERÇU (2026-10-27) : combo, Kulti sur le parcours, nouveau titre, objectif du jour, gel, éclair, récap du mois.
+     Rien de tout ça n'est encore dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .wrap > .card { min-width: 0; }
+    .card > h2 { margin: 0 0 2px; }
+    .lead { margin: 0 0 12px; color: var(--muted); font-weight: 700; }
+    .where { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .9rem; color: var(--ink); }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btns .btn { padding: 8px 12px; font-size: .9rem; }
+    .btns .btn.is-on { border-color: var(--green); color: var(--green-deep); }
+
+    .phone { position: relative; width: 300px; max-width: 100%; height: 520px; border-radius: 26px; overflow: hidden;
+        border: 6px solid #1d2433; background: var(--bg); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+    .p-top { display: flex; align-items: center; gap: 6px; padding: 10px; background: var(--surface); border-bottom: 1px solid var(--line); }
+    .p-top img.logo { width: 26px; height: 26px; border-radius: 7px; }
+    .p-top b { margin-right: auto; font-weight: 900; }
+    .chip { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 999px; border: 2px solid var(--line); font-weight: 900; font-size: .8rem; background: var(--surface); }
+    .chip img { width: 15px; height: 15px; }
+    .p-btn { width: 100%; padding: 12px; border: 0; border-radius: 14px; background: #58cc02; box-shadow: 0 4px 0 #46a302; color: #fff; font: inherit; font-weight: 900; cursor: pointer; }
+
+    /* 1 · Combo */
+    .lesson { padding: 14px; }
+    .bar { height: 12px; border-radius: 8px; background: var(--line); overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 0; background: #58cc02; border-radius: 8px; transition: width .3s; }
+    .q { margin: 40px 0 12px; font-size: 1.15rem; font-weight: 900; text-align: center; }
+    .ans { padding: 12px; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); font-weight: 800; color: var(--muted); }
+    .fb { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 14px 16px; background: #d7ffb8; transform: translateY(100%); transition: transform .25s; }
+    .fb.on { transform: none; }
+    .fb.bad { background: #ffdfe0; }
+    .fb-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 1.1rem; font-weight: 900; color: #58a700; }
+    .fb.bad .fb-head { color: #ea2b2b; }
+    .combo { padding: 3px 10px; border-radius: 999px; background: #ff9600; color: #fff; font-size: .85rem; font-weight: 900; box-shadow: 0 3px 0 #c46a00; }
+    .combo.pop { animation: comboPop .55s cubic-bezier(.2,1.8,.4,1); }
+    @keyframes comboPop { 0% { transform: scale(0) rotate(-12deg); } 60% { transform: scale(1.25) rotate(4deg); } 100% { transform: scale(1); } }
+    .flash { padding: 3px 9px; border-radius: 999px; background: #1cb0f6; color: #fff; font-size: .8rem; font-weight: 900; box-shadow: 0 3px 0 #1489c2; }
+    .flash.pop { animation: comboPop .55s cubic-bezier(.2,1.8,.4,1); }
+
+    /* 2 · Kulti sur le parcours */
+    .map { position: absolute; inset: 47px 0 0; background: #f3f7ee; overflow: hidden; }
+    .map.night { background: linear-gradient(#2b3157, #48406e); }
+    .node { position: absolute; width: 64px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 1.3rem; color: #fff; background: #58cc02; box-shadow: 0 6px 0 #46a302; }
+    .node.done { background: #ffc800; box-shadow: 0 6px 0 #d9a400; }
+    .node.lock { background: #e5e9f0; color: #9aa6bd; box-shadow: 0 6px 0 #cbd2de; }
+    .node.cur { outline: 5px solid rgba(88,204,2,.25); outline-offset: 4px; }
+    .mapk { position: absolute; width: 78px; height: 78px; cursor: pointer; }
+    .mapk .kulti { width: 100%; height: 100%; }
+    .hat { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    .zzz { position: absolute; right: -6px; top: -8px; font-weight: 900; color: #c9d3ff; font-size: 1rem; }
+    .zzz span { position: absolute; animation: zz 2.4s ease-in infinite; opacity: 0; }
+    .zzz span:nth-child(2) { animation-delay: .8s; font-size: .8rem; }
+    .zzz span:nth-child(3) { animation-delay: 1.6s; font-size: .65rem; }
+    @keyframes zz { 0% { opacity: 0; transform: translate(0, 0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(14px, -26px); } }
+    .say { position: absolute; max-width: 170px; padding: 8px 10px; border-radius: 12px; background: var(--surface); box-shadow: 0 6px 18px rgba(0,0,0,.18); font-weight: 800; font-size: .8rem; line-height: 1.3; opacity: 0; transform: translateY(6px); transition: .25s; pointer-events: none; }
+    .say.on { opacity: 1; transform: none; }
+
+    /* 3 · Nouveau titre */
+    .ov { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .ov.on { opacity: 1; pointer-events: auto; }
+    .ovT { background: linear-gradient(170deg, #58cc02, #2f8f00); color: #fff; overflow: hidden; }
+    .ovT .kk { width: 110px; height: 110px; }
+    .ovT small { font-weight: 800; opacity: .9; }
+    .flipT { width: 220px; height: 64px; perspective: 600px; }
+    .flipT .in { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.3,1.4,.5,1) .6s; }
+    .ovT.on .flipT .in { transform: rotateX(180deg); }
+    .flipT .f { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 16px; background: #fff; color: #2f8f00; font-size: 1.35rem; font-weight: 900; backface-visibility: hidden; box-shadow: 0 5px 0 rgba(0,0,0,.15); }
+    .flipT .f.old { color: #9aa6bd; text-decoration: line-through; }
+    .flipT .f.new { transform: rotateX(180deg); background: #ffc800; color: #7a4e00; }
+    .ovT .next { font-weight: 800; font-size: .85rem; opacity: .9; }
+    .ovT .cont { position: absolute; left: 16px; right: 16px; bottom: 16px; }
+    .ovT .cont .p-btn { background: #fff; color: #2f8f00; box-shadow: 0 4px 0 rgba(0,0,0,.15); }
+    .conf { position: absolute; top: -10px; width: 8px; height: 14px; border-radius: 2px; opacity: 0; }
+    .ov.on .conf { animation: confFall var(--d) linear var(--w) forwards; }
+    @keyframes confFall { 0% { opacity: 1; transform: translateY(0) rotate(0); } 100% { opacity: 1; transform: translateY(560px) rotate(720deg); } }
+
+    /* 4 · Objectif du jour */
+    .endm { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 22px 16px; text-align: center; }
+    .endm .kk { width: 84px; height: 84px; }
+    .endm h3 { margin: 0; font-size: 1.25rem; font-weight: 900; }
+    .goalbox { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border: 2px solid var(--line); border-radius: 16px; background: var(--surface); text-align: left; }
+    .goalbox.done { border-color: #ffc800; background: #fff8dc; }
+    .ring { flex: none; width: 58px; height: 58px; }
+    .ring circle { fill: none; stroke-width: 7; }
+    .ring .bg { stroke: var(--line); }
+    .ring .fg { stroke: #ff9600; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 1.2s cubic-bezier(.3,1,.5,1); }
+    .goalbox.done .ring .fg { stroke: #ffc800; }
+    .ringtxt { position: absolute; left: 12px; width: 58px; top: 50%; transform: translateY(-50%); text-align: center; font-weight: 900; font-size: .8rem; }
+    .goalbox b { display: block; font-weight: 900; }
+    .goalbox span { font-weight: 700; font-size: .82rem; color: var(--muted); }
+    .claim { margin-top: 6px; padding: 6px 12px; border: 0; border-radius: 10px; background: #ffc800; box-shadow: 0 3px 0 #d9a400; color: #7a4e00; font: inherit; font-weight: 900; font-size: .85rem; opacity: 0; transform: scale(.6); transition: .35s cubic-bezier(.2,1.6,.4,1); }
+    .goalbox.done .claim { opacity: 1; transform: none; }
+
+    /* 5 · Gel */
+    .ovG { background: radial-gradient(circle at 50% 45%, #0e3550, #071522); color: #fff; }
+    .ice { position: relative; width: 150px; height: 150px; display: grid; place-items: center; }
+    .ice img { width: 100px; height: 100px; transition: filter .4s; }
+    .ice .block { position: absolute; inset: 8px; border-radius: 26px; background: linear-gradient(140deg, rgba(190,235,255,.85), rgba(120,200,245,.55)); border: 3px solid rgba(255,255,255,.8); box-shadow: inset 0 0 20px rgba(255,255,255,.7), 0 0 30px rgba(124,200,245,.5); transform: scale(0); opacity: 0; }
+    .ovG.s1 .block { animation: freeze .5s cubic-bezier(.2,1.5,.4,1) forwards; }
+    .ovG.s1 .ice img { filter: grayscale(.8) brightness(1.3); }
+    .ovG.s2 .block { animation: crack .6s ease-in forwards; }
+    .ovG.s2 .ice img { filter: none; animation: flameBack .6s cubic-bezier(.2,1.6,.4,1) .3s; }
+    @keyframes freeze { to { transform: scale(1); opacity: 1; } }
+    @keyframes crack { 0% { transform: scale(1); opacity: 1; } 30% { transform: scale(1.05) rotate(2deg); } 100% { transform: scale(1.5); opacity: 0; } }
+    @keyframes flameBack { 50% { transform: scale(1.3); } }
+    .shard { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; background: rgba(200,240,255,.9); clip-path: polygon(50% 0, 100% 60%, 30% 100%); opacity: 0; }
+    .ovG.s2 .shard { animation: shard .7s ease-out forwards; }
+    @keyframes shard { 0% { opacity: 1; transform: translate(-50%,-50%) rotate(var(--a)) translateY(0); } 100% { opacity: 0; transform: translate(-50%,-50%) rotate(var(--a)) translateY(-90px); } }
+    .ovG h3 { margin: 0; font-size: 1.25rem; font-weight: 900; }
+    .ovG p { margin: 0; font-weight: 700; opacity: .85; }
+    .ovG .txt { opacity: 0; transition: .3s; }
+    .ovG.s2 .txt { opacity: 1; }
+
+    /* 7 · Récap du mois */
+    .tabs { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-around; padding: 8px 4px; background: var(--surface); border-top: 1px solid var(--line); font-size: .66rem; font-weight: 800; color: var(--muted); }
+    .tabs div { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .tabs div.on { color: #58a700; }
+    .tabs .dot { position: absolute; top: -3px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #ff4b4b; color: #fff; font-size: .62rem; display: grid; place-items: center; }
+    .prof { padding: 12px; }
+    .monthcard { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 16px; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; box-shadow: 0 5px 0 #6d3fd1; cursor: pointer; }
+    .monthcard b { display: block; font-weight: 900; }
+    .monthcard span { font-weight: 700; font-size: .8rem; opacity: .9; }
+    .monthcard .em { font-size: 1.8rem; }
+    .fake { margin-top: 12px; height: 70px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); }
+    .story { position: absolute; inset: 0; display: flex; flex-direction: column; color: #fff; opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 5; }
+    .story.on { opacity: 1; pointer-events: auto; }
+    .story .prog { display: flex; gap: 4px; padding: 10px 10px 0; }
+    .story .prog i { flex: 1; height: 4px; border-radius: 4px; background: rgba(255,255,255,.35); overflow: hidden; }
+    .story .prog i b { display: block; height: 100%; width: 0; background: #fff; }
+    .story .prog i.done b { width: 100%; }
+    .story .prog i.cur b { animation: progS 5s linear forwards; }
+    @keyframes progS { to { width: 100%; } }
+    .story .x { position: absolute; top: 18px; right: 12px; font-size: 1.2rem; font-weight: 900; cursor: pointer; }
+    .story .slide { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center; }
+    .story .slide .kk { width: 96px; height: 96px; }
+    .story .big { font-size: 3.6rem; font-weight: 900; line-height: 1; animation: comboPop .6s cubic-bezier(.2,1.6,.4,1); }
+    .story h3 { margin: 0; font-size: 1.3rem; font-weight: 900; }
+    .story p { margin: 0; font-weight: 700; opacity: .9; }
+    .story .hint { padding-bottom: 14px; text-align: center; font-size: .75rem; font-weight: 800; opacity: .7; }
+</style>
+<script src="kulti.js?v=idees1"></script>
+</head>
+<body>
+<div class="wrap">
+    <article class="card">
+        <h1 style="margin:0 0 4px">✨ Petites fêtes</h1>
+        <p class="lead" style="margin:0">Aperçu à juger : rien n'est encore dans le jeu. Touche les boutons sous chaque téléphone.</p>
+    </article>
+
+    <!-- 1 -->
+    <article class="card">
+        <h2>1 · Combo de bonnes réponses</h2>
+        <p class="lead">À 3, 5, 7, 10 bonnes réponses d'affilée, une pastille orange saute dans le bandeau vert. Le son monte d'une note à chaque bonne réponse de suite. Une erreur remet le combo à zéro.</p>
+        <div class="phone">
+            <div class="lesson"><div class="bar"><i id="cBar"></i></div><div class="q" id="cQ">Quelle est la capitale du Japon ?</div><div class="ans">Tokyo</div></div>
+            <div class="fb" id="cFb"><div class="fb-head"><span id="cHead">✅ Bonne réponse !</span><span class="combo" id="cCombo" hidden></span><span class="flash" id="cFlash" hidden>⚡ Éclair !</span></div><button class="p-btn" type="button">Continuer</button></div>
+        </div>
+        <div class="btns"><button class="btn btn-ghost" type="button" id="cGood">✅ Bonne réponse</button><button class="btn btn-ghost" type="button" id="cBad">❌ Erreur</button><button class="btn btn-ghost" type="button" id="cFast">⚡ Bonne et rapide</button></div>
+        <p class="where">Où : dans le bandeau de correction, à côté de « Bonne réponse ». Rien de plus : pas d'XP en plus, juste le plaisir.</p>
+    </article>
+
+    <!-- 6 -->
+    <article class="card">
+        <h2>6 · Éclair ⚡</h2>
+        <p class="lead">Si tu réponds juste en moins de 3 secondes (sans indice), une pastille bleue « ⚡ Éclair ! » apparaît au même endroit que le combo. Essaie le bouton « ⚡ Bonne et rapide » du téléphone au-dessus.</p>
+        <p class="where">Où : dans le bandeau vert de la bonne réponse, à côté du combo. Pas pendant le sprint (tout y est rapide) ni pour les drapeaux / rébus faciles à lire ? À voir avec toi. Pas d'XP en plus non plus.</p>
+    </article>
+
+    <!-- 2 -->
+    <article class="card">
+        <h2>2 · Kulti sur le parcours</h2>
+        <p class="lead">Kulti est assis à côté de ton niveau en cours (il te suit quand tu avances). Touche-le : il dit une petite phrase. Il change selon le moment :</p>
+        <div class="phone" id="mPhone">
+            <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div>
+            <div class="map" id="mMap">
+                <div class="node lock" style="left:150px;top:40px">14</div>
+                <div class="node cur" style="left:70px;top:150px">13</div>
+                <div class="node done" style="left:130px;top:262px">12</div>
+                <div class="node done" style="left:60px;top:370px">11</div>
+                <div class="mapk" id="mK" style="left:160px;top:136px"></div>
+                <div class="say" id="mSay" style="left:120px;top:92px"></div>
+            </div>
+        </div>
+        <div class="btns" id="mBtns">
+            <button class="btn btn-ghost is-on" type="button" data-m="jour">☀️ La journée</button>
+            <button class="btn btn-ghost" type="button" data-m="soir">🌙 Le soir, pas encore joué</button>
+            <button class="btn btn-ghost" type="button" data-m="halloween">🎃 Halloween</button>
+            <button class="btn btn-ghost" type="button" data-m="noel">🎄 Noël</button>
+        </div>
+        <p class="where">Où : sur la carte du parcours, juste à droite (ou à gauche) du niveau en cours, sans cacher les décors. Le soir (après 20 h) si tu n'as pas joué : il dort, « zzz », et dit « Ta série de 12 jours t'attend… ». Pendant les fêtes : chapeau de sorcière, bonnet de Noël. Ses phrases changent à chaque tap (encouragements, anecdotes courtes, rappel de l'objectif du jour).</p>
+    </article>
+
+    <!-- 3 -->
+    <article class="card">
+        <h2>3 · Nouveau titre</h2>
+        <p class="lead">Aujourd'hui, passer de « Curieux » à « Apprenti » ne se voit presque pas. Là : écran vert, Kulti fier, l'ancien titre se retourne pour montrer le nouveau, confettis.</p>
+        <div class="phone">
+            <div class="endm"><div class="kk" id="tK0"></div><h3>Niveau 9 terminé !</h3></div>
+            <div class="ov ovT" id="ovT">
+                <div class="kk" id="tK"></div>
+                <small>Nouveau titre !</small>
+                <div class="flipT"><div class="in"><div class="f old">Curieux</div><div class="f new">Apprenti</div></div></div>
+                <div class="next">Prochain : « Lecteur assidu » à 900 XP</div>
+                <div class="cont"><button class="p-btn" type="button">Super !</button></div>
+            </div>
+        </div>
+        <div class="btns"><button class="btn btn-ghost" type="button" data-play="T">▶ Rejouer</button></div>
+        <p class="where">Où : comme l'animation de série, par-dessus l'écran de fin, au moment où l'XP fait passer le cap. Rare (11 titres en tout), donc ça reste spécial. Si la série et le titre arrivent le même jour : l'un après l'autre.</p>
+    </article>
+
+    <!-- 4 -->
+    <article class="card">
+        <h2>4 · Objectif du jour atteint</h2>
+        <p class="lead">Aujourd'hui : quand ta partie fait atteindre ton objectif du jour (ex. 150 XP), il n'y a qu'une ligne de texte sur l'écran de fin, « 🎯 Objectif atteint ! Va dans Défis pour ta récompense ». Facile à rater.</p>
+        <p class="lead">L'idée : sur l'écran de fin, une petite case avec un anneau qui se remplit de 120 à 150 XP, devient doré avec un « ding », et un bouton « Réclamer 30 🪙 » directement là (plus besoin d'aller dans Défis).</p>
+        <div class="phone">
+            <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div>
+            <div class="endm">
+                <div class="kk" id="gK"></div>
+                <h3>Niveau 13 terminé !</h3>
+                <div class="goalbox" id="gBox">
+                    <svg class="ring" viewBox="0 0 60 60"><circle class="bg" cx="30" cy="30" r="25"/><circle class="fg" id="gRing" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="31"/></svg>
+                    <div class="ringtxt" id="gTxt">80 %</div>
+                    <div><b id="gTitle">Objectif du jour</b><span id="gSub">120 / 150 XP</span><br><button class="claim" type="button">Réclamer 30 🪙</button></div>
+                </div>
+                <button class="p-btn" type="button" style="margin-top:8px">Continuer</button>
+            </div>
+        </div>
+        <div class="btns"><button class="btn btn-ghost" type="button" data-play="G">▶ Rejouer</button></div>
+        <p class="where">Où : sur l'écran de fin, seulement le jour où l'objectif est atteint par cette partie (sinon rien ne change).</p>
+    </article>
+
+    <!-- 5 -->
+    <article class="card">
+        <h2>5 · Gel de série utilisé</h2>
+        <p class="lead">Aujourd'hui : un simple message « 🧊 1 gel de série utilisé : ta série est sauvée ! ». Là : la flamme se fige dans un bloc de glace, la glace éclate, la flamme repart.</p>
+        <div class="phone">
+            <div class="ov ovG" id="ovG">
+                <div class="ice"><img src="emoji/1f525.svg" alt=""><div class="block"></div></div>
+                <div class="txt"><h3>🧊 Série sauvée !</h3><p>Un gel a protégé hier. Ta série de 12 jours continue.</p></div>
+            </div>
+        </div>
+        <div class="btns"><button class="btn btn-ghost" type="button" data-play="G2">▶ Rejouer</button></div>
+        <p class="where">Où : juste AVANT l'animation de série du jour (le gel s'utilise à ce moment-là, à la fin de ta première partie). Puis la roulette enchaîne, et la case d'hier montre 🧊 dans la semaine, comme maintenant.</p>
+    </article>
+
+    <!-- 7 -->
+    <article class="card">
+        <h2>7 · Ton mois sur Kultivo</h2>
+        <p class="lead">Le 1er de chaque mois, un récap du mois passé, comme des « stories » Instagram : des écrans qui défilent seuls (ou d'un tap), avec tes chiffres.</p>
+        <div class="phone" id="rPhone">
+            <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div>
+            <div class="prof">
+                <div class="monthcard" id="rCard"><span class="em">📅</span><div><b>Ton mois d'octobre est prêt !</b><span>Touche pour voir ton récap</span></div></div>
+                <div class="fake"></div><div class="fake"></div>
+            </div>
+            <div class="tabs"><div>🗺️<span>Parcours</span></div><div>🏆<span>Défis</span></div><div>🥇<span>Classement</span></div><div>🛒<span>Boutique</span></div><div class="on">👤<span>Profil</span><i class="dot">1</i></div></div>
+            <div class="story" id="rStory"><div class="prog" id="rProg"></div><div class="x" id="rX">✕</div><div class="slide" id="rSlide"></div><div class="hint">Touche à droite : suivant · à gauche : retour</div></div>
+        </div>
+        <p class="where">« Pastille rouge » = le petit rond rouge avec un 1 sur l'onglet Profil (comme pour les cartes à réveiller). Pas de fenêtre qui s'ouvre toute seule : tu vois la pastille, tu vas dans Profil, la carte violette « Ton mois d'octobre est prêt ! » est tout en haut ; tu la touches quand tu veux. Elle reste jusqu'à la fin du mois, et on peut revoir les anciens mois.</p>
+        <p class="where">Écrans (6) : questions répondues · XP gagnés · ton meilleur thème · ta plus longue série · la question que tu as le plus ratée · cartes gagnées, puis « À novembre ! ».</p>
+    </article>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const K = (face, cls = 'kulti-blink kulti-float', heart) => kultiEl(face, cls, heart);
+KULTI_FACES.dort = { eyes: 'closed', mouth: 'o' };
+
+// ---------- Sons ----------
+let actx = null;
+function tone(freq, start, dur, type = 'sine', vol = 0.16) {
+    try {
+        actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+        if (actx.state === 'suspended') actx.resume();
+        const now = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+        o.type = type; o.frequency.setValueAtTime(freq, now + start);
+        g.gain.setValueAtTime(0.0001, now + start); g.gain.exponentialRampToValueAtTime(vol, now + start + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+        o.connect(g).connect(actx.destination); o.start(now + start); o.stop(now + start + dur + 0.02);
+    } catch (e) { }
+}
+const semis = n => Math.pow(2, n / 12);
+
+// ---------- 1 · Combo + 6 · Éclair ----------
+let combo = 0, qn = 0;
+const QS = ['Quelle est la capitale du Japon ?', 'Qui a peint la Joconde ?', 'Combien de pattes a une araignée ?', 'Quel est le plus grand océan ?', 'Quel gaz respire-t-on ?'];
+function answer(ok, fast = false) {
+    const fb = $('cFb');
+    fb.classList.remove('on');
+    setTimeout(() => {
+        qn++;
+        $('cBar').style.width = `${(qn % 11) * 10}%`;
+        $('cQ').textContent = QS[qn % QS.length];
+        fb.classList.toggle('bad', !ok);
+        $('cHead').textContent = ok ? '✅ Bonne réponse !' : '❌ La réponse était…';
+        const c = $('cCombo'), f = $('cFlash');
+        combo = ok ? combo + 1 : 0;
+        const show = [3, 5, 7, 10].includes(combo) || combo > 10 && combo % 5 === 0;
+        c.hidden = !show; c.textContent = `🔥 ${combo} d’affilée !`;
+        c.classList.remove('pop'); void c.offsetWidth; if (show) c.classList.add('pop');
+        f.hidden = !(ok && fast); f.classList.remove('pop'); void f.offsetWidth; if (ok && fast) f.classList.add('pop');
+        if (ok) { const k = Math.min(combo - 1, 8) * 2; tone(660 * semis(k), 0, 0.09); tone(880 * semis(k), 0.09, 0.18); if (show) tone(1320 * semis(k), 0.2, 0.25, 'triangle', 0.1); if (fast) tone(2000, 0.02, 0.06, 'square', 0.03); }
+        else tone(220, 0, 0.2, 'square', 0.05);
+        fb.classList.add('on');
+    }, 120);
+}
+$('cGood').onclick = () => answer(true);
+$('cBad').onclick = () => answer(false);
+$('cFast').onclick = () => answer(true, true);
+setTimeout(() => answer(true), 400);
+
+// ---------- 2 · Kulti sur le parcours ----------
+const HATS = {
+    halloween: '<svg class="hat" viewBox="0 0 36 36"><ellipse cx="16" cy="6.2" rx="10" ry="2.2" fill="#2c1a3d"/><path d="M10.5 6 Q14 -2 17.5 -7 Q20 -9.5 23.5 -8 Q20.5 -6.5 20.5 -3 L22 6 Z" fill="#3b2352"/><rect x="11.2" y="3.4" width="10.4" height="2.2" rx=".6" fill="#ff8a00"/><rect x="15.2" y="3.1" width="2.6" height="2.8" rx=".4" fill="#ffd36b"/></svg>',
+    noel: '<svg class="hat" viewBox="0 0 36 36"><path d="M8.5 7 Q12 -4 22 -5 Q28 -4.5 28.5 2 L27 7 Z" fill="#e0242f"/><rect x="7.5" y="5.2" width="21" height="3.4" rx="1.7" fill="#fff"/><circle cx="28.4" cy="1.6" r="2.4" fill="#fff"/></svg>'
+};
+const SAYS = {
+    jour: ['Allez, le niveau 13 t’attend !', 'Plus que 30 XP pour ton objectif du jour 🎯', 'Le saviez-tu ? Le miel ne se périme jamais.', 'Tu es sur une série de 12 jours, bravo 🔥'],
+    soir: ['Zzz… Ta série de 12 jours t’attend… 🔥', 'Un petit niveau avant de dormir ?'],
+    halloween: ['Bouh ! 🎃 Tu as trouvé la citrouille du jour ?', 'Encore 12 questions d’Halloween pour la carte !'],
+    noel: ['Joyeux Noël ! 🎄', 'Le défi de Noël t’attend dans Défis 🎁']
+};
+let mode = 'jour', sayIdx = 0, sayTimer = null;
+function drawK() {
+    const box = $('mK');
+    const face = mode === 'soir' ? 'dort' : mode === 'jour' ? 'content' : 'clin';
+    box.replaceChildren(K(face, mode === 'soir' ? '' : 'kulti-blink kulti-float'));
+    if (HATS[mode]) box.insertAdjacentHTML('beforeend', HATS[mode]);
+    if (mode === 'soir') box.insertAdjacentHTML('beforeend', '<div class="zzz"><span>Z</span><span>z</span><span>z</span></div>');
+    $('mMap').classList.toggle('night', mode === 'soir');
+    $('mSay').classList.remove('on');
+}
+$('mK').onclick = () => {
+    const s = $('mSay'), list = SAYS[mode];
+    s.textContent = list[sayIdx++ % list.length];
+    s.classList.add('on');
+    clearTimeout(sayTimer); sayTimer = setTimeout(() => s.classList.remove('on'), 2600);
+    tone(880, 0, 0.08, 'triangle', 0.1); tone(1175, 0.07, 0.1, 'triangle', 0.1);
+};
+document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+    mode = b.dataset.m; sayIdx = 0;
+    document.querySelectorAll('[data-m]').forEach(x => x.classList.toggle('is-on', x === b));
+    drawK(); setTimeout(() => $('mK').click(), 300);
+});
+drawK();
+setTimeout(() => $('mK').click(), 900);
+
+// ---------- 3 · Nouveau titre ----------
+$('tK0').append(K('content'));
+$('tK').append(K('fier'));
+function confetti(ov) {
+    ov.querySelectorAll('.conf').forEach(c => c.remove());
+    const colors = ['#ffc800', '#ff4b4b', '#1cb0f6', '#ce82ff', '#fff'];
+    for (let i = 0; i < 40; i++) {
+        const c = document.createElement('i');
+        c.className = 'conf';
+        c.style.left = `${Math.random() * 100}%`;
+        c.style.background = colors[i % colors.length];
+        c.style.setProperty('--d', `${1.6 + Math.random() * 1.4}s`);
+        c.style.setProperty('--w', `${0.6 + Math.random() * 0.6}s`);
+        ov.append(c);
+    }
+}
+function playT() {
+    const ov = $('ovT'); ov.classList.remove('on'); confetti(ov); void ov.offsetWidth;
+    requestAnimationFrame(() => ov.classList.add('on'));
+    [523, 659, 784].forEach((f, i) => tone(f, 0.6 + i * 0.08, 0.15, 'triangle', 0.12));
+    [523, 659, 784, 1047].forEach(f => tone(f, 0.9, 0.9, 'sine', 0.07));
+}
+
+// ---------- 4 · Objectif du jour ----------
+$('gK').append(K('content'));
+function playG() {
+    const box = $('gBox'), ring = $('gRing');
+    box.classList.remove('done'); ring.style.transition = 'none'; ring.style.strokeDashoffset = 157 * 0.2;
+    $('gTxt').textContent = '80 %'; $('gTitle').textContent = 'Objectif du jour'; $('gSub').textContent = '120 / 150 XP';
+    void ring.offsetWidth; ring.style.transition = '';
+    setTimeout(() => { ring.style.strokeDashoffset = 0; }, 500);
+    let v = 120; const t = setInterval(() => { v = Math.min(150, v + 2); $('gSub').textContent = `${v} / 150 XP`; $('gTxt').textContent = `${Math.round(v / 1.5)} %`; if (v >= 150) clearInterval(t); }, 60);
+    setTimeout(() => { box.classList.add('done'); $('gTxt').textContent = '🎯'; $('gTitle').textContent = 'Objectif atteint !'; tone(1319, 0, 0.5, 'sine', 0.14); tone(1760, 0.05, 0.7, 'sine', 0.08); }, 1750);
+}
+
+// ---------- 5 · Gel ----------
+function playG2() {
+    const ov = $('ovG');
+    ov.querySelectorAll('.shard').forEach(s => s.remove());
+    for (let i = 0; i < 10; i++) { const s = document.createElement('i'); s.className = 'shard'; s.style.setProperty('--a', `${i * 36}deg`); ov.querySelector('.ice').append(s); }
+    ov.classList.remove('on', 's1', 's2'); void ov.offsetWidth;
+    ov.classList.add('on');
+    setTimeout(() => { ov.classList.add('s1'); tone(1800, 0, 0.3, 'sine', 0.06); tone(2400, 0.05, 0.4, 'sine', 0.04); }, 400);
+    setTimeout(() => { ov.classList.remove('s1'); ov.classList.add('s2'); tone(300, 0, 0.12, 'square', 0.04); [784, 988, 1175].forEach((f, i) => tone(f, 0.3 + i * 0.05, 0.6, 'sine', 0.08)); }, 1800);
+}
+
+// ---------- 7 · Récap du mois ----------
+const SLIDES = [
+    { bg: 'linear-gradient(160deg,#8b5cf6,#ec4899)', face: 'clin', h: 'Ton mois d’octobre', p: 'On fait le bilan ? 👀' },
+    { bg: 'linear-gradient(160deg,#1cb0f6,#3b6cf6)', big: '412', h: 'questions répondues', p: 'dont 318 justes du premier coup (77 %)' },
+    { bg: 'linear-gradient(160deg,#58cc02,#2f8f00)', big: '2 340', h: 'XP gagnés', p: 'Ton meilleur jour : le 26 octobre, 410 XP' },
+    { bg: 'linear-gradient(160deg,#ff9600,#e8590c)', big: '🎬', h: 'Ton thème star : Cinéma', p: '92 % de bonnes réponses' },
+    { bg: 'linear-gradient(160deg,#ff4b4b,#b8125b)', big: '🔥 18', h: 'jours de série d’affilée', p: 'ta plus longue série du mois' },
+    { bg: 'linear-gradient(160deg,#334155,#0f172a)', face: 'triste', h: 'Ta bête noire', p: '« Quel est le plus long fleuve d’Asie ? » ratée 4 fois… C’était le Yangtsé 😅' },
+    { bg: 'linear-gradient(160deg,#ffc800,#f59e0b)', big: '🃏 14', h: 'cartes gagnées', p: 'dont 2 épiques ! Ta collection : 63 / 180' },
+    { bg: 'linear-gradient(160deg,#8b5cf6,#ec4899)', face: 'fier', h: 'À novembre !', p: 'Bravo pour ce mois 💪' }
+];
+let si = 0, sTimer = null;
+function showSlide(i) {
+    si = Math.max(0, Math.min(SLIDES.length - 1, i));
+    const s = SLIDES[si], st = $('rStory');
+    st.style.background = s.bg;
+    $('rProg').innerHTML = SLIDES.map((_, k) => `<i class="${k < si ? 'done' : k === si ? 'cur' : ''}"><b></b></i>`).join('');
+    const sl = $('rSlide'); sl.innerHTML = '';
+    if (s.face) { const d = document.createElement('div'); d.className = 'kk'; d.append(K(s.face)); sl.append(d); }
+    if (s.big) sl.insertAdjacentHTML('beforeend', `<div class="big">${s.big}</div>`);
+    sl.insertAdjacentHTML('beforeend', `<h3>${s.h}</h3><p>${s.p}</p>`);
+    clearTimeout(sTimer);
+    sTimer = setTimeout(() => { if (si < SLIDES.length - 1) showSlide(si + 1); }, 5000);
+}
+$('rCard').onclick = () => { $('rStory').classList.add('on'); document.querySelector('#rPhone .dot').hidden = true; showSlide(0); };
+$('rX').onclick = e => { e.stopPropagation(); clearTimeout(sTimer); $('rStory').classList.remove('on'); };
+$('rSlide').onclick = e => { const r = e.currentTarget.getBoundingClientRect(); showSlide(si + (e.clientX - r.left > r.width / 3 ? 1 : -1)); };
+
+document.querySelectorAll('[data-play]').forEach(b => b.onclick = () => ({ T: playT, G: playG, G2: playG2 })[b.dataset.play]());
+document.querySelectorAll('.ov .p-btn').forEach(b => b.onclick = () => b.closest('.ov').classList.remove('on'));
+setTimeout(() => { playT(); playG(); playG2(); }, 600);
+</script>
+</body>
+</html>
