@@ -132,6 +132,9 @@
     /* Humeurs en situation */
     .p-end .mas-end { width: 110px; height: 110px; }
     .p-end .mas-end svg { width: 100%; height: 100%; }
+    .mas-end { position: relative; }
+    .mas-end .heart { position: absolute; right: -14px; bottom: -2px; width: 46px; height: 46px; filter: drop-shadow(0 3px 4px rgba(0,0,0,.2)); animation: heartBreak 1.2s ease .3s both; }
+    @keyframes heartBreak { 0% { transform: scale(0) rotate(-20deg); } 45% { transform: scale(1.3) rotate(8deg); } 60% { transform: scale(1) rotate(-6deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0); } }
     .p-btn.ghost { background: var(--surface); color: var(--muted); box-shadow: none; border: 2px solid var(--line); }
     .dlg { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(10,16,32,.55); }
     .dlg .box { width: 100%; padding: 16px; border-radius: 20px; background: var(--surface); text-align: center; }
@@ -475,11 +478,11 @@ document.querySelector('[data-spin]').addEventListener('click', spinAll);
 const SIT = [
     ['content', '<h3>Niveau terminé !</h3><p>+36 XP · 6 bonnes réponses sur 7</p>', 'Continuer', 'Niveau réussi : content (à la place du 🎉).'],
     ['fier', '<h3>Sans faute !</h3><p>+46 XP · bonus sans faute</p>', 'Continuer', 'Sans faute, palier gagné, record du sprint : fier (à la place du 🏅).'],
-    ['triste', '<h3>Niveau raté</h3><p>Plus de cœurs… Tu y étais presque !</p>', 'Réessayer', 'Niveau raté : déçu (à la place du 💔).'],
+    ['triste', '<h3>Niveau raté</h3><p>💔 Plus de cœurs. Les questions ratées reviendront en révision.</p>', 'Réessayer', 'Niveau raté : déçu, avec le cœur brisé qui tombe à côté de lui (on comprend tout de suite qu’on n’a plus de vies).', true],
 ];
 const sit = document.getElementById('moodsSit');
-for (const [face, html, btn, cap] of SIT) {
-    sit.insertAdjacentHTML('beforeend', `<div><div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">7</span></div><div class="p-end"><div class="mas-end">${brainSVG(face, 'blink float')}</div>${html}<button class="p-btn" type="button" style="margin-top:14px">${btn}</button><button class="p-btn ghost" type="button">Retour au parcours</button></div></div><p class="cap">${cap}</p></div>`);
+for (const [face, html, btn, cap, heart] of SIT) {
+    sit.insertAdjacentHTML('beforeend', `<div><div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">7</span></div><div class="p-end"><div class="mas-end">${brainSVG(face, 'blink float')}${heart ? '<img class="heart" src="emoji/1f494.svg" alt="">' : ''}</div>${html}<button class="p-btn" type="button" style="margin-top:14px">${btn}</button><button class="p-btn ghost" type="button">Retour au parcours</button></div></div><p class="cap">${cap}</p></div>`);
 }
 sit.insertAdjacentHTML('beforeend', `<div><div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">12</span></div><div class="dlg"><div class="box"><div class="mas-end">${brainSVG('inquiet', 'blink float')}</div><h3>🔥 Ta série est en danger !</h3><p>Tu as manqué hier. Un gel de série la sauve : 200 🪙.</p><button class="p-btn" type="button">Acheter · 200 🪙</button><button class="p-btn ghost" type="button" style="margin-top:8px">Non merci</button></div></div></div><p class="cap">Série en danger (la fenêtre existe déjà à l'ouverture du jeu) : inquiet, au-dessus du titre.</p></div>`);
 sit.insertAdjacentHTML('beforeend', `<div><div class="phone"><div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b></div><div class="p-end" style="padding-top:60px"><div class="mas-end">${brainSVG('clin', 'blink float')}</div><h3>Bienvenue sur Kultivo !</h3><p>Moi, c'est Kulti. Je t'accompagne pour cultiver ta culture G.</p><button class="p-btn" type="button" style="margin-top:14px">C'est parti</button></div></div><p class="cap">Premier lancement : il se présente (clin d'œil).</p></div>`);
