@@ -2586,7 +2586,9 @@ function recapSlidesFor(m) {
     slides.push({ bg: 'linear-gradient(160deg,#8b5cf6,#ec4899)', face: 'fier', h: `À ${monthName(shiftMonth(m, 1))} !`, p: 'Bravo pour ce mois 💪' });
     return slides;
 }
+let recapMonth = null;
 function openRecap(m) {
+    recapMonth = m;
     recapSlides = recapSlidesFor(m);
     if (!state.data.recapSeen[m]) { state.data.recapSeen[m] = todayKey(); saveData(); }
     let ov = $('recapStory');
@@ -2622,6 +2624,13 @@ function showRecapSlide(i) {
     const p = el('p');
     p.textContent = s.p;
     sl.append(h, p);
+    if (RECAP_SHARE && recapIdx === recapSlides.length - 1) {
+        const share = el('button', 'btn recap-share-btn');
+        share.type = 'button';
+        share.textContent = '📤 Partager mon mois';
+        share.addEventListener('click', e => { e.stopPropagation(); openRecapShare(recapMonth); });
+        sl.append(share);
+    }
     clearTimeout(recapTimer);
     if (recapIdx < recapSlides.length - 1) recapTimer = setTimeout(() => showRecapSlide(recapIdx + 1), 5000);
 }
@@ -2629,6 +2638,124 @@ function closeRecap() {
     clearTimeout(recapTimer);
     const ov = $('recapStory');
     if (ov) ov.hidden = true;
+    const sh = $('recapShare');
+    if (sh) sh.hidden = true;
+}
+
+/* Partage du récap, façon Spotify Wrapped (2026-10-27, à essayer d'abord dans le bac à sable : `RECAP_SHARE`) :
+   une image au format story (1080 × 1920) dessinée dans un canvas — logo, « Mon mois d'octobre », Kulti fier, 6 cases de
+   chiffres (pas la « bête noire »), pseudo et lien du jeu — puis le menu de partage du téléphone (ou un téléchargement). */
+const RECAP_SHARE = BAC;
+const GAME_URL = 'https://aymericchevailler45-pixel.github.io/Kultivo/';
+const loadImg = src => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; });
+async function drawRecapImage(m) {
+    const r = monthRecap(m);
+    const W = 1080, H = 1920;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const g = cv.getContext('2d');
+    try { await document.fonts.load('900 80px Nunito'); await document.fonts.load('800 40px Nunito'); } catch (err) { /* police par défaut */ }
+    const font = (w, px) => `${w} ${px}px Nunito, "Segoe UI", Roboto, sans-serif`;
+    const grad = g.createLinearGradient(0, 0, W * 0.4, H);
+    grad.addColorStop(0, '#8b5cf6'); grad.addColorStop(1, '#ec4899');
+    g.fillStyle = grad; g.fillRect(0, 0, W, H);
+    // petits points en fond
+    g.fillStyle = 'rgba(255,255,255,0.08)';
+    for (let y = 30; y < H; y += 60) for (let x = (y / 60) % 2 ? 60 : 30; x < W; x += 60) { g.beginPath(); g.arc(x, y, 4, 0, Math.PI * 2); g.fill(); }
+    const roundRect = (x, y, w, h, rad) => { g.beginPath(); g.moveTo(x + rad, y); g.arcTo(x + w, y, x + w, y + h, rad); g.arcTo(x + w, y + h, x, y + h, rad); g.arcTo(x, y + h, x, y, rad); g.arcTo(x, y, x + w, y, rad); g.closePath(); };
+    g.textAlign = 'center';
+    g.textBaseline = 'alphabetic';
+    // logo + nom du jeu
+    try { const logo = await loadImg('icons/logo.svg'); g.drawImage(logo, W / 2 - 230, 110, 96, 96); } catch (err) { /* sans logo */ }
+    g.fillStyle = '#fff';
+    g.textAlign = 'left';
+    g.font = font(900, 72);
+    g.fillText('Kultivo', W / 2 - 112, 182);
+    g.textAlign = 'center';
+    g.font = font(800, 54);
+    g.fillStyle = 'rgba(255,255,255,0.85)';
+    g.fillText('Mon mois', W / 2, 330);
+    g.fillStyle = '#fff';
+    g.font = font(900, 110);
+    g.fillText(monthOf(m), W / 2, 450);
+    // Kulti fier
+    try {
+        const svg = kultiSVG('fier').replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" ');
+        const k = await loadImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+        g.drawImage(k, W / 2 - 210, 480, 420, 420);
+    } catch (err) { /* sans Kulti */ }
+    // 6 cases de chiffres
+    const fmt = n => n.toLocaleString('fr-FR');
+    const themeIcon = r.theme ? (THEME_DECOR.find(t => t.theme === r.theme[0]) || {}).icon || '⭐' : '';
+    const cells = [
+        ['❓', fmt(r.answers), r.answers > 1 ? 'questions' : 'question'],
+        ['✅', r.answers ? `${Math.round(r.right / r.answers * 100)} %` : '—', 'de bonnes réponses'],
+        ['⭐', fmt(r.xp), 'XP gagnés'],
+        [themeIcon || '🎯', r.theme ? r.theme[0] : '—', 'mon thème star'],
+        ['🔥', fmt(r.longest), r.longest > 1 ? 'jours de série' : 'jour de série'],
+        ['🃏', fmt(r.cards), r.cards > 1 ? 'cartes gagnées' : 'carte gagnée']
+    ];
+    const cw = 440, ch = 232, gap = 36, x0 = (W - cw * 2 - gap) / 2, y0 = 930;
+    cells.forEach(([icon, value, label], i) => {
+        const x = x0 + (i % 2) * (cw + gap), y = y0 + Math.floor(i / 2) * (ch + gap);
+        g.fillStyle = 'rgba(255,255,255,0.18)';
+        roundRect(x, y, cw, ch, 36); g.fill();
+        g.fillStyle = '#fff';
+        g.font = font(800, 56);
+        g.fillText(icon, x + cw / 2, y + 72);
+        let size = 84;
+        g.font = font(900, size);
+        while (g.measureText(value).width > cw - 40 && size > 40) { size -= 4; g.font = font(900, size); }
+        g.fillText(value, x + cw / 2, y + 156);
+        g.font = font(800, 34);
+        g.fillStyle = 'rgba(255,255,255,0.85)';
+        g.fillText(label, x + cw / 2, y + 204);
+    });
+    // pseudo + lien
+    const pseudo = cloudUser && league?.userId === cloudUser.id && league.pseudo;
+    g.fillStyle = '#fff';
+    g.font = font(900, 48);
+    if (pseudo) g.fillText(`@${pseudo}`, W / 2, 1810);
+    g.font = font(800, 34);
+    g.fillStyle = 'rgba(255,255,255,0.85)';
+    g.fillText('À toi de jouer : ' + GAME_URL.replace('https://', '').replace(/\/$/, ''), W / 2, pseudo ? 1866 : 1840);
+    return new Promise(ok => cv.toBlob(ok, 'image/png'));
+}
+let recapShareBlob = null;
+async function openRecapShare(m) {
+    clearTimeout(recapTimer);
+    let ov = $('recapShare');
+    if (!ov) {
+        ov = el('div', 'recap-share');
+        ov.id = 'recapShare';
+        ov.innerHTML = '<img class="recap-share-img" alt="Mon mois sur Kultivo"><div class="recap-share-actions"><button type="button" class="btn recap-share-go">📤 Partager</button><button type="button" class="btn btn-ghost recap-share-close">Fermer</button></div>';
+        document.body.append(ov);
+        ov.querySelector('.recap-share-close').addEventListener('click', () => { ov.hidden = true; });
+        ov.querySelector('.recap-share-go').addEventListener('click', () => shareRecapImage(recapMonth));
+    }
+    ov.hidden = false;
+    const img = ov.querySelector('.recap-share-img');
+    img.removeAttribute('src');
+    recapShareBlob = await drawRecapImage(m);
+    if (recapShareBlob) img.src = URL.createObjectURL(recapShareBlob);
+}
+async function shareRecapImage(m) {
+    if (!recapShareBlob) return;
+    const name = `kultivo-${monthName(m)}.png`;
+    const file = new File([recapShareBlob], name, { type: 'image/png' });
+    const text = `Mon mois ${monthOf(m)} sur Kultivo 🧠 À toi de jouer : ${GAME_URL}`;
+    try {
+        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text }); return; }
+    } catch (err) {
+        if (err && err.name === 'AbortError') return;   // partage annulé par le joueur
+    }
+    const a = document.createElement('a');   // pas de partage d'image : on l'enregistre
+    a.href = URL.createObjectURL(recapShareBlob);
+    a.download = name;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    showToast('🖼️ Image enregistrée : envoie-la à tes amis !');
 }
 
 /** Avatars des amis à côté du niveau où ils en sont (d'après leur résumé : `unlocked`). Tap = leur profil.
@@ -9512,6 +9639,7 @@ function closeTopOverlay() {
     const open = id => !$(id).hidden;
     if ($('streakAnim') && !$('streakAnim').hidden) { closeStreakAnim(); return true; }
     if (closeCelebrationLayer('titleAnim') || closeCelebrationLayer('freezeAnim')) return true;
+    if ($('recapShare') && !$('recapShare').hidden) { $('recapShare').hidden = true; return true; }
     if ($('recapStory') && !$('recapStory').hidden) { closeRecap(); return true; }
     if (open('askModal')) { $('askNo').click(); return true; }
     if (open('photoZoom')) {

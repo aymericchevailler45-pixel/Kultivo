@@ -3418,3 +3418,14 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .recap-slide h3 { margin: 0; font-size: 1.45rem; font-weight: 900; }
 .recap-slide p { margin: 0; max-width: 34ch; font-weight: 700; opacity: 0.92; }
 .recap-hint { margin: 0; padding-bottom: max(16px, env(safe-area-inset-bottom)); text-align: center; font-size: 0.78rem; font-weight: 800; opacity: 0.7; }
+
+/* Partage du récap (2026-10-27) */
+.recap-share-btn { margin-top: 10px; background: #fff; color: #8b5cf6; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15); }
+.recap-share { position: fixed; inset: 0; z-index: 320; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    padding: 16px; background: rgba(10, 16, 32, 0.85); }
+.recap-share-img { max-width: 100%; max-height: calc(100dvh - 150px); aspect-ratio: 9 / 16; border-radius: 18px; background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+.recap-share-actions { display: flex; gap: 10px; width: 100%; max-width: 360px; }
+.recap-share-actions .btn { flex: 1; }
+.recap-share-go { background: linear-gradient(135deg, #8b5cf6, #ec4899); box-shadow: 0 4px 0 #6d3fd1; color: #fff; }
+.recap-share-close { background: var(--surface); }
