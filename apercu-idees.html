@@ -222,7 +222,7 @@
             <button class="btn btn-ghost" type="button" data-m="halloween">🎃 Halloween</button>
             <button class="btn btn-ghost" type="button" data-m="noel">🎄 Noël</button>
         </div>
-        <p class="where">Où : Kulti se met toujours du côté du MILIEU de l'écran (là où il y a de la place), jamais vers le bord : les décors à anecdotes (dans les marges) restent libres. Niveau à gauche du chemin → Kulti à sa droite ; niveau à droite → Kulti à sa gauche. Tes amis (L, M) prennent alors l'autre côté du niveau, au lieu d'être toujours à droite. Essaie les deux boutons ci-dessus. Le soir (après 20 h) si tu n'as pas joué : il dort, « zzz », et dit « Ta série de 12 jours t'attend… ». Pendant les fêtes : chapeau de sorcière, bonnet de Noël. Ses phrases changent à chaque tap (encouragements, anecdotes courtes, rappel de l'objectif du jour).</p>
+        <p class="where">Où : Kulti se met toujours du côté du MILIEU de l'écran (là où il y a de la place), jamais vers le bord : les décors à anecdotes (dans les marges) restent libres. Niveau à gauche du chemin → Kulti à sa droite ; niveau à droite → Kulti à sa gauche. Tes amis restent à DROITE de leur niveau comme aujourd'hui (S, au niveau 12). Seule exception : un ami au MÊME niveau que toi (L, M) se met de l'autre côté de Kulti. Essaie les deux boutons ci-dessus. Le soir (après 20 h) si tu n'as pas joué : il dort, « zzz », et dit « Ta série de 12 jours t'attend… ». Pendant les fêtes : chapeau de sorcière, bonnet de Noël. Ses phrases changent à chaque tap (encouragements, anecdotes courtes, rappel de l'objectif du jour).</p>
     </article>
 
     <!-- 3 -->
@@ -385,6 +385,9 @@ function drawMap() {
     const kx = kultiRight ? cx + NODE_W / 2 + 4 : cx - NODE_W / 2 - 4 - 60;
     const fx = kultiRight ? cx - NODE_W / 2 - 4 - 44 : cx + NODE_W / 2 + 4;
     html += `<div class="mapk" id="mK" style="left:${kx}px;top:146px;width:60px;height:60px"></div>`;
+    // Ami à un AUTRE niveau (12) : toujours à droite, comme aujourd'hui
+    const n12 = nodes[2][1];
+    html += `<div class="map-friend-mock" style="left:${n12 + NODE_W / 2 + 4}px;top:282px;width:30px;height:30px;font-size:.8rem;background:hsl(40 85% 50%)">S</div>`;
     html += `<div class="map-friend-mock" style="left:${fx}px;top:162px;width:30px;height:30px;font-size:.8rem;background:hsl(210 70% 55%)">L</div><div class="map-friend-mock" style="left:${fx + 14}px;top:162px;width:30px;height:30px;font-size:.8rem;background:hsl(330 70% 55%)">M</div>`;
     html += `<div class="say" id="mSay" style="left:${kultiRight ? kx - 40 : kx - 50}px;top:96px"></div>`;
     map.innerHTML = html;
