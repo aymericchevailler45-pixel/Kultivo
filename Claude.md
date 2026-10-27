@@ -16,7 +16,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   et un niveau refait ne compte qu'UNE fois par jour pour les missions (bonnes réponses comprises) ; affiché au départ et à la fin.
 - FAIT le 26/10 : entraînement, palier 5 RÉUSSI → les sessions piochent dans les 150 questions du thème à égalité (les moins
   sues d'abord, `pickTrainingCards`), au lieu de tourner sur les 30 du palier 5 (vers la médaille d'or). Thèmes par ordre alphabétique.
-- DÉCIDÉ le 27/10 (aperçu : apercu-serie.html, PAS encore dans le jeu ; prochaine étape : bac à sable puis jeu) :
+- FAIT le 27/10, directement dans le vrai jeu (demande de l'utilisateur ; aperçu de référence : apercu-serie.html) :
+  code : `showStreakAnim` (appelée par `bumpStreak`), `playStreakSounds`, `STREAK_CAPS`, kulti.js (`kultiEl`), `END_FACES` /
+  `face` dans `setEnd`, `typeTourText` (bulles), art de `checkStreakDanger`, accueil étape 0. Détail :
   ANIMATION DU JOUR DE SÉRIE = mélange C + A : fond sombre, petites flammes qui montent, roulette RAPIDE de numéros au hasard
   (jusqu'à 2 × la série, min 99) qui ralentit et s'arrête sur la série, « 🔥 jours de série d'affilée ! », puis la semaine
   L→D (jours joués cochés, case du jour qui s'allume avec la flamme), bouton Continuer ; une fois par jour, fin de la 1re

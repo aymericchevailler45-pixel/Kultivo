@@ -3232,3 +3232,77 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 /* Dos de la carte dans les coffres : même taille et même arrondi */
 .flip.is-big:has(.kcard-v2) { width: 230px; }
 .flip.is-big:has(.kcard-v2) .flip-back { border-radius: 18px; }
+
+/* ============================================================
+   Kulti, la mascotte (2026-10-27) — cerveau du logo avec un visage (kulti.js)
+   ============================================================ */
+.kulti { position: relative; display: inline-block; width: 100%; height: 100%; }
+.kulti-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.kulti-blink .kulti-eyes { animation: kultiBlink 4s infinite; transform-origin: 18px 15px; }
+@keyframes kultiBlink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+.kulti-float { animation: kultiFloat 3s ease-in-out infinite; }
+@keyframes kultiFloat { 50% { transform: translateY(-4px) rotate(-2deg); } }
+.kulti-talking .kulti-mouth-open { animation: kultiTalk 0.22s steps(1) infinite; }
+.kulti-talking .kulti-mouth-closed { animation: kultiTalk 0.22s steps(1) 0.11s infinite; }
+.kulti:not(.kulti-talking) .kulti-mouth-open { display: none; }
+@keyframes kultiTalk { 50% { opacity: 0; } }
+.kulti-heart { position: absolute; right: -14%; bottom: -2%; width: 42%; height: 42%; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.2));
+    animation: kultiHeart 1.2s ease 0.3s both; }
+@keyframes kultiHeart { 0% { transform: scale(0) rotate(-20deg); } 45% { transform: scale(1.3) rotate(8deg); } 60% { transform: scale(1) rotate(-6deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .kulti-blink .kulti-eyes, .kulti-float, .kulti-heart { animation: none; } }
+
+/* Écran de fin */
+.end-emoji.is-kulti { width: 120px; height: 120px; font-size: 0; }
+@media (max-width: 600px) { .end-emoji.is-kulti { width: 100px; height: 100px; } }
+/* Fenêtres (série en danger…) */
+.ask-art .kulti { width: 92px; height: 92px; }
+/* Accueil */
+.onboard-kulti { align-self: center; width: 120px; height: 120px; }
+/* Bulles d'explication : Kulti à gauche */
+.tour-bubble { display: flex; align-items: flex-end; gap: 8px; }
+.tour-kulti { flex: none; width: 58px; height: 58px; margin-bottom: 2px; }
+.tour-main { flex: 1; min-width: 0; }
+.tour-rest { opacity: 0; }
+
+/* ============================================================
+   Animation du jour de série (2026-10-27, mélange C + A de apercu-serie.html)
+   ============================================================ */
+.streak-anim { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; padding: 20px 16px; overflow: hidden; text-align: center; color: #fff;
+    background: radial-gradient(circle at 50% 45%, #3a1d00, #120a02); opacity: 0; }
+.streak-anim.is-on { animation: streakIn 0.25s forwards; }
+.streak-anim.is-closing { animation: streakOut 0.25s forwards; }
+@keyframes streakIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes streakOut { from { opacity: 1; } to { opacity: 0; } }
+.streak-rise { position: absolute; bottom: -40px; width: 28px; height: 28px; opacity: 0; animation: streakRise var(--d) ease-in var(--w) infinite; }
+@keyframes streakRise { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 15% { opacity: 0.9; } 100% { opacity: 0; transform: translateY(-110vh) scale(1.1); } }
+.streak-digits { position: relative; z-index: 1; height: 6.6rem; overflow: hidden; color: #ffb238; font-size: 6rem; font-weight: 900; line-height: 6.6rem;
+    text-shadow: 0 0 24px rgba(255, 150, 0, 0.8);
+    -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent); mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent); }
+.streak-digits.is-long { font-size: 4.4rem; }
+.streak-roll { display: flex; flex-direction: column; }
+.streak-roll span { display: block; height: 6.6rem; line-height: 6.6rem; }
+.streak-digits.is-stopped { overflow: visible; animation: streakStop 0.5s cubic-bezier(0.2, 1.8, 0.4, 1); -webkit-mask-image: none; mask-image: none; }
+.streak-digits.is-stopped .streak-roll span:not(:last-child) { visibility: hidden; }
+@keyframes streakStop { 40% { transform: scale(1.25); text-shadow: 0 0 40px rgba(255, 180, 0, 1); } }
+.streak-label, .streak-cap { position: relative; z-index: 1; font-size: 1.2rem; font-weight: 900; opacity: 0; }
+.streak-cap { color: #ffd36b; font-size: 1.05rem; }
+.streak-label.is-on, .streak-cap.is-on, .streak-week.is-on { animation: streakUp 0.35s ease forwards; }
+@keyframes streakUp { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+.streak-week { position: relative; z-index: 1; display: flex; gap: 6px; justify-content: center; margin-top: 8px; opacity: 0; }
+.streak-day { display: flex; flex-direction: column; align-items: center; gap: 4px; color: rgba(255, 255, 255, 0.75); font-size: 0.72rem; font-weight: 900; }
+.streak-dot { position: relative; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); font-size: 0.85rem; }
+.streak-dot.is-done { background: #ff9600; }
+.streak-dot.is-frozen { background: #7cc8f5; }
+.streak-dot img { width: 18px; height: 18px; opacity: 0; }
+.streak-dot.is-today { box-shadow: 0 0 0 2px rgba(255, 150, 0, 0.6) inset; }
+.streak-dot.is-lit { animation: streakLit 0.55s cubic-bezier(0.2, 1.6, 0.4, 1) forwards; }
+.streak-dot.is-lit img { animation: streakFade 0.2s 0.1s forwards; }
+@keyframes streakLit { 0% { transform: scale(0.6); } 100% { transform: scale(1.2); background: #ff9600; box-shadow: 0 0 0 5px rgba(255, 150, 0, 0.3); } }
+@keyframes streakFade { to { opacity: 1; } }
+.streak-spark { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: #ff9600; opacity: 0; }
+.streak-dot.is-lit .streak-spark { animation: streakSpark 0.6s ease-out 0.1s forwards; }
+@keyframes streakSpark { 0% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--a)) translateY(0); } 100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--a)) translateY(-30px); } }
+.streak-continue { position: absolute; z-index: 1; left: 16px; right: 16px; bottom: max(20px, env(safe-area-inset-bottom)); max-width: 420px; margin: 0 auto;
+    background: #ff9600; box-shadow: 0 4px 0 #c46a00; color: #fff; }
+@media (prefers-reduced-motion: reduce) { .streak-rise { display: none; } }

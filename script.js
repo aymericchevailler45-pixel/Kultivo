@@ -964,6 +964,109 @@ function bumpStreak() {
     data.activeDays[data.lastDay] = data.activeDays[data.lastDay] || 0;
     data.best.streak = Math.max(data.best.streak, data.streak);
     saveData();
+    setTimeout(() => showStreakAnim(data.streak), 120);   // nouveau jour de série : l'animation, par-dessus l'écran de fin
+}
+
+/* ---------- Animation du jour de série (2026-10-27, choix de l'utilisateur : mélange C + A de apercu-serie.html) ----------
+   Fond sombre, petites flammes qui montent, roulette RAPIDE de numéros au hasard qui ralentit et s'arrête sur la série,
+   « 🔥 jours de série d'affilée ! », puis la semaine (jours joués cochés, case du jour qui s'allume). Une fois par jour.
+   Son : tic-tic qui ralentit + « embrasement » ; trompettes en plus pour les caps (`STREAK_CAPS`, puis chaque 100). */
+const STREAK_CAPS = [7, 30, 50, 100, 200, 365];
+const isStreakCap = n => STREAK_CAPS.includes(n) || (n > 365 && n % 100 === 0);
+const STREAK_SPIN_MS = 2300;
+let streakTimers = [];
+function showStreakAnim(streak) {
+    if (!streak) return;
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cap = isStreakCap(streak);
+    let ov = $('streakAnim');
+    if (!ov) {
+        ov = el('div', 'streak-anim');
+        ov.id = 'streakAnim';
+        ov.setAttribute('role', 'dialog');
+        ov.setAttribute('aria-label', 'Jour de série');
+        document.body.append(ov);
+    }
+    streakTimers.forEach(clearTimeout);
+    ov.replaceChildren();
+    for (let i = 0; i < 14; i++) {   // petites flammes qui montent
+        const f = el('img', 'streak-rise');
+        f.src = 'emoji/1f525.svg';
+        f.alt = '';
+        f.style.left = `${5 + Math.random() * 85}%`;
+        f.style.setProperty('--d', `${2 + Math.random() * 2}s`);
+        f.style.setProperty('--w', `${Math.random() * 2}s`);
+        ov.append(f);
+    }
+    const digits = el('div', `streak-digits${String(streak).length >= 4 ? ' is-long' : ''}`);
+    const roll = el('div', 'streak-roll');
+    // Plein de numéros au hasard (jusqu'à 2 × la série, au moins 99), jamais la série elle-même, puis la série
+    const max = Math.max(99, streak * 2);
+    const nums = reduced ? [] : Array.from({ length: 34 }, () => { let n; do n = 1 + Math.floor(Math.random() * max); while (n === streak); return n; });
+    nums.push(streak);
+    nums.forEach(n => { const sp = el('span'); sp.textContent = n; roll.append(sp); });
+    digits.append(roll);
+    const label = el('div', 'streak-label');
+    label.textContent = streak === 1 ? '🔥 jour de série !' : '🔥 jours de série d’affilée !';
+    const capLine = el('div', 'streak-cap');
+    capLine.textContent = `🏆 Cap des ${streak} jours !`;
+    capLine.hidden = !cap;
+    const week = el('div', 'streak-week');
+    const today = todayKey();
+    const monday = weekStart();
+    ['L', 'M', 'M', 'J', 'V', 'S', 'D'].forEach((name, i) => {
+        const key = shiftDays(monday, i);
+        const day = el('div', 'streak-day');
+        const dot = el('div', 'streak-dot');
+        if (key === today) {
+            dot.classList.add('is-today');
+            const fire = el('img');
+            fire.src = 'emoji/1f525.svg';
+            fire.alt = '';
+            dot.append(fire);
+            for (let k = 0; k < 8; k++) { const sp = el('i', 'streak-spark'); sp.style.setProperty('--a', `${k * 45}deg`); dot.append(sp); }
+        } else if (key < today && state.data.frozenDays[key]) {
+            dot.classList.add('is-frozen');
+            dot.textContent = '🧊';
+        } else if (key < today && state.data.activeDays[key] !== undefined) {
+            dot.classList.add('is-done');
+            dot.textContent = '✓';
+        }
+        const nm = el('span');
+        nm.textContent = name;
+        day.append(dot, nm);
+        week.append(day);
+    });
+    const btn = el('button', 'btn streak-continue');
+    btn.type = 'button';
+    btn.textContent = 'Continuer';
+    btn.addEventListener('click', closeStreakAnim);
+    ov.append(digits, label, capLine, week, btn);
+    ov.classList.remove('is-on', 'is-closing');
+    ov.hidden = false;
+    requestAnimationFrame(() => ov.classList.add('is-on'));
+    const spin = reduced ? 0 : STREAK_SPIN_MS;
+    const end = () => `translateY(${-(nums.length - 1) * roll.firstElementChild.offsetHeight}px)`;
+    if (!reduced) {
+        roll.animate([{ transform: 'translateY(0)' }, { transform: end() }],
+            { duration: STREAK_SPIN_MS, easing: 'cubic-bezier(.12,.8,.22,1)', fill: 'forwards' });
+    }
+    playStreakSounds(cap, spin / 1000);
+    streakTimers = [
+        // À l'arrêt, toujours pile sur la série (même si l'animation a pris du retard)
+        setTimeout(() => { roll.getAnimations().forEach(a => a.cancel()); roll.style.transform = end(); digits.classList.add('is-stopped'); }, spin),
+        setTimeout(() => { label.classList.add('is-on'); capLine.classList.add('is-on'); }, spin + 150),
+        setTimeout(() => { if (cap) launchConfetti(); }, spin + 200),
+        setTimeout(() => week.classList.add('is-on'), spin + 450),
+        setTimeout(() => { const t = week.querySelector('.is-today'); if (t) t.classList.add('is-lit'); }, spin + 950)
+    ];
+}
+function closeStreakAnim() {
+    const ov = $('streakAnim');
+    if (!ov || ov.hidden) return;
+    streakTimers.forEach(clearTimeout);
+    ov.classList.add('is-closing');
+    setTimeout(() => { ov.hidden = true; ov.classList.remove('is-on', 'is-closing'); ov.replaceChildren(); }, 250);
 }
 
 /** À l'ouverture de l'appli, après un ou plusieurs jours sans jouer : la série sera-t-elle sauvée ?
@@ -985,6 +1088,7 @@ async function checkStreakDanger(demo = null) {
     const days = plural(data.streak, 'jour', 'jours');
     if (data.inv.freeze >= missed) {
         await askConfirm({
+            art: kultiEl('content', 'kulti-blink kulti-float'),
             title: '🧊 Ta série est protégée',
             text: `Tu as manqué ${plural(missed, 'jour', 'jours')}. ${plural(missed, 'gel de série sera utilisé', 'gels de série seront utilisés')} quand tu finiras une leçon : ta série de ${days} continue !
 Il te restera ${plural(data.inv.freeze - missed, 'gel', 'gels')}.`,
@@ -997,6 +1101,7 @@ Il te restera ${plural(data.inv.freeze - missed, 'gel', 'gels')}.`,
     const price = need * item.price;
     const enough = data.coins >= price;
     const ok = await askConfirm({
+        art: kultiEl('inquiet', 'kulti-blink kulti-float'),
         title: '🔥 Ta série est en danger !',
         text: `Tu as manqué ${plural(missed, 'jour', 'jours')}. Il te manque ${plural(need, 'gel', 'gels')} de série pour sauver ta série de ${days}.\n`
             + (enough ? `Tu as ${data.coins} 🪙 : il t’en restera ${data.coins - price}. Termine ensuite une leçon pour la garder.`
@@ -4567,9 +4672,14 @@ function showRescueOption() {
 
 /* ---------- Fin de leçon ---------- */
 
-function setEnd({ emoji, title, text, extra = '', stats = [], primary, primaryClass, onPrimary, secondary, onSecondary }) {
+// Kulti remplace le grand dessin de l'écran de fin (2026-10-27) : réussi = content, exploit = fier, raté = déçu + cœur brisé
+const END_FACES = { '🎉': 'content', '🏆': 'fier', '🏅': 'fier', '💔': 'triste' };
+function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, primaryClass, onPrimary, secondary, onSecondary }) {
     renderEndStats(stats);
-    $('endEmoji').textContent = emoji;
+    const mood = face || END_FACES[emoji];
+    $('endEmoji').classList.toggle('is-kulti', !!mood);
+    if (mood) $('endEmoji').replaceChildren(kultiEl(mood, 'kulti-blink kulti-float', emoji === '💔'));
+    else $('endEmoji').textContent = emoji;
     $('endRescue').hidden = true;
     $('endRescueInfo').hidden = true;
     state.canRescue = false;
@@ -4607,7 +4717,7 @@ function endSession(win) {
         setEnd({
             emoji: '💔',
             title: challenge ? 'Défi raté' : 'Niveau raté',
-            text: 'Plus de cœurs. Les questions ratées reviendront en révision.',
+            text: '💔 Plus de cœurs. Les questions ratées reviendront en révision.',
             extra: xpSummary(),
             primary: 'Réessayer',
             onPrimary: () => startSession('level', state.level),
@@ -4737,6 +4847,7 @@ function endSession(win) {
             : "Tu as terminé tous les niveaux. Ajoute des questions dans questions.js pour continuer !";
         setEnd({
             emoji: challenge ? '🏆' : '🎉',
+            face: challenge || state.errors === 0 ? 'fier' : 'content',
             title: challenge ? 'Défi relevé !' : `Niveau ${state.level} terminé !`,
             text: (state.errors === 0 ? '✨ Sans faute ! ' : '') + next,
             stats: [statXp(), statAccuracy(), statTime()],
@@ -5330,6 +5441,7 @@ async function endDuel() {
                 if (res > 0) { d.totals.duelsWon = (d.totals.duelsWon || 0) + 1; launchConfetti(); }
                 saveData();
                 renderHeader();
+                $('endEmoji').classList.remove('is-kulti');
                 $('endEmoji').textContent = res > 0 ? '🏆' : res < 0 ? '😅' : '🤝';
                 $('endTitle').textContent = res > 0 ? 'Duel gagné !' : res < 0 ? 'Duel perdu' : 'Égalité parfaite !';
                 $('endText').textContent = `Toi : ${score}/${DUEL_SIZE} en ${fmtTime(seconds)} · ${du.friend.pseudo} : ${row.c_score}/${DUEL_SIZE} en ${fmtTime(row.c_seconds)}`
@@ -7926,11 +8038,33 @@ function showTourStep() {
     const step = tourSteps[tourStep];
     const target = step.target();
     if (target) target.scrollIntoView({ block: 'center' });
-    $('tourText').textContent = step.text;
+    typeTourText(step.text);
     $('tourDots').textContent = tourSteps.length > 1 ? `${tourStep + 1}/${tourSteps.length}` : '';
     $('tourNext').textContent = tourStep === tourSteps.length - 1 ? tourLastLabel : 'Suivant';
     $('tourSkip').hidden = tourStep === tourSteps.length - 1;
     setTimeout(placeTour, 60);   // après le défilement
+}
+
+/* Kulti à gauche de la bulle (2026-10-27) : le texte s'écrit lettre par lettre pendant que sa bouche bouge.
+   La place du texte entier est réservée dès le début (partie pas encore écrite invisible) : la bulle ne grandit pas. */
+let tourTyping = null;
+function typeTourText(text) {
+    clearInterval(tourTyping);
+    const p = $('tourText');
+    const shown = el('span'), rest = el('span', 'tour-rest');
+    p.replaceChildren(shown, rest);
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const done = () => { clearInterval(tourTyping); shown.textContent = text; rest.textContent = ''; $('tourKulti').replaceChildren(kultiEl('content', 'kulti-blink')); };
+    if (reduced) { done(); return; }
+    $('tourKulti').replaceChildren(kultiEl('parle', 'kulti-blink kulti-talking'));
+    let i = 0;
+    rest.textContent = text;
+    tourTyping = setInterval(() => {
+        i = Math.min(text.length, i + 2);
+        shown.textContent = text.slice(0, i);
+        rest.textContent = text.slice(i);
+        if (i >= text.length) done();
+    }, 30);
 }
 
 /** Place le trou de lumière sur l'élément, et la bulle au-dessous (ou au-dessus s'il n'y a pas la place). */
@@ -7954,6 +8088,7 @@ function placeTour() {
 
 let tourSkipped = false;   // « Passer » : on n'enchaîne pas sur la suite (ex. : l'entraînement)
 function endTour() {
+    clearInterval(tourTyping);
     const skipped = tourSkipped;
     tourSkipped = false;
     $('tour').hidden = true;
@@ -8058,12 +8193,10 @@ function renderOnboard(animate = true) {
     const big = (emoji) => { const e = el('div', 'onboard-emoji'); e.textContent = emoji; return e; };
 
     if (step === 0) {
-        const logo = el('img', 'onboard-logo');
-        logo.src = 'icons/logo.svg';
-        logo.alt = '';
+        const kulti = kultiEl('clin', 'onboard-kulti kulti-blink kulti-float');   // Kulti se présente (2026-10-27)
         title.textContent = 'Bienvenue sur Kultivo !';
-        text.textContent = 'Ta culture générale, un niveau après l’autre : questions, défis, grilles à associer… Commençons par faire connaissance.';
-        body.append(logo, title, text);
+        text.textContent = 'Moi, c’est Kulti ! Ta culture générale, un niveau après l’autre : questions, défis, grilles à associer… Commençons par faire connaissance.';
+        body.append(kulti, title, text);
         next.textContent = 'C’est parti';
     } else if (step === 1) {
         title.textContent = 'Comment juges-tu ta culture générale ?';
@@ -8298,6 +8431,77 @@ function playSound(name) {
         }
     } catch (err) {
         /* pas de son disponible : on continue sans */
+    }
+}
+
+/* Sons de l'animation de série : tic-tic de roulette qui ralentit, puis « embrasement » (souffle + cloches) ;
+   trompettes « ta-ta-ta-taaa » en plus pour un cap. Mêmes sons synthétisés que le reste (pas de fichier). */
+function audio() {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+}
+function synthTone(freq, start, dur, type = 'sine', vol = 0.16, endFreq) {
+    const ctx = audio(), now = ctx.currentTime, osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, now + start);
+    if (endFreq) osc.frequency.exponentialRampToValueAtTime(endFreq, now + start + dur);
+    g.gain.setValueAtTime(0.0001, now + start);
+    g.gain.exponentialRampToValueAtTime(vol, now + start + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+    osc.connect(g).connect(ctx.destination);
+    osc.start(now + start);
+    osc.stop(now + start + dur + 0.02);
+}
+function synthBrass(freq, start, dur, vol = 0.09) {
+    const ctx = audio(), now = ctx.currentTime, osc = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freq, now + start);
+    f.type = 'lowpass';
+    f.frequency.setValueAtTime(900, now + start);
+    f.frequency.linearRampToValueAtTime(3200, now + start + 0.08);
+    g.gain.setValueAtTime(0.0001, now + start);
+    g.gain.exponentialRampToValueAtTime(vol, now + start + 0.03);
+    g.gain.setValueAtTime(vol, now + start + dur - 0.06);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+    osc.connect(f).connect(g).connect(ctx.destination);
+    osc.start(now + start);
+    osc.stop(now + start + dur + 0.02);
+}
+function synthWhoosh(start, dur, vol = 0.25) {
+    const ctx = audio(), now = ctx.currentTime, len = Math.floor(ctx.sampleRate * dur);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = buf;
+    f.type = 'bandpass';
+    f.Q.value = 0.8;
+    f.frequency.setValueAtTime(300, now + start);
+    f.frequency.exponentialRampToValueAtTime(3500, now + start + dur);
+    g.gain.setValueAtTime(0.0001, now + start);
+    g.gain.exponentialRampToValueAtTime(vol, now + start + dur * 0.6);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+    src.connect(f).connect(g).connect(ctx.destination);
+    src.start(now + start);
+    src.stop(now + start + dur);
+}
+function playStreakSounds(cap, stopAt) {
+    if (!state.data.sound) return;
+    try {
+        let at = 0, gap = 0.035;
+        while (at < stopAt - 0.1) { synthTone(1500, at, 0.025, 'triangle', 0.07); at += gap; gap *= 1.09; }
+        // Embrasement : souffle qui monte, puis accord de cloches
+        synthWhoosh(Math.max(0, stopAt - 0.25), 0.7);
+        [784, 988, 1175, 1568].forEach((f, i) => synthTone(f, stopAt + 0.35 + i * 0.03, 1.3, 'sine', 0.08));
+        [1568, 1976].forEach((f, i) => synthTone(f * 2, stopAt + 0.38 + i * 0.05, 0.6, 'sine', 0.04));
+        if (cap) {   // trompettes des caps (7, 30, 50, 100…)
+            const t = stopAt + 0.9;
+            [[392, 0, .12], [392, .14, .12], [392, .28, .12], [523, .42, .9]].forEach(([f, s, d]) => { synthBrass(f, t + s, d); synthBrass(f * 1.5, t + s, d, 0.05); });
+            [659, 784].forEach(f => synthBrass(f, t + 0.42, 0.9, 0.05));
+        }
+        synthTone(600, stopAt + 0.95, 0.18, 'sine', 0.18, 1300);   // « pop » quand le jour s'allume
+    } catch (err) {
+        /* pas de son disponible */
     }
 }
 
@@ -8879,6 +9083,7 @@ function closePatchNotes() {
 
 function closeTopOverlay() {
     const open = id => !$(id).hidden;
+    if ($('streakAnim') && !$('streakAnim').hidden) { closeStreakAnim(); return true; }
     if (open('askModal')) { $('askNo').click(); return true; }
     if (open('photoZoom')) {
         $('photoZoom').hidden = true;
