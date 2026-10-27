@@ -13,10 +13,34 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Kultivo">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261027g">
+    <!-- Écran de chargement : ses styles sont ICI et les feuilles de style sont chargées APRÈS lui (dans le body),
+         pour qu'il s'affiche tout de suite, sans écran blanc (2026-10-27) -->
+    <style>
+/* Écran de chargement (2026-10-27, version 1) : fond vert, icônes des thèmes en transparence, logo qui saute, Kulti sur la barre */
+.splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    padding: 20px; text-align: center; color: #fff; overflow: hidden; background: linear-gradient(170deg, #5fd40a, #46a302); }
+.splash.is-out { animation: splashOut .35s ease forwards; pointer-events: none; }
+@keyframes splashOut { to { opacity: 0; transform: scale(1.04); } }
+.splash-ico { position: absolute; font-size: 1.7rem; opacity: .18; animation: splashDrift 3s ease-in-out infinite alternate; }
+@keyframes splashDrift { from { transform: translateY(0) rotate(-8deg); } to { transform: translateY(-14px) rotate(8deg); } }
+.splash-logo { position: relative; z-index: 1; width: 120px; height: 120px; border-radius: 32px;
+    box-shadow: 0 8px 0 rgba(0,0,0,.18), 0 0 0 6px rgba(255,255,255,.25); animation: splashHop .9s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes splashHop { 0% { transform: translateY(80px) scale(.3); opacity: 0; } 60% { transform: translateY(-14px) scale(1.08); opacity: 1; } 100% { transform: none; } }
+.splash-name { position: relative; z-index: 1; font-size: 2.3rem; font-weight: 900; animation: splashPop .5s .4s both; }
+@keyframes splashPop { 0% { transform: scale(.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.splash-track { position: relative; z-index: 1; width: min(74%, 320px); height: 12px; margin-top: 34px; border-radius: 8px; background: rgba(255,255,255,.3); }
+/* La barre avance seule jusqu'à 85 %, puis se remplit quand le jeu est prêt (`hideSplash`) ; Kulti est collé au bout */
+.splash-track > i { position: relative; display: block; height: 100%; width: 0; border-radius: 8px; background: #fff; animation: splashLoad 1.4s ease-out .2s forwards; }
+.splash.is-ready .splash-track > i { animation: splashLoadEnd .25s ease-out forwards; }
+@keyframes splashLoad { to { width: 85%; } }
+@keyframes splashLoadEnd { from { width: var(--w, 85%); } to { width: 100%; } }
+.splash-rider { position: absolute; right: -24px; bottom: 6px; width: 48px; height: 48px; }
+.splash-rider .kulti { animation: splashRide .45s ease-in-out infinite; }
+@keyframes splashRide { 0%, 100% { transform: none; } 30% { transform: translateY(-14px) scaleY(1.04); } 50% { transform: translateY(0) scaleY(.94); } }
+@media (prefers-reduced-motion: reduce) { .splash-ico, .splash-rider .kulti { animation: none; } }
+.splash .kulti { position: relative; display: inline-block; width: 100%; height: 100%; }
+.splash .kulti-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    </style>
 </head>
 <body>
 
@@ -42,8 +66,12 @@
             setTimeout(function () { var x = document.getElementById('splash'); if (x) x.remove(); }, 8000);
         })();
     </script>
-    <script src="kulti.js?v=20261027g"></script>
+    <script src="kulti.js?v=20261027h"></script>
     <script>document.getElementById('splashRider').append(kultiEl('content', 'kulti-blink'));</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=20261027h">
 
     <!-- BARRE DU HAUT (visible hors leçon) -->
     <header class="topbar" id="topbar">
@@ -121,6 +149,7 @@
                     </div>
                 </article>
                 <button type="button" id="missionsRow" class="missions-row"></button>
+                <button type="button" id="questRow" class="missions-row quest-row" hidden></button>
 
                 <article class="card card-violet" id="dailyCard">
                     <h2>📅 Défi du jour</h2>
@@ -531,6 +560,15 @@
         </div>
     </div>
 
+    <div id="questModal" class="modal-overlay" hidden>
+        <div class="modal-content missions-sheet" role="dialog" aria-modal="true" aria-labelledby="questTitle">
+            <button type="button" id="closeQuestBtn" class="icon-btn close-modal" aria-label="Fermer">✕</button>
+            <h2 id="questTitle">🤝 Quête en duo</h2>
+            <p class="muted">Un partenaire par semaine : vos XP s’additionnent.</p>
+            <div id="questBody" class="quest-body"></div>
+        </div>
+    </div>
+
     <div id="patchModal" class="modal-overlay" hidden>
         <div class="modal-content patch-sheet" role="dialog" aria-modal="true" aria-labelledby="patchTitle">
             <h2 id="patchTitle">✨ Quoi de neuf ?</h2>
@@ -603,31 +641,31 @@
     <div class="toasts" id="toasts" aria-live="polite"></div>
 
     <!-- L'ordre compte : les questions d'abord, puis la logique -->
-    <script src="questions.js?v=20261027g"></script>
-    <script src="pairs.js?v=20261027g"></script>
-    <script src="order.js?v=20261027g"></script>
-    <script src="facts.js?v=20261027g"></script>
-    <script src="entrainement/banque.js?v=20261027g"></script>
-    <script src="entrainement/histoire.js?v=20261027g"></script>
-    <script src="entrainement/sciences.js?v=20261027g"></script>
-    <script src="entrainement/geographie.js?v=20261027g"></script>
-    <script src="entrainement/technologie.js?v=20261027g"></script>
-    <script src="entrainement/musique.js?v=20261027g"></script>
-    <script src="entrainement/litterature.js?v=20261027g"></script>
-    <script src="entrainement/jeux.js?v=20261027g"></script>
-    <script src="entrainement/cinema.js?v=20261027g"></script>
-    <script src="entrainement/gastronomie.js?v=20261027g"></script>
-    <script src="entrainement/sport.js?v=20261027g"></script>
-    <script src="entrainement/arts.js?v=20261027g"></script>
-    <script src="entrainement/langue-francaise.js?v=20261027g"></script>
-    <script src="entrainement/mythologie.js?v=20261027g"></script>
-    <script src="entrainement/drapeaux.js?v=20261027g"></script>
-    <script src="entrainement/monuments.js?v=20261027g"></script>
-    <script src="cards.js?v=20261027g"></script>
-    <script src="cosmetiques.js?v=20261027g"></script>
-    <script src="levels.js?v=20261027g"></script>
-    <script src="vendor/supabase.min.js?v=20261027g"></script>
-    <script src="evenements/halloween.js?v=20261027g"></script>
-    <script src="script.js?v=20261027g"></script>
+    <script src="questions.js?v=20261027h"></script>
+    <script src="pairs.js?v=20261027h"></script>
+    <script src="order.js?v=20261027h"></script>
+    <script src="facts.js?v=20261027h"></script>
+    <script src="entrainement/banque.js?v=20261027h"></script>
+    <script src="entrainement/histoire.js?v=20261027h"></script>
+    <script src="entrainement/sciences.js?v=20261027h"></script>
+    <script src="entrainement/geographie.js?v=20261027h"></script>
+    <script src="entrainement/technologie.js?v=20261027h"></script>
+    <script src="entrainement/musique.js?v=20261027h"></script>
+    <script src="entrainement/litterature.js?v=20261027h"></script>
+    <script src="entrainement/jeux.js?v=20261027h"></script>
+    <script src="entrainement/cinema.js?v=20261027h"></script>
+    <script src="entrainement/gastronomie.js?v=20261027h"></script>
+    <script src="entrainement/sport.js?v=20261027h"></script>
+    <script src="entrainement/arts.js?v=20261027h"></script>
+    <script src="entrainement/langue-francaise.js?v=20261027h"></script>
+    <script src="entrainement/mythologie.js?v=20261027h"></script>
+    <script src="entrainement/drapeaux.js?v=20261027h"></script>
+    <script src="entrainement/monuments.js?v=20261027h"></script>
+    <script src="cards.js?v=20261027h"></script>
+    <script src="cosmetiques.js?v=20261027h"></script>
+    <script src="levels.js?v=20261027h"></script>
+    <script src="vendor/supabase.min.js?v=20261027h"></script>
+    <script src="evenements/halloween.js?v=20261027h"></script>
+    <script src="script.js?v=20261027h"></script>
 </body>
 </html>

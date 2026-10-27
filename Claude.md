@@ -53,7 +53,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   manifest background_color vert) ; Kulti du parcours : plus de clin d'œil pendant les événements (le chapeau reste).
   Quête : PAS de trio ; chacun doit avoir un partenaire : 1) ami libre actif la semaine d'avant, 2) sinon un autre joueur
   seul tiré au hasard (« Ajouter en ami » en fin de semaine), 3) personne en 24 h → Kulti partenaire ; compte obligatoire.
-  Proposé sur l'aperçu, en attente de son accord.
+  Règle ACCEPTÉE et FAITE le 27/10 : `supabase/quete-duo.sql` (À LANCER par l'utilisateur ; table `quests`, fonctions
+  `quest_join` (tirage, verrou, Kulti après 24 h) et `quest_push`) ; jeu : `questLoad` (Défis + après `leagueFetch`),
+  ligne `#questRow` sous les missions (flèche verte ronde `rowArrow`, aussi sur la ligne des missions), fenêtre
+  `#questModal` (`openQuestModal`, `questBlock` : barre 2 couleurs, coffre de 2 cartes, « Ajouter en ami »),
+  `questDone` dans la sauvegarde, Kulti = 100 XP par jour joué (`QUEST_KULTI_DAY_XP`). Bac à sable : fausse quête avec Léa.
+  Écran de chargement : styles dans index.html, feuilles de style chargées APRÈS lui (sinon écran blanc avant).
+  Écran blanc + logo d'Android au lancement = celui de l'appli installée (ancien background_color) : passe au vert
+  quand Chrome met l'appli à jour (quelques jours), impossible à supprimer.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

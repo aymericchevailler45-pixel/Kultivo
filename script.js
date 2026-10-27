@@ -660,6 +660,7 @@ function defaultData() {
         chestBonus: 0,                   // cartes encore dues pour les coffres sautés par le placement
         coinBonus: 0,                    // pièces encore dues pour les niveaux sautés par le placement
         missions: null,                  // missions de la semaine : { week, progress, claimed, chest }
+        questDone: {},                   // quête en duo : lundi -> coffre ouvert
         events: {},                      // événements : id -> { found, won, pumpkins: { day, got } }
         avatarExtra: [],                 // dessins d'avatar gagnés pendant les événements (gardés pour toujours)
         avatarNew: false,                // un dessin vient d'être gagné : pastille sur l'avatar du Profil
@@ -684,7 +685,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -1901,8 +1902,8 @@ function renderMissionsRow() {
     const label = el('span', 'missions-label');
     label.textContent = '🗓️ Missions de la semaine';
     const right = el('span', 'missions-dots');
-    right.textContent = `${dots} ${done}/${list.length} ›`;
-    row.replaceChildren(label, right);
+    right.textContent = `${done}/${list.length}`;
+    row.replaceChildren(label, right, rowArrow());
     const n = missionsToClaim();
     if (n > 0) row.setAttribute('data-notif', n);
     else row.removeAttribute('data-notif');
@@ -1975,6 +1976,211 @@ function openMissionsModal() {
     const days = 7 - ((new Date().getDay() + 6) % 7);   // jours restants, lundi compris
     $('missionsWhen').textContent = days <= 1 ? 'Nouvelles missions demain.' : `Nouvelles missions dans ${days} jours (lundi).`;
     $('missionsModal').hidden = false;
+}
+
+/* ---------- Quête en duo (2026-10-27, supabase/quete-duo.sql) ----------
+   Chaque semaine, un partenaire (2 joueurs exactement) : un ami libre qui joue, sinon un autre joueur seul tiré au
+   hasard, sinon Kulti au bout de 24 h. Les XP de la semaine des deux s'additionnent ; objectif atteint = coffre de
+   2 cartes pour chacun. Le tirage est fait en ligne (`quest_join`), mes XP envoyés par `quest_push`. */
+const QUEST_KULTI_DAY_XP = 100;   // XP que Kulti ajoute chaque jour où l'on joue (≈ un joueur moyen)
+const QUEST_CARDS = 2;
+let quest = null;        // quête de la semaine : { week, goal, mine, theirs, partner, kulti, waiting, friend, asked }
+let questPrev = null;    // celle de la semaine dernière (pour un coffre pas encore ouvert)
+let questReady = false;  // le tirage a répondu (sinon : fichier SQL pas encore lancé → pas de ligne)
+let questLastLoad = 0;
+
+const rowArrow = () => { const a = el('span', 'row-arrow'); a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; return a; };
+const fmtNum = n => Math.round(n).toLocaleString('fr-FR');
+
+function questKultiXp(monday) {
+    let days = 0;
+    for (let i = 0; i < 7; i++) if ((state.data.activeDays[shiftDays(monday, i)] || 0) > 0) days++;
+    return days * QUEST_KULTI_DAY_XP;
+}
+const questReached = q => !!q && !q.waiting && q.mine + q.theirs >= q.goal;
+function questsToClaim() {
+    return [quest, questPrev].filter(q => questReached(q) && !state.data.questDone[q.week]).length;
+}
+
+function questFrom(r, profs) {
+    const meA = r.a === cloudUser.id;
+    const pid = meA ? r.b : r.a;
+    const week = String(r.week).slice(0, 10);
+    const prof = pid ? profs[pid] : null;
+    const look = prof && Number.isInteger(prof.avatar_hue) ? { hue: prof.avatar_hue, emoji: prof.avatar_emoji || null } : null;
+    const friend = pid ? league?.friends.find(f => f.id === pid) : null;
+    return {
+        week, goal: r.goal || 1500, kulti: !!r.kulti && !pid, waiting: !pid && !r.kulti,
+        mine: Math.max(weekXp(week), meA ? r.a_xp : r.b_xp),
+        theirs: pid ? (meA ? r.b_xp : r.a_xp) : r.kulti ? questKultiXp(week) : 0,
+        partner: pid ? { id: pid, pseudo: friend?.pseudo || prof?.pseudo || '?', look: friend?.look || look } : null,
+        friend: !!friend, asked: !!league?.outgoing.find(f => f.id === pid)
+    };
+}
+
+async function questLoad(force = false) {
+    if (BAC) {   // bac à sable : une fausse quête avec Léa (rien en ligne)
+        const lea = league.friends[0];
+        quest = { week: weekStart(), goal: 1500, kulti: false, waiting: false, mine: weekXp(weekStart()), theirs: 640,
+            partner: { id: lea.id, pseudo: lea.pseudo, look: lea.look }, friend: true, asked: false };
+        questReady = true;
+        renderQuestRow();
+        return;
+    }
+    const c = cloudClient();
+    if (!c || !cloudUser || !league?.pseudo || !navigator.onLine) { renderQuestRow(); return; }
+    if (!force && Date.now() - questLastLoad < 60000) { renderQuestRow(); return; }
+    questLastLoad = Date.now();
+    try {
+        const { data, error } = await c.rpc('quest_join');
+        if (error) { questReady = false; renderQuestRow(); return; }   // fichier SQL pas encore lancé
+        const r = Array.isArray(data) ? data[0] : data;
+        if (!r) return;
+        const week = String(r.week).slice(0, 10);
+        await c.rpc('quest_push', { p_xp: Math.min(15000, weekXp(week)) });
+        const { data: old } = await c.from('quests').select('*').eq('week', shiftDays(week, -7)).maybeSingle();
+        const ids = [r, old].filter(Boolean).map(x => (x.a === cloudUser.id ? x.b : x.a)).filter(Boolean);
+        const profs = {};
+        if (ids.length) {
+            const { data: ps } = await c.from('profiles').select('*').in('user_id', ids);
+            (ps || []).forEach(p => { profs[p.user_id] = p; });
+        }
+        quest = questFrom(r, profs);
+        questPrev = old ? questFrom(old, profs) : null;
+        questReady = true;
+    } catch (err) { /* hors ligne : on garde la dernière version */ }
+    renderQuestRow();
+    updateNavNotifications();
+    if (!$('questModal').hidden) openQuestModal();
+}
+
+/** Ligne compacte sous les missions : 🤝 Quête avec Max · 640 / 1 500 (›) */
+function renderQuestRow() {
+    const row = $('questRow');
+    if (!row) return;
+    const label = el('span', 'missions-label');
+    const right = el('span', 'missions-dots');
+    row.hidden = false;
+    if (!cloudUser) { label.textContent = '🤝 Quête en duo'; right.textContent = 'Crée un compte'; }
+    else if (!league?.pseudo) { label.textContent = '🤝 Quête en duo'; right.textContent = 'Choisis un pseudo'; }
+    else if (!questReady || !quest) { row.hidden = true; return; }
+    else if (quest.waiting) { label.textContent = '🤝 Quête en duo'; right.textContent = '🔎 Recherche…'; }
+    else {
+        label.textContent = `🤝 Quête avec ${quest.kulti ? 'Kulti' : quest.partner.pseudo}`;
+        right.textContent = questReached(quest) ? '✓ Réussie' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)}`;
+    }
+    row.replaceChildren(label, right, rowArrow());
+    const n = questsToClaim();
+    if (n > 0) row.setAttribute('data-notif', n);
+    else row.removeAttribute('data-notif');
+}
+
+function questClick() {
+    if (!cloudUser) { openAuthModal(); return; }
+    if (!league?.pseudo) { showScreen('league'); return; }
+    openQuestModal();
+}
+
+/** Bloc d'une quête : partenaire, barre à deux couleurs, récompense. */
+function questBlock(q, past) {
+    const box = el('div', 'quest-box');
+    const head = el('div', 'quest-head');
+    let av;
+    if (q.kulti) { av = el('span', 'league-avatar quest-kulti'); av.append(kultiEl('content', 'kulti-blink')); }
+    else av = avatarEl(q.partner.pseudo, q.partner.look);
+    const who = el('div', 'quest-who');
+    const name = el('b');
+    name.textContent = q.kulti ? 'Kulti' : q.partner.pseudo;
+    const kind = el('small');
+    kind.textContent = q.kulti ? 'La mascotte de Kultivo' : q.friend ? 'Ton ami' : 'Joueur tiré au hasard';
+    who.append(name, kind);
+    head.append(av, who);
+    box.append(head);
+
+    const total = q.mine + q.theirs;
+    const line = el('div', 'quest-line');
+    const a = el('span');
+    a.textContent = past ? 'Semaine dernière' : `${fmtNum(total)} / ${fmtNum(q.goal)} XP`;
+    const b = el('span', 'muted');
+    b.textContent = past ? `${fmtNum(total)} / ${fmtNum(q.goal)} XP` : `⏳ ${vitrineTimeLeft()}`;
+    line.append(a, b);
+    const bar = el('div', 'quest-bar');
+    const pct = x => `${Math.min(100, (x / q.goal) * 100)}%`;
+    const f1 = el('i', 'is-me');
+    f1.style.width = pct(q.mine);
+    const f2 = el('i', 'is-mate');
+    f2.style.width = pct(Math.min(q.theirs, Math.max(0, q.goal - q.mine)));
+    bar.append(f1, f2);
+    const legend = el('div', 'quest-legend');
+    const l1 = el('span', 'is-me');
+    l1.textContent = `Toi ${fmtNum(q.mine)}`;
+    const l2 = el('span', 'is-mate');
+    l2.textContent = `${q.kulti ? 'Kulti' : q.partner.pseudo} ${fmtNum(q.theirs)}`;
+    legend.append(l1, l2);
+    box.append(line, bar, legend);
+    if (q.kulti) {
+        const note = el('p', 'quest-note');
+        note.textContent = `Personne n’était libre : Kulti joue avec toi cette semaine. Il ajoute ${QUEST_KULTI_DAY_XP} XP chaque jour où tu joues.`;
+        box.append(note);
+    }
+
+    const done = state.data.questDone[q.week];
+    if (questReached(q) && !done) {
+        const btn = el('button', 'btn btn-violet btn-full');
+        btn.type = 'button';
+        btn.textContent = `🎁 Ouvrir le coffre (${QUEST_CARDS} cartes)`;
+        btn.addEventListener('click', () => {
+            state.data.questDone[q.week] = true;
+            saveData();
+            $('questModal').hidden = true;
+            renderQuestRow();
+            updateNavNotifications();
+            openCardBoxes([{ size: QUEST_CARDS, rare: false }], `🤝 Quête réussie avec ${q.kulti ? 'Kulti' : q.partner.pseudo} !`);
+        });
+        box.append(btn);
+    } else {
+        const chest = el('div', `mission-chest${done ? ' is-open' : ''}`);
+        chest.textContent = done ? '🎁 Coffre ouvert. Nouvelle quête lundi !'
+            : past ? 'Objectif pas atteint.' : `🎁 ${fmtNum(q.goal)} XP à vous deux = un coffre de ${QUEST_CARDS} cartes pour chacun.`;
+        box.append(chest);
+    }
+    if (q.partner && !q.friend && !past) {
+        const add = el('button', 'btn btn-ghost btn-full');
+        add.type = 'button';
+        add.textContent = q.asked ? '✓ Demande d’ami envoyée' : `👥 Ajouter ${q.partner.pseudo} en ami`;
+        add.disabled = q.asked;
+        add.addEventListener('click', async () => {
+            add.disabled = true;
+            const c = cloudClient();
+            const { error } = c ? await c.from('friendships').insert({ requester: cloudUser.id, addressee: q.partner.id }) : { error: true };
+            if (error) { add.disabled = false; showToast('Impossible pour le moment. Réessaie.'); return; }
+            q.asked = true;
+            add.textContent = '✓ Demande d’ami envoyée';
+            leagueLoad();
+        });
+        box.append(add);
+    }
+    return box;
+}
+
+function openQuestModal() {
+    const body = $('questBody');
+    body.replaceChildren();
+    if (questPrev && questReached(questPrev) && !state.data.questDone[questPrev.week]) body.append(questBlock(questPrev, true));
+    if (!quest) {
+        const p = el('p', 'muted');
+        p.textContent = 'Connexion impossible pour le moment. Réessaie plus tard.';
+        body.append(p);
+    } else if (quest.waiting) {
+        const box = el('div', 'quest-box quest-wait');
+        const k = el('div', 'quest-wait-kulti');
+        k.append(kultiEl('parle', 'kulti-blink kulti-float'));
+        const p = el('p');
+        p.textContent = 'Je te cherche un partenaire… Dès qu’un autre joueur ouvre Défis, vous ferez équipe. Si personne n’arrive d’ici demain, c’est moi qui jouerai avec toi !';
+        box.append(k, p);
+        body.append(box);
+    } else body.append(questBlock(quest, false));
+    $('questModal').hidden = false;
 }
 
 /* ---------- Défi du jour ---------- */
@@ -2144,7 +2350,7 @@ function updateNavNotifications() {
         unclaimedGoals = 1;
     }
     
-    unclaimedGoals += missionsToClaim();
+    unclaimedGoals += missionsToClaim() + questsToClaim();
     const challengesBtn = document.querySelector('.nav-btn[data-screen="challenges"]');
     if (unclaimedGoals > 0) challengesBtn.setAttribute('data-notif', unclaimedGoals);
     else challengesBtn.removeAttribute('data-notif');
@@ -3385,6 +3591,7 @@ function renderChallenges() {
         ? `Rythme « ${currentChoice.label} » · modifiable demain`
         : 'Modifiable tant que tu n’as pas joué aujourd’hui.';
     renderMissionsRow();
+    questLoad();
 
     // Défi du jour
     const result = data.daily[today];
@@ -7629,6 +7836,7 @@ async function leaguePushScore() {
             const { error } = await c.from('scores').upsert(attempt);
             if (!error) break;   // sinon : colonnes pas encore créées, on réessaie avec moins
         }
+        await c.rpc('quest_push', { p_xp: row.week_xp });   // quête en duo (sans effet si pas de quête)
     } catch (err) { /* hors ligne : au prochain envoi */ }
 }
 
@@ -8014,6 +8222,7 @@ async function leagueFetch() {
     refreshLeagueView();
     renderMapFriends();
     if (!$('challengesScreen').hidden) renderDailyFriends(state.data.daily[todayKey()]);
+    questLoad();
     handleInvite();   // sans attendre : la fenêtre « ajouter en ami ? » peut rester ouverte
     checkPodium();
 }
@@ -9271,6 +9480,9 @@ function bindEvents() {
     window.addEventListener('resize', updateEventBanner);
     $('missionsRow').addEventListener('click', openMissionsModal);
     $('closeMissionsBtn').addEventListener('click', () => { $('missionsModal').hidden = true; });
+    $('questRow').addEventListener('click', questClick);
+    $('closeQuestBtn').addEventListener('click', () => { $('questModal').hidden = true; });
+    $('questModal').addEventListener('click', e => { if (e.target === $('questModal')) $('questModal').hidden = true; });
     $('patchOk').addEventListener('click', closePatchNotes);
     $('missionsModal').addEventListener('click', e => { if (e.target === $('missionsModal')) $('missionsModal').hidden = true; });
     $('closeDropsBtn').addEventListener('click', closeDropsModal);
@@ -9660,6 +9872,7 @@ function closeTopOverlay() {
     if (open('chestModal')) { closeChest(); return true; }
     if (open('dropsModal')) { closeDropsModal(); return true; }
     if (open('missionsModal')) { $('missionsModal').hidden = true; return true; }
+    if (open('questModal')) { $('questModal').hidden = true; return true; }
     if (open('patchModal')) { closePatchNotes(); return true; }
     if (open('avatarModal')) { closeAvatarModal(); return true; }
     if (open('titlesModal')) { $('titlesModal').hidden = true; return true; }
