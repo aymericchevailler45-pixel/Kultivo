@@ -9019,6 +9019,8 @@ function initBac() {
             showToast('Bulles remises : va dans Défis pour les voir.');
             return;
         }
+        const anim = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir l’animation du jour de série (avec ta série actuelle) ?', yes: 'Voir l’animation', no: 'Plus d’options' });
+        if (anim) { showStreakAnim(state.data.streak || 1); return; }
         const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Fermer' });
         if (reset) { try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* tant pis */ } location.reload(); }
     });
