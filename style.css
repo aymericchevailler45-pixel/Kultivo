@@ -3469,3 +3469,4 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .quest-row-bar .is-me { background: var(--green); }
 .quest-row-bar .is-mate { background: #3b82f6; }
 .quest-row-num { white-space: nowrap; }
+#questTitle { font-size: 1.35rem; white-space: nowrap; }

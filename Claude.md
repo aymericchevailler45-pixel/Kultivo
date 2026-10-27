@@ -55,7 +55,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   seul tiré au hasard (« Ajouter en ami » en fin de semaine), 3) personne en 24 h → Kulti partenaire ; compte obligatoire.
   Règle ACCEPTÉE et FAITE le 27/10 : `supabase/quete-duo.sql` (À LANCER par l'utilisateur ; table `quests`, fonctions
   `quest_join` (tirage, verrou, Kulti après 24 h) et `quest_push`) ; jeu : `questLoad` (Défis + après `leagueFetch`),
-  ligne `#questRow` sous les missions (flèche verte ronde `rowArrow`, aussi sur la ligne des missions), fenêtre
+  ligne `#questRow` sous les missions (récompense : 2 cartes + 50 🪙, `QUEST_COINS`) (flèche verte ronde `rowArrow`, aussi sur la ligne des missions), fenêtre
   `#questModal` (`openQuestModal`, `questBlock` : barre 2 couleurs, coffre de 2 cartes, « Ajouter en ami »),
   `questDone` dans la sauvegarde, Kulti = 100 XP par jour joué (`QUEST_KULTI_DAY_XP`). Bac à sable : fausse quête avec Léa.
   Objectif (27/10, `supabase/quete-duo-objectif.sql`) : 5 000 XP la semaine du 26/10, puis moyenne des 3 dernières

@@ -1985,6 +1985,7 @@ function openMissionsModal() {
 // XP que Kulti ajoute chaque jour où l'on joue : de quoi faire la moitié de l'objectif si l'on joue tous les jours
 const questKultiDay = goal => Math.round(goal / 14 / 10) * 10;
 const QUEST_CARDS = 2;
+const QUEST_COINS = 50;   // + pièces pour chacun (2026-10-27, demande de l'utilisateur)
 let quest = null;        // quête de la semaine : { week, goal, mine, theirs, partner, kulti, waiting, friend, asked }
 let questPrev = null;    // celle de la semaine dernière (pour un coffre pas encore ouvert)
 let questReady = false;  // le tirage a répondu (sinon : fichier SQL pas encore lancé → pas de ligne)
@@ -2131,20 +2132,22 @@ function questBlock(q, past) {
     if (questReached(q) && !done) {
         const btn = el('button', 'btn btn-violet btn-full');
         btn.type = 'button';
-        btn.textContent = `🎁 Ouvrir le coffre (${QUEST_CARDS} cartes)`;
+        btn.textContent = `🎁 ${QUEST_CARDS} cartes + ${QUEST_COINS} 🪙`;
         btn.addEventListener('click', () => {
             state.data.questDone[q.week] = true;
+            state.data.coins += QUEST_COINS;
             saveData();
+            renderHeader();
             $('questModal').hidden = true;
             renderQuestRow();
             updateNavNotifications();
-            openCardBoxes([{ size: QUEST_CARDS, rare: false }], `🤝 Quête réussie avec ${q.kulti ? 'Kulti' : q.partner.pseudo} !`);
+            openCardBoxes([{ size: QUEST_CARDS, rare: false }], `🤝 Quête réussie avec ${q.kulti ? 'Kulti' : q.partner.pseudo} ! +${QUEST_COINS} 🪙`);
         });
         box.append(btn);
     } else {
         const chest = el('div', `mission-chest${done ? ' is-open' : ''}`);
         chest.textContent = done ? '🎁 Coffre ouvert. Nouvelle quête lundi !'
-            : past ? 'Objectif pas atteint.' : `🎁 ${fmtNum(q.goal)} XP à vous deux = un coffre de ${QUEST_CARDS} cartes pour chacun.`;
+            : past ? 'Objectif pas atteint.' : `🎁 ${fmtNum(q.goal)} XP à vous deux = ${QUEST_CARDS} cartes + ${QUEST_COINS} 🪙 pour chacun.`;
         box.append(chest);
     }
     if (q.partner && !q.friend && !past) {
