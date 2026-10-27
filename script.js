@@ -2067,8 +2067,12 @@ function renderQuestRow() {
     else if (!league?.pseudo) right.textContent = 'Choisis un pseudo';
     else if (!questReady || !quest) { row.hidden = true; return; }
     else if (quest.waiting) right.textContent = '🔎 Recherche…';
-    else right.textContent = questReached(quest) ? '✓ Réussie' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)}`;
+    else right.textContent = questReached(quest) ? '✓ Réussie' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)} XP`;
     row.replaceChildren(label, right, rowArrow());
+    // « XP » seulement s'il y a la place (sinon le titre serait coupé sur un petit téléphone)
+    if (right.textContent.endsWith(' XP')) requestAnimationFrame(() => {
+        if (label.scrollWidth > label.clientWidth + 1) right.textContent = right.textContent.slice(0, -3);
+    });
     const n = questsToClaim();
     if (n > 0) row.setAttribute('data-notif', n);
     else row.removeAttribute('data-notif');
