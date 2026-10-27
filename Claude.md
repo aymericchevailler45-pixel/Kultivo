@@ -74,7 +74,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   · Défi de Kulti (`KULTI_DEFIS`, `kultiToday`, `kultiItems`, `openKultiDefi`, `endKulti`, mode `kulti`, sauvegarde `kulti`) :
     pastille orange « ! » sur Kulti (parcours, dès le niveau 3, Kulti réveillé tant que pas fait) ; 1 par jour, tiré par
     joueur ; formats : 3 d'un thème faible sans faute 15 🪙, chrono 5 bonnes en 45 s 15 🪙, « Kulti s'est trompé » 10 🪙
-    (fausse réponse = réponse d'une question qui commence pareil), revanche (3 ratées) 15 🪙, drapeau 10, rébus 10,
+    (fausse réponse = réponse d'une question du MÊME THÈME aux 3 mêmes premiers mots, dans une bulle de Kulti `#kultiSaid` au-dessus de la question), revanche (3 ratées) 15 🪙, drapeau 10, rébus 10,
     question pointue (d ≥ 4,5) 30 🪙. Un seul essai, fin à la 1re erreur, ni XP ni gouttes ni cœurs ni indices,
     ne compte PAS pour la série. Bac à sable : nouveau défi à chaque tap. Question très dure : 20 🪙 (pas 30, choix de l'utilisateur).
     Ajoutés le 27/10 : Vrai ou faux (5 affirmations, 4 justes, boutons `#tfActions`, 15 🪙) et Devine l'année (3 dates à

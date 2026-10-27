@@ -2789,20 +2789,20 @@ function kultiItems(k) {
         return [{ family, pairs: pickPairs(family, t).slice(0, 4), matched: new Set(), failed: new Set(), order: null }];
     }
     if (k.kind === 'pointue') return weakFirst(all.filter(q => q.d >= 4.5 && !isMastered(q.id))).slice(0, 1).map(one);
-    // « Kulti s'est trompé » : sa mauvaise réponse = la réponse d'une autre question qui commence pareil
-    // (« Quel pays… », « Qui a… », « En quelle année… ») : une réponse du même genre, jamais absurde
+    // « Kulti s'est trompé » : sa mauvaise réponse = la réponse d'une autre question DU MÊME THÈME qui commence par
+    // les mêmes 3 mots (« Qui a peint… », « Dans quel pays se… », « Combien de joueurs… ») : une réponse proche, jamais absurde
     const head = q => {
-        const w = q.q.toLowerCase().replace(/[’']/g, ' ').split(/\s+/);
-        return w.slice(0, ['dans', 'en', 'de', 'à', 'au', 'sur', 'par', 'pour', 'avec'].includes(w[0]) ? 3 : 2).join(' ');
+        const w = q.q.toLowerCase().replace(/[’']/g, ' ').replace(/[^a-zà-ÿœæ0-9 ]/g, ' ').split(/\s+/).filter(Boolean);
+        return w.slice(0, ['dans', 'en', 'de', 'à', 'au', 'sur', 'par', 'pour', 'avec', 'chez'].includes(w[0]) ? 4 : 3).join(' ');
     };
-    const plain = all.filter(o => kultiPlain(o) && !/^(quel|quelle|quels|quelles) est\b/i.test(o.q));
+    const vague = h => /\b(est|sont|s|appelle|appellent|nomme|était|étaient)\b/.test(h);
+    const num = a => /^\d/.test(a);
     for (const q of shuffle(pool.filter(kultiPlain))) {
         const h = head(q);
-        if (/^((quel|quelle|quels|quelles) (est|sont)|comment .*|qu .*|que .*)$/.test(h)) continue;   // trop vague (« Quel est… »)
-        const same = plain.filter(o => o.id !== q.id && head(o) === h);
-        const decoy = shuffle(same.filter(o => o.theme === q.theme)).concat(shuffle(same))
+        if (vague(h)) continue;
+        const decoy = shuffle(all.filter(o => o.id !== q.id && o.theme === q.theme && kultiPlain(o) && head(o) === h && num(o.a[0]) === num(q.a[0])))
             .map(o => o.a[0]).find(a => a.length <= 30 && judge(a, q.a, q.q) === 'wrong');
-        if (decoy) return [{ q: { ...q, q: `J’ai répondu « ${decoy} »… c’est faux ! ${q.q}` }, review: false }];
+        if (decoy) return [{ q: { ...q, kultiSaid: decoy }, review: false }];
     }
     return [];
 }
@@ -5277,6 +5277,21 @@ function showCard() {
                     : state.mode === 'placement' ? `Placement · étape ${state.placeStep + 1}/${PLACEMENT_STEPS}`
                     : 'Défi';
     $('questionText').textContent = item.q.q;
+    const said = $('kultiSaid');   // « Kulti s'est trompé » : sa fausse réponse dans une bulle, à part de la question
+    said.hidden = !item.q.kultiSaid;
+    if (item.q.kultiSaid) {
+        const face = el('span', 'kulti-said-face');
+        face.append(kultiEl('inquiet', 'kulti-blink'));
+        const bubble = el('span', 'kulti-said-bubble');
+        const t1 = el('span');
+        t1.textContent = 'J’ai répondu ';
+        const ans = el('b');
+        ans.textContent = `« ${item.q.kultiSaid} »`;
+        const t2 = el('span');
+        t2.textContent = '… c’est faux ! Aide-moi : quelle est la bonne réponse ?';
+        bubble.append(t1, ans, t2);
+        said.replaceChildren(face, bubble);
+    }
     $('questionFlag').hidden = !item.q.flag;           // questions « Drapeaux » : grand drapeau en image
     if (item.q.flag) {   // drapeau + petite loupe : un tap l'affiche en grand
         const wrap = el('span', 'photo-wrap');

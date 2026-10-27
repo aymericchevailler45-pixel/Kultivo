@@ -3487,3 +3487,12 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .tf-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .tf-actions[hidden] { display: none; }
 .tf-actions .btn { font-size: 1.15rem; padding: 16px 10px; }
+/* Défi de Kulti « Kulti s'est trompé » : sa fausse réponse dans une bulle, au-dessus de la question */
+.kulti-said { display: flex; align-items: center; gap: 10px; margin: 4px 0 10px; }
+.kulti-said[hidden] { display: none; }
+.kulti-said-face { flex: none; width: 52px; height: 52px; }
+.kulti-said-bubble { position: relative; flex: 1; padding: 10px 12px; border: 2px solid #f3b4c0; border-radius: 16px;
+    background: #fff0f3; color: var(--ink); font-size: .95rem; font-weight: 700; line-height: 1.35; }
+.kulti-said-bubble::before { content: ''; position: absolute; left: -9px; top: 50%; width: 14px; height: 14px; margin-top: -7px;
+    border-left: 2px solid #f3b4c0; border-bottom: 2px solid #f3b4c0; background: #fff0f3; transform: rotate(45deg); }
+.kulti-said-bubble b { color: var(--red-ink, #c0392b); text-decoration: line-through; text-decoration-thickness: 2px; }
