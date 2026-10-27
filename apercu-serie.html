@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aperçu série et mascotte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=serie1">
+<!-- Page d'APERÇU (2026-10-27) : animations du jour de série + cerveau mascotte, à choisir avant de les mettre dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .wrap > .card { min-width: 0; }
+    .card > h2 { margin: 0 0 2px; }
+    .lead { margin: 0 0 12px; color: var(--muted); font-weight: 700; }
+    .sub { margin: 14px 0 6px; font-weight: 900; font-size: 0.85rem; color: var(--muted); }
+    .demo-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-start; }
+    .replay { margin-top: 10px; }
+
+    /* Faux téléphone */
+    .phone { position: relative; width: 300px; max-width: 100%; height: 520px; border-radius: 26px; overflow: hidden;
+        border: 6px solid #1d2433; background: var(--bg); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+    .p-top { display: flex; align-items: center; gap: 6px; padding: 10px; background: var(--surface); border-bottom: 1px solid var(--line); }
+    .p-top img.logo { width: 26px; height: 26px; border-radius: 7px; }
+    .p-top b { margin-right: auto; font-weight: 900; }
+    .chip { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 999px; border: 2px solid var(--line); font-weight: 900; font-size: .8rem; background: var(--surface); }
+    .chip img { width: 15px; height: 15px; }
+    .p-end { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 26px 16px; text-align: center; }
+    .p-end .big { font-size: 3rem; }
+    .p-end h3 { margin: 0; font-size: 1.3rem; font-weight: 900; }
+    .p-end p { margin: 0; color: var(--muted); font-weight: 700; font-size: .9rem; }
+    .p-btn { width: 100%; padding: 12px; border: 0; border-radius: 14px; background: var(--green, #58cc02); box-shadow: 0 4px 0 #46a302; color: #fff; font: inherit; font-weight: 900; }
+
+    /* Calque d'animation dans le téléphone */
+    .ov { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 20px; opacity: 0; pointer-events: none; }
+    .ov.on { opacity: 1; pointer-events: auto; transition: opacity .25s; }
+    .ov .cont { position: absolute; left: 16px; right: 16px; bottom: 16px; }
+    .week { display: flex; gap: 6px; justify-content: center; }
+    .day { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .7rem; font-weight: 900; }
+    .dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.25); color: #fff; font-size: .85rem; }
+    .dot.done { background: #ff9600; }
+    .dot img { width: 18px; height: 18px; }
+
+    /* A · Flamme en grand */
+    .ovA { background: linear-gradient(170deg, #ffb238, #ff7a00); color: #fff; }
+    .ovA .flame { width: 120px; height: 120px; transform: scale(0); }
+    .ovA.on .flame { animation: flamePop .8s cubic-bezier(.2,1.6,.4,1) .15s forwards, flameWobble 1.6s ease-in-out 1s infinite; }
+    .ovA .num { font-size: 4.2rem; font-weight: 900; line-height: 1; height: 4.4rem; overflow: hidden; }
+    .ovA .num .roll { display: flex; flex-direction: column; transition: transform .6s cubic-bezier(.3,1.4,.5,1) .9s; }
+    .ovA.on .num .roll { transform: translateY(-50%); }
+    .ovA .lbl { font-size: 1.2rem; font-weight: 900; }
+    .ovA .day { color: #fff; }
+    .ovA .dot.today { background: rgba(255,255,255,.25); }
+    .ovA.on .dot.today { animation: dayFill .5s ease 1.6s forwards; }
+    .ovA .cont .p-btn { background: #fff; color: #ff7a00; box-shadow: 0 4px 0 rgba(0,0,0,.15); }
+    @keyframes flamePop { to { transform: scale(1); } }
+    @keyframes flameWobble { 0%, 100% { transform: scale(1) rotate(-3deg); } 50% { transform: scale(1.06) rotate(3deg); } }
+    @keyframes dayFill { 0% { transform: scale(1); } 50% { transform: scale(1.35); background: #fff; } 100% { transform: scale(1); background: #fff; } }
+    .ovA .dot.today img { opacity: 0; }
+    .ovA.on .dot.today img { animation: fadeIn .3s 1.8s forwards; }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* B · Calendrier de la semaine (fond clair) */
+    .ovB { background: rgba(10,16,32,.55); }
+    .ovB .sheet { width: 100%; padding: 20px 14px 16px; border-radius: 20px; background: var(--surface); color: var(--ink); transform: translateY(40px); opacity: 0; }
+    .ovB.on .sheet { animation: sheetIn .45s cubic-bezier(.2,1.3,.4,1) forwards; }
+    .ovB h3 { margin: 0 0 4px; font-size: 1.25rem; font-weight: 900; }
+    .ovB p { margin: 0 0 14px; color: var(--muted); font-weight: 700; font-size: .9rem; }
+    .ovB .dot { background: var(--line); color: var(--muted); width: 32px; height: 32px; }
+    .ovB .dot.done { background: #ffe3b8; }
+    .ovB .day { color: var(--muted); }
+    .ovB .dot.today { position: relative; }
+    .ovB.on .dot.today { animation: todayB .6s cubic-bezier(.2,1.6,.4,1) .7s forwards; }
+    @keyframes todayB { 0% { transform: scale(.6); } 100% { transform: scale(1.25); background: #ff9600; box-shadow: 0 0 0 5px rgba(255,150,0,.25); } }
+    .ovB .dot.today img { opacity: 0; }
+    .ovB.on .dot.today img { animation: fadeIn .2s .8s forwards; }
+    .spark { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: #ff9600; opacity: 0; }
+    .ovB.on .spark { animation: spark .6s ease-out .85s forwards; }
+    @keyframes spark { 0% { opacity: 1; transform: translate(-50%,-50%) rotate(var(--a)) translateY(0); } 100% { opacity: 0; transform: translate(-50%,-50%) rotate(var(--a)) translateY(-30px); } }
+    .ovB .count { margin-top: 14px; font-weight: 900; color: #ff7a00; font-size: 1.05rem; }
+    .ovB .p-btn { margin-top: 14px; }
+
+    /* C · Compteur qui roule + flammes qui montent */
+    .ovC { background: radial-gradient(circle at 50% 60%, #3a1d00, #120a02); color: #fff; overflow: hidden; }
+    .ovC .digits { font-size: 6rem; font-weight: 900; height: 6.4rem; line-height: 6.4rem; overflow: hidden; color: #ffb238; text-shadow: 0 0 24px rgba(255,150,0,.8); }
+    .ovC .digits .roll { display: flex; flex-direction: column; }
+    .ovC.on .digits .roll { animation: rollC 1.2s cubic-bezier(.3,1.2,.5,1) .3s forwards; }
+    @keyframes rollC { to { transform: translateY(-75%); } }
+    .ovC .lbl { font-size: 1.15rem; font-weight: 900; opacity: 0; }
+    .ovC.on .lbl { animation: fadeIn .4s 1.4s forwards; }
+    .rise { position: absolute; bottom: -40px; width: 28px; height: 28px; opacity: 0; }
+    .ovC.on .rise { animation: rise var(--d) ease-in var(--w) infinite; }
+    @keyframes rise { 0% { opacity: 0; transform: translateY(0) scale(.6); } 15% { opacity: .9; } 100% { opacity: 0; transform: translateY(-560px) scale(1.1); } }
+    .ovC .cont .p-btn { background: #ff9600; box-shadow: 0 4px 0 #c46a00; }
+
+    /* D · Discret : la flamme file vers le compteur du haut */
+    .ovD { pointer-events: none; }
+    .flyer { position: absolute; left: 50%; top: 55%; width: 70px; height: 70px; margin: -35px 0 0 -35px; opacity: 0; }
+    .ovD.on .flyer { animation: fly 1.1s cubic-bezier(.5,0,.3,1) .2s forwards; }
+    @keyframes fly { 0% { opacity: 0; transform: scale(.3); } 25% { opacity: 1; transform: scale(1.2); } 45% { transform: scale(1); } 100% { opacity: 1; transform: translate(var(--tx), var(--ty)) scale(.22); } }
+    .chip.fire.bump { animation: bump .5s cubic-bezier(.2,1.8,.4,1); border-color: #ff9600; background: #fff4e3; }
+    @keyframes bump { 50% { transform: scale(1.35); } }
+    .banner { position: absolute; left: 10px; right: 10px; top: 52px; padding: 9px 12px; border-radius: 12px; background: #fff4e3; border: 2px solid #ffc46b; color: #b35900; font-weight: 900; font-size: .9rem; text-align: center; transform: translateY(-20px); opacity: 0; transition: .35s; }
+    .banner.on { transform: none; opacity: 1; }
+
+    /* ---------- Mascotte ---------- */
+    .brain { display: block; overflow: visible; }
+    .faces { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+    .face { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border: 2px solid var(--line); border-radius: 14px; font-weight: 800; font-size: .8rem; color: var(--muted); }
+    .face svg { width: 80px; height: 80px; }
+    .blink .eyes { animation: blink 4s infinite; transform-origin: 18px 15px; }
+    @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+    .float { animation: floaty 3s ease-in-out infinite; }
+    @keyframes floaty { 50% { transform: translateY(-4px) rotate(-2deg); } }
+
+    /* Bulle du tutoriel avec la mascotte */
+    .map { position: absolute; inset: 44px 0 0; background: #f3f7ee; }
+    .node { position: absolute; width: 58px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; color: #fff; background: #58cc02; box-shadow: 0 5px 0 #46a302; }
+    .shade { position: absolute; inset: 0; background: rgba(10,16,32,.66); }
+    .hole { position: absolute; border-radius: 50%; box-shadow: 0 0 0 9999px rgba(10,16,32,.66); }
+    .tb { position: absolute; left: 10px; right: 10px; bottom: 16px; display: flex; align-items: flex-end; gap: 6px; }
+    .tb .mas { flex: none; width: 76px; height: 76px; }
+    .tb .bub { position: relative; flex: 1; padding: 12px; border-radius: 16px; background: var(--surface); color: var(--ink); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+    .tb .bub::before { content: ''; position: absolute; left: -9px; bottom: 22px; border: 9px solid transparent; border-right-color: var(--surface); border-left: 0; }
+    .tb .bub p { margin: 0 0 10px; font-weight: 700; font-size: .88rem; line-height: 1.35; min-height: 3.6em; }
+    .tb .foot { display: flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 800; color: var(--muted); white-space: nowrap; }
+    .tb .foot u { margin-left: auto; }
+    .tb .foot span.next { padding: 6px 12px; border-radius: 10px; background: #58cc02; color: #fff; }
+    .talking .mouth-open { animation: talk .22s steps(1) infinite; }
+    .talking .mouth-closed { animation: talk .22s steps(1) .11s infinite; }
+    @keyframes talk { 50% { opacity: 0; } }
+    .old-bub { position: absolute; left: 12px; right: 12px; bottom: 16px; padding: 14px; border-radius: 16px; background: var(--surface); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+    .old-bub p { margin: 0 0 10px; font-weight: 700; font-size: .88rem; line-height: 1.35; }
+
+    /* Logos */
+    .logos { display: flex; gap: 14px; flex-wrap: wrap; }
+    .logo-c { display: flex; flex-direction: column; align-items: center; gap: 6px; font-weight: 800; font-size: .8rem; color: var(--muted); text-align: center; max-width: 150px; }
+    .logo-c svg { width: 120px; height: 120px; }
+    .logo-c .mini { display: flex; gap: 8px; align-items: center; }
+    .logo-c .mini svg { width: 48px; height: 48px; }
+    .logo-c .mini svg + svg { width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+    <article class="card">
+        <h1 style="margin:0 0 4px">🔥 Série et 🧠 mascotte</h1>
+        <p class="lead">Aperçu à juger : rien n'est encore dans le jeu. Chaque animation se rejoue avec son bouton.</p>
+        <p class="lead" style="margin:0">Quand ? Une seule fois par jour, à la fin de la PREMIÈRE partie qui compte pour la série (niveau, révision, entraînement…), juste avant l'écran de fin.</p>
+    </article>
+
+    <article class="card">
+        <h2>A · La flamme en grand</h2>
+        <p class="lead">Écran orange plein : la flamme surgit, le compteur passe de 6 à 7, la case du jour se remplit. Le plus proche de Duolingo, on ne peut pas le rater.</p>
+        <div class="phone" id="phA">
+            <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">6</span></div>
+            <div class="ov ovA" id="ovA">
+                <img class="flame" src="emoji/1f525.svg" alt="">
+                <div class="num"><div class="roll"><span>6</span><span>7</span></div></div>
+                <div class="lbl">jours de série !</div>
+                <div class="week" data-week></div>
+                <div class="cont"><button class="p-btn" type="button">Continuer</button></div>
+            </div>
+        </div>
+        <button class="btn btn-ghost replay" type="button" data-play="A">▶ Rejouer</button>
+    </article>
+
+    <article class="card">
+        <h2>B · Le calendrier de la semaine</h2>
+        <p class="lead">Une fenêtre monte du bas : la semaine, et la case du jour qui s'allume avec quelques étincelles. Plus calme, on voit bien les jours déjà joués.</p>
+        <div class="phone">
+            <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">7</span></div>
+            <div class="p-end"><div class="big">🎉</div><h3>Niveau terminé !</h3><p>(l'écran de fin, derrière)</p></div>
+            <div class="ov ovB" id="ovB">
+                <div class="sheet">
+                    <h3>🔥 Série de 7 jours !</h3>
+                    <p>Tu as joué aujourd'hui. Reviens demain pour passer à 8.</p>
+                    <div class="week" data-week></div>
+                    <button class="p-btn" type="button">Super !</button>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-ghost replay" type="button" data-play="B">▶ Rejouer</button>
+    </article>
+
+    <article class="card">
+        <h2>C · Le compteur qui roule</h2>
+        <p class="lead">Fond sombre, gros chiffre qui défile (5 → 6 → 7) comme une machine à sous, et des petites flammes qui montent. Le plus « spectaculaire ».</p>
+        <div class="phone">
+            <div class="ov ovC" id="ovC">
+                <div class="digits"><div class="roll"><span>4</span><span>5</span><span>6</span><span>7</span></div></div>
+                <div class="lbl">🔥 jours de série d'affilée !</div>
+                <div class="cont"><button class="p-btn" type="button">Continuer</button></div>
+            </div>
+        </div>
+        <button class="btn btn-ghost replay" type="button" data-play="C">▶ Rejouer</button>
+    </article>
+
+    <article class="card">
+        <h2>D · Discret, sans fenêtre</h2>
+        <p class="lead">Sur l'écran de fin : une flamme apparaît, file vers le compteur 🔥 en haut, qui grossit et passe à 7, avec un petit bandeau. Rien à fermer.</p>
+        <div class="phone" id="phD">
+            <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1fa99.svg" alt="" onerror="this.remove()">120</span><span class="chip fire" id="chipD"><img src="emoji/1f525.svg" alt=""><span id="numD">6</span></span></div>
+            <div class="p-end"><div class="big">🎉</div><h3>Niveau terminé !</h3><p>+36 XP · 100 % de bonnes réponses</p><button class="p-btn" type="button" style="margin-top:20px">Continuer</button></div>
+            <div class="banner" id="banD">🔥 Série : 7 jours ! Reviens demain pour 8.</div>
+            <div class="ov ovD" id="ovD"><img class="flyer" id="flyD" src="emoji/1f525.svg" alt=""></div>
+        </div>
+        <button class="btn btn-ghost replay" type="button" data-play="D">▶ Rejouer</button>
+    </article>
+
+    <article class="card">
+        <h2>🧠 Le cerveau de Kultivo, avec un visage</h2>
+        <p class="lead">Le même cerveau que le logo, avec des yeux et une bouche. Il cligne des yeux. Plusieurs humeurs selon le moment :</p>
+        <div class="faces" id="faces"></div>
+        <p class="sub">Un nom ? Idées : Kulti, Neuro, Cervo, Brainy… (à toi de choisir, ou pas de nom)</p>
+    </article>
+
+    <article class="card">
+        <h2>💬 Les bulles d'explication avec lui</h2>
+        <p class="lead">À gauche : avec le cerveau qui « parle » (sa bouche bouge pendant que le texte s'écrit). À droite : les bulles d'aujourd'hui.</p>
+        <div class="demo-row">
+            <div class="phone" id="phT">
+                <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">7</span></div>
+                <div class="map">
+                    <div class="node" style="left:121px;top:70px">4</div>
+                    <div class="node" style="left:70px;top:160px">5</div>
+                    <div class="node" style="left:150px;top:250px">6</div>
+                </div>
+                <div class="hole" style="left:63px;top:197px;width:72px;height:72px"></div>
+                <div class="tb">
+                    <div class="mas" id="masT"></div>
+                    <div class="bub"><p id="txtT"></p><div class="foot">2 / 9 <u>Passer</u><span class="next">Suivant</span></div></div>
+                </div>
+            </div>
+            <div class="phone">
+                <div class="p-top"><img class="logo" src="icons/logo.svg" alt=""><b>Kultivo</b><span class="chip"><img src="emoji/1f525.svg" alt="">7</span></div>
+                <div class="map">
+                    <div class="node" style="left:121px;top:70px">4</div>
+                    <div class="node" style="left:70px;top:160px">5</div>
+                    <div class="node" style="left:150px;top:250px">6</div>
+                </div>
+                <div class="hole" style="left:63px;top:197px;width:72px;height:72px"></div>
+                <div class="old-bub"><p>Voici ton niveau en cours. Touche-le pour commencer : chaque niveau compte 6 ou 7 questions.</p><div class="tb" style="position:static"><div class="foot" style="flex:1">2 / 9 <u>Passer</u><span class="next">Suivant</span></div></div></div>
+            </div>
+        </div>
+        <button class="btn btn-ghost replay" type="button" data-play="T">▶ Rejouer la bulle</button>
+        <p class="sub">Il pourrait aussi apparaître ailleurs : écran de fin (content / déçu), série en danger (inquiet), accueil du premier lancement.</p>
+    </article>
+
+    <article class="card">
+        <h2>🎨 Le logo</h2>
+        <p class="lead">Pas obligatoire de le refaire : la mascotte peut vivre dans le jeu et le logo rester tel quel. Trois pistes (grand, puis en petit comme sur l'écran du téléphone) :</p>
+        <div class="logos" id="logos"></div>
+    </article>
+</div>
+
+<script>
+const BRAIN = `<path fill="#EA596E" d="M29.896 26.667c.003.283-.07.653-.146.958-.531 2.145-2.889 4.552-6.208 4.333-3.008-.198-5.458-1.642-5.458-3.667s2.444-3.667 5.458-3.667 6.335.018 6.354 2.043z"/><path fill="#DD2E44" d="M23.542 24.964c-1.619 0-5.314.448-6.162.448-1.498 0-2.713.94-2.713 2.1 0 .558.286 1.062.744 1.438 0 0 1.006 1.009 2.818.525.793-.212 2.083-1.786 4.354-2.036 1.131-.125 3.25.75 6.974.771.16-.344.193-.583.193-.583 0-2.027-3.194-2.663-6.208-2.663z"/><path fill="#F4ABBA" d="M29.75 27.625s2.184-.443 3.542-2.229c1.583-2.083 1.375-4.312 1.375-4.312 1.604-3-.5-5.813-.5-5.813C33.958 12.104 32 10.792 32 10.792c-1.271-3.021-4.083-3.833-4.083-3.833-2.208-2.583-6.125-2.5-6.125-2.5s-3.67-1.345-8.708.167c-.833.25-3.625.833-5.667 2.083C.981 10.649.494 16.793.584 17.792 1.083 23.375 5 24.375 7.5 24.958c.583 1.583 2.729 4.5 6.583 3.417 4.75-.833 6.75-2.25 7.917-2.25s4.417 1.25 7.75 1.5z"/><g fill="#EA596E"><path d="M17.737 18.648c2.328-1.255 3.59-1.138 4.704-1.037.354.032.689.057 1.028.055 1.984-.045 3.591-.881 4.302-1.69.182-.208.161-.523-.046-.706-.206-.182-.521-.163-.706.045-.548.624-1.899 1.313-3.573 1.351-.3.009-.601-.021-.913-.05-1.195-.111-2.679-.247-5.271 1.152-.665.359-1.577.492-2.565.592-2.197-3.171-.875-5.933-.497-6.591.037.002.073.014.111.014.4 0 .802-.098 1.166-.304.24-.136.325-.441.189-.681s-.441-.325-.681-.189c-.64.362-1.482.153-1.88-.467-.149-.233-.458-.301-.69-.151-.232.149-.3.458-.151.69.237.371.571.65.948.837-.521 1.058-1.51 3.84.372 6.951-1.324.13-2.65.317-3.688.986-.67.432-1.355 1.064-1.878 1.791-.629-.108-2.932-.675-3.334-3.231.25-.194.452-.45.577-.766.102-.257-.024-.547-.281-.649s-.547.024-.649.281c-.089.225-.25.389-.454.461-.202.072-.431.048-.643-.07-.243-.135-.546-.046-.68.194-.134.241-.047.546.194.68.284.158.588.238.89.238.037 0 .072-.017.109-.019.476 2.413 2.383 3.473 3.732 3.794-.176.388-.295.788-.331 1.192-.024.274.179.518.454.542l.045.002c.256 0 .475-.195.498-.456.108-1.213 1.265-2.48 2.293-3.145.964-.621 2.375-.752 3.741-.879 1.325-.121 2.577-.237 3.558-.767zm12.866-1.504c-.131.242-.041.546.2.677.076.042.159.062.24.062.176 0 .347-.093.438-.259.019-.034 1.842-3.449-1.571-5.744-.228-.152-.539-.093-.694.136-.154.229-.093.54.136.694 2.644 1.778 1.309 4.326 1.251 4.434zM9.876 9.07c.156 0 .309-.072.406-.208 1.45-2.017 3.458-1.327 3.543-1.295.259.094.544-.038.64-.296.096-.259-.036-.546-.295-.642-.96-.356-3.177-.468-4.7 1.65-.161.223-.11.536.114.697.089.064.191.094.292.094zm13.072-1.888c2.225-.181 3.237 1.432 3.283 1.508.094.158.26.246.431.246.086 0 .174-.022.253-.069.238-.14.318-.446.179-.684-.054-.091-1.34-2.218-4.224-1.998-.275.021-.48.262-.459.538.022.275.271.484.537.459zm9.15 14.611c-.246-.014-.517.181-.539.457-.002.018-.161 1.719-1.91 2.294-.262.086-.405.368-.318.631.068.21.265.344.475.344.052 0 .104-.008.156-.025 2.372-.778 2.586-3.064 2.594-3.161.021-.276-.183-.518-.458-.54z"/><path d="M7.347 16.934c-.072.267.086.541.353.613.043.012.087.017.13.017.221 0 .422-.147.482-.37.19-.711.927-1.167 1.652-1.014.271.055.535-.116.592-.387.057-.27-.116-.535-.387-.592-.426-.09-.854-.048-1.248.086-1.166-1.994-.939-3.96-.936-3.981.036-.273-.156-.524-.429-.562-.272-.033-.524.154-.562.427-.013.097-.28 2.316 1.063 4.614-.334.301-.588.694-.71 1.149zm11.179-2.47c.407-.377 1.06-.37 1.455.015.098.094.223.141.349.141.131 0 .261-.051.358-.152.192-.198.188-.515-.01-.707-.23-.223-.505-.372-.797-.465.296-1.016.179-1.467-.096-2.312-.048-.147-.101-.311-.157-.498l-.03-.1c-.364-1.208-.605-2.005.087-3.13.145-.235.071-.543-.164-.688-.231-.144-.542-.073-.688.164-.928 1.508-.587 2.637-.192 3.944l.03.1c.059.194.113.364.163.517.247.761.322 1.016.02 1.936-.369.069-.722.236-1.01.504-.202.188-.213.505-.025.707.189.202.506.212.707.024zm6.365-2.985c.291 0 .585-.061.859-.191.25-.118.357-.416.239-.666-.117-.25-.419-.354-.665-.239-.502.236-1.121.031-1.384-.457-.131-.244-.436-.333-.677-.205-.243.13-.335.434-.204.677.18.336.448.601.76.785-.537 1.305-.232 2.691.017 3.426.07.209.265.34.474.34.053 0 .106-.008.16-.026.262-.088.402-.372.313-.633-.168-.498-.494-1.756-.002-2.826.038.002.073.015.11.015zm4.797 9.429c-.019-.275-.257-.492-.531-.467-1.014.072-1.878-.697-1.947-1.703-.02-.275-.265-.48-.533-.465-.275.019-.483.258-.465.533.041.59.266 1.122.608 1.555-.804.946-1.857 1.215-2.444 1.284-.519.062-.973.009-1.498-.053-.481-.055-1.025-.118-1.698-.098l-.005.001c-.02-.286-.088-.703-.305-1.05-.146-.233-.455-.304-.689-.158-.233.146-.305.455-.158.689.134.215.159.558.159.725-.504.181-.94.447-1.334.704-.704.458-1.259.82-2.094.632-.756-.173-1.513-.208-2.155-.118-.1-.251-.258-.551-.502-.782-.201-.19-.517-.182-.707.02-.189.2-.181.517.02.707.086.081.154.199.209.317-1.103.454-1.656 1.213-1.682 1.25-.16.224-.107.533.115.694.088.063.19.094.292.094.155 0 .308-.071.406-.205.005-.008.554-.743 1.637-1.04.56-.154 1.363-.141 2.146.037.219.05.422.067.619.07.093.218.129.477.134.573.016.266.236.472.499.472l.027-.001c.275-.015.486-.248.473-.523-.003-.05-.023-.346-.13-.686.461-.167.862-.428 1.239-.673.572-.373 1.113-.726 1.82-.749.592-.021 1.08.036 1.551.091.474.055.94.091 1.454.061.091.253.084.591.07.704-.033.273.16.523.434.559.021.003.042.004.063.004.247 0 .462-.183.495-.435.008-.062.059-.512-.059-.981.718-.193 1.608-.612 2.345-1.471.431.264.934.419 1.469.419.062 0 .125-.002.187-.006.275-.018.483-.255.465-.531z"/></g>`;
+const FACES = {
+    content: { label: '😊 Content', eyes: 'open', mouth: 'M14.6 20.2 Q17.6 23.4 20.6 20.2' },
+    parle: { label: '🗣️ Il explique', eyes: 'open', mouth: 'open' },
+    fier: { label: '😎 Fier (série, palier)', eyes: 'happy', mouth: 'M14 19.8 Q17.6 24.4 21.2 19.8 Z', fill: true },
+    clin: { label: '😉 Clin d’œil', eyes: 'wink', mouth: 'M14.6 20.2 Q17.6 23.4 20.6 20.2' },
+    surpris: { label: '😮 Surpris', eyes: 'big', mouth: 'o' },
+    inquiet: { label: '😟 Inquiet (série en danger)', eyes: 'worried', mouth: 'M14.8 22 Q17.6 19.6 20.4 22' },
+    triste: { label: '😢 Déçu (niveau raté)', eyes: 'sad', mouth: 'M14.8 22.2 Q17.6 19.8 20.4 22.2' }
+};
+const EYE_L = [13, 14.8], EYE_R = [22.2, 14.8];
+// Zone du visage : couleur de fond du cerveau en fondu, pour que les plis ne traversent pas les yeux
+const PATCH = `<defs><radialGradient id="fp"><stop offset="0" stop-color="#F4ABBA"/><stop offset=".75" stop-color="#F4ABBA"/><stop offset="1" stop-color="#F4ABBA" stop-opacity="0"/></radialGradient></defs><ellipse cx="17.6" cy="17.6" rx="9.6" ry="7" fill="url(#fp)"/>`;
+function eyesSVG(kind) {
+    const one = ([x, y], k) => {
+        if (k === 'happy') return `<path d="M${x - 2.2} ${y + .6} Q${x} ${y - 2.2} ${x + 2.2} ${y + .6}" fill="none" stroke="#2b1a22" stroke-width="1.1" stroke-linecap="round"/>`;
+        if (k === 'closed') return `<path d="M${x - 2} ${y + .3} Q${x} ${y + 1.8} ${x + 2} ${y + .3}" fill="none" stroke="#2b1a22" stroke-width="1.1" stroke-linecap="round"/>`;
+        const r = k === 'big' ? 3.5 : 3.1, p = k === 'big' ? 1.4 : 1.75;
+        const dy = k === 'sad' || k === 'worried' ? .5 : 0;
+        let s = `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#2b1a22" stroke-width=".6"/><circle cx="${x + .3}" cy="${y + .4 + dy}" r="${p}" fill="#2b1a22"/><circle cx="${x + .8}" cy="${y - .3 + dy}" r=".5" fill="#fff"/>`;
+        if (k === 'worried') s += `<path d="M${x - 2.4} ${y - 3.4} L${x + 2} ${y - 4.4}" stroke="#2b1a22" stroke-width=".9" stroke-linecap="round" transform="${x > 18 ? `scale(-1 1) translate(${-2 * x} 0)` : ''}"/>`;
+        if (k === 'sad') s += `<path d="M${x - 2.2} ${y - 4.2} L${x + 2} ${y - 3.2}" stroke="#2b1a22" stroke-width=".9" stroke-linecap="round" transform="${x > 18 ? `scale(-1 1) translate(${-2 * x} 0)` : ''}"/>`;
+        return s;
+    };
+    if (kind === 'wink') return one(EYE_L, 'open') + one(EYE_R, 'closed');
+    return one(EYE_L, kind) + one(EYE_R, kind);
+}
+function mouthSVG(m, fill) {
+    if (m === 'open') return `<g class="mouth-open"><ellipse cx="17.6" cy="21.2" rx="2.3" ry="1.8" fill="#7a1f33"/><ellipse cx="17.6" cy="22.2" rx="1.3" ry=".7" fill="#ff8fa3"/></g><path class="mouth-closed" d="M15 20.6 Q17.6 22.6 20.2 20.6" fill="none" stroke="#2b1a22" stroke-width="1" stroke-linecap="round"/>`;
+    if (m === 'o') return `<ellipse cx="17.6" cy="21.4" rx="1.5" ry="1.9" fill="#7a1f33"/>`;
+    if (fill) return `<path d="${m}" fill="#7a1f33" stroke="#2b1a22" stroke-width=".6" stroke-linejoin="round"/><path d="M15.6 21.6 Q17.6 23.4 19.6 21.6" fill="#ff8fa3"/>`;
+    return `<path d="${m}" fill="none" stroke="#2b1a22" stroke-width="1" stroke-linecap="round"/>`;
+}
+function brainSVG(face, cls = '') {
+    const f = FACES[face];
+    const cheeks = face === 'content' || face === 'fier' || face === 'clin' || face === 'parle' ? `<ellipse cx="10.6" cy="19.4" rx="1.6" ry="1" fill="#ff7f9b" opacity=".55"/><ellipse cx="24.6" cy="19.4" rx="1.6" ry="1" fill="#ff7f9b" opacity=".55"/>` : '';
+    return `<svg class="brain ${cls}" viewBox="0 0 36 36">${BRAIN}${PATCH}<g class="eyes">${eyesSVG(f.eyes)}</g>${cheeks}${mouthSVG(f.mouth, f.fill)}</svg>`;
+}
+
+// Semaine (L à D), 6 jours faits avant aujourd'hui : on prend dim → aujourd'hui = 7e case
+function fillWeeks() {
+    document.querySelectorAll('[data-week]').forEach(w => {
+        w.innerHTML = ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => `<div class="day"><div class="dot ${i < 6 ? 'done' : 'today'}">${i < 6 ? '✓' : ''}<img src="emoji/1f525.svg" alt="" style="${i < 6 ? 'display:none' : ''}">${i === 6 ? Array.from({ length: 8 }, (_, k) => `<i class="spark" style="--a:${k * 45}deg"></i>`).join('') : ''}</div>${d}</div>`).join('');
+    });
+}
+fillWeeks();
+
+// Flammes qui montent (C)
+const ovC = document.getElementById('ovC');
+for (let i = 0; i < 14; i++) {
+    const img = document.createElement('img');
+    img.className = 'rise'; img.src = 'emoji/1f525.svg'; img.alt = '';
+    img.style.left = `${5 + Math.random() * 85}%`;
+    img.style.setProperty('--d', `${2 + Math.random() * 2}s`);
+    img.style.setProperty('--w', `${Math.random() * 2}s`);
+    ovC.append(img);
+}
+
+function play(which) {
+    if (which === 'T') return talk();
+    const ov = document.getElementById('ov' + which);
+    ov.classList.remove('on');
+    if (which === 'D') {
+        document.getElementById('numD').textContent = '6';
+        document.getElementById('banD').classList.remove('on');
+        const ph = document.getElementById('phD').getBoundingClientRect(), chip = document.getElementById('chipD').getBoundingClientRect();
+        const fly = document.getElementById('flyD');
+        fly.style.setProperty('--tx', `${chip.left + chip.width / 2 - (ph.left + ph.width / 2)}px`);
+        fly.style.setProperty('--ty', `${chip.top + chip.height / 2 - (ph.top + ph.height * .55)}px`);
+        setTimeout(() => { const c = document.getElementById('chipD'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump'); document.getElementById('numD').textContent = '7'; }, 1300);
+        setTimeout(() => { ov.classList.remove('on'); document.getElementById('banD').classList.add('on'); }, 1350);
+        setTimeout(() => document.getElementById('banD').classList.remove('on'), 4200);
+    }
+    void ov.offsetWidth;
+    requestAnimationFrame(() => ov.classList.add('on'));
+}
+document.querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', () => play(b.dataset.play)));
+document.querySelectorAll('.ov .p-btn').forEach(b => b.addEventListener('click', () => b.closest('.ov').classList.remove('on')));
+
+// Mascotte : humeurs
+const faces = document.getElementById('faces');
+for (const k of Object.keys(FACES)) faces.insertAdjacentHTML('beforeend', `<div class="face">${brainSVG(k, 'blink float')}<span>${FACES[k].label}</span></div>`);
+
+// Bulle qui parle
+const TXT = 'Voici ton niveau en cours ! Touche-le pour commencer : chaque niveau compte 6 ou 7 questions.';
+let talkTimer = null;
+function talk() {
+    clearInterval(talkTimer);
+    const mas = document.getElementById('masT'), out = document.getElementById('txtT');
+    mas.innerHTML = brainSVG('parle', 'blink talking float');
+    let i = 0; out.textContent = '';
+    talkTimer = setInterval(() => {
+        out.textContent = TXT.slice(0, ++i);
+        if (i >= TXT.length) { clearInterval(talkTimer); mas.innerHTML = brainSVG('content', 'blink float'); }
+    }, 28);
+}
+
+// Logos
+const K = `<path transform="translate(165 150)" d="M0 0h52v66l64-66h66l-86 86 90 102h-66l-62-73-6 7v66h-52z" fill="#46a302" stroke="#ffffff" stroke-width="22" stroke-linejoin="round" paint-order="stroke"/>`;
+const BG = `<defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fd40a"/><stop offset="1" stop-color="#46a302"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#lg)"/>`;
+const faceG = face => { const f = FACES[face]; return `${PATCH}<g class="eyes">${eyesSVG(f.eyes)}</g><ellipse cx="10.6" cy="19.4" rx="1.6" ry="1" fill="#ff7f9b" opacity=".55"/><ellipse cx="24.6" cy="19.4" rx="1.6" ry="1" fill="#ff7f9b" opacity=".55"/>${mouthSVG(f.mouth, f.fill)}`; };
+const LOGOS = [
+    ['Aujourd’hui : cerveau + K', `${BG}<g transform="translate(52 40) scale(11.3)">${BRAIN}</g>${K}`],
+    ['1 · Le cerveau avec son visage, sans le K (comme la chouette de Duolingo)', `${BG}<g transform="translate(52 50) scale(11.3)">${BRAIN}${faceG('content')}</g>`],
+    ['2 · Le visage + un petit K dans le coin', `${BG}<g transform="translate(40 40) scale(11)">${BRAIN}${faceG('clin')}</g><g transform="translate(330 318) scale(.62)">${K.replace('translate(165 150)', 'translate(0 0)')}</g>`],
+    ['3 · Fond blanc, cerveau qui sourit, liseré vert', `<rect width="512" height="512" rx="112" fill="#fff"/><rect x="14" y="14" width="484" height="484" rx="100" fill="none" stroke="#58cc02" stroke-width="28"/><g transform="translate(52 52) scale(11.3)">${BRAIN}${faceG('fier')}</g>`]
+];
+const logos = document.getElementById('logos');
+for (const [label, svg] of LOGOS) logos.insertAdjacentHTML('beforeend', `<div class="logo-c"><svg viewBox="0 0 512 512">${svg}</svg><div class="mini"><svg viewBox="0 0 512 512">${svg}</svg><svg viewBox="0 0 512 512">${svg}</svg></div><span>${label}</span></div>`);
+
+// Démarrage : tout joue une fois
+setTimeout(() => { play('A'); play('B'); play('C'); play('D'); talk(); }, 500);
+</script>
+</body>
+</html>
