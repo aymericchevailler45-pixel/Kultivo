@@ -2467,7 +2467,13 @@ function kultiSay(btn) {
     const top = r.bottom + 10 + bubble.offsetHeight < window.innerHeight - 90 ? r.bottom + 10 : r.top - 10 - bubble.offsetHeight;
     bubble.style.top = `${Math.max(70, top)}px`;
     playSound('tap');
+    // La bulle s'en va toute seule après le temps de lecture (4 à 9 s)
+    clearTimeout(kultiSayTimer);
+    const text = $('factText').textContent;
+    kultiSayTimer = setTimeout(() => { if ($('factTitle').textContent === '🧠 Kulti' && $('factText').textContent === text) bubble.hidden = true; },
+        Math.min(9000, Math.max(4000, 1500 + text.length * 50)));
 }
+let kultiSayTimer = null;
 
 /* ---------- 7 · Ton mois sur Kultivo (2026-10-27) ----------
    Le 1er du mois : récap du mois passé, en « stories ». Bouton violet dans l'en-tête du Profil (sous l'XP), pastille rouge
@@ -2631,8 +2637,12 @@ function showRecapSlide(i) {
         share.addEventListener('click', e => { e.stopPropagation(); openRecapShare(recapMonth); });
         sl.append(share);
     }
+    // Temps de lecture selon la longueur du texte (2026-10-27 : la « bête noire » passait trop vite) : 5 à 14 s
+    const ms = Math.min(14000, Math.max(5000, 2500 + (s.h.length + s.p.length) * 60));
+    const bar = ov.querySelector('.recap-prog .is-cur b');
+    if (bar) bar.style.animationDuration = `${ms}ms`;
     clearTimeout(recapTimer);
-    if (recapIdx < recapSlides.length - 1) recapTimer = setTimeout(() => showRecapSlide(recapIdx + 1), 5000);
+    if (recapIdx < recapSlides.length - 1) recapTimer = setTimeout(() => showRecapSlide(recapIdx + 1), ms);
 }
 function closeRecap() {
     clearTimeout(recapTimer);
