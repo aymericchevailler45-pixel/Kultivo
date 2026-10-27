@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kulti et le K</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=kultik1">
+<!-- Page d'APERÇU (2026-10-27) : mettre le K de Kultivo plus en avant (Kulti qui porte le K, récap partagé, tampon).
+     Rien de tout ça n'est encore dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .card > h2 { margin: 0 0 2px; }
+    .lead { margin: 0 0 12px; color: var(--muted); font-weight: 700; }
+    .where { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .9rem; }
+    .versions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .ver { padding: 12px; border: 2px solid var(--line); border-radius: 16px; background: var(--surface); text-align: center; }
+    .ver h3 { margin: 0 0 4px; font-weight: 900; }
+    .ver p { margin: 6px 0 0; color: var(--muted); font-weight: 700; font-size: .85rem; }
+    .big { width: 130px; height: 130px; margin: 6px auto; }
+    .sizes { display: flex; justify-content: center; align-items: flex-end; gap: 14px; margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--line); }
+    .sizes span.lbl { display: block; font-size: .7rem; font-weight: 800; color: var(--muted); margin-top: 2px; }
+    .s58 { width: 58px; height: 58px; } .s44 { width: 44px; height: 44px; } .s32 { width: 32px; height: 32px; }
+
+    /* Kulti + K */
+    .kk { position: relative; display: inline-block; }
+    .kk > .kulti { width: 100%; height: 100%; }
+    .kk .k-front { position: absolute; left: 39.5%; top: 9%; width: 22%; pointer-events: none; }
+    .kk .k-badge { position: absolute; right: -4%; bottom: 6%; width: 36%; aspect-ratio: 1; border-radius: 50%;
+        background: linear-gradient(170deg, #5fd40a, #46a302); box-shadow: 0 0 0 2px #fff, 0 2px 4px rgba(0,0,0,.25); display: grid; place-items: center; }
+    .kk .k-badge svg { width: 58%; }
+    .kk .k-band { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+    /* Contextes */
+    .phones { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 6px; }
+    .phone { position: relative; flex: none; width: 260px; height: 440px; border-radius: 26px; overflow: hidden; border: 6px solid #1d2433; background: var(--bg); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+    .cap { margin: 6px 0 0; max-width: 260px; font-weight: 800; font-size: .82rem; color: var(--muted); }
+    .map { position: absolute; inset: 0; background: linear-gradient(#eef3f8, #e6edf5); }
+    .node { position: absolute; width: 70px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 1.4rem; color: #fff; background: #58cc02; box-shadow: 0 6px 0 #46a302; }
+    .node.lock { background: #d5dde8; box-shadow: 0 6px 0 #b9c4d3; color: #8a97ab; }
+    .end { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px; text-align: center; }
+    .end h3 { margin: 0; font-weight: 900; }
+    .end p { margin: 0; color: var(--muted); font-weight: 700; }
+    .p-btn { width: 100%; padding: 11px; border: 0; border-radius: 14px; background: #58cc02; box-shadow: 0 4px 0 #46a302; color: #fff; font: inherit; font-weight: 900; }
+    .tour { position: absolute; left: 10px; right: 10px; bottom: 16px; display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 16px; background: #fff; box-shadow: 0 6px 20px rgba(0,0,0,.2); font-weight: 700; font-size: .9rem; }
+    .tour-dim { position: absolute; inset: 0; background: rgba(20,28,45,.55); }
+
+    /* Récap partagé */
+    .story { position: relative; flex: none; width: 230px; height: 408px; border-radius: 18px; overflow: hidden; color: #fff; text-align: center;
+        background: linear-gradient(160deg, #7c3aed, #4c1d95); box-shadow: 0 8px 24px rgba(0,0,0,.25); padding: 18px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .story .top { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 1.1rem; }
+    .story .top img { width: 30px; height: 30px; border-radius: 9px; }
+    .story .bigk { position: absolute; right: -40px; bottom: -40px; width: 200px; opacity: .14; }
+    .story .cells { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; margin-top: 6px; }
+    .story .cells div { padding: 8px 4px; border-radius: 10px; background: rgba(255,255,255,.14); font-weight: 900; font-size: 1.05rem; }
+    .story .cells small { display: block; font-size: .65rem; font-weight: 800; opacity: .85; }
+    .story .foot { margin-top: auto; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.18); font-weight: 900; font-size: .8rem; }
+    .story .foot img { width: 22px; height: 22px; border-radius: 6px; }
+
+    /* Tampon K */
+    .stampzone { position: relative; height: 300px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+    .stamp { position: absolute; top: 18px; right: 18px; width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center;
+        background: linear-gradient(170deg, #5fd40a, #46a302); box-shadow: 0 0 0 5px #fff, 0 0 0 8px #46a302; transform: rotate(-12deg); }
+    .stamp svg { width: 52%; }
+    .stamp small { position: absolute; bottom: -26px; left: 50%; transform: translateX(-50%) rotate(0); white-space: nowrap; font-weight: 900; color: var(--green-deep); font-size: .8rem; }
+    .stamp.go { animation: stampIn .5s cubic-bezier(.3,1.6,.5,1) both; }
+    @keyframes stampIn { 0% { transform: scale(2.6) rotate(-30deg); opacity: 0; } 60% { transform: scale(.9) rotate(-10deg); opacity: 1; } 100% { transform: scale(1) rotate(-12deg); } }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .btns .btn { padding: 8px 12px; font-size: .9rem; }
+</style>
+<script src="kulti.js?v=kultik1"></script>
+</head>
+<body>
+<div class="wrap">
+    <article class="card">
+        <h1 style="margin:0 0 4px">🧠 Kulti et le K de Kultivo</h1>
+        <p class="lead" style="margin:0">Aperçu à juger : rien n'est encore dans le jeu. Le logo de l'appli ne change pas.</p>
+    </article>
+
+    <article class="card">
+        <h2>1 · Kulti porte le K : 3 versions</h2>
+        <p class="lead">Le même K que sur l'icône (vert, cerclé de blanc). En bas de chaque version : la taille sur le parcours (58), dans les bulles (44) et dans les petites listes (32), pour voir s'il reste lisible.</p>
+        <div class="versions">
+            <div class="ver"><h3>A · Sur le front</h3><div class="big" data-v="front" data-face="content"></div>
+                <p>Comme sur l'icône de l'appli : le K posé sur le cerveau.</p>
+                <div class="sizes"><div><div class="s58" data-v="front"></div><span class="lbl">parcours</span></div><div><div class="s44" data-v="front"></div><span class="lbl">bulle</span></div><div><div class="s32" data-v="front"></div><span class="lbl">petit</span></div></div></div>
+            <div class="ver"><h3>B · Le badge</h3><div class="big" data-v="badge" data-face="content"></div>
+                <p>Un rond vert avec le K, accroché comme une médaille.</p>
+                <div class="sizes"><div><div class="s58" data-v="badge"></div><span class="lbl">parcours</span></div><div><div class="s44" data-v="badge"></div><span class="lbl">bulle</span></div><div><div class="s32" data-v="badge"></div><span class="lbl">petit</span></div></div></div>
+            <div class="ver"><h3>C · Le bandeau</h3><div class="big" data-v="band" data-face="content"></div>
+                <p>Un bandeau de sport vert avec le K, comme un champion.</p>
+                <div class="sizes"><div><div class="s58" data-v="band"></div><span class="lbl">parcours</span></div><div><div class="s44" data-v="band"></div><span class="lbl">bulle</span></div><div><div class="s32" data-v="band"></div><span class="lbl">petit</span></div></div></div>
+        </div>
+        <div class="btns" id="faceBtns"></div>
+        <p class="where">Pendant les événements, le chapeau (Halloween, Noël) remplace le bandeau (C) ; avec A et B, le K reste visible sous le chapeau.</p>
+    </article>
+
+    <article class="card">
+        <h2>Dans le jeu</h2>
+        <p class="lead">Les 3 endroits où on voit le plus Kulti. Touche une version pour changer :</p>
+        <div class="btns" id="ctxBtns"></div>
+        <div class="phones">
+            <div><div class="phone"><div class="map">
+                <div class="node lock" style="left:120px;top:40px">14</div>
+                <div class="node" style="left:60px;top:170px">13</div>
+                <div class="node" style="left:130px;top:310px;background:#ffc800;box-shadow:0 6px 0 #e0a800">12</div>
+                <div class="s58 ctx" style="position:absolute;left:146px;top:170px"></div>
+            </div></div><p class="cap">Parcours : Kulti à côté du niveau en cours.</p></div>
+            <div><div class="phone"><div class="end">
+                <div class="ctx" data-face="fier" style="width:120px;height:120px"></div>
+                <h3>Niveau 13 terminé !</h3><p>Sans faute 👏</p>
+                <button class="p-btn" type="button" style="margin-top:10px">Continuer</button>
+            </div></div><p class="cap">Écran de fin d'un niveau.</p></div>
+            <div><div class="phone"><div class="map"></div><div class="tour-dim"></div>
+                <div class="tour"><div class="s44 ctx" data-face="parle" style="flex:none"></div><div>Ici, ce sont tes défis : chaque jour, un nouveau défi à relever !</div></div>
+            </div><p class="cap">Bulle d'explication.</p></div>
+        </div>
+    </article>
+
+    <article class="card">
+        <h2>4 · Le récap partagé</h2>
+        <p class="lead">L'image qu'on partage sur WhatsApp ou Instagram : c'est elle qui fait connaître le jeu. À gauche aujourd'hui, à droite avec le K plus visible.</p>
+        <div class="phones">
+            <div><div class="story" style="background:linear-gradient(160deg,#7c3aed,#4c1d95)">
+                <div class="top"><img src="icons/logo.svg" alt="">Mon mois</div><div style="font-weight:900;font-size:1.3rem">Octobre</div>
+                <div style="width:70px;height:70px" class="kplain"></div>
+                <div class="cells"><div>412<small>bonnes réponses</small></div><div>🔥 18<small>jours de série</small></div><div>81 %<small>de réussite</small></div><div>🃏 23<small>cartes</small></div></div>
+                <div class="foot">@toi · kultivo</div>
+            </div><p class="cap">Aujourd'hui : petit logo en haut.</p></div>
+            <div><div class="story">
+                <svg class="bigk" viewBox="-15 -15 212 218"><path d="M0 0h52v66l64-66h66l-86 86 90 102h-66l-62-73-6 7v66h-52z" fill="#fff"/></svg>
+                <div class="top"><img src="icons/logo.svg" alt="">Mon mois sur Kultivo</div><div style="font-weight:900;font-size:1.3rem">Octobre</div>
+                <div style="width:76px;height:76px" class="ctx" data-face="fier"></div>
+                <div class="cells"><div>412<small>bonnes réponses</small></div><div>🔥 18<small>jours de série</small></div><div>81 %<small>de réussite</small></div><div>🃏 23<small>cartes</small></div></div>
+                <div class="foot"><img src="icons/logo.svg" alt="">Joue avec moi sur Kultivo</div>
+            </div><p class="cap">Avec le K : grand K en filigrane, Kulti qui le porte, et le logo dans « Joue avec moi sur Kultivo ».</p></div>
+        </div>
+    </article>
+
+    <article class="card">
+        <h2>3 · Bonus : le tampon K « Sans faute »</h2>
+        <p class="lead">Quand tu finis un niveau sans aucune erreur, un tampon K vient se poser sur l'écran de fin, avec un petit « tchac ».</p>
+        <div class="stampzone">
+            <div class="ctx" data-face="fier" style="width:110px;height:110px"></div>
+            <h3 style="margin:0;font-weight:900">Niveau 13 terminé !</h3>
+            <div class="stamp" id="stamp"><svg viewBox="-15 -15 212 218"><path d="M0 0h52v66l64-66h66l-86 86 90 102h-66l-62-73-6 7v66h-52z" fill="#fff"/></svg><small>SANS FAUTE</small></div>
+        </div>
+        <div class="btns"><button class="btn btn-ghost" type="button" id="stampBtn">▶ Rejouer le tampon</button></div>
+    </article>
+</div>
+
+<script>
+const K_PATH = 'M0 0h52v66l64-66h66l-86 86 90 102h-66l-62-73-6 7v66h-52z';
+const kSvg = (fill, stroke) => `<svg viewBox="-15 -15 212 218" aria-hidden="true"><path d="${K_PATH}" fill="${fill}"${stroke ? ` stroke="${stroke}" stroke-width="26" stroke-linejoin="round" paint-order="stroke"` : ''}/></svg>`;
+// Bandeau : une bande verte sur le haut du cerveau, avec le K blanc au milieu (dessinée dans la même grille 36 × 36 que Kulti)
+const BAND = `<svg class="k-band" viewBox="0 0 36 36" aria-hidden="true"><path d="M2.4 12 Q17.6 1.6 33.8 10.6 L34 15.4 Q17.6 8.2 2.2 16.4 Z" fill="#46a302" stroke="#fff" stroke-width=".8"/>
+    <g transform="translate(15.9 7.2) scale(.021)"><path d="${K_PATH}" fill="#fff"/></g></svg>`;
+
+function kulti(v, face = 'content') {
+    const wrap = document.createElement('span');
+    wrap.className = 'kk';
+    wrap.style.width = wrap.style.height = '100%';
+    wrap.append(kultiEl(face, 'kulti-blink kulti-float'));
+    const k = wrap.firstChild;
+    if (v === 'front') k.insertAdjacentHTML('beforeend', `<span class="k-front">${kSvg('#46a302', '#fff')}</span>`);
+    if (v === 'badge') k.insertAdjacentHTML('beforeend', `<span class="k-badge">${kSvg('#fff')}</span>`);
+    if (v === 'band') k.insertAdjacentHTML('beforeend', BAND);
+    return wrap;
+}
+
+let face = 'content';
+let ctxV = 'front';
+function draw() {
+    document.querySelectorAll('div[data-v]').forEach(n => n.replaceChildren(kulti(n.dataset.v, n.dataset.face ? face : 'content')));
+    document.querySelectorAll('.ctx').forEach(n => n.replaceChildren(kulti(ctxV, n.dataset.face || 'content')));
+    document.querySelectorAll('.kplain').forEach(n => n.replaceChildren(kultiEl('fier', 'kulti-blink')));
+    document.querySelectorAll('#ctxBtns .btn').forEach(b => b.classList.toggle('btn-green', b.dataset.cv === ctxV));
+    document.querySelectorAll('#faceBtns .btn').forEach(b => b.classList.toggle('btn-green', b.dataset.f === face));
+}
+[['content', '🙂 Content'], ['fier', '😄 Fier'], ['parle', '💬 Parle'], ['triste', '😢 Déçu']].forEach(([f, label]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-ghost'; b.dataset.f = f; b.textContent = label;
+    b.onclick = () => { face = f; draw(); };
+    document.getElementById('faceBtns').append(b);
+});
+[['front', 'A · Front'], ['badge', 'B · Badge'], ['band', 'C · Bandeau']].forEach(([v, label]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-ghost'; b.dataset.cv = v; b.textContent = label;
+    b.onclick = () => { ctxV = v; draw(); };
+    document.getElementById('ctxBtns').append(b);
+});
+draw();
+const stamp = document.getElementById('stamp');
+const replay = () => { stamp.classList.remove('go'); void stamp.offsetWidth; stamp.classList.add('go'); };
+document.getElementById('stampBtn').onclick = replay;
+setTimeout(replay, 600);
+</script>
+</body>
+</html>
