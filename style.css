@@ -3461,3 +3461,11 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .modal-content p.quest-note { margin: 0; color: var(--muted); font-size: .9rem; font-weight: 700; }
 .quest-wait { align-items: center; text-align: center; }
 .quest-wait-kulti { width: 90px; height: 90px; }
+.quest-row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.quest-row-main .missions-label { flex: none; }
+.quest-row-sub { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .88rem; font-weight: 800; }
+.quest-row-bar { flex: 1; display: flex; height: 10px; border-radius: 6px; overflow: hidden; background: var(--line); }
+.quest-row-bar i { display: block; height: 100%; }
+.quest-row-bar .is-me { background: var(--green); }
+.quest-row-bar .is-mate { background: #3b82f6; }
+.quest-row-num { white-space: nowrap; }

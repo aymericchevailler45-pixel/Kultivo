@@ -1982,7 +1982,8 @@ function openMissionsModal() {
    Chaque semaine, un partenaire (2 joueurs exactement) : un ami libre qui joue, sinon un autre joueur seul tiré au
    hasard, sinon Kulti au bout de 24 h. Les XP de la semaine des deux s'additionnent ; objectif atteint = coffre de
    2 cartes pour chacun. Le tirage est fait en ligne (`quest_join`), mes XP envoyés par `quest_push`. */
-const QUEST_KULTI_DAY_XP = 100;   // XP que Kulti ajoute chaque jour où l'on joue (≈ un joueur moyen)
+// XP que Kulti ajoute chaque jour où l'on joue : de quoi faire la moitié de l'objectif si l'on joue tous les jours
+const questKultiDay = goal => Math.round(goal / 14 / 10) * 10;
 const QUEST_CARDS = 2;
 let quest = null;        // quête de la semaine : { week, goal, mine, theirs, partner, kulti, waiting, friend, asked }
 let questPrev = null;    // celle de la semaine dernière (pour un coffre pas encore ouvert)
@@ -1992,10 +1993,10 @@ let questLastLoad = 0;
 const rowArrow = () => { const a = el('span', 'row-arrow'); a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; return a; };
 const fmtNum = n => Math.round(n).toLocaleString('fr-FR');
 
-function questKultiXp(monday) {
+function questKultiXp(monday, goal) {
     let days = 0;
     for (let i = 0; i < 7; i++) if ((state.data.activeDays[shiftDays(monday, i)] || 0) > 0) days++;
-    return days * QUEST_KULTI_DAY_XP;
+    return days * questKultiDay(goal);
 }
 const questReached = q => !!q && !q.waiting && q.mine + q.theirs >= q.goal;
 function questsToClaim() {
@@ -2012,7 +2013,7 @@ function questFrom(r, profs) {
     return {
         week, goal: r.goal || 1500, kulti: !!r.kulti && !pid, waiting: !pid && !r.kulti,
         mine: Math.max(weekXp(week), meA ? r.a_xp : r.b_xp),
-        theirs: pid ? (meA ? r.b_xp : r.a_xp) : r.kulti ? questKultiXp(week) : 0,
+        theirs: pid ? (meA ? r.b_xp : r.a_xp) : r.kulti ? questKultiXp(week, r.goal || 1500) : 0,
         partner: pid ? { id: pid, pseudo: friend?.pseudo || prof?.pseudo || '?', look: friend?.look || look } : null,
         friend: !!friend, asked: !!league?.outgoing.find(f => f.id === pid)
     };
@@ -2021,7 +2022,7 @@ function questFrom(r, profs) {
 async function questLoad(force = false) {
     if (BAC) {   // bac à sable : une fausse quête avec Léa (rien en ligne)
         const lea = league.friends[0];
-        quest = { week: weekStart(), goal: 1500, kulti: false, waiting: false, mine: weekXp(weekStart()), theirs: 640,
+        quest = { week: weekStart(), goal: 5000, kulti: false, waiting: false, mine: weekXp(weekStart()), theirs: 640,
             partner: { id: lea.id, pseudo: lea.pseudo, look: lea.look }, friend: true, asked: false };
         questReady = true;
         renderQuestRow();
@@ -2054,22 +2055,34 @@ async function questLoad(force = false) {
     if (!$('questModal').hidden) openQuestModal();
 }
 
-/** Ligne compacte sous les missions : 🤝 Quête avec Max · 640 / 1 500 (›) */
+/** Ligne de la quête sur 2 lignes : « 🤝 Quête en duo avec Léa » puis petite barre + « 1 128 / 5 000 XP » (›) */
 function renderQuestRow() {
     const row = $('questRow');
     if (!row) return;
-    const label = el('span', 'missions-label');
-    const right = el('span', 'missions-dots');
+    const main = el('span', 'quest-row-main');
+    const title = el('span', 'missions-label');
+    const sub = el('span', 'quest-row-sub');
     row.hidden = false;
-    if (!cloudUser) { label.textContent = '🤝 Quête en duo'; right.textContent = 'Crée un compte'; }
-    else if (!league?.pseudo) { label.textContent = '🤝 Quête en duo'; right.textContent = 'Choisis un pseudo'; }
+    title.textContent = '🤝 Quête en duo';
+    if (!cloudUser) sub.textContent = 'Crée un compte pour jouer à deux';
+    else if (!league?.pseudo) sub.textContent = 'Choisis un pseudo pour jouer à deux';
     else if (!questReady || !quest) { row.hidden = true; return; }
-    else if (quest.waiting) { label.textContent = '🤝 Quête en duo'; right.textContent = '🔎 Recherche…'; }
+    else if (quest.waiting) sub.textContent = '🔎 Recherche d’un partenaire…';
     else {
-        label.textContent = `🤝 Quête avec ${quest.kulti ? 'Kulti' : quest.partner.pseudo}`;
-        right.textContent = questReached(quest) ? '✓ Réussie' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)}`;
+        title.textContent = `🤝 Quête en duo avec ${quest.kulti ? 'Kulti' : quest.partner.pseudo}`;
+        const bar = el('span', 'quest-row-bar');
+        const pct = x => `${Math.min(100, (x / quest.goal) * 100)}%`;
+        const f1 = el('i', 'is-me');
+        f1.style.width = pct(quest.mine);
+        const f2 = el('i', 'is-mate');
+        f2.style.width = pct(Math.min(quest.theirs, Math.max(0, quest.goal - quest.mine)));
+        bar.append(f1, f2);
+        const txt = el('span', 'quest-row-num');
+        txt.textContent = questReached(quest) ? '✓ Réussie !' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)} XP`;
+        sub.append(bar, txt);
     }
-    row.replaceChildren(label, right, rowArrow());
+    main.append(title, sub);
+    row.replaceChildren(main, rowArrow());
     const n = questsToClaim();
     if (n > 0) row.setAttribute('data-notif', n);
     else row.removeAttribute('data-notif');
@@ -2120,7 +2133,7 @@ function questBlock(q, past) {
     box.append(line, bar, legend);
     if (q.kulti) {
         const note = el('p', 'quest-note');
-        note.textContent = `Personne n’était libre : Kulti joue avec toi cette semaine. Il ajoute ${QUEST_KULTI_DAY_XP} XP chaque jour où tu joues.`;
+        note.textContent = `Personne n’était libre : Kulti joue avec toi cette semaine. Il ajoute ${questKultiDay(q.goal)} XP chaque jour où tu joues.`;
         box.append(note);
     }
 

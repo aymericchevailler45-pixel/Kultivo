@@ -58,6 +58,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   ligne `#questRow` sous les missions (flèche verte ronde `rowArrow`, aussi sur la ligne des missions), fenêtre
   `#questModal` (`openQuestModal`, `questBlock` : barre 2 couleurs, coffre de 2 cartes, « Ajouter en ami »),
   `questDone` dans la sauvegarde, Kulti = 100 XP par jour joué (`QUEST_KULTI_DAY_XP`). Bac à sable : fausse quête avec Léa.
+  Objectif (27/10, `supabase/quete-duo-objectif.sql`) : 5 000 XP la semaine du 26/10, puis (XP semaine d'avant des deux) × 1,1
+  arrondi à 500, entre 1 500 et 10 000 (`quest_goal`, joueur sans score = 1 000) ; Kulti = objectif / 14 par jour joué.
+  Ligne de la quête sur 2 lignes : titre + petite barre 2 couleurs et « x / y XP ».
   Écran de chargement : styles dans index.html, feuilles de style chargées APRÈS lui (sinon écran blanc avant).
   Écran blanc + logo d'Android au lancement = celui de l'appli installée (ancien background_color) : passe au vert
   quand Chrome met l'appli à jour (quelques jours), impossible à supprimer.
