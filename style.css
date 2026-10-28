@@ -1,3 +1,6 @@
+/* Pièce K (2026-10-28) : la 🪙 est dessinée par cette mini-police (un seul caractère, U+1FA99) partout dans le jeu. */
+@font-face { font-family: 'KCoin'; src: url(data:font/otf;base64,T1RUTwALAIAAAwAwQ0ZGIJ9a/JcAAAJMAAABAkNPTFIAEgAuAAADUAAAACRDUEFMSv09iwAAA3QAAAAeT1MvMkVDSEsAAAEgAAAAYGNtYXAAHvXlAAAB3AAAAFBoZWFkMXLuzgAAALwAAAA2aGhlYQc8BBwAAAD0AAAAJGhtdHgETAAAAAADlAAAAA5tYXhwAAZQAAAAARgAAAAGbmFtZTjrOaYAAAGAAAAAWnBvc3QAAwAAAAACLAAAACAAAQAAAAEAABTCXsVfDzz1AAMD6AAAAADnB9WtAAAAAOcH1a0AS/9vBAEDJQAAAAMAAgAAAAAAAAABAAADhP84AAAETAAAAJYDtgABAAAAAAAAAAAAAAAAAAAAAQAAUAAABgAAAAMETAGQAAUABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAD8/Pz8AAP////8DhP84AAADhADIAAAAAAAAAAAAAAAAAAAAIAAAAAAABAA2AAEAAAAAAAEABQAAAAEAAAAAAAIABwAFAAMAAQQJAAEACgAMAAMAAQQJAAIADgAWS0NvaW5SZWd1bGFyAEsAQwBvAGkAbgBSAGUAZwB1AGwAYQByAAAAAAADAAAAAwAAABwAAwABAAAAHAADAAoAAAA0AAQAGAAAAAIAAgAAAAD//wAA//8AAQAAAAwAAAAAABwAAAAAAAAAAQAB+pkAAfqZAAAAAQADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAEAgABAQEGS0NvaW4AAQEBFPgeAtb7JfqV+bkFzQ+L95YS2BEABAEBBQkOE2NvaW5nb2xkc2hpbmVLQ29pbgAAAAGHAIQBiAGJAEwABgEBBAcwWYKs+uAO+uAO+uD6lffeFfea+2n3afua+5r7aftp+5r7mvdp+2n3mvea92n3afeaHg764Ppo9/QV94H7VfdV+4H7gftV+1X7gfuB91X7VfeB94H3VfdV94EeDvrg+gT4GhX3Vfsx9zH7VftV+zH7MftV+1X3Mfsx91X3Vfcx9zH3VR4O+uD3yNcV9xv3Pwabnfc1+1H3QIv7fved93P3c/s/i/s7+z8F9z/7GwcOAAAAAAABAAAADgAAABQABAABAAAABAACAAAAAwABAAQAAgAFAAMAAAAEAAEABAAAAA4AAACPyf8AuPX/O9T//wBaiv8AAARMAAAAAAAAAAAAAAAAAAA=) format('opentype'); unicode-range: U+1FA99; font-display: block; }
+
 /* ============================================================
    KULTIVO — styles (plein écran)
    ============================================================ */
@@ -45,7 +48,7 @@
     --radius: 16px;
     --gutter: clamp(16px, 3vw, 48px);      /* marge latérale : s'adapte à la largeur de l'écran */
     --content-w: 960px;                    /* largeur du contenu de la leçon */
-    --font: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font: 'KCoin', 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -3502,3 +3505,30 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .quest-row-bar.is-steps i { flex: 1; border-radius: 6px; background: var(--line); }
 .quest-row-bar.is-steps i.is-me { background: var(--green); }
 .quest-row { margin-top: 0; }
+/* Kulti ouvre le niveau suivant (2026-10-28) */
+.node-lock.is-shaking { animation: lockShake 0.35s ease-in-out 2; }
+.node-lock.is-flying { animation: lockFly 0.9s ease-in forwards; }
+@keyframes lockShake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-20deg); } 75% { transform: rotate(20deg); } }
+@keyframes lockFly { 0% { transform: rotate(0); } 25% { transform: rotate(-20deg) scale(1.3); } 40% { transform: rotate(15deg) scale(1.3); } 100% { transform: translate(40px, -120px) rotate(80deg) scale(0.6); opacity: 0; } }
+.node.is-unlocking { animation: nodeUnlock 0.5s cubic-bezier(0.3, 1.6, 0.5, 1); }
+@keyframes nodeUnlock { 0% { transform: scale(0.8); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+.hop-spark { position: absolute; z-index: 4; font-size: 1.2rem; pointer-events: none; animation: hopSpark 0.8s ease-out forwards; }
+@keyframes hopSpark { from { transform: translate(0, 0) scale(0.6); opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(1.1); opacity: 0; } }
+.map-kulti > svg, .map-kulti > * { transform-origin: 50% 100%; }
+/* Médailles d'entraînement visibles (2026-10-28) */
+.train-meds { display: flex; align-items: center; gap: 4px; margin-top: 4px; padding-top: 6px; border-top: 1px dashed var(--line); color: var(--muted); font-size: 0.75rem; font-weight: 800; }
+.train-slot { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; line-height: 1;
+    border: 2px dashed #c7d1de; filter: grayscale(1); opacity: 0.55; }
+.train-slot.is-got { border: 0; filter: none; opacity: 1; font-size: 1.1rem; }
+.train-mbar { flex: 1; min-width: 10px; height: 6px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.train-mbar i { display: block; height: 100%; }
+.train-mnum { flex: none; white-space: nowrap; }
+.medal-line { display: grid; grid-template-columns: 34px 1fr; gap: 4px 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); text-align: left; }
+.medal-ic { grid-row: span 2; font-size: 1.7rem; text-align: center; line-height: 1; }
+.medal-ic.is-off { filter: grayscale(1); opacity: 0.4; }
+.medal-line b { font-weight: 900; }
+.medal-line small { color: var(--muted); font-weight: 800; }
+.medal-bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.medal-bar i { display: block; height: 100%; }
+.medal-note { margin: 10px 0 0; padding: 10px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: 0.85rem; text-align: left; }
+.medal-note.is-master { color: var(--r-master); }

@@ -2645,6 +2645,7 @@ function renderMap() {
     renderMapFriends();
     placeMapKulti();
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
+    if (kultiHop) startKultiHop();
     setTimeout(updateToCurrentBtn, 50);
     if (!state.data.tipChest && readyChests().length) maybeShowChestTip();
     else if (!state.data.tipReviews && currentReviewsLabel()) maybeShowReviewsTip();
@@ -2684,6 +2685,113 @@ function placeMapKulti() {
     if (right) stop.classList.add('has-kulti-right');
     stop.append(btn);
 }
+/* ---------- Kulti ouvre le niveau suivant (2026-10-28, aperçu : apercu-propositions.html) ----------
+   Niveau réussi → au retour sur le parcours, Kulti saute 3 fois jusqu'au niveau débloqué, secoue le cadenas, qui s'envole,
+   et le niveau s'allume. Une fois par niveau débloqué, avec son (réglage `sound`). Un tap la termine tout de suite. */
+let kultiHop = 0;          // niveau qui vient d'être débloqué (pas sauvegardé : appli fermée = pas d'animation)
+let kultiHopRun = 0;
+const KULTI_HOP_WAIT = '.modal-overlay:not([hidden]), #titleAnim:not([hidden]), #streakAnim:not([hidden]), #freezeAnim:not([hidden]), #tour:not([hidden]), .recap-story:not([hidden])';
+function startKultiHop(tries = 0) {
+    const to = kultiHop;
+    if (!to || $('mapScreen').hidden) return;
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced || to !== Math.min(state.data.unlocked, MAX_LEVEL) || to < 2) { kultiHop = 0; return; }
+    if (document.querySelector(KULTI_HOP_WAIT)) {   // une fenêtre ou une fête est ouverte : on attend qu'elle se ferme
+        if (tries < 60) setTimeout(() => startKultiHop(tries + 1), 400);
+        return;
+    }
+    kultiHop = 0;
+    playKultiHop(to - 1, to);
+}
+async function playKultiHop(from, to) {
+    const run = ++kultiHopRun;
+    const fromStop = document.querySelector(`.stop[data-level="${from}"]`);
+    const toStop = document.querySelector(`.stop[data-level="${to}"]`);
+    const kb = toStop?.querySelector('.map-kulti');
+    const node = toStop?.querySelector('.node');
+    if (!fromStop || !kb || !node) return;
+    // Le niveau a l'air encore fermé pendant l'animation
+    const nodeClass = node.className;
+    node.classList.remove('is-current');
+    node.classList.add('is-locked');
+    const lock = el('span', 'node-lock');
+    lock.textContent = '🔒';
+    node.append(lock);
+    const target = kb.getBoundingClientRect();
+    const right = (parseFloat(fromStop.style.getPropertyValue('--x')) || 0) <= 0;
+    kb.classList.toggle('is-right', right);
+    kb.classList.toggle('is-left', !right);
+    fromStop.append(kb);
+    fromStop.style.zIndex = '6';   // Kulti passe devant les niveaux du dessus pendant les sauts
+    const start = kb.getBoundingClientRect();
+    const dx = target.left - start.left, dy = target.top - start.top;
+    const face = mood => kb.firstElementChild.replaceWith(kultiEl(mood, 'kulti-blink', false, currentEvent()?.bank || null));
+    face('content');
+    let done = false;
+    const finish = () => {
+        if (done) return;
+        done = true;
+        kultiHopRun++;
+        document.removeEventListener('pointerdown', finish, true);
+        node.className = nodeClass;
+        lock.remove();
+        fromStop.style.zIndex = '';
+        placeMapKulti();
+    };
+    document.addEventListener('pointerdown', finish, true);   // un tap : tout de suite à la fin
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    const hop = (k0, k1, ms, h) => new Promise(res => {
+        const t0 = performance.now();
+        const step = t => {
+            if (run !== kultiHopRun) return res();
+            const k = Math.min(1, (t - t0) / ms);
+            const f = k0 + (k1 - k0) * k;
+            const sq = k > 0.85 ? 1 - (1 - k) * 0.6 : 1;   // petit écrasement à l'atterrissage
+            kb.style.transform = `translate(${dx * f}px, ${dy * f - Math.sin(Math.PI * k) * h}px)`;
+            kb.firstElementChild.style.transform = k > 0.85 && k < 1 ? `scale(${2 - sq}, ${sq})` : '';
+            if (k < 1) requestAnimationFrame(step); else res();
+        };
+        requestAnimationFrame(step);
+    });
+    await wait(450);
+    for (let i = 0; i < 3; i++) {
+        if (run !== kultiHopRun) return;
+        playSound('hop', i * 2);
+        await hop(i / 3, (i + 1) / 3, 380, 40);
+    }
+    if (run !== kultiHopRun) return;
+    face('surpris');
+    lock.classList.add('is-shaking');
+    playSound('rattle');
+    await wait(700);
+    if (run !== kultiHopRun) return;
+    lock.classList.remove('is-shaking');
+    lock.classList.add('is-flying');
+    playSound('unlock');
+    await wait(450);
+    if (run !== kultiHopRun) return;
+    node.className = nodeClass;
+    node.classList.add('is-unlocking');
+    face('fier');
+    const r = node.getBoundingClientRect(), p = toStop.getBoundingClientRect();
+    for (let i = 0; i < 8; i++) {
+        const sp = el('span', 'hop-spark');
+        sp.textContent = '✨';
+        sp.style.left = `${r.left - p.left + r.width / 2 - 10}px`;
+        sp.style.top = `${r.top - p.top + r.height / 2 - 10}px`;
+        const a = (i / 8) * Math.PI * 2;
+        sp.style.setProperty('--dx', `${Math.cos(a) * 60}px`);
+        sp.style.setProperty('--dy', `${Math.sin(a) * 60}px`);
+        toStop.append(sp);
+        setTimeout(() => sp.remove(), 900);
+    }
+    await wait(1100);
+    if (run !== kultiHopRun) return;
+    lock.remove();
+    node.classList.remove('is-unlocking');
+    finish();
+}
+
 function kultiLines() {
     const d = state.data, streak = currentStreak();
     if (kultiSleepy()) return [streak > 0 ? `Zzz… Ta série de ${plural(streak, 'jour', 'jours')} t’attend… 🔥` : 'Zzz… Un petit niveau avant de dormir ?', 'Un petit niveau avant de dormir ?'];
@@ -3104,7 +3212,7 @@ async function drawRecapImage(m) {
     cv.width = W; cv.height = H;
     const g = cv.getContext('2d');
     try { await document.fonts.load('900 80px Nunito'); await document.fonts.load('800 40px Nunito'); } catch (err) { /* police par défaut */ }
-    const font = (w, px) => `${w} ${px}px Nunito, "Segoe UI", Roboto, sans-serif`;
+    const font = (w, px) => `${w} ${px}px KCoin, Nunito, "Segoe UI", Roboto, sans-serif`;
     const grad = g.createLinearGradient(0, 0, W * 0.4, H);
     grad.addColorStop(0, '#8b5cf6'); grad.addColorStop(1, '#ec4899');
     g.fillStyle = grad; g.fillRect(0, 0, W, H);
@@ -5903,7 +6011,9 @@ function endSession(win) {
         }
 
         state.data.done[state.level] = true;
+        const unlockedBefore = state.data.unlocked;
         state.data.unlocked = Math.max(state.data.unlocked, Math.min(state.level + 1, MAX_LEVEL));
+        if (state.data.unlocked > unlockedBefore) kultiHop = state.data.unlocked;   // Kulti ira ouvrir ce niveau sur le parcours
 
         const next = state.level < MAX_LEVEL
             ? `Le niveau ${state.level + 1} est débloqué.`
@@ -7324,6 +7434,78 @@ function trainMedalOf(theme) {
     return pr.total ? TRAIN_MEDALS.filter(m => pr.totalMastered >= Math.ceil(pr.total * m.part)).length : 0;
 }
 
+/* Médailles visibles (2026-10-28, aperçu : apercu-propositions.html) : sur chaque case de thème, les 3 médailles en gris
+   tant qu'elles ne sont pas gagnées + la progression vers la prochaine ; un tap ouvre leur explication (et la carte Maître). */
+function medalInfo(theme) {
+    const pr = trainingProgress(theme);
+    const have = trainMedalOf(theme);
+    const steps = TRAIN_MEDALS.map(m => Math.ceil(pr.total * m.part));
+    const next = have < TRAIN_MEDALS.length ? { m: TRAIN_MEDALS[have], need: steps[have], left: steps[have] - pr.totalMastered } : null;
+    return { pr, have, steps, next };
+}
+function medalRow(theme, icon) {
+    const { pr, have, next } = medalInfo(theme);
+    const row = el('span', 'train-meds');
+    TRAIN_MEDALS.forEach((m, i) => {
+        const slot = el('span', `train-slot${i < have ? ' is-got' : ''}`);
+        slot.textContent = m.icon;
+        row.append(slot);
+    });
+    const bar = el('span', 'train-mbar');
+    const fill = el('i');
+    fill.style.width = `${next ? Math.min(100, (pr.totalMastered / next.need) * 100) : 100}%`;
+    fill.style.background = MEDAL_COLORS[next ? have : 2];
+    bar.append(fill);
+    const num = el('span', 'train-mnum');
+    num.textContent = next ? `${pr.totalMastered}/${next.need}` : '✓';
+    row.append(bar, num);
+    row.setAttribute('role', 'button');
+    row.setAttribute('aria-label', 'Médailles du thème : comment les gagner');
+    row.addEventListener('click', e => { e.stopPropagation(); openMedalsSheet(theme, icon); });
+    return row;
+}
+const MEDAL_COLORS = ['#cd7f32', '#a8b3c2', '#f5b800'];
+function openMedalsSheet(theme, icon) {
+    const { pr, have, steps } = medalInfo(theme);
+    const body = $('friendBody');
+    body.replaceChildren();
+    const h = el('h2', 'review-title');
+    h.textContent = `🏅 Médailles · ${theme}`;
+    const sub = el('p', 'muted review-note');
+    sub.textContent = 'Maîtrise les questions du thème pour les gagner.';
+    body.append(h, sub);
+    const names = ['Bronze', 'Argent', 'Or'];
+    TRAIN_MEDALS.forEach((m, i) => {
+        const line = el('div', 'medal-line');
+        const ic = el('span', `medal-ic${i < have ? '' : ' is-off'}`);
+        ic.textContent = m.icon;
+        const b = el('b');
+        b.textContent = `${names[i]} `;
+        const sm = el('small');
+        sm.textContent = i < have ? '· gagnée ✓' : `· ${i === 2 ? `les ${steps[i]}` : steps[i]} questions maîtrisées`;
+        b.append(sm);
+        const bar = el('span', 'medal-bar');
+        const fill = el('i');
+        fill.style.width = `${Math.min(100, (pr.totalMastered / steps[i]) * 100)}%`;
+        fill.style.background = MEDAL_COLORS[i];
+        bar.append(fill);
+        line.append(ic, b, bar);
+        body.append(line);
+    });
+    const note = el('p', 'medal-note');
+    note.textContent = `✅ Une question est maîtrisée quand tu l’as réussie 2 fois de suite, sur 2 jours différents. Tu en as ${pr.totalMastered} sur ${pr.total}.`;
+    body.append(note);
+    const master = masterCard(theme);
+    if (master) {   // la carte Maître : expliquée ici plutôt que sur la case (2026-10-28)
+        const got = !!state.data.cards[master.id];
+        const mc = el('p', 'medal-note is-master');
+        mc.textContent = got ? '🏆 Carte Maître du thème : obtenue !'
+            : `🏆 Et la carte Maître du thème : réussis le palier 5 (tu es au palier ${pr.tier} / ${TRAIN_TIERS}).`;
+        body.append(mc);
+    }
+    $('friendModal').hidden = false;
+}
+
 /** Monte d'un ou plusieurs paliers si les conditions sont remplies. Renvoie le nouveau palier. */
 function updateTrainingTier(theme) {
     let tier = trainTierOf(theme);
@@ -7444,6 +7626,9 @@ function endTraining() {
         const m = TRAIN_MEDALS[medal - 1];
         text += `\n${m.icon} Médaille d’${m.name} en ${theme} !`;
         saveData();
+    } else {
+        const { next } = medalInfo(theme);
+        if (next && next.left > 0) text += `\n${next.m.icon} Plus que ${plural(next.left, 'question maîtrisée', 'questions maîtrisées')} pour la médaille d’${next.m.name}.`;
     }
     const dropLine = earnPracticeDrop();
     setEnd({
@@ -7605,13 +7790,6 @@ function renderTraining() {
         const name = el('b', 'train-name');
         name.textContent = theme;
         head.append(ic, name);
-        const medal = bank.length ? trainMedalOf(theme) : 0;
-        if (medal) {
-            const md = el('span', 'train-medal');
-            md.textContent = TRAIN_MEDALS[medal - 1].icon;
-            md.title = `Médaille d’${TRAIN_MEDALS[medal - 1].name}`;
-            head.append(md);
-        }
         tile.append(head);
         if (!bank.length) {
             const soon = el('span', 'train-line');
@@ -7634,12 +7812,7 @@ function renderTraining() {
                 bar.append(seg);
             }
             bar.setAttribute('aria-label', `Palier ${pr.tier} sur ${TRAIN_TIERS}`);
-            const line = el('span', 'train-line');
-            line.textContent = `${pr.totalMastered} / ${pr.total} maîtrisées`;
-            const master = masterCard(theme);
-            const reward = el('span', 'train-master');
-            reward.textContent = master && state.data.cards[master.id] ? '🏆 Carte Maître obtenue' : '🏆 Carte Maître à gagner au palier 5';
-            tile.append(label, bar, line, reward);
+            tile.append(label, bar, medalRow(theme, icon));
             if (pr.blockedToday) {
                 const today = el('span', 'train-today');
                 today.textContent = '✅ Palier du jour gagné · suite demain';
@@ -9523,7 +9696,10 @@ const SOUNDS = {
     title: [[523, 0.6, 0.15, 'triangle'], [659, 0.68, 0.15, 'triangle'], [784, 0.76, 0.15, 'triangle'], [1047, 0.9, 0.9]],
     freeze: [[1800, 0, 0.3], [2400, 0.05, 0.4]],
     thaw: [[300, 0, 0.12, 'square'], [784, 0.3, 0.6], [988, 0.35, 0.6], [1175, 0.4, 0.6]],
-    tap: [[880, 0, 0.08, 'triangle'], [1175, 0.07, 0.1, 'triangle']]
+    tap: [[880, 0, 0.08, 'triangle'], [1175, 0.07, 0.1, 'triangle']],
+    hop: [[330, 0, 0.14, 'triangle', 700]],                                   // Kulti saute (monte d'une note à chaque saut)
+    rattle: [[900, 0, 0.04, 'square'], [650, 0.12, 0.04, 'square'], [900, 0.24, 0.04, 'square'], [650, 0.36, 0.04, 'square']],   // cadenas secoué
+    unlock: [[180, 0, 0.07, 'square'], [1047, 0.1, 0.3], [1319, 0.17, 0.35], [1568, 0.24, 0.5]]   // clac + carillon
 };
 let audioCtx = null;
 
@@ -10154,6 +10330,8 @@ function initBac() {
         if (more2) { recapSlides = []; openRecap(monthKeyOf(todayKey())); return; }
         const more3 = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le gel de série puis le nouveau titre ?', yes: 'Gel + titre', no: 'Plus d’options' });
         if (more3) { celebrate(() => showFreezeAnim(state.data.streak || 1)); const t = titleFor(state.data.xp); celebrate(() => showTitleAnim({ from: 'Curieux', to: t.current.name, next: t.next })); return; }
+        const hopIt = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir Kulti ouvrir le niveau suivant (comme après un niveau réussi) ?', yes: 'Voir Kulti', no: 'Plus d’options' });
+        if (hopIt) { showScreen('map'); setTimeout(() => playKultiHop(Math.min(state.data.unlocked, MAX_LEVEL) - 1, Math.min(state.data.unlocked, MAX_LEVEL)), 400); return; }
         const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Fermer' });
         if (reset) { try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* tant pis */ } location.reload(); }
     });

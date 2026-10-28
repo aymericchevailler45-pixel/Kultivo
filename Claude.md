@@ -87,6 +87,18 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   au chargement des duels et en quittant), pas de 2e essai ; défi de Kulti compté fait dès le départ ; textes de « Quitter ? »
   adaptés. Profil : valeurs longues plus petites (`.tile b.is-long`). Missions + quête entre duo sur 2 lignes (`twoLineRow` :
   titre + petite barre + texte). Records : « x / y » partout.
+- FAIT le 28/10 (suite, choix de l'utilisateur sur apercu-propositions.html) :
+  PIÈCE K : la 🪙 est dessinée PARTOUT par une mini-police intégrée dans style.css (`@font-face 'KCoin'`, data:font/otf,
+  unicode-range U+1FA99, en tête de `--font` et de la police du récap) ; rien à changer dans les textes. Pour la redessiner :
+  script `tools-make_kcoin.py` (fontTools, COLR v0 : anneau, or, reflet, K du logo) → base64 à remettre dans style.css.
+  Idée A (K du logo comme 1re lettre de « Kultivo ») PAS faite : le logo garde son K, et la place manque avec « à revoir ».
+  KULTI OUVRE LE NIVEAU SUIVANT : `kultiHop` (posé quand `unlocked` monte), `startKultiHop` (attend que fenêtres / fêtes /
+  bulles soient fermées), `playKultiHop` : 3 sauts, cadenas secoué puis envolé, niveau qui s'allume + ✨ ; sons `hop`
+  (monte à chaque saut), `rattle`, `unlock` ; tap = fin immédiate ; rien si « réduire les animations ». Bac à sable : option.
+  MÉDAILLES D'ENTRAÎNEMENT : rangée des 3 médailles (grises tant que pas gagnées) + barre vers la prochaine + « 32/50 » sur
+  chaque case (`medalRow`, `medalInfo`), tap = fenêtre d'explication (`openMedalsSheet`, dans friendModal) qui dit aussi
+  comment gagner la carte Maître (la ligne « carte Maître à gagner au palier 5 » a quitté la case) ; fin de session :
+  « 🥉 Plus que N questions maîtrisées pour la médaille de bronze ».
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?
