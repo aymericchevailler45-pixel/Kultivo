@@ -166,6 +166,13 @@ const PLACEMENT_PASS = 2;       // bonnes réponses pour valider une étape
 /* ---------- Petits utilitaires ---------- */
 
 /** Emoji affiché en image Twemoji (dossier emoji/) : net et identique sur tous les téléphones. */
+/** Image d'une carte : l'emoji, sauf dessin fait exprès (le maillot jaune, dont l'emoji est bleu). */
+const CARD_IMAGES = { sp5: 'emoji/maillot-jaune.svg' };
+function cardImg(card) {
+    const img = emojiImg(card.icon);
+    if (CARD_IMAGES[card.id]) img.src = CARD_IMAGES[card.id];
+    return img;
+}
 function emojiImg(emoji) {
     let cps = [...emoji].map(c => c.codePointAt(0));
     if (!cps.includes(0x200D)) cps = cps.filter(cp => cp !== 0xFE0F);   // règle de nommage de Twemoji
@@ -673,6 +680,7 @@ function defaultData() {
         leagueRecap: null,               // résultat de la semaine dernière (ligue des amis), montré jusqu'à « vu » / coffre ouvert
         duelsSeen: {},                   // duels dont le résultat a été vu (pièces données une seule fois)
         duelAnswers: {},                 // duels : graine -> mes réponses tapées (pour les revoir)
+        duelStarted: {},                 // duels reçus commencés : id -> { score, grid, seconds } (envoyés même si on quitte)
         duelsViewed: {},                 // résultats de duels déjà regardés (sinon pastille)
         replayDay: { day: null, xp: 0, levels: {} },   // niveaux refaits aujourd'hui : XP gagnés (plafond), niveaux comptés pour les missions
         monthStats: {},                  // récap du mois : 'AAAA-MM' -> { answers, right, themes, missed, cards, bigCards }
@@ -686,7 +694,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone', 'duelStarted']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -1899,15 +1907,25 @@ function renderMissionsRow() {
     const row = $('missionsRow');
     const list = weekMissions();
     const done = list.filter(m => missionProgress(m) >= m.goal).length;
-    const dots = list.map(m => missionProgress(m) >= m.goal ? '●' : '○').join('');
-    const label = el('span', 'missions-label');
-    label.textContent = '🗓️ Missions de la semaine';
-    const right = el('span', 'missions-dots');
-    right.textContent = `${done}/${list.length}`;
-    row.replaceChildren(label, right, rowArrow());
+    const bar = el('span', 'quest-row-bar is-steps');   // 3 morceaux : un par mission
+    list.forEach(m => { const i = el('i', missionProgress(m) >= m.goal ? 'is-me' : ''); bar.append(i); });
+    row.replaceChildren(twoLineRow('🗓️ Missions de la semaine', bar, `${done} / ${list.length} réussies`), rowArrow());
     const n = missionsToClaim();
     if (n > 0) row.setAttribute('data-notif', n);
     else row.removeAttribute('data-notif');
+}
+/** Ligne sur 2 lignes (missions, quête entre duo, 2026-10-28) : titre en haut, petite barre + texte en dessous. */
+function twoLineRow(titleText, bar, subText) {
+    const main = el('span', 'quest-row-main');
+    const title = el('span', 'missions-label');
+    title.textContent = titleText;
+    const sub = el('span', 'quest-row-sub');
+    if (bar) sub.append(bar);
+    const txt = el('span', 'quest-row-num');
+    txt.textContent = subText;
+    sub.append(txt);
+    main.append(title, sub);
+    return main;
 }
 
 /** Fenêtre des missions : progression, récompenses, coffre des 3. */
@@ -2061,20 +2079,26 @@ async function questLoad(force = false) {
 function renderQuestRow() {
     const row = $('questRow');
     if (!row) return;
-    const label = el('span', 'missions-label');
-    label.textContent = '🤝 Quête entre duo';
-    const right = el('span', 'missions-dots');
     row.hidden = false;
-    if (!cloudUser) right.textContent = 'Crée un compte';
-    else if (!league?.pseudo) right.textContent = 'Choisis un pseudo';
+    let title = '🤝 Quête entre duo';
+    let bar = null;
+    let sub;
+    if (!cloudUser) sub = 'Crée un compte pour jouer à deux';
+    else if (!league?.pseudo) sub = 'Choisis un pseudo pour jouer à deux';
     else if (!questReady || !quest) { row.hidden = true; return; }
-    else if (quest.waiting) right.textContent = '🔎 Recherche…';
-    else right.textContent = questReached(quest) ? '✓ Réussie' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)} XP`;
-    row.replaceChildren(label, right, rowArrow());
-    // « XP » seulement s'il y a la place (sinon le titre serait coupé sur un petit téléphone)
-    if (right.textContent.endsWith(' XP')) requestAnimationFrame(() => {
-        if (label.scrollWidth > label.clientWidth + 1) right.textContent = right.textContent.slice(0, -3);
-    });
+    else if (quest.waiting) sub = '🔎 Recherche d’un partenaire…';
+    else {
+        title = `🤝 Quête entre duo avec ${quest.kulti ? 'Kulti' : quest.partner.pseudo}`;
+        bar = el('span', 'quest-row-bar');
+        const pct = x => `${Math.min(100, (x / quest.goal) * 100)}%`;
+        const f1 = el('i', 'is-me');
+        f1.style.width = pct(quest.mine);
+        const f2 = el('i', 'is-mate');
+        f2.style.width = pct(Math.min(quest.theirs, Math.max(0, quest.goal - quest.mine)));
+        bar.append(f1, f2);
+        sub = questReached(quest) ? '✓ Réussie !' : `${fmtNum(quest.mine + quest.theirs)} / ${fmtNum(quest.goal)} XP`;
+    }
+    row.replaceChildren(twoLineRow(title, bar, sub), rowArrow());
     const n = questsToClaim();
     if (n > 0) row.setAttribute('data-notif', n);
     else row.removeAttribute('data-notif');
@@ -2820,6 +2844,8 @@ async function openKultiDefi() {
     });
     if (!go) return;
     state.kultiItems = kultiItems(k);
+    k.done = true;   // un seul essai : quitter compte comme raté
+    saveData();
     if (!state.kultiItems.length) { k.done = true; saveData(); placeMapKulti(); showToast('Kulti n’a pas trouvé de défi aujourd’hui. À demain !'); return; }
     startSession('kulti');
 }
@@ -3493,7 +3519,7 @@ function closeChest() {
 function cardFaceV1(card, big = false, shiny = false) {
     const box = el('div', `kcard rarity-${card.rarity}${big ? ' is-big' : ''}${shiny ? ' is-shiny' : ''}`);
     const art = el('div', 'kcard-art');
-    art.append(emojiImg(card.icon));
+    art.append(cardImg(card));
     const name = el('div', 'kcard-name');
     name.textContent = card.name;
     box.append(art, name);
@@ -3529,7 +3555,7 @@ function cardFaceV2(card, big = false, shiny = false) {
     const box = el('div', `kcard kcard-v2 rarity-${card.rarity}${big ? ' is-big' : ''}${shiny ? ' is-shiny' : ''}`);
     const top = el('div', 'kcard-top');
     const art = el('div', 'kcard-art');
-    art.append(emojiImg(card.icon));
+    art.append(cardImg(card));
     top.append(art);
     box.append(top);
     if (shiny) {
@@ -3857,6 +3883,8 @@ function renderProfile() {
         ? `${Math.round((data.totals.right / data.totals.tries) * 100)}${nbsp}%`
         : '—';
     $('tileLevels').textContent = `${finished}${nbsp}/${nbsp}${MAX_LEVEL}`;
+    // Valeur longue (« 100 / 170 », « 120 jours ») : un peu plus petite, pour ne pas déborder de la case (2026-10-28)
+    ['tileStreak', 'tileRate', 'tileLevels'].forEach(id => $(id).classList.toggle('is-long', $(id).textContent.length >= 9));
 
     // Records
     const dailies = Object.values(data.daily);
@@ -3872,7 +3900,7 @@ function renderProfile() {
         ['🌋 Meilleure série', plural(Math.max(data.best.streak, currentStreak()), 'jour', 'jours')],
         ['⚡ Meilleur sprint', data.best.sprint > 0 ? plural(data.best.sprint, 'bonne réponse', 'bonnes réponses') : '—'],
         ['📅 Meilleur défi du jour', bestDaily],
-        ['✅ Réussies du premier coup', `${data.totals.right} sur ${data.totals.tries}`],
+        ['✅ Réussies du premier coup', `${data.totals.right} / ${data.totals.tries}`],
         ['🗺️ Niveaux terminés', `${doneCount} / ${MAX_LEVEL}`],
         ['🎯 Jours d’objectif atteint', String(Object.keys(data.goalDays).length)],
         ['🏆 Semaines 1er de la ligue', String(leagueWins())],
@@ -4748,6 +4776,7 @@ function startSession(requestedMode, level = 0) {
     } else if (mode === 'daily') {
         if (state.data.daily[todayKey()]) return;   // déjà fait aujourd'hui
         items = dailyQuestions(todayKey()).map(q => ({ q, review: false }));
+        saveDailyProgress(0, [], [], 0);   // (2026-10-28) quitter puis revenir ne permet plus de le refaire en connaissant les réponses
     } else if (mode === 'sprint') {
         items = shuffle(allQuestionsPool()).map(q => ({ q, review: false }));
     } else if (mode === 'placement') {
@@ -5136,12 +5165,15 @@ function openQuitModal() {
         pairs:     'Ta progression dans ce niveau sera perdue.',
         order:     'Ta progression dans ce niveau sera perdue.',
         review:    'Ta session de révision sera perdue.',
-        daily:     'Ton défi du jour ne sera pas enregistré. Tu pourras le recommencer.',
+        daily:     'Ton défi du jour sera terminé : les questions pas encore jouées compteront comme fausses.',
+        kulti:     'Le défi de Kulti comptera comme raté pour aujourd’hui.',
         sprint:    'Ce sprint ne sera pas enregistré (le chrono continue pendant ce message).',
         placement: 'Le test de placement sera annulé. Tu pourras le refaire plus tard.'
     };
     $('quitTitle').textContent = state.mode === 'placement' ? 'Quitter le test ?' : 'Quitter ?';
-    $('quitDesc').textContent = messages[state.mode] || messages.level;
+    $('quitDesc').textContent = state.mode === 'duel'
+        ? (state.duel?.role === 'opponent' ? 'Le duel sera terminé : les questions pas encore jouées compteront comme fausses.' : 'Le duel ne sera pas envoyé.')
+        : messages[state.mode] || messages.level;
     $('quitModal').hidden = false;
     $('quitStayBtn').focus();
 }
@@ -5511,6 +5543,11 @@ function commit(ok) {
         if (mode === 'daily') {
             state.grid.push(ok ? '🟩' : '🟥');
             state.answers.push(($('userInput').value || '').trim().slice(0, 60));
+            saveDailyProgress(state.correct, state.grid, state.answers, Math.round((Date.now() - state.startedAt) / 1000));
+        }
+        if (mode === 'duel' && state.duel?.role === 'opponent') {   // duel reçu : le score part même si on quitte
+            state.data.duelStarted[state.duel.row.id] = { score: state.correct, grid: state.grid.join(''), seconds: Math.round((Date.now() - state.startedAt) / 1000) };
+            saveData();
         }
         state.done++;
         hideFeedback();
@@ -6414,6 +6451,13 @@ async function playDuel(row) {
     const f = duelFriend(row.challenger);
     const pseudo = f?.pseudo || 'Ton ami';
     if (!navigator.onLine) { showToast('📶 Il faut internet pour jouer un duel.'); return; }
+    if (state.data.duelStarted[row.id]) {   // déjà commencé puis quitté : on envoie le score, pas de 2e essai
+        showToast('⚔️ Ce duel est déjà commencé : ton score a été envoyé.');
+        await flushStartedDuels();
+        lastLeagueLoad = 0;
+        leagueFetch();
+        return;
+    }
     const ok = await askConfirm({
         title: `⚔️ Duel de ${pseudo}`,
         text: `${DUEL_SIZE} questions, un seul essai chacune. Son score reste caché jusqu’à la fin : à toi de faire mieux ! À égalité de bonnes réponses, le plus rapide gagne.`,
@@ -6421,7 +6465,35 @@ async function playDuel(row) {
     });
     if (!ok) return;
     state.duel = { role: 'opponent', seed: row.seed, row, friend: { id: row.challenger, pseudo } };
+    state.data.duelStarted[row.id] = { score: 0, grid: '', seconds: 0 };   // commencé : il compte même si on quitte
+    saveData();
     startSession('duel');
+}
+
+/** Défi du jour en cours : enregistré tel quel (questions pas encore jouées = fausses). Écrasé par le vrai résultat à la fin. */
+function saveDailyProgress(score, grid, answers, seconds) {
+    const rest = DAILY_SIZE - grid.length;
+    state.data.daily[todayKey()] = { score, seconds, grid: grid.join('') + '🟥'.repeat(Math.max(0, rest)),
+        answers: [...answers, ...Array(Math.max(0, rest)).fill('')], partial: true };
+    saveData();
+}
+
+/** Duels reçus commencés puis quittés (ou appli fermée) : le score fait jusque-là est envoyé, le reste compte faux. */
+async function flushStartedDuels() {
+    const c = cloudClient();
+    const started = state.data.duelStarted;
+    if (!c || !cloudUser || !navigator.onLine || !Object.keys(started).length) return;
+    for (const [id, p] of Object.entries(started)) {
+        if (state.phase !== 'over' && state.mode === 'duel' && String(state.duel?.row?.id) === id && !$('studyScreen').hidden) continue;   // en train de jouer
+        const grid = p.grid + '🟥'.repeat(Math.max(0, DUEL_SIZE - [...p.grid].length));
+        try {
+            await c.from('duels').update({ o_score: p.score, o_seconds: Math.max(1, p.seconds), o_grid: grid }).eq('id', id).is('o_score', null);
+            delete started[id];
+            state.data.duelsSeen[id] = 1;
+            state.data.duelsViewed[id] = 1;
+            saveData();
+        } catch (err) { return; }   // hors ligne : au prochain chargement
+    }
 }
 
 /** Fin d'un duel : on enregistre le score (lanceur) ou on répond et on compare (ami). */
@@ -6456,6 +6528,8 @@ async function endDuel() {
         } else {
             const row = du.row;
             const { error } = await c.from('duels').update({ o_score: score, o_seconds: seconds, o_grid: grid }).eq('id', row.id);
+            delete state.data.duelStarted[row.id];
+            saveData();
             if (error) {
                 $('endText').textContent = '😕 Ton score n’a pas pu être envoyé (duel expiré ?).';
             } else {
@@ -8481,6 +8555,7 @@ async function leagueFetch() {
         // Duels (table de supabase/duels.sql ; si elle n'existe pas encore : liste vide, sans erreur)
         const { data: duels, error: duelErr } = await c.from('duels').select('*').order('created_at', { ascending: false }).limit(100);
         fresh.duels = duelErr ? (before?.duels || []) : (duels || []);
+        if (Object.keys(state.data.duelStarted).length) setTimeout(flushStartedDuels, 0);
         league = { ...fresh, at: Date.now() };
         saveLeagueCache();
         if (league.pseudo && Date.now() - lastScorePush > 120000) leaguePushScore();
@@ -9917,8 +9992,11 @@ function bindEvents() {
     $('quitStayBtn').addEventListener('click', closeQuitModal);
     $('quitConfirmBtn').addEventListener('click', () => {
         if (state.phase !== 'over') queueStats('quit');
+        const leftDuel = state.mode === 'duel' && state.phase !== 'over';
+        state.phase = 'over';
         closeQuitModal();
         returnToMap();
+        if (leftDuel) flushStartedDuels().then(() => { lastLeagueLoad = 0; leagueFetch(); });
     });
     $('quitModal').addEventListener('click', e => {
         if (e.target === $('quitModal')) closeQuitModal();

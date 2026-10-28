@@ -81,6 +81,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
     5 ans près, 2 justes, verdict `near`, 15 🪙) avec un contenu PROPRE à Kulti dans `kulti-defis.js` (`KULTI_TF` 88,
     `KULTI_YEARS` 75, pas dans les révisions) ; frise express (4 cartes, 1 cœur, 15 🪙) et paires express (4 paires sans
     erreur, 10 🪙) dans les écrans habituels. Les autres formats reprennent les questions du jeu.
+- FAIT le 28/10 : carte « Maillot jaune » en jaune (`CARD_IMAGES`, emoji/maillot-jaune.svg, `cardImg`) ; FAILLE corrigée :
+  défi du jour enregistré dès le départ et à chaque réponse (`saveDailyProgress`, `partial: true`, questions pas jouées =
+  fausses) ; duel REÇU commencé = `duelStarted[id]`, score envoyé même si on quitte / ferme l'appli (`flushStartedDuels`,
+  au chargement des duels et en quittant), pas de 2e essai ; défi de Kulti compté fait dès le départ ; textes de « Quitter ? »
+  adaptés. Profil : valeurs longues plus petites (`.tile b.is-long`). Missions + quête entre duo sur 2 lignes (`twoLineRow` :
+  titre + petite barre + texte). Records : « x / y » partout.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

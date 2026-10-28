@@ -1703,6 +1703,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     .tile { padding: 10px 6px; }
     .tile-label { font-size: 0.78rem; }
     .tile b { font-size: clamp(1rem, 5vw, 1.35rem); }
+    .tile b.is-long { font-size: clamp(0.9rem, 4.2vw, 1.15rem); letter-spacing: -0.02em; }
 }
 
 @media (min-width: 900px) {
@@ -3496,3 +3497,8 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .kulti-said-bubble::before { content: ''; position: absolute; left: -9px; top: 50%; width: 14px; height: 14px; margin-top: -7px;
     border-left: 2px solid #f3b4c0; border-bottom: 2px solid #f3b4c0; background: #fff0f3; transform: rotate(45deg); }
 .kulti-said-bubble b { color: var(--red-ink, #c0392b); text-decoration: line-through; text-decoration-thickness: 2px; }
+/* Missions : barre en 3 morceaux (2026-10-28) */
+.quest-row-bar.is-steps { gap: 4px; background: none; border-radius: 0; }
+.quest-row-bar.is-steps i { flex: 1; border-radius: 6px; background: var(--line); }
+.quest-row-bar.is-steps i.is-me { background: var(--green); }
+.quest-row { margin-top: 0; }
