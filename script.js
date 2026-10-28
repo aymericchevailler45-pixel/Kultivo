@@ -1380,7 +1380,8 @@ function profileThemeStats() {
     const map = {};
     const all = QUESTIONS.concat(typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS);
     all.forEach(q => {
-        const t = map[q.theme] || (map[q.theme] = { theme: q.theme, seen: 0, tries: 0, right: 0, mastered: 0 });
+        const t = map[q.theme] || (map[q.theme] = { theme: q.theme, seen: 0, total: 0, tries: 0, right: 0, mastered: 0 });
+        t.total++;
         const s = state.data.stats[q.id];
         if (!s) return;
         t.seen++;
@@ -4079,9 +4080,8 @@ function renderProfile() {
         fill.style.width = `${pct ?? 0}%`;
         meter.append(fill);
         const sub = el('p', 'theme-sub');
-        sub.textContent = `${plural(t.seen, 'question vue', 'questions vues')} · ${t.mastered} maîtrisée${t.mastered > 1 ? 's' : ''}`;
-        row.append(head, meter);
-        if (t.seen) row.append(sub);
+        sub.textContent = `${t.seen} vue${t.seen > 1 ? 's' : ''} sur ${t.total} · ${t.mastered} maîtrisée${t.mastered > 1 ? 's' : ''}`;
+        row.append(head, meter, sub);
         bars.append(row);
     });
 
