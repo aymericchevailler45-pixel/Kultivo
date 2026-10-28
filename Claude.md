@@ -103,7 +103,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (pas de blanc). DÉFI DU JOUR et DUELS : sortir de l'appli plus de 3 s (`AWAY_MAX_MS`, visibilitychange) = partie arrêtée
   (`leaveSession`, comme « Quitter »), fenêtre « 📵 … terminé » ; parcours / entraînement : rien (choix : plus ludique).
   Profil → Thèmes : TOUTES les réponses du thème (`profileThemeStats` : parcours + entraînement, donc aussi défi du jour /
-  sprint), ligne « N vues sur T · M maîtrisées » (T = toutes les questions du thème, parcours + entraînement) (règle de l'entraînement) ; plus de « débloquées sur … » ; les badges
+  sprint), ligne « N découvertes sur T · M maîtrisées » (« vues » jugé bizarre) (T = toutes les questions du thème, parcours + entraînement) (règle de l'entraînement) ; plus de « débloquées sur … » ; les badges
   gardent `themeStats` (parcours).
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le

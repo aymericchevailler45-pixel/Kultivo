@@ -4080,7 +4080,7 @@ function renderProfile() {
         fill.style.width = `${pct ?? 0}%`;
         meter.append(fill);
         const sub = el('p', 'theme-sub');
-        sub.textContent = `${t.seen} vue${t.seen > 1 ? 's' : ''} sur ${t.total} · ${t.mastered} maîtrisée${t.mastered > 1 ? 's' : ''}`;
+        sub.textContent = `${t.seen} découverte${t.seen > 1 ? 's' : ''} sur ${t.total} · ${t.mastered} maîtrisée${t.mastered > 1 ? 's' : ''}`;
         row.append(head, meter, sub);
         bars.append(row);
     });
