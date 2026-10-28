@@ -3532,3 +3532,5 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .medal-bar i { display: block; height: 100%; }
 .medal-note { margin: 10px 0 0; padding: 10px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: 0.85rem; text-align: left; }
 .medal-note.is-master { color: var(--r-master); }
+.train-tier { white-space: pre-line; }
+.train-meds { margin-top: auto; }   /* médailles toujours en bas de la case : pas de blanc dessous */

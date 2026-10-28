@@ -99,6 +99,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   chaque case (`medalRow`, `medalInfo`), tap = fenêtre d'explication (`openMedalsSheet`, dans friendModal) qui dit aussi
   comment gagner la carte Maître (la ligne « carte Maître à gagner au palier 5 » a quitté la case) ; fin de session :
   « 🥉 Plus que N questions maîtrisées pour la médaille de bronze ».
+  Retouches du 28/10 : palier de la case toujours sur 2 lignes (« Palier 2 / 5 » puis « Initié ») et médailles collées en bas
+  (pas de blanc). DÉFI DU JOUR et DUELS : sortir de l'appli plus de 3 s (`AWAY_MAX_MS`, visibilitychange) = partie arrêtée
+  (`leaveSession`, comme « Quitter »), fenêtre « 📵 … terminé » ; parcours / entraînement : rien (choix : plus ludique).
+  Profil → Thèmes : TOUTES les réponses du thème (`profileThemeStats` : parcours + entraînement, donc aussi défi du jour /
+  sprint), ligne « N questions vues · M maîtrisées » (règle de l'entraînement) ; plus de « débloquées sur … » ; les badges
+  gardent `themeStats` (parcours).
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

@@ -1374,6 +1374,23 @@ function themeStats() {
     return Object.values(map).sort((a, b) => byThemeName(a.theme, b.theme));
 }
 
+/** Profil → Thèmes (2026-10-28) : TOUTES les réponses du thème (parcours, entraînement, défi du jour, sprint), pas seulement
+    le parcours ; « maîtrisée » = même règle que l'entraînement (réussie 2 fois de suite, sur 2 jours). Les badges gardent themeStats. */
+function profileThemeStats() {
+    const map = {};
+    const all = QUESTIONS.concat(typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS);
+    all.forEach(q => {
+        const t = map[q.theme] || (map[q.theme] = { theme: q.theme, seen: 0, tries: 0, right: 0, mastered: 0 });
+        const s = state.data.stats[q.id];
+        if (!s) return;
+        t.seen++;
+        t.tries += s.tries || 0;
+        t.right += s.right || 0;
+        if (isMastered(q.id)) t.mastered++;
+    });
+    return Object.values(map).sort((a, b) => byThemeName(a.theme, b.theme));
+}
+
 function badgeStats() {
     const d = state.data;
     // Les niveaux validés par le test de placement comptent aussi (depuis le 2026-10-20 : sinon le joueur placé est lésé)
@@ -4048,7 +4065,7 @@ function renderProfile() {
     // Réussite par thème
     const bars = $('themeBars');
     bars.replaceChildren();
-    themeStats().forEach(t => {
+    profileThemeStats().forEach(t => {
         const row = el('div', 'theme-row');
         const head = el('div', 'theme-head');
         const name = el('span');
@@ -4062,8 +4079,9 @@ function renderProfile() {
         fill.style.width = `${pct ?? 0}%`;
         meter.append(fill);
         const sub = el('p', 'theme-sub');
-        sub.textContent = `${t.mastered} ancrées en mémoire, ${t.unlocked} débloquées sur ${t.total} dans le jeu`;
-        row.append(head, meter, sub);
+        sub.textContent = `${plural(t.seen, 'question vue', 'questions vues')} · ${t.mastered} maîtrisée${t.mastered > 1 ? 's' : ''}`;
+        row.append(head, meter);
+        if (t.seen) row.append(sub);
         bars.append(row);
     });
 
@@ -5289,6 +5307,16 @@ function openQuitModal() {
 function closeQuitModal() {
     $('quitModal').hidden = true;
     if (state.phase === 'answering') $('userInput').focus();
+}
+
+const AWAY_MAX_MS = 3000;
+/** Quitter la partie en cours (bouton « Quitter », ou sortie de l'appli pendant le défi du jour / un duel). */
+function leaveSession() {
+    if (state.phase !== 'over') queueStats('quit');
+    const leftDuel = state.mode === 'duel' && state.phase !== 'over';
+    state.phase = 'over';
+    returnToMap();
+    if (leftDuel) flushStartedDuels().then(() => { lastLeagueLoad = 0; leagueFetch(); });
 }
 
 function returnToMap() {
@@ -7798,7 +7826,7 @@ function renderTraining() {
         } else {
             const pr = trainingProgress(theme);
             const label = el('span', 'train-tier');
-            label.textContent = `Palier ${pr.tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`;
+            label.textContent = `Palier ${pr.tier} / ${TRAIN_TIERS}\n${TRAIN_TIER_NAMES[pr.tier - 1]}`;   // toujours 2 lignes : cases de même allure
             // 5 morceaux : pleins = paliers passés, le palier en cours se remplit selon ce qu'il reste à faire
             const bar = el('div', 'train-steps');
             const goal = pr.needRight + pr.needMastered;
@@ -10166,13 +10194,20 @@ function bindEvents() {
     window.addEventListener('scroll', () => { if (!$('tour').hidden) placeTour(); }, { passive: true });   // fin du défilement : la lumière suit
 
     $('quitStayBtn').addEventListener('click', closeQuitModal);
-    $('quitConfirmBtn').addEventListener('click', () => {
-        if (state.phase !== 'over') queueStats('quit');
-        const leftDuel = state.mode === 'duel' && state.phase !== 'over';
-        state.phase = 'over';
-        closeQuitModal();
-        returnToMap();
-        if (leftDuel) flushStartedDuels().then(() => { lastLeagueLoad = 0; leagueFetch(); });
+    $('quitConfirmBtn').addEventListener('click', () => { closeQuitModal(); leaveSession(); });
+    // Défi du jour et duels (2026-10-28, demande de l'utilisateur) : sortir de l'appli plus de 3 s = partie terminée
+    // (sinon on pourrait aller chercher la réponse ailleurs). Les questions pas encore jouées comptent fausses.
+    let awaySince = 0;
+    document.addEventListener('visibilitychange', () => {
+        const strict = (state.mode === 'daily' || state.mode === 'duel') && state.phase !== 'over' && state.phase !== 'idle' && !$('studyScreen').hidden;
+        if (document.visibilityState === 'hidden') { awaySince = strict ? Date.now() : 0; return; }
+        const away = awaySince ? Date.now() - awaySince : 0;
+        awaySince = 0;
+        if (!strict || away <= AWAY_MAX_MS) return;
+        const what = state.mode === 'daily' ? 'Défi du jour terminé' : state.duel?.role === 'opponent' ? 'Duel terminé' : 'Duel annulé';
+        $('quitModal').hidden = true;
+        leaveSession();
+        askConfirm({ title: `📵 ${what}`, text: 'Tu es sorti de l’appli pendant la partie. Pour que ce soit juste pour tout le monde, la partie s’arrête : les questions pas encore jouées comptent comme fausses.', yes: 'Compris', no: null });
     });
     $('quitModal').addEventListener('click', e => {
         if (e.target === $('quitModal')) closeQuitModal();
