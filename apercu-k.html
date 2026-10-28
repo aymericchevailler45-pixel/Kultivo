@@ -64,6 +64,13 @@
     .story .wm { position: absolute; right: -18px; bottom: -14px; width: 92px; opacity: .16; }
     .story .sign { position: absolute; left: 0; right: 0; bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 3px; font-size: .62rem; letter-spacing: .04em; }
     .story .sign svg { width: 12px; height: 12px; }
+    /* Podium + couronne */
+    .podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; padding: 10px 0 0; }
+    .pcol { display: flex; flex-direction: column; align-items: center; width: 84px; font-weight: 900; font-size: .85rem; }
+    .pcol .crown { height: 34px; display: grid; place-items: end center; font-size: 1.7rem; line-height: 1; margin-bottom: -2px; }
+    .pcol .crown svg { width: 44px; height: 34px; filter: drop-shadow(0 2px 0 rgba(0,0,0,.18)); }
+    .pcol .av { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem; color: #fff; }
+    .pcol .step { width: 100%; margin-top: 6px; border-radius: 10px 10px 0 0; display: grid; place-items: start center; padding-top: 6px; color: #fff; font-size: 1.2rem; }
 </style>
 <script src="kulti.js?v=k1"></script>
 </head>
@@ -115,6 +122,16 @@
             <div><span class="tag new">Avec le K</span><div class="story" id="s2"></div></div>
         </div>
     </article>
+    <!-- 4 · Couronne -->
+    <article class="card">
+        <h2>4 · Le K sur la couronne du 1er</h2>
+        <p class="lead">Dans le Classement, au-dessus du 1er de la ligue des amis : une couronne dorée dessinée pour le jeu, avec le K gravé, à la place de l'emoji 👑.</p>
+        <div class="row3">
+            <div><span class="tag">Aujourd'hui</span><div class="podium" data-pod="emoji"></div></div>
+            <div><span class="tag new">Avec le K</span><div class="podium" data-pod="k"></div></div>
+        </div>
+        <p class="where">Même taille qu'aujourd'hui. On pourrait aussi la mettre sur le badge « 👑 Légende de la ligue » (10 semaines 1er).</p>
+    </article>
 </div>
 
 <script>
@@ -150,6 +167,18 @@ const storyBody = `<div class="top"><img src="icons/logo.svg" alt="">Kultivo · 
   <div class="cells"><span>🔥 12 j</span><span>🎯 87 %</span><span>🃏 18</span><span>🏆 3</span></div>`;
 document.getElementById('s1').innerHTML = storyBody;
 document.getElementById('s2').innerHTML = storyBody + `<div class="wm">${kSvg('#fff')}</div><div class="sign">${kSvg('#fff')}ultivo · joue avec moi !</div>`;
+
+// Couronne dorée avec le K
+const crownK = `<svg viewBox="-3 0 70 50" aria-hidden="true">
+  <path d="M4 14 L18 28 L32 6 L46 28 L60 14 L54 44 H10 Z" fill="#ffc800" stroke="#e0a000" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="9" y="40" width="46" height="7" rx="3" fill="#e0a000"/>
+  <circle cx="4" cy="14" r="4" fill="#ffc800" stroke="#e0a000" stroke-width="2"/><circle cx="32" cy="6" r="4" fill="#ffc800" stroke="#e0a000" stroke-width="2"/><circle cx="60" cy="14" r="4" fill="#ffc800" stroke="#e0a000" stroke-width="2"/>
+  <g transform="translate(25.5 23) scale(.072)"><path d="${K_PATH}" fill="#a86b00"/></g></svg>`;
+document.querySelectorAll('[data-pod]').forEach(p => {
+    const cols = [['2', 'Tom', 'hsl(200 70% 52%)', '🦊', '#a8b3c2', 46], ['1', 'Moi', 'hsl(15 80% 55%)', '🦖', '#ffc800', 70], ['3', 'Léa', 'hsl(280 60% 55%)', '🦉', '#cd7f32', 32]];
+    p.innerHTML = cols.map(([n, name, bg, e, col, h]) => `<div class="pcol"><div class="crown">${n === '1' ? (p.dataset.pod === 'k' ? crownK : '👑') : ''}</div>
+      <div class="av" style="background:${bg}">${e}</div>${name}<div class="step" style="height:${h}px;background:${col}">${n}</div></div>`).join('');
+});
 </script>
 </body>
 </html>

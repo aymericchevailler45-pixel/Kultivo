@@ -105,6 +105,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Profil → Thèmes : TOUTES les réponses du thème (`profileThemeStats` : parcours + entraînement, donc aussi défi du jour /
   sprint), ligne « N découvertes sur T · M maîtrisées » (« vues » jugé bizarre) (T = toutes les questions du thème, parcours + entraînement) (règle de l'entraînement) ; plus de « débloquées sur … » ; les badges
   gardent `themeStats` (parcours).
+- FAIT le 28/10 (choix sur apercu-k.html) : LE K PARTOUT. Dos des cartes « signé » (version B : logo + cadre fin + « KULTIVO »
+  en bas des grandes cartes, `.flip-ring` / `.flip-word` dans `cardFlip`) ; TAMPON « Sans faute » (`stampSans`, option
+  `stamp` de `setEnd`, niveau du parcours sans erreur : rond rouge « SANS FAUTE ★ » + K, posé à côté de Kulti avec
+  tremblement et son `stamp` ; le texte « ✨ Sans faute ! » est retiré) ; récap partagé : grand K en filigrane en bas à droite
+  + signature « Kultivo · joue avec moi ! » (K dessiné) + adresse. `K_PATH` = tracé du K (script.js). EN ATTENTE : K gravé sur
+  la couronne du 1er du podium (section 4 de apercu-k.html).
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

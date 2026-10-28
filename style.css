@@ -3534,3 +3534,17 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .medal-note.is-master { color: var(--r-master); }
 .train-tier { white-space: pre-line; }
 .train-meds { margin-top: auto; }   /* médailles toujours en bas de la case : pas de blanc dessous */
+/* Dos des cartes « signé » (2026-10-28) : cadre fin + KULTIVO en bas (grandes cartes seulement) */
+.flip-back .flip-ring { position: absolute; inset: 7px; border: 2px solid rgba(255, 255, 255, 0.35); border-radius: 7px; pointer-events: none; }
+.flip-back .flip-word { position: absolute; bottom: 9px; left: 0; right: 0; text-align: center; color: #fff; font-weight: 900; font-size: 0.72rem; letter-spacing: 0.18em; opacity: 0.9; }
+.flip:not(.is-big) .flip-back .flip-word { display: none; }
+.flip:not(.is-big) .flip-back .flip-ring { inset: 3px; border-width: 1px; border-radius: 5px; }
+.flip.is-big .flip-back img { width: 62%; }
+/* Tampon « Sans faute » (2026-10-28) */
+.end-emoji { position: relative; }
+.end-stamp { position: absolute; left: calc(100% - 14px); top: -6px; width: 74px; height: 74px; opacity: 0; }
+.end-stamp.is-on { animation: endStamp 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) forwards; }
+@keyframes endStamp { 0% { opacity: 0; transform: scale(2.6) rotate(-30deg); } 60% { opacity: 1; transform: scale(0.92) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-14deg); } }
+#endView.is-stamped { animation: endShake 0.25s; }
+@keyframes endShake { 0%, 100% { transform: none; } 30% { transform: translate(-3px, 2px); } 60% { transform: translate(3px, -1px); } }
+@media (prefers-reduced-motion: reduce) { .end-stamp.is-on { animation: none; opacity: 1; transform: rotate(-14deg); } }

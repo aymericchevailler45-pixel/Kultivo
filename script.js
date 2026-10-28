@@ -3240,6 +3240,15 @@ async function drawRecapImage(m) {
     const roundRect = (x, y, w, h, rad) => { g.beginPath(); g.moveTo(x + rad, y); g.arcTo(x + w, y, x + w, y + h, rad); g.arcTo(x + w, y + h, x, y + h, rad); g.arcTo(x, y + h, x, y, rad); g.arcTo(x, y, x + w, y, rad); g.closePath(); };
     g.textAlign = 'center';
     g.textBaseline = 'alphabetic';
+    // grand K en filigrane dans le coin (2026-10-28)
+    g.save();
+    g.globalAlpha = 0.13;
+    g.fillStyle = '#fff';
+    g.translate(W - 330, H - 400);
+    g.rotate(-0.12);
+    g.scale(2.1, 2.1);
+    g.fill(new Path2D(K_PATH));
+    g.restore();
     // logo + nom du jeu
     try { const logo = await loadImg('icons/logo.svg'); g.drawImage(logo, W / 2 - 230, 110, 96, 96); } catch (err) { /* sans logo */ }
     g.fillStyle = '#fff';
@@ -3286,14 +3295,26 @@ async function drawRecapImage(m) {
         g.fillStyle = 'rgba(255,255,255,0.85)';
         g.fillText(label, x + cw / 2, y + 204);
     });
-    // pseudo + lien
+    // pseudo + signature « Kultivo · joue avec moi ! » (le K du logo) + lien
     const pseudo = cloudUser && league?.userId === cloudUser.id && league.pseudo;
     g.fillStyle = '#fff';
     g.font = font(900, 48);
-    if (pseudo) g.fillText(`@${pseudo}`, W / 2, 1810);
-    g.font = font(800, 34);
+    if (pseudo) g.fillText(`@${pseudo}`, W / 2, 1764);
+    const sy = pseudo ? 1830 : 1806;
+    g.font = font(900, 46);
+    const sign = 'ultivo · joue avec moi !';
+    const kw = 182 * 0.2, sw = g.measureText(sign).width, sx = W / 2 - (kw + 4 + sw) / 2;
+    g.save();
+    g.translate(sx, sy - 188 * 0.2 + 2);
+    g.scale(0.2, 0.2);
+    g.fill(new Path2D(K_PATH));
+    g.restore();
+    g.textAlign = 'left';
+    g.fillText(sign, sx + kw + 4, sy);
+    g.textAlign = 'center';
+    g.font = font(800, 32);
     g.fillStyle = 'rgba(255,255,255,0.85)';
-    g.fillText('À toi de jouer : ' + GAME_URL.replace('https://', '').replace(/\/$/, ''), W / 2, pseudo ? 1866 : 1840);
+    g.fillText(GAME_URL.replace('https://', '').replace(/\/$/, ''), W / 2, sy + 52);
     return new Promise(ok => cv.toBlob(ok, 'image/png'));
 }
 let recapShareBlob = null;
@@ -3514,7 +3535,9 @@ function cardFlip(card, big, shiny = false) {
     const logo = el('img');
     logo.src = 'icons/logo.svg';
     logo.alt = '';
-    back.append(logo);
+    const word = el('span', 'flip-word');   // dos « signé » (2026-10-28, apercu-k.html version B)
+    word.textContent = 'KULTIVO';
+    back.append(el('span', 'flip-ring'), logo, word);
     const front = el('div', 'flip-front');
     front.append(cardFace(card, big, shiny));
     inner.append(back, front);
@@ -5862,7 +5885,25 @@ function renderEndGoal() {
 
 // Kulti remplace le grand dessin de l'écran de fin (2026-10-27) : réussi = content, exploit = fier, raté = déçu + cœur brisé
 const END_FACES = { '🎉': 'content', '🏆': 'fier', '🏅': 'fier', '💔': 'triste' };
-function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, primaryClass, onPrimary, secondary, onSecondary }) {
+/* Le K de Kultivo (2026-10-28) : même tracé que le logo (SVG, 182 × 188) */
+const K_PATH = 'M0 0h52v66l64-66h66l-86 86 90 102h-66l-62-73-6 7v66h-52z';
+/** Tampon « Sans faute » posé à côté de Kulti sur l'écran de fin (niveau du parcours sans erreur). */
+function stampSans() {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('class', 'end-stamp');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = `<defs><path id="stampArc" d="M50 50 m-34 0 a34 34 0 1 1 68 0 a34 34 0 1 1 -68 0"/></defs>
+      <circle cx="50" cy="50" r="46" fill="rgba(255,255,255,.88)" stroke="#e5484d" stroke-width="5"/>
+      <circle cx="50" cy="50" r="24" fill="none" stroke="#e5484d" stroke-width="2.5"/>
+      <text font-family="Nunito, sans-serif" font-weight="900" font-size="9.6" fill="#e5484d" letter-spacing="1.5"><textPath href="#stampArc" startOffset="2%">SANS FAUTE ★ SANS FAUTE ★</textPath></text>
+      <g transform="translate(37.5 37) scale(.135)"><path d="${K_PATH}" fill="#e5484d"/></g>`;
+    return svg;
+}
+let stampTimer = null;
+
+function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, primaryClass, onPrimary, secondary, onSecondary, stamp = false }) {
     renderEndStats(stats);
     renderEndGoal();
     if (state.pendingTitle) { const t = state.pendingTitle; state.pendingTitle = null; celebrate(() => showTitleAnim(t)); }
@@ -5870,6 +5911,16 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     $('endEmoji').classList.toggle('is-kulti', !!mood);
     if (mood) $('endEmoji').replaceChildren(kultiEl(mood, 'kulti-blink kulti-float', emoji === '💔'));
     else $('endEmoji').textContent = emoji;
+    clearTimeout(stampTimer);
+    if (stamp) {
+        const st = stampSans();
+        $('endEmoji').append(st);
+        const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        stampTimer = setTimeout(() => {
+            st.classList.add('is-on');
+            if (!reduced) setTimeout(() => { $('endView').classList.remove('is-stamped'); void $('endView').offsetWidth; $('endView').classList.add('is-stamped'); playSound('stamp'); }, 280);
+        }, reduced ? 0 : 900);
+    }
     $('endRescue').hidden = true;
     $('endRescueInfo').hidden = true;
     state.canRescue = false;
@@ -6050,7 +6101,8 @@ function endSession(win) {
             emoji: challenge ? '🏆' : '🎉',
             face: challenge || state.errors === 0 ? 'fier' : 'content',
             title: challenge ? 'Défi relevé !' : `Niveau ${state.level} terminé !`,
-            text: (state.errors === 0 ? '✨ Sans faute ! ' : '') + next,
+            text: next,   // « sans faute » : le tampon le dit (2026-10-28)
+            stamp: state.errors === 0,
             stats: [statXp(), statAccuracy(), statTime()],
             extra: rewardSummary(),
             primary: 'Continuer',
@@ -9727,7 +9779,8 @@ const SOUNDS = {
     tap: [[880, 0, 0.08, 'triangle'], [1175, 0.07, 0.1, 'triangle']],
     hop: [[330, 0, 0.14, 'triangle', 700]],                                   // Kulti saute (monte d'une note à chaque saut)
     rattle: [[900, 0, 0.04, 'square'], [650, 0.12, 0.04, 'square'], [900, 0.24, 0.04, 'square'], [650, 0.36, 0.04, 'square']],   // cadenas secoué
-    unlock: [[180, 0, 0.07, 'square'], [1047, 0.1, 0.3], [1319, 0.17, 0.35], [1568, 0.24, 0.5]]   // clac + carillon
+    unlock: [[180, 0, 0.07, 'square'], [1047, 0.1, 0.3], [1319, 0.17, 0.35], [1568, 0.24, 0.5]],   // clac + carillon
+    stamp: [[140, 0, 0.12, 'square', 60], [1568, 0.05, 0.25, 'triangle']]   // tampon « Sans faute » : boum + petite note
 };
 let audioCtx = null;
 
