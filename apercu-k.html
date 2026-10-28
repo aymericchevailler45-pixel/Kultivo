@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le K de Kultivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=k1">
+<!-- Page d'APERÇU (2026-10-28) : 3 nouveaux endroits pour le K (dos des cartes, tampon « Sans faute », récap partagé).
+     Rien de tout ça n'est encore dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .card > h2 { margin: 0 0 2px; }
+    .lead { margin: 0 0 12px; color: var(--muted); font-weight: 700; }
+    .where { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .9rem; }
+    .opt { margin-top: 14px; padding: 12px; border: 2px solid var(--line); border-radius: 16px; background: var(--surface); }
+    .opt h3 { margin: 0 0 4px; font-weight: 900; }
+    .opt > p { margin: 0 0 10px; color: var(--muted); font-weight: 700; font-size: .9rem; }
+    .tag { display: inline-block; margin-bottom: 6px; padding: 2px 8px; border-radius: 999px; background: var(--bg); font-size: .72rem; font-weight: 900; color: var(--muted); }
+    .tag.new { background: #e7f8d9; color: #3d8a00; }
+    .row3 { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; justify-content: center; }
+    .row3 > div { display: flex; flex-direction: column; align-items: center; }
+    .btns { display: flex; justify-content: center; margin-top: 10px; }
+    .btns .btn { padding: 8px 12px; font-size: .9rem; }
+
+    /* Dos de carte (mêmes couleurs que le jeu) */
+    .back { position: relative; width: 120px; aspect-ratio: 5 / 7; border: 4px solid #fff; border-radius: 12px; display: grid; place-items: center;
+        background: repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0 10px, transparent 10px 20px), linear-gradient(150deg, #6ad80f, #2f7d00);
+        box-shadow: 0 3px 0 #23600a, 0 0 0 2px var(--line); }
+    .back.sm { width: 46px; border-width: 2px; border-radius: 8px; }
+    .back img { width: 58%; filter: drop-shadow(0 3px 0 rgba(0,0,0,.2)); }
+    .back svg { width: 56%; filter: drop-shadow(0 3px 0 rgba(0,0,0,.22)); }
+    .back .ring { position: absolute; inset: 7px; border: 2px solid rgba(255,255,255,.35); border-radius: 7px; }
+    .back.sm .ring { inset: 3px; border-width: 1px; border-radius: 5px; }
+    .back .word { position: absolute; bottom: 9px; left: 0; right: 0; text-align: center; color: #fff; font-weight: 900; font-size: .72rem; letter-spacing: .18em; opacity: .9; }
+    .back.sm .word { display: none; }
+    .smrow { display: flex; gap: 6px; margin-top: 10px; }
+
+    /* Écran de fin + tampon */
+    .endbox { position: relative; padding: 18px 14px 16px; border-radius: 18px; border: 2px solid var(--line); background: var(--surface); text-align: center; overflow: hidden; max-width: 360px; margin: 0 auto; }
+    .endbox .face { width: 92px; height: 92px; margin: 0 auto; }
+    .endbox h3 { margin: 6px 0 2px; font-size: 1.35rem; font-weight: 900; }
+    .endbox p { margin: 0; color: var(--muted); font-weight: 800; }
+    .tiles { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+    .tiles span { flex: 1; padding: 8px 4px; border-radius: 12px; border: 2px solid var(--line); font-weight: 900; font-size: .85rem; }
+    .tiles b { display: block; font-size: 1.1rem; }
+    .stamp { position: absolute; top: 8px; right: 8px; width: 72px; height: 72px; opacity: 0; }
+    .stamp.on { animation: stamp .5s cubic-bezier(.2,1.4,.4,1) forwards; }
+    @keyframes stamp { 0% { opacity: 0; transform: scale(2.6) rotate(-30deg); } 60% { opacity: 1; transform: scale(.92) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-14deg); } }
+    .endbox.shake { animation: shake .25s; }
+    @keyframes shake { 0%,100% { transform: none; } 30% { transform: translate(-3px, 2px); } 60% { transform: translate(3px, -1px); } }
+
+    /* Récap partagé (image 9:16 en petit) */
+    .story { position: relative; width: 150px; aspect-ratio: 9 / 16; border-radius: 14px; overflow: hidden; color: #fff; font-weight: 900;
+        background: linear-gradient(165deg, #8b5cf6, #ec4899); box-shadow: 0 6px 16px rgba(0,0,0,.18); }
+    .story .top { display: flex; align-items: center; gap: 5px; justify-content: center; margin-top: 14px; font-size: .78rem; }
+    .story .top img { width: 18px; height: 18px; border-radius: 5px; }
+    .story .big { margin-top: 26px; text-align: center; font-size: 1.9rem; line-height: 1; }
+    .story .lbl { text-align: center; font-size: .6rem; opacity: .85; }
+    .story .cells { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 16px 10px 0; }
+    .story .cells span { padding: 6px 2px; border-radius: 8px; background: rgba(255,255,255,.16); text-align: center; font-size: .7rem; }
+    .story .wm { position: absolute; right: -18px; bottom: -14px; width: 92px; opacity: .16; }
+    .story .sign { position: absolute; left: 0; right: 0; bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 3px; font-size: .62rem; letter-spacing: .04em; }
+    .story .sign svg { width: 12px; height: 12px; }
+</style>
+<script src="kulti.js?v=k1"></script>
+</head>
+<body>
+<div class="wrap">
+    <article class="card">
+        <h1 style="margin:0 0 4px">🅺 Le K de Kultivo</h1>
+        <p class="lead" style="margin:0">Aperçu à juger : rien n'est encore dans le jeu.</p>
+    </article>
+
+    <!-- 1 · Dos des cartes -->
+    <article class="card">
+        <h2>1 · Le dos des cartes</h2>
+        <p class="lead">On le voit à chaque coffre ouvert, juste avant que la carte se retourne.</p>
+        <div class="row3">
+            <div><span class="tag">Aujourd'hui</span><div class="back"><img src="icons/logo.svg" alt=""></div></div>
+            <div><span class="tag new">A · Grand K</span><div class="back"><span class="ring"></span><span data-k="w"></span><span class="word">KULTIVO</span></div></div>
+            <div><span class="tag new">B · K + cerveau</span><div class="back"><span class="ring"></span><span data-k="kb"></span><span class="word">KULTIVO</span></div></div>
+        </div>
+        <p class="where">En petit (coffre de plusieurs cartes), version A :</p>
+        <div class="smrow" style="justify-content:center">
+            <div class="back sm"><span class="ring"></span><span data-k="w"></span></div><div class="back sm"><span class="ring"></span><span data-k="w"></span></div>
+            <div class="back sm"><span class="ring"></span><span data-k="w"></span></div><div class="back sm"><span class="ring"></span><span data-k="w"></span></div>
+            <div class="back sm"><span class="ring"></span><span data-k="w"></span></div>
+        </div>
+    </article>
+
+    <!-- 2 · Tampon Sans faute -->
+    <article class="card">
+        <h2>2 · Le tampon «&nbsp;Sans&nbsp;faute&nbsp;»</h2>
+        <p class="lead">Niveau fini sans aucune erreur : un tampon K vient se poser sur l'écran de fin, avec un petit « clac ».</p>
+        <div class="endbox" id="endbox">
+            <div class="face" id="face"></div>
+            <h3>Niveau 12 terminé !</h3>
+            <p>Le niveau 13 est débloqué.</p>
+            <div class="tiles"><span>XP<b>42</b></span><span>Précision<b>100 %</b></span><span>Temps<b>1:12</b></span></div>
+            <svg class="stamp" id="stamp" viewBox="0 0 100 100" aria-hidden="true"></svg>
+        </div>
+        <div class="btns"><button class="btn btn-ghost" type="button" id="stampBtn">▶ Rejouer</button></div>
+        <p class="where">Seulement pour les niveaux du parcours réussis sans erreur (pas les révisions). Le bonus d'XP « sans faute » reste le même : le tampon le rend juste visible.</p>
+    </article>
+
+    <!-- 3 · Récap partagé -->
+    <article class="card">
+        <h2>3 · La signature sur le récap partagé</h2>
+        <p class="lead">L'image du récap du mois que tu partages (stories, WhatsApp…) : un grand K en filigrane dans le coin et « kultivo » en bas, pour qu'on reconnaisse le jeu.</p>
+        <div class="row3">
+            <div><span class="tag">Aujourd'hui</span><div class="story" id="s1"></div></div>
+            <div><span class="tag new">Avec le K</span><div class="story" id="s2"></div></div>
+        </div>
+    </article>
+</div>
+
+<script>
+const K_PATH = 'M0 0h52v66l64-66h66l-86 86 90 102h-66l-62-73-6 7v66h-52z';
+const kSvg = (fill, stroke, sw) => `<svg viewBox="-15 -15 212 218" aria-hidden="true"><path d="${K_PATH}" fill="${fill}"${stroke ? ` stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" paint-order="stroke"` : ''}/></svg>`;
+document.querySelectorAll('[data-k="w"]').forEach(n => { n.outerHTML = kSvg('#fff', '#2f7d00', 10); });
+// B : le K vert cerclé de blanc du logo, avec le cerveau en petit dessous
+document.querySelectorAll('[data-k="kb"]').forEach(n => {
+    n.outerHTML = `<div style="position:relative;width:62%;aspect-ratio:1"><img src="icons/logo.svg" alt="" style="width:100%;border-radius:22%;filter:drop-shadow(0 3px 0 rgba(0,0,0,.22))"></div>`;
+});
+
+// Tampon : rond rouge, « SANS FAUTE » autour, K au milieu
+const stamp = document.getElementById('stamp');
+stamp.innerHTML = `
+  <defs><path id="arc" d="M50 50 m-34 0 a34 34 0 1 1 68 0 a34 34 0 1 1 -68 0"/></defs>
+  <circle cx="50" cy="50" r="46" fill="rgba(255,255,255,.85)" stroke="#e5484d" stroke-width="5"/>
+  <circle cx="50" cy="50" r="24" fill="none" stroke="#e5484d" stroke-width="2.5"/>
+  <text font-family="Nunito" font-weight="900" font-size="9.6" fill="#e5484d" letter-spacing="1.5"><textPath href="#arc" startOffset="2%">SANS FAUTE ★ SANS FAUTE ★</textPath></text>
+  <g transform="translate(37.5 37) scale(.135)"><path d="${K_PATH}" fill="#e5484d"/></g>`;
+const box = document.getElementById('endbox');
+function playStamp() {
+    document.getElementById('face').replaceChildren(kultiEl('fier', 'kulti-blink kulti-float'));
+    stamp.classList.remove('on'); box.classList.remove('shake');
+    void stamp.offsetWidth;
+    setTimeout(() => { stamp.classList.add('on'); setTimeout(() => box.classList.add('shake'), 300); }, 700);
+}
+document.getElementById('stampBtn').onclick = playStamp;
+playStamp();
+
+// Récaps
+const storyBody = `<div class="top"><img src="icons/logo.svg" alt="">Kultivo · octobre</div>
+  <div class="big">1 240</div><div class="lbl">XP ce mois-ci</div>
+  <div class="cells"><span>🔥 12 j</span><span>🎯 87 %</span><span>🃏 18</span><span>🏆 3</span></div>`;
+document.getElementById('s1').innerHTML = storyBody;
+document.getElementById('s2').innerHTML = storyBody + `<div class="wm">${kSvg('#fff')}</div><div class="sign">${kSvg('#fff')}ultivo · joue avec moi !</div>`;
+</script>
+</body>
+</html>
