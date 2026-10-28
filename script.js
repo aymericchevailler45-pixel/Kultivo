@@ -5902,6 +5902,17 @@ function stampSans() {
     return svg;
 }
 let stampTimer = null;
+/** Couronne dorée avec le K gravé (essai dans le bac à sable). */
+function crownKSvg() {
+    return `<svg class="crown-k" viewBox="-3 -1 70 52" aria-hidden="true"><defs><linearGradient id="crownGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe680"/><stop offset=".55" stop-color="#ffc800"/><stop offset="1" stop-color="#f0a800"/></linearGradient></defs>
+      <path d="M4 14 L18 28 L32 6 L46 28 L60 14 L54 44 H10 Z" fill="url(#crownGold)" stroke="#d99a00" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M9 22 L17 30" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round"/>
+      <rect x="9" y="39" width="46" height="8" rx="3.5" fill="#e0a000"/>
+      <circle cx="18" cy="43" r="2.2" fill="#ff5a5f"/><circle cx="32" cy="43" r="2.2" fill="#1cb0f6"/><circle cx="46" cy="43" r="2.2" fill="#58cc02"/>
+      <circle cx="4" cy="14" r="4" fill="#ffe066" stroke="#d99a00" stroke-width="2"/><circle cx="32" cy="6" r="4.5" fill="#ffe066" stroke="#d99a00" stroke-width="2"/><circle cx="60" cy="14" r="4" fill="#ffe066" stroke="#d99a00" stroke-width="2"/>
+      <g transform="translate(25.6 20.5) scale(.07)"><path d="${K_PATH}" fill="#9a6200"/></g></svg>`;
+}
 
 function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, primaryClass, onPrimary, secondary, onSecondary, stamp = false }) {
     renderEndStats(stats);
@@ -9169,6 +9180,7 @@ function renderLeague() {
         if (r.friend) { col.type = 'button'; col.addEventListener('click', () => openFriendProfile(r.friend)); }
         const crown = el('span', 'podium-crown');
         crown.textContent = i === 0 && r.xp > 0 ? '👑' : '';
+        if (BAC && i === 0 && r.xp > 0) crown.innerHTML = crownKSvg();   // essai (2026-10-28) : couronne au K, bac à sable seulement
         const name = el('span', 'podium-name');
         name.textContent = r.me ? 'Toi' : r.pseudo;
         const xp = el('span', 'podium-xp');

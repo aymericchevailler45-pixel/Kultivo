@@ -110,7 +110,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `stamp` de `setEnd`, niveau du parcours sans erreur : rond rouge « SANS FAUTE ★ » + K, posé à côté de Kulti avec
   tremblement et son `stamp` ; le texte « ✨ Sans faute ! » est retiré) ; récap partagé : grand K en filigrane en bas à droite
   + signature « Kultivo · joue avec moi ! » (K dessiné) + adresse. `K_PATH` = tracé du K (script.js). EN ATTENTE : K gravé sur
-  la couronne du 1er du podium (section 4 de apercu-k.html).
+  la couronne du 1er du podium (section 4 de apercu-k.html), essai visible SEULEMENT dans le bac à sable (`crownKSvg`, `BAC`).
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?

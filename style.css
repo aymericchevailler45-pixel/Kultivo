@@ -3548,3 +3548,4 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 #endView.is-stamped { animation: endShake 0.25s; }
 @keyframes endShake { 0%, 100% { transform: none; } 30% { transform: translate(-3px, 2px); } 60% { transform: translate(3px, -1px); } }
 @media (prefers-reduced-motion: reduce) { .end-stamp.is-on { animation: none; opacity: 1; transform: rotate(-14deg); } }
+.podium-crown .crown-k { width: 1.45em; height: 1.1em; vertical-align: bottom; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.15)); }
