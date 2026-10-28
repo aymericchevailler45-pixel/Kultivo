@@ -111,6 +111,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   tremblement et son `stamp` ; le texte « ✨ Sans faute ! » est retiré) ; récap partagé : grand K en filigrane en bas à droite
   + signature « Kultivo · joue avec moi ! » (K dessiné) + adresse. `K_PATH` = tracé du K (script.js). Couronne au K : essayée
   dans le bac à sable puis REFUSÉE (« moins belle ») : on garde l'emoji 👑. Pastille 🔥🤝 : tap = explication (`explainFriendStreak`).
+  Le jeu a DÉJÀ un mode sombre automatique (prefers-color-scheme, variables dans style.css) : rébus en mode sombre = emojis sur
+  une case claire (le 🔙 noir était invisible). Pas de réglage Clair / Sombre (pas demandé).
+- GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
+  aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
+  sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de
+  collections, couronne au K. Toujours pour plus tard : Qui suis-je ?, Heure dorée, AVANT DE PUBLIER.
 - EN ATTENTE D'UNE RÉPONSE DE L'UTILISATEUR :
   1. Entraînement : garder la règle actuelle (les bonnes réponses données après le palier du jour comptent déjà pour le
      palier suivant, on monte quand même d'un seul palier par jour) ou règle « stricte » (elles ne comptent pas) ?
