@@ -8517,6 +8517,7 @@ function profileSummary() {
         badges: Object.keys(d.badges).filter(id => d.badges[id]),
         cards: Object.keys(d.cards).filter(id => d.cards[id]),
         shiny: Object.keys(d.shinyCards || {}).filter(id => (d.cards[id] || 0) >= SHINY_AT),   // cartes brillantes
+        medals: Object.fromEntries(THEME_DECOR.map(({ theme }) => [theme, trainingBank(theme).length ? trainMedalOf(theme) : 0]).filter(x => x[1])),   // médailles d'entraînement (29/10)
         daily: d.daily[todayKey()] ? { day: todayKey(), grid: d.daily[todayKey()].grid } : null,   // défi du jour, question par question
         days: myPlayedDays(),   // série d'amis 🔥🤝
         weeks: Object.fromEntries([7, 14, 21].map(k => [shiftDays(weekStart(), -k), weekXp(shiftDays(weekStart(), -k))]))   // objectif de la quête en duo
@@ -8586,6 +8587,21 @@ function openFriendProfile(f) {
         if (!badges.length) bl.textContent = 'Aucun badge pour l’instant.';
         body.append(bh, bl);
 
+        if (s.medals) {   // médailles d'entraînement (2026-10-29 ; ancien résumé : rien)
+            const mh = el('h3', 'friend-section');
+            const list = Object.entries(s.medals).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
+            mh.textContent = `🏅 Médailles d’entraînement · ${list.length}`;
+            const ml = el('div', 'friend-badges');
+            list.forEach(([theme, n]) => {
+                const m = el('span', 'friend-medal');
+                m.textContent = `${TRAIN_MEDALS[n - 1].icon}${(THEME_DECOR.find(t => t.theme === theme) || {}).icon || ''}`;
+                m.title = `Médaille d’${TRAIN_MEDALS[n - 1].name} · ${theme}`;
+                ml.append(m);
+            });
+            if (!list.length) ml.textContent = 'Aucune médaille pour l’instant.';
+            body.append(mh, ml);
+        }
+
         const order = Object.keys(CARD_RARITIES);
         const cards = CARDS.filter(c => s.cards.includes(c.id))
             .sort((a, b) => order.indexOf(b.rarity) - order.indexOf(a.rarity));
@@ -8604,7 +8620,18 @@ function openFriendProfile(f) {
             });
             cl.append(btn);
         });
-        if (!cards.length) cl.textContent = 'Aucune carte pour l’instant.';
+        // Cartes d'événement (Citrouille 2026…) : après les autres, hors du compte des 180 (2026-10-29)
+        EVENT_CARDS.filter(c => s.cards.includes(c.id)).forEach(card => {
+            const btn = el('button', 'kcard-btn');
+            btn.type = 'button';
+            btn.append(cardFace(card, false));
+            btn.addEventListener('click', () => {
+                $('friendModal').hidden = true;
+                openCardView(card, () => { $('friendModal').hidden = false; });
+            });
+            cl.append(btn);
+        });
+        if (!cl.children.length) cl.textContent = 'Aucune carte pour l’instant.';
         body.append(ch, cl);
     }
 

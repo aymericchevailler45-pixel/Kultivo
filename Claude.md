@@ -111,8 +111,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   tremblement et son `stamp` ; le texte « ✨ Sans faute ! » est retiré) ; récap partagé : grand K en filigrane en bas à droite
   + signature « Kultivo · joue avec moi ! » (K dessiné) + adresse. `K_PATH` = tracé du K (script.js). Couronne au K : essayée
   dans le bac à sable puis REFUSÉE (« moins belle ») : on garde l'emoji 👑. Pastille 🔥🤝 : tap = explication (`explainFriendStreak`).
-  Le jeu a DÉJÀ un mode sombre automatique (prefers-color-scheme, variables dans style.css) : rébus en mode sombre = emojis sur
-  une case claire (le 🔙 noir était invisible). Pas de réglage Clair / Sombre (pas demandé).
+  Le jeu a DÉJÀ un mode sombre automatique (prefers-color-scheme, variables dans style.css). Case claire derrière les rébus en
+  mode sombre : essayée puis RETIRÉE le 29/10 (« ça va pas »). Pas de réglage Clair / Sombre.
+- FAIT le 29/10 : profil d'un ami = ses médailles d'entraînement (`summary.medals` : thème -> 1/2/3) et ses cartes
+  d'événement (après les autres, hors du compte des 180) ; « LDC » accepté pour la Ligue des champions (19102).
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

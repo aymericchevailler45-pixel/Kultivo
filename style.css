@@ -2585,6 +2585,7 @@ button.podium-col { padding: 0; border: 0; background: none; color: inherit; fon
 .badge-big b { font-size: 1.25rem; font-weight: 900; }
 .modal-content .badge-big p { margin: 0; color: var(--muted); }
 button.friend-badge { border: 0; font: inherit; cursor: pointer; }
+.friend-medal { display: inline-flex; align-items: center; gap: 2px; padding: 4px 8px; border-radius: 12px; background: var(--bg); font-size: 1.1rem; font-weight: 900; }
 
 /* Indices en grille (comme au pendu) */
 .hint-list li.hint-box { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; }
@@ -3549,7 +3550,3 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 @keyframes endShake { 0%, 100% { transform: none; } 30% { transform: translate(-3px, 2px); } 60% { transform: translate(3px, -1px); } }
 @media (prefers-reduced-motion: reduce) { .end-stamp.is-on { animation: none; opacity: 1; transform: rotate(-14deg); } }
 .friend-streak[role="button"] { cursor: pointer; }
-/* Mode sombre du téléphone (2026-10-28) : certains emojis sont noirs (🔙 du rébus « Retour vers le futur »…) → petite case claire derrière */
-@media (prefers-color-scheme: dark) {
-    .question-rebus .emoji-img, .review-media .emoji-img { background: #eef2f8; border-radius: 14px; padding: 6px; }
-}

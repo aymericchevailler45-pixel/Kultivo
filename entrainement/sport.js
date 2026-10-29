@@ -116,7 +116,7 @@ TRAINING_QUESTIONS.push(
     { id: 19100, theme: "Sport", d: 4.4, q: "Quel cycliste danois a gagné le Tour de France en 2022 et 2023 ?", a: ["Jonas Vingegaard", "Vingegaard"], exp: "Ancien employé d’une usine de poissons." },
     // Lot 3
     { id: 19101, theme: "Sport", d: 1.0, q: "Combien de joueurs compte une équipe de handball sur le terrain, gardien compris ?", a: ["7", "Sept"], exp: "Six joueurs de champ et un gardien." },
-    { id: 19102, theme: "Sport", d: 1.2, q: "Quel trophée de foot est surnommé « la coupe aux grandes oreilles » ?", a: ["La Ligue des champions", "Ligue des champions", "Champions League", "C1"], exp: "À cause de ses deux énormes anses." },
+    { id: 19102, theme: "Sport", d: 1.2, q: "Quel trophée de foot est surnommé « la coupe aux grandes oreilles » ?", a: ["La Ligue des champions", "Ligue des champions", "Champions League", "C1", "LDC"], exp: "À cause de ses deux énormes anses." },
     { id: 19103, theme: "Sport", d: 1.2, q: "Comment appelle-t-on trois buts marqués par le même joueur dans un match ?", a: ["Un triplé", "Triplé", "Coup du chapeau", "Hat-trick"], exp: "On dit aussi « coup du chapeau »." },
     { id: 19104, theme: "Sport", d: 1.3, q: "Dans quelle grande enceinte de Saint-Denis jouent les Bleus du football ?", a: ["Le Stade de France", "Stade de France"], exp: "Inauguré pour la Coupe du monde 1998." },
     { id: 19105, theme: "Sport", d: 1.4, q: "Quel attaquant suédois au caractère bien trempé a joué au PSG de 2012 à 2016 ?", a: ["Zlatan Ibrahimović", "Zlatan", "Ibrahimovic", "Zlatan Ibrahimovic"], exp: "Il parle souvent de lui à la troisième personne." },
