@@ -114,7 +114,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Le jeu a DÉJÀ un mode sombre automatique (prefers-color-scheme, variables dans style.css). Case claire derrière les rébus en
   mode sombre : essayée puis RETIRÉE le 29/10 (« ça va pas »). Pas de réglage Clair / Sombre.
 - FAIT le 29/10 : profil d'un ami = ses médailles d'entraînement (`summary.medals` : thème -> 1/2/3) et ses cartes
-  d'événement (après les autres, hors du compte des 180) ; « LDC » accepté pour la Ligue des champions (19102).
+  d'événement (à part, hors du compte des 180), cartes RANGÉES PAR THÈME comme dans mon profil (« ? » / 🔒 pour celles qui
+  lui manquent) ; « LDC » accepté pour la Ligue des champions (19102). Records : « x / y réponses » (y = réponses données).
+  FÊTE DE LA NOUVELLE MÉDAILLE (aperçu apercu-medaille.html) : `showMedalAnim` (file `celebrate`, appelée dans `endTraining`),
+  fond violet, médaille Twemoji (emoji/1f947-1f949.svg) qui tombe en tournant, rayons, ✨, Kulti, « Super ! » ; son.
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

@@ -1023,6 +1023,61 @@ function closeCelebrationLayer(id) {
     return true;
 }
 
+/* ---------- Nouvelle médaille d'entraînement (2026-10-29, aperçu : apercu-medaille.html) ----------
+   Après l'écran de fin : la médaille tombe en tournant (rayons, ✨), son nom, le thème, la suivante, Kulti qui félicite.
+   Fond violet (couleur de l'entraînement). Un tap pendant l'animation la termine. File `celebrate` (avant le nouveau titre). */
+const MEDAL_IMGS = ['1f949', '1f948', '1f947'];
+function showMedalAnim({ theme, icon, medal, mastered }) {
+    const ov = celebrationLayer('medalAnim', `medal-anim is-m${medal}`);
+    const m = TRAIN_MEDALS[medal - 1];
+    const names = ['Médaille de bronze', 'Médaille d’argent', 'Médaille d’or'];
+    const rays = el('div', 'medal-rays');
+    const small = el('small', 'medal-step');
+    small.textContent = 'Nouvelle médaille !';
+    const box = el('div', 'medal-big medal-step');
+    const img = el('img');
+    img.src = `emoji/${MEDAL_IMGS[medal - 1]}.svg`;
+    img.alt = '';
+    box.append(img);
+    [[8, 10], [78, 4], [88, 62], [2, 70], [46, -8]].forEach(([x, y], i) => {
+        const s = el('i', 'medal-spark');
+        s.textContent = '✨';
+        s.style.left = `${x}%`;
+        s.style.top = `${y}%`;
+        s.style.animationDelay = `${0.9 + i * 0.12}s`;
+        box.append(s);
+    });
+    const name = el('div', 'medal-name medal-step');
+    name.textContent = names[medal - 1];
+    const th = el('div', 'medal-theme medal-step');
+    th.textContent = `${icon} ${theme} · ${mastered} questions maîtrisées`;
+    const nx = el('div', 'medal-next medal-step');
+    const total = trainingBank(theme).length;
+    nx.textContent = medal < 3 ? `Prochaine : ${TRAIN_MEDALS[medal].icon} ${TRAIN_MEDALS[medal].name} à ${Math.ceil(total * TRAIN_MEDALS[medal].part)}`
+        : `🏆 Les ${total} questions maîtrisées !`;
+    const say = el('div', 'medal-kulti medal-step');
+    const k = el('div', 'medal-kulti-face');
+    k.append(kultiEl('fier', 'kulti-blink'));
+    const bubble = el('div', 'medal-bubble');
+    bubble.textContent = medal === 3 ? 'Toutes les questions ! Tu es un vrai expert.' : medal === 2 ? 'Plus que l’or à décrocher !' : `Tu connais vraiment bien ce thème !`;
+    say.append(k, bubble);
+    const btn = el('button', 'btn medal-continue medal-step');
+    btn.type = 'button';
+    btn.textContent = 'Super !';
+    btn.addEventListener('click', e => { e.stopPropagation(); closeCelebrationLayer('medalAnim'); });
+    ov.append(rays, small, box, name, th, nx, say, btn);
+    ov.addEventListener('pointerdown', () => ov.classList.add('is-skip'), { once: true });   // un tap : tout de suite à la fin
+    if (state.data.sound) {
+        try {
+            [0, 0.08, 0.16, 0.24].forEach((s, i) => synthTone(900 + i * 220, 0.35 + s, 0.12, 'triangle', 0.07));   // la médaille tourne
+            synthTone(2093, 0.95, 0.5, 'sine', 0.14);                                                          // « tchin »
+            synthTone(2637, 1.0, 0.6, 'sine', 0.1);
+            [1047, 1319, 1568, 2093].forEach((f, i) => synthTone(f, 1.25 + i * 0.09, 0.5, 'sine', 0.12));      // carillon
+        } catch (err) { /* pas de son */ }
+    }
+    void m;
+}
+
 /* ---------- 5 · Gel de série utilisé : la flamme se fige dans la glace, la glace éclate, la flamme repart ---------- */
 let freezeTimers = [];
 function showFreezeAnim(streak) {
@@ -2708,7 +2763,7 @@ function placeMapKulti() {
    et le niveau s'allume. Une fois par niveau débloqué, avec son (réglage `sound`). Un tap la termine tout de suite. */
 let kultiHop = 0;          // niveau qui vient d'être débloqué (pas sauvegardé : appli fermée = pas d'animation)
 let kultiHopRun = 0;
-const KULTI_HOP_WAIT = '.modal-overlay:not([hidden]), #titleAnim:not([hidden]), #streakAnim:not([hidden]), #freezeAnim:not([hidden]), #tour:not([hidden]), .recap-story:not([hidden])';
+const KULTI_HOP_WAIT = '.modal-overlay:not([hidden]), #titleAnim:not([hidden]), #medalAnim:not([hidden]), #streakAnim:not([hidden]), #freezeAnim:not([hidden]), #tour:not([hidden]), .recap-story:not([hidden])';
 function startKultiHop(tries = 0) {
     const to = kultiHop;
     if (!to || $('mapScreen').hidden) return;
@@ -4066,7 +4121,7 @@ function renderProfile() {
         ['🌋 Meilleure série', plural(Math.max(data.best.streak, currentStreak()), 'jour', 'jours')],
         ['⚡ Meilleur sprint', data.best.sprint > 0 ? plural(data.best.sprint, 'bonne réponse', 'bonnes réponses') : '—'],
         ['📅 Meilleur défi du jour', bestDaily],
-        ['✅ Réussies du premier coup', `${data.totals.right} / ${data.totals.tries}`],
+        ['✅ Réussies du premier coup', `${data.totals.right} / ${data.totals.tries} réponses`],   // y = réponses données, pas des questions (29/10)
         ['🗺️ Niveaux terminés', `${doneCount} / ${MAX_LEVEL}`],
         ['🎯 Jours d’objectif atteint', String(Object.keys(data.goalDays).length)],
         ['🏆 Semaines 1er de la ligue', String(leagueWins())],
@@ -7723,6 +7778,8 @@ function endTraining() {
         const m = TRAIN_MEDALS[medal - 1];
         text += `\n${m.icon} Médaille d’${m.name} en ${theme} !`;
         saveData();
+        const mastered = trainingProgress(theme).totalMastered;
+        celebrate(() => showMedalAnim({ theme, icon, medal, mastered }));   // la fête, juste après l'écran de fin
     } else {
         const { next } = medalInfo(theme);
         if (next && next.left > 0) text += `\n${next.m.icon} Plus que ${plural(next.left, 'question maîtrisée', 'questions maîtrisées')} pour la médaille d’${next.m.name}.`;
@@ -8602,36 +8659,51 @@ function openFriendProfile(f) {
             body.append(mh, ml);
         }
 
+        // Cartes rangées par thème, comme dans mon profil (2026-10-29) : les siennes, et « ? » pour celles qui lui manquent
         const order = Object.keys(CARD_RARITIES);
-        const cards = CARDS.filter(c => s.cards.includes(c.id))
-            .sort((a, b) => order.indexOf(b.rarity) - order.indexOf(a.rarity));
-        const ch = el('h3', 'friend-section');
-        ch.textContent = `🃏 Cartes · ${cards.length}/${CARDS.length}`;
-        const cl = el('div', 'friend-cards');
         const shiny = s.shiny || [];   // ancien résumé : pas d'info sur les cartes brillantes
-        cards.forEach(card => {
+        const has = c => s.cards.includes(c.id);
+        const ch = el('h3', 'friend-section');
+        ch.textContent = `🃏 Cartes · ${CARDS.filter(has).length}/${CARDS.length}`;
+        const cl = el('div', 'friend-collection');
+        const cardBtn = (card, isShinyCard) => {
             const btn = el('button', 'kcard-btn');
             btn.type = 'button';
-            const isShinyCard = shiny.includes(card.id);
             btn.append(cardFace(card, false, isShinyCard));
             btn.addEventListener('click', () => {
                 $('friendModal').hidden = true;
                 openCardView(card, () => { $('friendModal').hidden = false; }, isShinyCard);
             });
-            cl.append(btn);
-        });
-        // Cartes d'événement (Citrouille 2026…) : après les autres, hors du compte des 180 (2026-10-29)
-        EVENT_CARDS.filter(c => s.cards.includes(c.id)).forEach(card => {
-            const btn = el('button', 'kcard-btn');
-            btn.type = 'button';
-            btn.append(cardFace(card, false));
-            btn.addEventListener('click', () => {
-                $('friendModal').hidden = true;
-                openCardView(card, () => { $('friendModal').hidden = false; });
+            return btn;
+        };
+        [...new Set(CARDS.map(c => c.theme))].sort(byThemeName).forEach(theme => {
+            const cards = CARDS.filter(c => c.theme === theme).sort((x, y) => order.indexOf(x.rarity) - order.indexOf(y.rarity));
+            const n = cards.filter(has).length;
+            const head = el('div', 'card-theme-head');
+            head.textContent = `${theme} · ${n}/${cards.length}${n === cards.length ? ' ✓' : ''}`;
+            head.classList.toggle('is-complete', n === cards.length);
+            const row = el('div', 'card-row');
+            row.style.setProperty('--per-row', String(Math.ceil(cards.length / 2)));
+            row.style.setProperty('--per-row-phone', String(Math.ceil(cards.length / 2)));
+            cards.forEach(card => {
+                if (has(card)) row.append(cardBtn(card, shiny.includes(card.id)));
+                else {
+                    const box = el('div', `kcard is-missing rarity-${card.rarity}${card.rarity === 'master' ? ' is-locked' : ''}`);
+                    box.textContent = card.rarity === 'master' ? '🔒' : '?';
+                    row.append(box);
+                }
             });
-            cl.append(btn);
+            cl.append(head, row);
         });
-        if (!cl.children.length) cl.textContent = 'Aucune carte pour l’instant.';
+        // Cartes d'événement (Citrouille 2026…) : à part, hors du compte des 180
+        const evCards = EVENT_CARDS.filter(has);
+        if (evCards.length) {
+            const head = el('div', 'card-theme-head is-event');
+            head.textContent = '🎉 Événements';
+            const row = el('div', 'card-row');
+            evCards.forEach(card => row.append(cardBtn(card, false)));
+            cl.append(head, row);
+        }
         body.append(ch, cl);
     }
 
@@ -10531,7 +10603,7 @@ function closePatchNotes() {
 function closeTopOverlay() {
     const open = id => !$(id).hidden;
     if ($('streakAnim') && !$('streakAnim').hidden) { closeStreakAnim(); return true; }
-    if (closeCelebrationLayer('titleAnim') || closeCelebrationLayer('freezeAnim')) return true;
+    if (closeCelebrationLayer('titleAnim') || closeCelebrationLayer('freezeAnim') || closeCelebrationLayer('medalAnim')) return true;
     if ($('recapShare') && !$('recapShare').hidden) { $('recapShare').hidden = true; return true; }
     if ($('recapStory') && !$('recapStory').hidden) { closeRecap(); return true; }
     if (open('askModal')) { $('askNo').click(); return true; }
