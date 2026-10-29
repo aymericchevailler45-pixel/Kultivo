@@ -51,7 +51,7 @@ TRAINING_QUESTIONS.push(
     // Palier 5
     { id: 21041, theme: "Langue française", d: 3.2, q: "Quel verbe décrit le cri de l’éléphant ?", a: ["Barrir", "Il barrit"], exp: "On parle aussi de « barrissement »." },
     { id: 21042, theme: "Langue française", d: 3.2, q: "Combien de noms en -ou prennent un x au pluriel ?", a: ["7", "Sept"], exp: "Bijou, caillou, chou, genou, hibou, joujou, pou." },
-    { id: 21043, theme: "Langue française", d: 3.4, q: "Quel mot officiel français remplace « hashtag » ?", a: ["Mot-dièse", "Mot dièse", "Mot-diese"], exp: "Recommandé au Journal officiel en 2013." },
+    { id: 21043, theme: "Langue française", d: 3.4, q: "Quel mot officiel français remplace « hashtag » ?", a: ["Mot-dièse", "Mot dièse", "Mot-diese", "Dièse"], exp: "Recommandé au Journal officiel en 2013." },
     { id: 21044, theme: "Langue française", d: 3.4, q: "Comment appelle-t-on les habitants de Saint-Étienne ?", a: ["Les Stéphanois", "Stéphanois", "Stephanois"], exp: "Du latin « Stephanus », Étienne." },
     { id: 21045, theme: "Langue française", d: 3.4, q: "Comment appelle-t-on un collectionneur de timbres ?", a: ["Un philatéliste", "Philatéliste", "Philateliste"], exp: "Du grec « philos » (ami) et « ateleia » (exemption de taxe)." },
     { id: 21046, theme: "Langue française", d: 3.6, q: "Comment dit-on « podcast » au Québec ?", a: ["Balado", "Un balado", "Baladodiffusion"], exp: "De « baladeur » et « radiodiffusion »." },
@@ -128,7 +128,7 @@ TRAINING_QUESTIONS.push(
     { id: 21111, theme: "Langue française", d: 1.8, q: "Quel mot officiel français, peu utilisé, remplace « smartphone » ?", a: ["Ordiphone", "Un ordiphone", "Téléphone intelligent"], exp: "Au Québec, on dit plutôt « téléphone intelligent »." },
     { id: 21112, theme: "Langue française", d: 1.8, q: "Que veut dire « ghoster » quelqu’un ?", a: ["Ne plus répondre", "Disparaître", "L’ignorer", "Couper le contact", "Ne plus donner de nouvelles"], exp: "Disparaître comme un fantôme (« ghost »)." },
     { id: 21113, theme: "Langue française", d: 1.9, q: "À quel temps est conjugué « j’ai mangé » ?", a: ["Le passé composé", "Passé composé"], exp: "Un auxiliaire au présent + un participe passé." },
-    { id: 21114, theme: "Langue française", d: 2.0, q: "Que veut dire « tomber des nues » ?", a: ["Être très surpris", "Être surpris", "Être stupéfait", "Être étonné"], exp: "Les « nues », ce sont les nuages." },
+    { id: 21114, theme: "Langue française", d: 2.0, q: "Que veut dire « tomber des nues » ?", a: ["Être très surpris", "Être surpris", "Être stupéfait", "Être étonné", "Ne pas en revenir", "Être sidéré", "Être abasourdi", "Être ébahi"], exp: "Les « nues », ce sont les nuages." },
     { id: 21115, theme: "Langue française", d: 2.0, q: "Que veut dire « revenir à ses moutons » ?", a: ["Reprendre le sujet", "Revenir au sujet", "Revenir à son sujet", "Revenir au sujet principal"], exp: "Tiré d’une farce du Moyen Âge, « Maître Pathelin »." },
     { id: 21116, theme: "Langue française", d: 2.0, q: "Quel mot désigne la peur de la foule ou des grands espaces ?", a: ["L’agoraphobie", "Agoraphobie"], exp: "De l’« agora », la place publique grecque." },
     { id: 21117, theme: "Langue française", d: 2.1, q: "Quel verbe décrit le cri du cerf ?", a: ["Bramer", "Raire", "Réer"], exp: "On parle du « brame du cerf », à l’automne." },

@@ -6,7 +6,7 @@ TRAINING_QUESTIONS.push(
     { id: 22003, theme: "Mythologie", d: 1.3, q: "Quel cheval ailé est né du sang de Méduse ?", a: ["Pégase", "Pegase"], exp: "Il jaillit du cou de la Gorgone quand Persée la décapite." },
     { id: 22004, theme: "Mythologie", d: 1.2, q: "Quel guerrier grec n’était vulnérable qu’au talon ?", a: ["Achille"], exp: "Sa mère l’avait plongé dans le Styx en le tenant par le talon." },
     { id: 22005, theme: "Mythologie", d: 1.4, q: "Quel dieu romain de la guerre a donné son nom à une planète rouge ?", a: ["Mars"], exp: "Son équivalent grec est Arès." },
-    { id: 22006, theme: "Mythologie", d: 1.5, q: "Quel dieu grec de l’amour décoche des flèches pour rendre amoureux ?", a: ["Éros", "Eros", "Cupidon"], exp: "Les Romains l’appellent Cupidon." },
+    { id: 22006, theme: "Mythologie", d: 1.5, q: "Quel dieu grec de l’amour décoche des flèches pour rendre amoureux ?", a: ["Éros", "Eros"], exp: "Les Romains l’appellent Cupidon." },
     { id: 22007, theme: "Mythologie", d: 1.2, q: "Quelle ville d’Asie Mineure les Grecs ont-ils assiégée pendant dix ans ?", a: ["Troie"], exp: "Elle tombe grâce à la ruse du cheval de bois." },
     { id: 22008, theme: "Mythologie", d: 1.4, q: "Quel jeune homme est tombé amoureux de son propre reflet ?", a: ["Narcisse"], exp: "Il donne son nom à la fleur… et au narcissisme." },
     { id: 22009, theme: "Mythologie", d: 1.8, q: "Quel dieu égyptien à tête de faucon est le fils d’Osiris ?", a: ["Horus"], exp: "Son œil est un puissant symbole de protection." },

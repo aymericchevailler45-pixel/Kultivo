@@ -118,6 +118,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   lui manquent) ; « LDC » accepté pour la Ligue des champions (19102). Records : « x / y réponses » (y = réponses données).
   FÊTE DE LA NOUVELLE MÉDAILLE (aperçu apercu-medaille.html) : `showMedalAnim` (file `celebrate`, appelée dans `endTraining`),
   fond violet, médaille Twemoji (emoji/1f947-1f949.svg) qui tombe en tournant, rayons, ✨, Kulti, « Super ! » ; son.
+- Signalements traités le 29/10 (choix de l'utilisateur) : acceptés Bandicoot, touché-coulé, bad, « ne pas en revenir »
+  (+ sidéré / abasourdi / ébahi), « dièse » seul, traité de Paris (question → « Quel accord ») ; Minions = « petites
+  créatures » ; retirés : Cupidon (nom romain, question « grec »), « Un lion » (Normandie), Élisabeth sans « II » ;
+  Cendrillon : phrase verre / vair ; drapeau du Pérou = drapeau OFFICIEL avec le blason (flags/pe.svg, Wikimedia, domaine
+  public). Refusés exprès : « mont rochmort », « des bonbons ou un sort » (la question demande l'anglais).
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

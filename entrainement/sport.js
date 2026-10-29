@@ -4,7 +4,7 @@ TRAINING_QUESTIONS.push(
     { id: 19001, theme: "Sport", d: 1.0, q: "Dans quel sport marque-t-on des paniers ?", a: ["Le basket", "Basket", "Basket-ball", "Basketball"], exp: "Inventé en 1891 dans un gymnase américain." },
     { id: 19002, theme: "Sport", d: 1.0, q: "Quelle ville a accueilli les Jeux olympiques d’été de 2024 ?", a: ["Paris"], exp: "Cent ans après les Jeux de 1924, déjà à Paris." },
     { id: 19003, theme: "Sport", d: 1.0, q: "Quel sport pratiquait Roger Federer ?", a: ["Le tennis", "Tennis"], exp: "Vingt titres du Grand Chelem en simple." },
-    { id: 19004, theme: "Sport", d: 1.2, q: "Quel sport se joue avec une raquette et un volant ?", a: ["Le badminton", "Badminton"], exp: "Le volant peut dépasser 400 km/h lors d’un smash." },
+    { id: 19004, theme: "Sport", d: 1.2, q: "Quel sport se joue avec une raquette et un volant ?", a: ["Le badminton", "Badminton", "Le bad", "Bad"], exp: "Le volant peut dépasser 400 km/h lors d’un smash." },
     { id: 19005, theme: "Sport", d: 1.2, q: "Combien de joueurs une équipe de rugby à XV aligne-t-elle sur le terrain ?", a: ["15", "Quinze"], exp: "Huit avants et sept arrières." },
     { id: 19006, theme: "Sport", d: 1.2, q: "Dans quel sport cherche-t-on à rentrer la balle dans le trou en peu de coups ?", a: ["Le golf", "Golf"], exp: "Un parcours classique compte 18 trous." },
     { id: 19007, theme: "Sport", d: 1.2, q: "Quel sport pratiquent les All Blacks de Nouvelle-Zélande ?", a: ["Le rugby", "Rugby"], exp: "Ils dansent le haka avant chaque match." },
