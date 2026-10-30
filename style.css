@@ -3632,7 +3632,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .bdf-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .bdf-head b { font-size: 1.02rem; font-weight: 900; flex: 1; }
 .bdf-head small { color: var(--muted); font-weight: 800; }
-.bdf-next { margin: 0 0 8px; font-size: .85rem; font-weight: 800; color: var(--muted); line-height: 1.35; }
+.bdf-next { margin: 0 0 14px; font-size: .85rem; font-weight: 800; color: var(--muted); line-height: 1.35; }
 .bdf-next i { display: block; height: 7px; margin-top: 4px; border-radius: 99px; background: var(--line); overflow: hidden; }
 .bdf-next i::before { content: ''; display: block; height: 100%; width: var(--p); background: var(--violet); border-radius: inherit; }
 .bdf-next.is-max { color: var(--green-ink); }
@@ -3651,3 +3651,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .bdf-tile.is-claim .bdf-sub { color: var(--green-ink); }
 .bdf-more { display: block; margin: 8px auto 0; }
 .bdf-detail { margin: 8px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .88rem; }
+
+/* Onglet avec pastille touché : ce qui attend brille un instant (2026-10-30) */
+.notif-flash { animation: notifFlash 0.6s ease-in-out 3; }
+@keyframes notifFlash { 50% { box-shadow: 0 0 0 4px var(--green), 0 0 18px var(--green); } }

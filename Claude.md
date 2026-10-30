@@ -132,6 +132,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   gagné / prochain violet avec « x / y » / suivant, « Voir les N », 24 nouveaux badges → 60) EN ATTENTE de son avis.
   Badges V2 codés SEULEMENT dans le bac à sable (`BADGES_V2 = BAC`, `BADGES_NEW`, `BADGE_FAMS`, `renderBadgesV2`, `activeBadges`,
   `medalCounts`) : pour l’activer pour tous, mettre `BADGES_V2 = true`.
+  Retouches 30/10 : plus d'espace sous la barre « Prochain », pas de message « toute la famille est gagnée » ; un badge à
+  récupérer reste visible avec le prochain à côté.
+- FAIT le 30/10 : onglet AVEC PASTILLE touché → `goToNotif` défile jusqu'à ce qui attend et le fait briller (`.notif-flash`) :
+  coffre prêt (Parcours), objectif / missions / quête (Défis), récap / demandes d'amis / duels (Classement), récap du mois /
+  avatar / badge à récupérer / carte brillante (Profil). Frises : on repart du HAUT à chaque frise (`showOrderRound`).
+  Frises toujours les mêmes (niv. 85-105 : rois, films, consoles, albums) : le tirage donnait poids 1 + cartes ratées → plafonné
+  (×2 au plus) et les familles des 2 dernières frises jouées passent derrière (`orderRecent` dans la sauvegarde, 6 dernières).
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

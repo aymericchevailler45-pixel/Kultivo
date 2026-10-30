@@ -631,6 +631,7 @@ function defaultData() {
         placementOffered: false,         // popup de bienvenue déjà montrée
         pairStats: {},                   // niveaux Paires : « famille:élément » -> { miss, streak, last }
         orderStats: {},                  // niveaux Ordre : « famille:carte » -> { miss, streak, last }
+        orderRecent: [],                 // familles des dernières frises (2026-10-30 : éviter de toujours revoir les mêmes)
         cards: {},                       // collection : id de carte (cards.js) -> nombre d'exemplaires
         chests: {},                      // coffres du parcours ouverts : n° du niveau -> date
         podium: {},                      // classement : lundi de la semaine -> place obtenue (0 = rien)
@@ -699,6 +700,7 @@ function normalizeData(data) {
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
     if (!Array.isArray(data.reports)) data.reports = [];
+    if (!Array.isArray(data.orderRecent)) data.orderRecent = [];   // familles des dernières frises (2026-10-30)
     if (!Array.isArray(data.avatarExtra)) data.avatarExtra = [];
     data.av = { owned: {}, opened: {}, known: {}, grant: {}, migrated: false, ...(data.av || {}) };
     for (const k of ['owned', 'opened', 'known', 'grant']) data.av[k] = data.av[k] || {};
@@ -1639,19 +1641,19 @@ function renderBadgesV2(grid) {
         sec.append(head);
         const nextI = list.findIndex(x => !x.has);
         const next = list[nextI];
-        const line = el('p', `bdf-next${next ? '' : ' is-max'}`);
         if (next) {
+            const line = el('p', 'bdf-next');
             line.textContent = `Prochain : ${next.b.icon} ${next.b.name} · ${nf(Math.min(next.val, next.target))} / ${nf(next.target)}${unit ? ` ${unit}` : ''}`;
             const bar = el('i');
             bar.style.setProperty('--p', `${Math.min(100, (next.val / next.target) * 100)}%`);
             line.append(bar);
-        } else line.textContent = '✓ Toute la famille est gagnée !';
-        sec.append(line);
+            sec.append(line);
+        }
         let from = nextI < 0 ? list.length - 3 : Math.max(0, nextI - 1);
         from = Math.max(0, Math.min(from, list.length - 3));
         let shown = badgeFamOpen.has(name) ? list : list.slice(from, from + 3);
         const waiting = list.find(x => x.claim);   // un badge à récupérer est toujours visible
-        if (waiting && !shown.includes(waiting)) shown = [waiting, ...shown.slice(1)];
+        if (waiting && !shown.includes(waiting)) shown = [waiting, ...list.slice(Math.max(0, nextI)).filter(x => x !== waiting)].slice(0, 3);
         const row = el('div', 'bdf-row');
         shown.forEach(x => {
             const t = el('button', `bdf-tile${x.claim ? ' is-claim' : x.has ? '' : x === next ? ' is-next' : ' is-locked'}`);
@@ -2638,6 +2640,37 @@ function updateNavNotifications() {
     else mapBtn.removeAttribute('data-notif');
 }
 
+
+/** Onglet touché alors qu'il a une pastille : défile jusqu'à ce qui attend (coffre, objectif, badge…) et le fait briller. */
+function goToNotif(screen) {
+    const d = state.data;
+    let find = null;
+    if (screen === 'map') find = () => document.querySelector('.chest-node.is-ready');
+    if (screen === 'challenges') {
+        setChallengesTab('defis');
+        find = () => (dayXpNow() >= d.goal && !d.claimedGoals[todayKey()] && document.querySelector('.goal-card'))
+            || (missionsToClaim() && $('missionsRow')) || (questsToClaim() && $('questRow'));
+    }
+    if (screen === 'league') find = () => document.querySelector('.league-recap') || document.querySelector('.league-request') || document.querySelector('.duel-row[data-notif]');
+    if (screen === 'profile') {
+        const badges = Object.keys(d.badges).some(b => !d.claimedBadges[b]);
+        if (recapUnseen()) find = () => $('monthRecapBtn');
+        else if ($('avatarBtn').hasAttribute('data-notif')) find = () => $('avatarBtn');
+        else if (badges) { setProfileTab('badges'); find = () => document.querySelector('#badgeGrid .bdf-tile.is-claim, #badgeGrid .badge .btn-green'); }
+        else if (pendingShinyCount()) { setProfileTab('cards'); find = () => document.querySelector('#profileGrid .is-pending'); }
+    }
+    if (!find) return;
+    setTimeout(() => {
+        let t = find();
+        if (!t || t.hidden) return;
+        if (t.matches('.btn-green')) t = t.closest('.badge') || t;
+        t.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        t.classList.remove('notif-flash');
+        void t.offsetWidth;
+        t.classList.add('notif-flash');
+        setTimeout(() => t.classList.remove('notif-flash'), 1800);
+    }, 250);
+}
 
 function renderHeader() {
     $('streakDisplay').textContent = currentStreak();
@@ -6367,7 +6400,10 @@ function buildOrderRounds(level) {
     // Tirage pondéré : une famille avec des cartes mal placées a plus de chances de sortir
     const missedIn = f => f.items.filter(it => orderMiss(orderKey(f, it[0])) > 0).length;
     const adapted = ORDER_FAMILIES.filter(f => nearCount(f) >= n);
-    const eligible = weightedPick(adapted, f => 1 + missedIn(f), adapted.length);
+    // 2026-10-30 : avant, poids = 1 + cartes ratées → quelques erreurs suffisaient à faire revenir toujours les mêmes familles.
+    // Désormais le bonus d'erreurs est plafonné (×2 au plus) et les familles des 2 dernières frises jouées passent derrière.
+    const recent = state.data.orderRecent || [];
+    const eligible = weightedPick(adapted, f => (recent.includes(f.id) ? 0.15 : 1) * (1 + Math.min(2, missedIn(f)) * 0.5), adapted.length);
     const families = [];
     for (const f of eligible) {
         if (families.length < ORDER_ROUNDS && !families.some(g => g.theme === f.theme)) families.push(f);
@@ -6377,6 +6413,7 @@ function buildOrderRounds(level) {
         if (families.length < ORDER_ROUNDS && !families.includes(f)) families.push(f);
     }
     const progress = (level - 1) / Math.max(1, MAX_LEVEL - 1);   // 0 au début, 1 à la fin
+    state.data.orderRecent = [...families.map(f => f.id), ...recent.filter(id => !families.some(f => f.id === id))].slice(0, 6);
     return families.map((family, i) => ({ family, items: pickOrderItems(family, t, sizes[i] || n, progress), placed: [], checked: false }));
 }
 
@@ -6450,6 +6487,9 @@ function showOrderRound() {
     refreshNudgeView('order');
     renderOrder();
     updateProgress();
+    // Grandes frises (2026-10-30) : on repart du HAUT (la consigne), pas du bas où l'on était resté pour « Continuer »
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => window.scrollTo(0, 0));
 }
 
 /** Dessine la frise (emplacements numérotés) et les cartes restantes. */
@@ -10328,7 +10368,9 @@ function bindEvents() {
                 window.scrollTo(0, 0);
                 return;
             }
+            const notif = btn.hasAttribute('data-notif');
             showScreen(btn.dataset.screen);
+            if (notif) goToNotif(btn.dataset.screen);   // pastille : on va directement à ce qui attend (2026-10-30)
         });
     });
 
