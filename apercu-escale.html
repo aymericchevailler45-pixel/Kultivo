@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escale au Maghreb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=esc1">
+<!-- Page d'APERÇU (2026-10-30) : l'événement « Escale au Maghreb ». Rien n'est encore dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .lead { margin: 0; color: var(--muted); font-weight: 700; }
+    .lead b { color: var(--ink); }
+    h2 { margin: 0 0 10px; }
+    .note { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .9rem; }
+    .e { width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
+
+    /* Le parcours pendant l'escale */
+    .phone { position: relative; max-width: 360px; margin: 0 auto; border-radius: 22px; overflow: hidden; border: 2px solid var(--line);
+        background: linear-gradient(180deg, #fff4e0, #ffe3b8); }
+    .esc-banner { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: linear-gradient(90deg, #c2410c, #e0902a);
+        color: #fff; font-weight: 900; font-size: .9rem; }
+    .esc-banner small { margin-left: auto; font-weight: 800; opacity: .9; }
+    .map { position: relative; height: 380px; }
+    .node { position: absolute; width: 62px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 1.2rem;
+        color: #fff; background: #58cc02; box-shadow: 0 6px 0 #3f9a00; left: calc(50% - 31px + var(--x)); }
+    .node.is-done { background: #ffc800; box-shadow: 0 6px 0 #d9a400; }
+    .node.is-lock { background: #e5e5e5; box-shadow: 0 6px 0 #c4c4c4; color: #aaa; }
+    .deco { position: absolute; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: #fff;
+        box-shadow: 0 6px 14px rgba(194, 65, 12, .18), 0 3px 0 #f1d3a4; }
+    .deco img { width: 24px; height: 24px; }
+    .dune { position: absolute; left: -10%; right: -10%; bottom: -40px; height: 120px; border-radius: 50% 50% 0 0; background: #f2c27b; opacity: .55; }
+    .dune.b { bottom: -70px; left: 30%; right: -30%; background: #e9ad5c; opacity: .45; }
+
+    /* Carte de l'événement dans Défis */
+    .ev-card { border: 2px solid #e0902a; border-radius: 18px; padding: 14px; background: linear-gradient(180deg, #fff7ea, var(--surface)); }
+    .ev-card h3 { margin: 0 0 2px; font-size: 1.15rem; }
+    .ev-card p { margin: 0 0 10px; color: var(--muted); font-weight: 700; font-size: .9rem; }
+    .ev-bar { height: 12px; border-radius: 99px; background: var(--line); overflow: hidden; }
+    .ev-bar i { display: block; height: 100%; width: 40%; background: linear-gradient(90deg, #e0902a, #c2410c); }
+    .ev-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+    .ev-step { text-align: center; padding: 8px 4px; border: 2px solid var(--line); border-radius: 14px; font-weight: 800; font-size: .78rem; }
+    .ev-step img { width: 34px; height: 34px; display: block; margin: 0 auto 2px; }
+    .ev-step.is-got { border-color: #58cc02; background: var(--green-tint); }
+    .ev-step.is-off img { filter: grayscale(1); opacity: .5; }
+    .ev-play { width: 100%; }
+
+    /* Carte souvenir */
+    .souv { width: 170px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 3px #e0902a, 0 10px 24px rgba(224, 144, 42, .35); background: #fff; text-align: center; }
+    .souv-top { padding: 18px 0 14px; background: radial-gradient(circle at 50% 40%, #ffd28a, #e0902a); }
+    .souv-top img { width: 72px; height: 72px; }
+    .souv b { display: block; padding: 8px 6px 0; color: #1b2745; }
+    .souv small { display: block; padding: 2px 8px 10px; color: #6b7280; font-weight: 700; font-size: .75rem; }
+
+    /* Collection de la boutique (cadre « Zellige », fond « Dunes ») */
+    .league-avatar.fr-zellige::before { background: repeating-conic-gradient(#0e7c7b 0 25%, #f6ead2 0 50%) 0 0 / 7px 7px; }
+    .league-avatar.fr-zellige::after { background-image: url(emoji/1f54c.svg); }
+    .league-avatar.bg-dunes { background: linear-gradient(180deg, #ffb35c 0%, #ff7b54 48%, #eab06a 49%, #c9863a 100%); }
+    .league-avatar img { width: 62%; height: 62%; }
+    .coll { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .coll-items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+    .coll-item { text-align: center; padding: 10px 4px; border: 2px solid var(--line); border-radius: 14px; font-weight: 800; font-size: .8rem; }
+    .coll-item .league-avatar { width: 48px; height: 48px; margin: 0 auto 6px; }
+    .coll-item small { display: block; color: var(--muted); }
+    .tile-bg { display: block; width: 48px; height: 48px; margin: 0 auto 6px; border-radius: 50%; }
+
+    .qs { margin: 0; padding-left: 20px; font-weight: 700; }
+    .qs li { margin: 5px 0; }
+    .qs small { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <article class="card">
+        <h1 style="margin:0 0 6px">🐪 Escale au Maghreb</h1>
+        <p class="lead">Aperçu à juger : rien n'est encore dans le jeu. Un événement d'<b>une semaine</b>, plus léger qu'Halloween :
+            décor du parcours, environ <b>30 questions faciles</b> (Maroc, Algérie, Tunisie), 2 emojis d'avatar et une carte souvenir à gagner,
+            et une collection dans la boutique. Dates proposées : <b>du mardi 3 au lundi 9 novembre</b> (juste après Halloween).</p>
+    </article>
+
+    <article class="card">
+        <h2>1. Le parcours pendant l'escale</h2>
+        <div class="phone">
+            <div class="esc-banner"><img class="e" src="emoji/1f42a.svg" alt=""> Escale au Maghreb <small>⏳ 6 j 14 h</small></div>
+            <div class="map">
+                <div class="dune"></div><div class="dune b"></div>
+                <div class="node is-lock" style="top:24px;--x:30px">114</div>
+                <div class="node" style="top:112px;--x:-28px">113</div>
+                <div class="node is-done" style="top:200px;--x:24px">112</div>
+                <div class="node is-done" style="top:288px;--x:-20px">111</div>
+                <div class="deco" style="top:30px;left:24px"><img src="emoji/1f334.svg" alt=""></div>
+                <div class="deco" style="top:96px;right:22px"><img src="emoji/1fad6.svg" alt=""></div>
+                <div class="deco" style="top:176px;left:30px"><img src="emoji/1f54c.svg" alt=""></div>
+                <div class="deco" style="top:250px;right:30px"><img src="emoji/1f42a.svg" alt=""></div>
+                <div class="deco" style="top:318px;left:40px"><img src="emoji/1f34a.svg" alt=""></div>
+                <div class="deco" style="top:330px;right:60px"><img src="emoji/1f3fa.svg" alt=""></div>
+            </div>
+        </div>
+        <p class="note">Comme pour Halloween : fond couleur sable, bandeau en haut avec le temps restant, et les petits décors du parcours
+            deviennent 🌴 🫖 🕌 🐪 🍊 🏺 🌙 🏜️. Un tap sur un décor donne une anecdote sur le Maghreb (par ex. « Le thé à la menthe se sert
+            de haut pour faire de la mousse »). Pas de citrouilles cachées cette fois (plus léger).</p>
+    </article>
+
+    <article class="card">
+        <h2>2. Dans l'onglet Défis</h2>
+        <div class="ev-card">
+            <h3>🐪 Escale au Maghreb</h3>
+            <p>Trouve 30 questions différentes · sessions de 10, sans gouttes ni cœurs</p>
+            <div class="ev-bar"><i></i></div>
+            <p style="margin:6px 0 0;font-weight:900;color:var(--ink)">12 / 30 questions trouvées</p>
+            <div class="ev-steps">
+                <div class="ev-step is-got"><img src="emoji/1fad6.svg" alt="">Emoji Théière<br>10 ✓</div>
+                <div class="ev-step is-off"><img src="emoji/1f334.svg" alt="">Emoji Palmier<br>20</div>
+                <div class="ev-step is-off"><img src="emoji/1f42a.svg" alt="">Carte + emoji Dromadaire<br>30</div>
+            </div>
+            <button class="btn btn-green ev-play" type="button">Jouer · 10 questions</button>
+        </div>
+        <p class="note">Même règle qu'Halloween : une question ratée reviendra dans une autre session. Pas de missions spéciales ni de badge
+            (pour rester léger) — dis-moi si tu en veux un.</p>
+    </article>
+
+    <article class="card">
+        <h2>3. La carte souvenir</h2>
+        <div class="souv">
+            <div class="souv-top"><img src="emoji/1f42a.svg" alt=""></div>
+            <b>Dromadaire 2026</b>
+            <small>Gagnée pendant l'Escale au Maghreb 2026.</small>
+        </div>
+        <p class="note">Rangée dans « 🎉 Événements » de la collection, comme la Citrouille 2026 (hors des 180 cartes). Rien n'est marqué
+            « exclusif » : on pourra refaire l'escale plus tard pour les nouveaux joueurs.</p>
+    </article>
+
+    <article class="card">
+        <h2>4. La collection de la boutique : « Médina »</h2>
+        <div class="coll">
+            <span class="league-avatar is-big fr fr-zellige fx-tag bg-dunes"><img src="emoji/1faac.svg" alt=""></span>
+            <div style="max-width:300px">
+                <b>Collection Médina</b>
+                <p class="lead" style="font-size:.9rem">En vitrine pendant la semaine de l'escale. Les 3 : <b>1 200 🪙</b> (prix habituels).</p>
+            </div>
+        </div>
+        <div class="coll-items">
+            <div class="coll-item"><span class="league-avatar fr fr-zellige fx-tag" style="--hue:210;--light:80%"></span>Cadre Zellige<small>600 🪙</small></div>
+            <div class="coll-item"><span class="tile-bg" style="background:linear-gradient(180deg,#ffb35c 0%,#ff7b54 48%,#eab06a 49%,#c9863a 100%)"></span>Fond Dunes<small>600 🪙</small></div>
+            <div class="coll-item"><span class="league-avatar" style="--hue:30;--light:60%"><img src="emoji/1faac.svg" alt=""></span>Emoji Khamsa<small>300 🪙</small></div>
+        </div>
+        <p class="note">Cadre en mosaïque de zellige (carreaux verts et crème) avec une petite mosquée 🕌, fond coucher de soleil sur les dunes,
+            emoji khamsa (la « main de Fatma ») 🪬. Les objets à gagner (🫖 🌴 🐪) et ceux de la boutique sont différents.
+            Comme toutes les collections, elle pourra revenir plus tard en vitrine.</p>
+    </article>
+
+    <article class="card">
+        <h2>5. Exemples de questions (faciles, d ≈ 2)</h2>
+        <ol class="qs">
+            <li>Quelle est la capitale du Maroc ? <small>Rabat</small></li>
+            <li>Quel plat mijoté porte le nom du récipient en terre au couvercle pointu dans lequel il cuit ? <small>Le tajine</small></li>
+            <li>Quelle boisson chaude se sert traditionnellement avec des feuilles de menthe ? <small>Le thé</small></li>
+            <li>Quel grand désert couvre la plus grande partie de l'Algérie ? <small>Le Sahara</small></li>
+            <li>Quelle chaîne de montagnes traverse le Maroc, l'Algérie et la Tunisie ? <small>L'Atlas</small></li>
+            <li>Quel village tunisien est célèbre pour ses maisons blanches aux portes bleues ? <small>Sidi Bou Saïd</small></li>
+            <li>Comment appelle-t-on le marché traditionnel aux ruelles couvertes ? <small>Le souk</small></li>
+            <li>Dans quelle ville marocaine se trouve la célèbre place Jemaa el-Fna ? <small>Marrakech</small></li>
+        </ol>
+        <p class="note">Environ 30 questions (+ quelques rébus et drapeaux), faits vérifiés en ligne. Thèmes variés : villes, plats, monuments,
+            histoire, langue, sport (la Coupe d'Afrique, Zidane, Mahrez…).</p>
+    </article>
+</div>
+</body>
+</html>
