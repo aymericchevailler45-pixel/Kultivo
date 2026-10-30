@@ -8815,7 +8815,9 @@ function profileSummary() {
         medals: Object.fromEntries(THEME_DECOR.map(({ theme }) => [theme, trainingBank(theme).length ? trainMedalOf(theme) : 0]).filter(x => x[1])),   // médailles d'entraînement (29/10)
         daily: d.daily[todayKey()] ? { day: todayKey(), grid: d.daily[todayKey()].grid } : null,   // défi du jour, question par question
         days: myPlayedDays(),   // série d'amis 🔥🤝
-        weeks: Object.fromEntries([7, 14, 21].map(k => [shiftDays(weekStart(), -k), weekXp(shiftDays(weekStart(), -k))]))   // objectif de la quête en duo
+        // Objectif de la quête en duo : semaine EN COURS comprise (2026-10-30), sinon un partenaire qui n'a pas rouvert le jeu
+        // le lundi n'avait pas encore « la semaine dernière » dans son résumé
+        weeks: Object.fromEntries([0, 7, 14, 21].map(k => [shiftDays(weekStart(), -k), weekXp(shiftDays(weekStart(), -k))])),
     };
 }
 
