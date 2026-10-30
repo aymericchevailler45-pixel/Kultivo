@@ -1470,8 +1470,17 @@ function badgeStats() {
         leagueWins: leagueWins(),
         themesComplete: completeThemes().length,
         shinyTheme: shinyThemes().length > 0,
-        eventsWon: Object.keys(d.events || {}).filter(id => d.events[id].won)
+        eventsWon: Object.keys(d.events || {}).filter(id => d.events[id].won),
+        duelsWon: d.totals.duelsWon || 0,
+        ...(BADGES_V2 ? medalCounts() : {})
     };
+}
+
+/* BADGES V2 (2026-10-30, aperçu apercu-badges.html) : rangés par familles + 24 nouveaux. Pour l'instant SEULEMENT dans le bac à sable. */
+const BADGES_V2 = BAC;
+function medalCounts() {
+    const m = THEME_DECOR.map(({ theme }) => (trainingBank(theme).length ? trainMedalOf(theme) : 0));
+    return { medals: m.filter(x => x > 0).length, golds: m.filter(x => x >= 3).length };
 }
 
 const BADGES = [
@@ -1530,15 +1539,172 @@ const BADGES = [
     { id: 'shinyTheme',icon: '✨', name: 'Tout brille',         desc: 'Toutes les cartes d’un thème en brillantes (sauf la carte Maître)', test: s => s.shinyTheme }
 ];
 
+const BADGES_NEW = [
+    { id: 'lv25',     icon: '🧭', name: 'Explorateur',            desc: 'Terminer 25 niveaux du parcours',        test: s => s.levelsDone >= 25 },
+    { id: 'lv50',     icon: '🏕️', name: 'Aventurier',             desc: 'Terminer 50 niveaux du parcours',        test: s => s.levelsDone >= 50 },
+    { id: 'lv100',    icon: '🏔️', name: 'Grand voyageur',         desc: 'Terminer 100 niveaux du parcours',       test: s => s.levelsDone >= 100 },
+    { id: 'right1000', icon: '📖', name: 'Tête bien pleine',      desc: '1 000 bonnes réponses du premier coup',  test: s => s.right >= 1000 },
+    { id: 'right2500', icon: '📚', name: 'Bibliothèque vivante',  desc: '2 500 bonnes réponses du premier coup',  test: s => s.right >= 2500 },
+    { id: 'right5000', icon: '🦉', name: 'Érudit',                desc: '5 000 bonnes réponses du premier coup',  test: s => s.right >= 5000 },
+    { id: 'right10000', icon: '🌌', name: 'Mémoire infinie',      desc: '10 000 bonnes réponses du premier coup', test: s => s.right >= 10000 },
+    { id: 'streak180', icon: '☄️', name: 'Six mois de feu',       desc: '180 jours de série consécutifs',         test: s => s.bestStreak >= 180 },
+    { id: 'goal100',  icon: '⏰', name: 'Réglé comme une horloge', desc: 'Atteindre l’objectif 100 jours',        test: s => s.goalDays >= 100 },
+    { id: 'xp10000',  icon: '🚀', name: '10 000 XP',              desc: 'Cumuler 10 000 XP',                      test: s => s.xp >= 10000 },
+    { id: 'xp25000',  icon: '🪐', name: '25 000 XP',              desc: 'Cumuler 25 000 XP',                      test: s => s.xp >= 25000 },
+    { id: 'xp50000',  icon: '☀️', name: '50 000 XP',              desc: 'Cumuler 50 000 XP',                      test: s => s.xp >= 50000 },
+    { id: 'xp100000', icon: '🌠', name: '100 000 XP',             desc: 'Cumuler 100 000 XP',                     test: s => s.xp >= 100000 },
+    { id: 'flawless25', icon: '🎯', name: 'Précision suisse',     desc: 'Terminer 25 leçons sans erreur',         test: s => s.flawless >= 25 },
+    { id: 'flawless100', icon: '🏹', name: 'Sans bavure',         desc: 'Terminer 100 leçons sans erreur',        test: s => s.flawless >= 100 },
+    { id: 'daily30',  icon: '📌', name: 'Abonné du jour',         desc: 'Terminer 30 défis du jour',              test: s => s.dailyDone >= 30 },
+    { id: 'sprint30', icon: '💨', name: 'Supersonique',           desc: '30 bonnes réponses en un sprint',        test: s => s.bestSprint >= 30 },
+    { id: 'medal1',   icon: '🥉', name: 'Première médaille',      desc: 'Gagner une médaille d’entraînement',     test: s => s.medals >= 1 },
+    { id: 'gold1',    icon: '🥇', name: 'Médaille d’or',          desc: 'Gagner une médaille d’or (toutes les questions d’un thème maîtrisées)', test: s => s.golds >= 1 },
+    { id: 'gold5',    icon: '🏆', name: 'Pluie d’or',             desc: 'Médaille d’or dans 5 thèmes',            test: s => s.golds >= 5 },
+    { id: 'duel1',    icon: '⚔️', name: 'Premier duel',           desc: 'Gagner un duel',                         test: s => s.duelsWon >= 1 },
+    { id: 'duel10',   icon: '🤺', name: 'Duelliste',              desc: 'Gagner 10 duels',                        test: s => s.duelsWon >= 10 },
+    { id: 'duel50',   icon: '🛡️', name: 'Invaincu… ou presque',   desc: 'Gagner 50 duels',                        test: s => s.duelsWon >= 50 },
+    { id: 'revisions25', icon: '🧹', name: 'Rien ne m’échappe',   desc: 'Terminer 25 sessions de révision',       test: s => s.reviews >= 25 }
+];
+const activeBadges = () => (BADGES_V2 ? BADGES.concat(BADGES_NEW) : BADGES);
+/* Familles : [icône, nom, unité de la phrase « Prochain », [[id, objectif court, valeur visée, valeur du joueur]]], du plus facile au plus dur. */
+const BADGE_FAMS = [
+    ['🗺️', 'Parcours', 'niveaux', [['first', '1 niveau', 1, s => s.levelsDone], ['challenge', '1 défi', 1, s => s.challengesDone],
+        ['lv25', '25 niveaux', 25, s => s.levelsDone], ['lv50', '50 niveaux', 50, s => s.levelsDone], ['lv100', '100 niveaux', 100, s => s.levelsDone],
+        ['complete', 'tous', 1, s => +s.mapComplete]]],
+    ['🧠', 'Bonnes réponses', 'bonnes réponses du 1er coup', [['right25', '25', 25, s => s.right], ['right100', '100', 100, s => s.right],
+        ['right500', '500', 500, s => s.right], ['right1000', '1 000', 1000, s => s.right], ['right2500', '2 500', 2500, s => s.right],
+        ['right5000', '5 000', 5000, s => s.right], ['right10000', '10 000', 10000, s => s.right]]],
+    ['🔥', 'Série', 'jours de série', [['streak7', '7 jours', 7, s => s.bestStreak], ['streak30', '30 jours', 30, s => s.bestStreak],
+        ['streak90', '90 jours', 90, s => s.bestStreak], ['streak180', '180 jours', 180, s => s.bestStreak], ['streak365', '365 jours', 365, s => s.bestStreak]]],
+    ['⭐', 'Objectif du jour', 'jours avec l’objectif atteint', [['goal', '1 jour', 1, s => s.goalDays], ['goal7', '7 jours', 7, s => s.goalDays],
+        ['goal30', '30 jours', 30, s => s.goalDays], ['goal100', '100 jours', 100, s => s.goalDays]]],
+    ['💫', 'XP', 'XP', [['xp100', '100 XP', 100, s => s.xp], ['xp500', '500 XP', 500, s => s.xp], ['xp2000', '2 000 XP', 2000, s => s.xp],
+        ['xp5000', '5 000 XP', 5000, s => s.xp], ['xp10000', '10 000 XP', 10000, s => s.xp], ['xp25000', '25 000 XP', 25000, s => s.xp],
+        ['xp50000', '50 000 XP', 50000, s => s.xp], ['xp100000', '100 000 XP', 100000, s => s.xp]]],
+    ['✨', 'Sans faute', 'leçons sans erreur', [['flawless', '1 leçon', 1, s => s.flawless], ['flawless5', '5 leçons', 5, s => s.flawless],
+        ['flawless25', '25 leçons', 25, s => s.flawless], ['flawless100', '100 leçons', 100, s => s.flawless]]],
+    ['⚡', 'Défis et modes', '', [['daily', '1 défi du jour', 1, s => s.dailyDone], ['daily7', '7 défis du jour', 7, s => s.dailyDone],
+        ['daily30', '30 défis du jour', 30, s => s.dailyDone], ['daily10', '10/10', 1, s => +s.dailyPerfect], ['sprint10', 'sprint : 10', 10, s => s.bestSprint],
+        ['sprint20', 'sprint : 20', 20, s => s.bestSprint], ['sprint30', 'sprint : 30', 30, s => s.bestSprint]]],
+    ['🎯', 'Entraînement', '', [['medal1', '1 médaille', 1, s => s.medals], ['gold1', '1 or', 1, s => s.golds], ['gold5', '5 thèmes en or', 5, s => s.golds],
+        ['specialist', '1 thème', 1, s => +s.themeMastered]]],
+    ['🥇', 'Ligue et duels', '', [['league1', '1 semaine 1er', 1, s => s.leagueWins], ['league5', '5 semaines', 5, s => s.leagueWins],
+        ['league10', '10 semaines', 10, s => s.leagueWins], ['duel1', '1 duel gagné', 1, s => s.duelsWon], ['duel10', '10 duels', 10, s => s.duelsWon],
+        ['duel50', '50 duels', 50, s => s.duelsWon]]],
+    ['🃏', 'Collection', '', [['collect1', '1 thème', 1, s => s.themesComplete], ['shinyTheme', '1 thème brillant', 1, s => +s.shinyTheme],
+        ['collect5', '5 thèmes', 5, s => s.themesComplete], ['collectAll', 'toutes', 15, s => s.themesComplete]]],
+    ['🔁', 'Révisions et boutique', '', [['shop', '1 achat', 1, s => s.purchases], ['revisions', '1 révision', 1, s => s.reviews],
+        ['revisions5', '5 révisions', 5, s => s.reviews], ['revisions25', '25 révisions', 25, s => s.reviews]]],
+    ['🎉', 'Événements', '', [['ev-halloween-2026', 'événement fini', 1, s => +s.eventsWon.includes('halloween-2026')]]]
+];
+
 /** Semaines terminées à la 1re place de la Ligue des amis. */
 const leagueWins = () => Object.values(state.data.podium || {}).filter(place => place === 1).length;
+
+/* Badges V2 : une famille = titre + « Prochain : … » avec sa barre + 3 cases (dernier gagné, prochain, suivant), « Voir les N ». */
+const badgeFamOpen = new Set();
+let badgeDetail = null;
+function claimBadge(b) {
+    const data = state.data;
+    data.claimedBadges[b.id] = true;
+    data.coins += coinBadge();
+    saveData();
+    renderHeader();
+    renderProfile();
+    showToast(`🎁 +${coinBadge()} 🪙 pour le badge ${b.name} !`);
+}
+function renderBadgesV2(grid) {
+    const data = state.data;
+    const s = badgeStats();
+    const byId = Object.fromEntries(activeBadges().map(b => [b.id, b]));
+    const nf = n => n.toLocaleString('fr-FR');
+    grid.className = 'badge-fams';
+    let got = 0, all = 0, toClaim = 0, firstClaim = null;
+    BADGE_FAMS.forEach(([icon, name, unit, rows]) => {
+        const list = rows.map(([id, goal, target, val]) => ({ b: byId[id], goal, target, val: val(s) })).filter(x => x.b)
+            .filter(x => !x.b.event || data.badges[x.b.id] || currentEvent()?.id === x.b.event);
+        if (!list.length) return;
+        list.forEach(x => { x.has = !!data.badges[x.b.id]; x.claim = x.has && !data.claimedBadges[x.b.id]; });
+        const done = list.filter(x => x.has).length;
+        got += done; all += list.length;
+        const sec = el('section', 'bdf');
+        const head = el('div', 'bdf-head');
+        const hi = el('span');
+        hi.textContent = icon;
+        const hb = el('b');
+        hb.textContent = name;
+        const hc = el('small');
+        hc.textContent = `${done} / ${list.length}`;
+        head.append(hi, hb, hc);
+        sec.append(head);
+        const nextI = list.findIndex(x => !x.has);
+        const next = list[nextI];
+        const line = el('p', `bdf-next${next ? '' : ' is-max'}`);
+        if (next) {
+            line.textContent = `Prochain : ${next.b.icon} ${next.b.name} · ${nf(Math.min(next.val, next.target))} / ${nf(next.target)}${unit ? ` ${unit}` : ''}`;
+            const bar = el('i');
+            bar.style.setProperty('--p', `${Math.min(100, (next.val / next.target) * 100)}%`);
+            line.append(bar);
+        } else line.textContent = '✓ Toute la famille est gagnée !';
+        sec.append(line);
+        let from = nextI < 0 ? list.length - 3 : Math.max(0, nextI - 1);
+        from = Math.max(0, Math.min(from, list.length - 3));
+        let shown = badgeFamOpen.has(name) ? list : list.slice(from, from + 3);
+        const waiting = list.find(x => x.claim);   // un badge à récupérer est toujours visible
+        if (waiting && !shown.includes(waiting)) shown = [waiting, ...shown.slice(1)];
+        const row = el('div', 'bdf-row');
+        shown.forEach(x => {
+            const t = el('button', `bdf-tile${x.claim ? ' is-claim' : x.has ? '' : x === next ? ' is-next' : ' is-locked'}`);
+            t.type = 'button';
+            const ic = el('span', 'bdf-ic');
+            ic.textContent = x.b.icon;
+            const nm = el('span', 'bdf-name');
+            nm.textContent = x.b.name;
+            const sub = el('span', 'bdf-sub');
+            sub.textContent = x.claim ? `🎁 +${coinBadge()} 🪙` : x.has ? `✓ ${x.goal}` : x === next ? `${nf(Math.min(x.val, x.target))} / ${nf(x.target)}` : `🔒 ${x.goal}`;
+            t.append(ic, nm, sub);
+            t.addEventListener('click', () => {
+                if (x.claim) { claimBadge(x.b); return; }
+                badgeDetail = badgeDetail === x.b.id ? null : x.b.id;
+                renderProfile();
+            });
+            row.append(t);
+        });
+        sec.append(row);
+        const det = list.find(x => x.b.id === badgeDetail);
+        if (det) {
+            const p = el('p', 'bdf-detail');
+            p.textContent = `${det.b.icon} ${det.b.name} : ${det.b.desc}.`;
+            sec.append(p);
+        }
+        if (list.length > 3) {
+            const more = el('button', 'link-btn list-more bdf-more');
+            more.type = 'button';
+            more.textContent = badgeFamOpen.has(name) ? 'Voir moins' : `Voir les ${list.length} ›`;
+            more.addEventListener('click', () => { if (badgeFamOpen.has(name)) badgeFamOpen.delete(name); else badgeFamOpen.add(name); renderProfile(); });
+            sec.append(more);
+        }
+        const claims = list.filter(x => x.claim).length;
+        toClaim += claims;
+        if (claims && !firstClaim) firstClaim = sec;
+        grid.append(sec);
+    });
+    if (toClaim) {
+        const bar = el('button', 'bdf-claim');
+        bar.type = 'button';
+        bar.textContent = `🎁 ${toClaim} badge${toClaim > 1 ? 's' : ''} à récupérer · +${toClaim * coinBadge()} 🪙 ↓`;
+        bar.addEventListener('click', () => firstClaim?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        grid.prepend(bar);
+    }
+    $('badgeCount').textContent = `(${got}/${all})`;
+}
 
 /** Débloque les badges mérités. `silent` évite les notifications (au chargement). */
 function checkBadges(silent = false) {
     const stats = badgeStats();
     state.data.best.streak = Math.max(state.data.best.streak, stats.bestStreak);
     let earned = false;
-    for (const badge of BADGES) {
+    for (const badge of activeBadges()) {
         if (state.data.badges[badge.id] || !badge.test(stats)) continue;
         state.data.badges[badge.id] = todayKey();
         
@@ -4185,6 +4351,7 @@ function renderProfile() {
     // Badges
     const grid = $('badgeGrid');
     grid.replaceChildren();
+    if (BADGES_V2) { renderBadgesV2(grid); return; }
     let earned = 0;
     // Ordre d'affichage : à récupérer, puis obtenus, puis verrouillés
     const rank = b => !data.badges[b.id] ? 2 : data.claimedBadges[b.id] ? 1 : 0;
@@ -8631,9 +8798,9 @@ function openFriendProfile(f) {
         });
         body.append(tiles);
 
-        const badges = BADGES.filter(b => s.badges.includes(b.id));
+        const badges = BADGES.concat(BADGES_NEW).filter(b => s.badges.includes(b.id));
         const bh = el('h3', 'friend-section');
-        bh.textContent = `🎖️ Badges · ${badges.length}/${BADGES.length}`;
+        bh.textContent = `🎖️ Badges · ${badges.length}/${activeBadges().length}`;
         const bl = el('div', 'friend-badges');
         badges.forEach(b => {
             const i = el('button', 'friend-badge');

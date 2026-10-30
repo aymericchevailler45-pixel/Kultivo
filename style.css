@@ -3622,3 +3622,32 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 /* Profil d'un ami : cartes par thème */
 .friend-collection { text-align: left; }
 .friend-collection .card-row { margin-bottom: 8px; }
+
+/* Badges V2 rangés par familles (2026-10-30, bac à sable pour l'instant ; aperçu apercu-badges.html) */
+.badge-fams { display: block; }
+.bdf-claim { display: block; width: 100%; margin: 0 0 12px; padding: 10px 12px; border: 2px solid var(--green); border-radius: 14px;
+    background: var(--green-tint); color: var(--green-ink); font: inherit; font-weight: 900; text-align: left; cursor: pointer; }
+.bdf { padding: 12px 0; border-top: 2px solid var(--line); }
+.bdf:first-child, .bdf-claim + .bdf { border-top: 0; padding-top: 0; }
+.bdf-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.bdf-head b { font-size: 1.02rem; font-weight: 900; flex: 1; }
+.bdf-head small { color: var(--muted); font-weight: 800; }
+.bdf-next { margin: 0 0 8px; font-size: .85rem; font-weight: 800; color: var(--muted); line-height: 1.35; }
+.bdf-next i { display: block; height: 7px; margin-top: 4px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.bdf-next i::before { content: ''; display: block; height: 100%; width: var(--p); background: var(--violet); border-radius: inherit; }
+.bdf-next.is-max { color: var(--green-ink); }
+.bdf-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.bdf-tile { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 4px 8px; border: 2px solid var(--gold);
+    border-radius: 14px; background: var(--surface); text-align: center; cursor: pointer; font: inherit; color: var(--ink); }
+.bdf-ic { font-size: 1.6rem; line-height: 1.2; }
+.bdf-name { font-size: .74rem; font-weight: 900; line-height: 1.2; hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
+.bdf-sub { font-size: .68rem; font-weight: 800; color: var(--muted); line-height: 1.2; }
+.bdf-tile.is-next { border-color: var(--violet); }
+.bdf-tile.is-next .bdf-sub { color: var(--violet-ink); }
+.bdf-tile.is-locked { border-color: var(--line); }
+.bdf-tile.is-locked .bdf-ic { filter: grayscale(1); opacity: .45; }
+.bdf-tile.is-locked .bdf-name { color: var(--muted); }
+.bdf-tile.is-claim { border-color: var(--green); background: var(--green-tint); }
+.bdf-tile.is-claim .bdf-sub { color: var(--green-ink); }
+.bdf-more { display: block; margin: 8px auto 0; }
+.bdf-detail { margin: 8px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .88rem; }
