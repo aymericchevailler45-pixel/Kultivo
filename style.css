@@ -3655,3 +3655,9 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 /* Onglet avec pastille touché : ce qui attend brille un instant (2026-10-30) */
 .notif-flash { animation: notifFlash 0.6s ease-in-out 3; }
 @keyframes notifFlash { 50% { box-shadow: 0 0 0 4px var(--green), 0 0 18px var(--green); } }
+
+/* Frise « Drapeaux du nord au sud » (2026-10-30) : les cartes sont des drapeaux en image */
+.order-card.has-flag { padding: 6px 10px; }
+.order-card.has-flag .flag-img { display: block; height: 34px; width: auto; border-radius: 4px; box-shadow: 0 0 0 1px var(--line); }
+.order-answer b.has-flag .flag-img { display: inline-block; height: 26px; width: auto; vertical-align: middle; border-radius: 3px; box-shadow: 0 0 0 1px var(--line); }
+.order-yours .flag-img { display: inline-block; height: 18px; width: auto; vertical-align: middle; border-radius: 2px; }

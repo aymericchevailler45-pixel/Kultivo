@@ -137,6 +137,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - FAIT le 30/10 : onglet AVEC PASTILLE touché → `goToNotif` défile jusqu'à ce qui attend et le fait briller (`.notif-flash`) :
   coffre prêt (Parcours), objectif / missions / quête (Défis), récap / demandes d'amis / duels (Classement), récap du mois /
   avatar / badge à récupérer / carte brillante (Profil). Frises : on repart du HAUT à chaque frise (`showOrderRound`).
+  FRISES : +7 familles le 30/10 (23 en tout, chaque thème en a au moins une ; choix de l'utilisateur) : sagas (1er film,
+  Cinéma), réseaux sociaux (Technologie), hauteur des monuments, calories (Gastronomie), DRAPEAUX du nord au sud (cartes =
+  drapeaux en image, `fillOrderLabel` / `isFlagLabel`, valeur = − latitude de la capitale), noces (Langue française), mythes
+  au cinéma et dans les jeux (Mythologie). Refusés : générations des dieux, Mario / Pokémon, grands nombres, jours de la
+  semaine, guerre de Troie. Plus tard peut-être : températures, population des villes, Coupe du monde.
   Frises toujours les mêmes (niv. 85-105 : rois, films, consoles, albums) : le tirage donnait poids 1 + cartes ratées → plafonné
   (×2 au plus) et les familles des 2 dernières frises jouées passent derrière (`orderRecent` dans la sauvegarde, 6 dernières).
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si

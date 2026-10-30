@@ -6492,6 +6492,13 @@ function showOrderRound() {
     requestAnimationFrame(() => window.scrollTo(0, 0));
 }
 
+/** Carte de frise : texte, ou DRAPEAU en image si le libellé est un emoji de drapeau (famille « Drapeaux du nord au sud »). */
+const isFlagLabel = label => /^[\u{1F1E6}-\u{1F1FF}]{2}$/u.test(label);
+function fillOrderLabel(node, label) {
+    if (isFlagLabel(label)) { node.replaceChildren(flagImg(label)); node.classList.add('has-flag'); }
+    else node.textContent = label;
+}
+
 /** Dessine la frise (emplacements numérotés) et les cartes restantes. */
 function renderOrder() {
     const round = state.orderRounds[state.orderIndex];
@@ -6509,7 +6516,7 @@ function renderOrder() {
             if (idx !== undefined) {
                 const card = el('button', `order-card is-placed${round.nudged && round.nudged.slot === i ? ' is-nudged' : ''}`);
                 card.type = 'button';
-                card.textContent = round.items[idx].label;
+                fillOrderLabel(card, round.items[idx].label);
                 card.addEventListener('click', () => { if (Date.now() - orderDragEnd > 350) unplaceOrderCard(i); });
                 card.addEventListener('pointerdown', e => startOrderDrag(e, i, card));
                 li.append(card);
@@ -6528,13 +6535,15 @@ function renderOrder() {
             num.textContent = ok ? '✓' : '✗';
             const box = el('div', 'order-answer');
             const label = el('b');
-            label.textContent = round.items[idx].label;
+            fillOrderLabel(label, round.items[idx].label);
             const shown = el('span', 'order-value');
             shown.textContent = round.items[idx].shown;
             box.append(label, shown);
             if (!ok) {
                 const yours = el('span', 'order-yours');
-                yours.textContent = `Tu avais mis : ${round.items[round.placed[i]].label}`;
+                const mine = round.items[round.placed[i]].label;
+                if (isFlagLabel(mine)) yours.replaceChildren('Tu avais mis : ', flagImg(mine));
+                else yours.textContent = `Tu avais mis : ${mine}`;
                 box.append(yours);
             }
             li.append(num, box);
@@ -6549,7 +6558,7 @@ function renderOrder() {
             if (round.placed.includes(idx)) return;
             const card = el('button', 'order-card');
             card.type = 'button';
-            card.textContent = item.label;
+            fillOrderLabel(card, item.label);
             card.addEventListener('click', () => placeOrderCard(idx));
             pool.append(card);
         });

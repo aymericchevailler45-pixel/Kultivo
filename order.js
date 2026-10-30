@@ -338,5 +338,171 @@ const ORDER_FAMILIES = [
             ['Tokyo', 2021, '2021 (prévus en 2020)', 2],
             ['Paris', 2024, '2024', 1]
         ]
+    },
+    // ---------- Nouvelles familles du 2026-10-30 (choisies par l'utilisateur : un thème sans frise = une famille) ----------
+    {
+        id: 'sagas', theme: 'Cinéma', title: 'Sagas : le premier film',
+        prompt: 'Du plus ancien au plus récent', ends: ['Plus ancien', 'Plus récent'],
+        items: [
+            ['James Bond (James Bond 007 contre Dr No)', 1962, '1962', 4],
+            ['La Planète des singes', 1968, '1968', 4],
+            ['Rocky', 1976, '1976', 3],
+            ['Les Bronzés', 1978, '1978', 3.5],
+            ['Alien', 1979, '1979', 3.5],
+            ['Indiana Jones (Les Aventuriers de l’arche perdue)', 1981, '1981', 3],
+            ['Terminator', 1984, '1984', 3],
+            ['Die Hard (Piège de cristal)', 1988, '1988', 3.5],
+            ['Toy Story', 1995, '1995', 2.5],
+            ['Mission impossible', 1996, '1996', 3],
+            ['Taxi', 1998, '1998', 3],
+            ['Astérix et Obélix contre César', 1999, '1999', 3],
+            ['Harry Potter à l’école des sorciers', 2001, '2001', 1.5],
+            ['Spider-Man (avec Tobey Maguire)', 2002, '2002', 2.5],
+            ['Pirates des Caraïbes', 2003, '2003', 2.5],
+            ['Iron Man (1er film Marvel)', 2008, '2008', 2.5],
+            ['Moi, moche et méchant', 2010, '2010', 2],
+            ['Hunger Games', 2012, '2012', 3],
+            ['La Reine des neiges', 2013, '2013', 1.5]
+        ]
+    },
+    {
+        id: 'reseaux', theme: 'Technologie', title: 'Réseaux sociaux et messageries',
+        prompt: 'Du plus ancien au plus récent', ends: ['Plus ancien', 'Plus récent'],
+        items: [
+            ['MSN Messenger', 1999, '1999', 3],
+            ['MySpace', 2003, '2003', 3.5],
+            ['Facebook', 2004, '2004', 1.5],
+            ['YouTube', 2005, '2005', 2],
+            ['Twitter (X)', 2006, '2006', 2.5],
+            ['Tumblr', 2007, '2007', 4],
+            ['WhatsApp', 2009, '2009', 2.5],
+            ['Instagram', 2010, '2010', 2.5],
+            ['Snapchat', 2011, '2011', 2.5],
+            ['Telegram', 2013, '2013', 3.5],
+            ['Discord', 2015, '2015', 3],
+            ['TikTok', 2016, '2016 (Douyin en Chine ; TikTok dans le monde en 2017)', 1.5],
+            ['Threads', 2023, '2023', 2]
+        ]
+    },
+    {
+        id: 'hauteurs', theme: 'Monuments', title: 'Hauteur des monuments',
+        prompt: 'Du plus petit au plus grand', ends: ['Plus petit', 'Plus grand'],
+        items: [
+            ['Manneken-Pis (Bruxelles)', 0.55, '55 cm', 2.5],
+            ['Stonehenge', 7, 'environ 7 m', 3],
+            ['Sphinx de Gizeh', 20, '20 m', 3],
+            ['Christ Rédempteur (Rio)', 38, '38 m avec son socle', 3],
+            ['Arc de Triomphe', 50, '50 m', 3],
+            ['Tour de Pise', 56, '56 m', 3],
+            ['Taj Mahal', 73, '73 m', 3.5],
+            ['Statue de la Liberté', 93, '93 m avec son socle', 2.5],
+            ['Big Ben', 96, '96 m', 4],
+            ['Grande pyramide de Khéops', 138, '138 m (146 m à l’origine)', 2.5],
+            ['Tour Montparnasse', 210, '210 m', 3],
+            ['Tour Eiffel', 330, '330 m', 1.5],
+            ['Empire State Building', 381, '381 m (443 m avec l’antenne)', 3],
+            ['Tours Petronas (Kuala Lumpur)', 452, '452 m', 3.5],
+            ['One World Trade Center (New York)', 541, '541 m', 3.5],
+            ['Tokyo Skytree', 634, '634 m', 4],
+            ['Burj Khalifa (Dubaï)', 828, '828 m', 1.5]
+        ]
+    },
+    {
+        id: 'calories', theme: 'Gastronomie', title: 'Calories',
+        prompt: 'Du moins au plus calorique (pour 100 g)', ends: ['Moins calorique', 'Plus calorique'],
+        items: [
+            ['Concombre', 15, 'environ 15 kcal', 2],
+            ['Fraise', 32, 'environ 32 kcal', 3],
+            ['Coca-Cola (100 ml)', 42, 'environ 42 kcal', 3.5],
+            ['Pomme', 52, 'environ 52 kcal', 2.5],
+            ['Banane', 89, 'environ 89 kcal', 3],
+            ['Riz cuit', 130, 'environ 130 kcal', 3.5],
+            ['Œuf', 145, 'environ 145 kcal', 3.5],
+            ['Saumon', 205, 'environ 205 kcal', 4],
+            ['Pain blanc', 265, 'environ 265 kcal', 3],
+            ['Frites', 310, 'environ 310 kcal', 3],
+            ['Sucre', 400, 'environ 400 kcal', 3],
+            ['Chocolat noir', 550, 'environ 550 kcal', 2.5],
+            ['Beurre', 720, 'environ 720 kcal', 2.5],
+            ['Huile', 900, 'environ 900 kcal', 1.5]
+        ]
+    },
+    {
+        // Cartes = DRAPEAUX en image (le pays n'est écrit qu'après « Vérifier ») ; valeur = − latitude de la capitale
+        id: 'drapeaux-nord-sud', theme: 'Drapeaux', title: 'Drapeaux',
+        prompt: 'Du plus au nord au plus au sud (d’après la capitale)', ends: ['Plus au nord', 'Plus au sud'],
+        items: [
+            ['🇮🇸', -64.1, 'Islande · Reykjavik, 64° N', 3.5],
+            ['🇫🇮', -60.2, 'Finlande · Helsinki, 60° N', 3.5],
+            ['🇩🇰', -55.7, 'Danemark · Copenhague, 56° N', 3],
+            ['🇩🇪', -52.5, 'Allemagne · Berlin, 52° N', 1.5],
+            ['🇬🇧', -51.5, 'Royaume-Uni · Londres, 51° N', 1.5],
+            ['🇫🇷', -48.9, 'France · Paris, 49° N', 1],
+            ['🇨🇭', -46.9, 'Suisse · Berne, 47° N', 2],
+            ['🇨🇦', -45.4, 'Canada · Ottawa, 45° N', 1.5],
+            ['🇮🇹', -41.9, 'Italie · Rome, 42° N', 1.5],
+            ['🇪🇸', -40.4, 'Espagne · Madrid, 40° N', 2],
+            ['🇨🇳', -39.9, 'Chine · Pékin, 40° N', 2.5],
+            ['🇺🇸', -38.9, 'États-Unis · Washington, 39° N', 2.5],
+            ['🇬🇷', -38.0, 'Grèce · Athènes, 38° N', 3],
+            ['🇯🇵', -35.7, 'Japon · Tokyo, 36° N', 1.5],
+            ['🇲🇦', -34.0, 'Maroc · Rabat, 34° N', 3],
+            ['🇪🇬', -30.0, 'Égypte · Le Caire, 30° N', 3],
+            ['🇮🇳', -28.6, 'Inde · New Delhi, 29° N', 2.5],
+            ['🇲🇽', -19.4, 'Mexique · Mexico, 19° N', 2.5],
+            ['🇸🇳', -14.7, 'Sénégal · Dakar, 15° N', 4],
+            ['🇹🇭', -13.8, 'Thaïlande · Bangkok, 14° N', 4],
+            ['🇨🇴', -4.7, 'Colombie · Bogota, 5° N', 3.5],
+            ['🇰🇪', 1.3, 'Kenya · Nairobi, 1° S', 3.5],
+            ['🇵🇪', 12.0, 'Pérou · Lima, 12° S', 3.5],
+            ['🇧🇷', 15.8, 'Brésil · Brasilia, 16° S', 1.5],
+            ['🇿🇦', 25.7, 'Afrique du Sud · Pretoria, 26° S', 2.5],
+            ['🇦🇷', 34.6, 'Argentine · Buenos Aires, 35° S', 2.5],
+            ['🇦🇺', 35.3, 'Australie · Canberra, 35° S', 2],
+            ['🇳🇿', 41.3, 'Nouvelle-Zélande · Wellington, 41° S', 3.5]
+        ]
+    },
+    {
+        id: 'noces', theme: 'Langue française', title: 'Anniversaires de mariage',
+        prompt: 'Du plus court au plus long mariage', ends: ['Moins d’années', 'Plus d’années'],
+        items: [
+            ['Noces de coton', 1, '1 an', 2.5],
+            ['Noces de cuir', 2, '2 ans', 4],
+            ['Noces de bois', 5, '5 ans', 3.5],
+            ['Noces de laine', 7, '7 ans', 4.5],
+            ['Noces d’étain', 10, '10 ans', 4],
+            ['Noces de cristal', 15, '15 ans', 3.5],
+            ['Noces de porcelaine', 20, '20 ans', 3.5],
+            ['Noces d’argent', 25, '25 ans', 2],
+            ['Noces de perle', 30, '30 ans', 3],
+            ['Noces de rubis', 35, '35 ans', 3.5],
+            ['Noces d’émeraude', 40, '40 ans', 4],
+            ['Noces de vermeil', 45, '45 ans', 4.5],
+            ['Noces d’or', 50, '50 ans', 1.5],
+            ['Noces de diamant', 60, '60 ans', 2],
+            ['Noces de platine', 70, '70 ans', 3.5]
+        ]
+    },
+    {
+        id: 'mythes-ecran', theme: 'Mythologie', title: 'Mythes au cinéma et dans les jeux',
+        prompt: 'Du plus ancien au plus récent', ends: ['Plus ancien', 'Plus récent'],
+        items: [
+            ['Jason et les Argonautes (film)', 1963, '1963 · la quête de la Toison d’or', 4.5],
+            ['Ulysse 31 (dessin animé)', 1981, '1981 · l’Odyssée dans l’espace', 3.5],
+            ['Les Chevaliers du Zodiaque (dessin animé)', 1986, '1986 · ils protègent Athéna', 3.5],
+            ['Hercule (Disney)', 1997, '1997 · Héraclès, fils de Zeus', 2],
+            ['Age of Mythology (jeu vidéo)', 2002, '2002 · dieux grecs, égyptiens et nordiques', 4],
+            ['Troie (film)', 2004, '2004 · la guerre de Troie, avec Achille', 2.5],
+            ['God of War (jeu vidéo)', 2005, '2005 · Kratos contre les dieux grecs', 3],
+            ['Percy Jackson : Le Voleur de foudre (film)', 2010, '2010 · le fils de Poséidon', 2.5],
+            ['Thor (Marvel)', 2011, '2011 · le dieu nordique du tonnerre', 2],
+            ['Vaiana (Disney)', 2016, '2016 · le demi-dieu polynésien Maui', 2],
+            ['Wonder Woman (film)', 2017, '2017 · une princesse amazone', 2.5],
+            ['Assassin’s Creed Odyssey (jeu vidéo)', 2018, '2018 · la Grèce antique', 3],
+            ['Hadès (jeu vidéo)', 2020, '2020 · le fils d’Hadès s’enfuit des Enfers', 3.5],
+            ['Percy Jackson et les Olympiens (série)', 2023, '2023 · nouvelle adaptation sur Disney+', 3],
+            ['Kaos (série Netflix)', 2024, '2024 · Zeus joué par Jeff Goldblum', 3.5],
+            ['L’Odyssée (Christopher Nolan)', 2026, '2026 · le retour d’Ulysse à Ithaque', 1.5]
+        ]
     }
 ];
