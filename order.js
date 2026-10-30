@@ -345,7 +345,7 @@ const ORDER_FAMILIES = [
         prompt: 'Du plus ancien au plus récent', ends: ['Plus ancien', 'Plus récent'],
         items: [
             ['James Bond (James Bond 007 contre Dr No)', 1962, '1962', 4],
-            ['La Planète des singes', 1968, '1968', 4],
+            ['La Planète des singes (avec Charlton Heston)', 1968, '1968', 4],
             ['Rocky', 1976, '1976', 3],
             ['Les Bronzés', 1978, '1978', 3.5],
             ['Alien', 1979, '1979', 3.5],
@@ -353,7 +353,7 @@ const ORDER_FAMILIES = [
             ['Terminator', 1984, '1984', 3],
             ['Die Hard (Piège de cristal)', 1988, '1988', 3.5],
             ['Toy Story', 1995, '1995', 2.5],
-            ['Mission impossible', 1996, '1996', 3],
+            ['Mission impossible (le film, avec Tom Cruise)', 1996, '1996 (la série télé date de 1966)', 3],
             ['Taxi', 1998, '1998', 3],
             ['Astérix et Obélix contre César', 1999, '1999', 3],
             ['Harry Potter à l’école des sorciers', 2001, '2001', 1.5],
