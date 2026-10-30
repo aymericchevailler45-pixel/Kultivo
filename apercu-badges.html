@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Badges rangés</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=bdg1">
+<!-- Page d'APERÇU (2026-10-30) : les badges rangés par familles + les nouveaux badges. Rien n'est encore dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .lead { margin: 0; color: var(--muted); font-weight: 700; }
+    .lead b { color: var(--ink); }
+    .phone { max-width: 380px; margin: 0 auto; width: 100%; }
+    .bd-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 0 10px; }
+    .bd-top h2 { margin: 0; }
+    .bd-top span { color: var(--muted); font-weight: 800; }
+    .bd-claim { display: block; width: 100%; margin: 0 0 12px; padding: 10px 12px; border: 2px solid var(--green); border-radius: 14px;
+        background: var(--green-tint); color: var(--green-ink); font: inherit; font-weight: 900; text-align: left; cursor: pointer; }
+
+    .fam { padding: 12px 0; border-top: 2px solid var(--line); }
+    .fam:first-of-type { border-top: 0; padding-top: 0; }
+    .fam-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .fam-head b { font-size: 1.02rem; font-weight: 900; flex: 1; }
+    .fam-head small { color: var(--muted); font-weight: 800; }
+    .fam-next { margin: 0 0 8px; font-size: .85rem; font-weight: 800; color: var(--muted); }
+    .fam-next i { display: block; height: 7px; margin-top: 4px; border-radius: 99px; background: var(--line); overflow: hidden; }
+    .fam-next i::before { content: ''; display: block; height: 100%; width: var(--p); background: var(--violet, #8b5cf6); border-radius: inherit; }
+    .fam-next.is-max { color: var(--green-ink); }
+
+    .bd-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .bd { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 4px 8px; border: 2px solid var(--gold);
+        border-radius: 14px; background: var(--surface); text-align: center; cursor: pointer; font: inherit; color: var(--ink); }
+    .bd-ic { font-size: 1.6rem; line-height: 1.2; }
+    .bd-name { font-size: .74rem; font-weight: 900; line-height: 1.2; hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
+    .bd-sub { font-size: .68rem; font-weight: 800; color: var(--muted); line-height: 1.2; }
+    .bd.is-next { border-color: var(--violet, #8b5cf6); }
+    .bd.is-next .bd-sub { color: var(--violet-ink); }
+    .bd.is-locked { border-color: var(--line); }
+    .bd.is-locked .bd-ic { filter: grayscale(1); opacity: .45; }
+    .bd.is-locked .bd-name { color: var(--muted); }
+    .bd.is-claim { border-color: var(--green); background: var(--green-tint); }
+    .bd.is-claim .bd-sub { color: var(--green-ink); }
+    .bd-new { position: absolute; top: -7px; right: -4px; padding: 1px 6px; border-radius: 99px; background: #ff4b4b; color: #fff; font-size: .6rem; font-weight: 900; }
+    .bd-more { display: block; margin: 8px auto 0; }
+    .bd-detail { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .88rem; }
+
+    .opt { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+    .note { margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .9rem; }
+    .newlist { margin: 0; padding-left: 18px; font-weight: 700; font-size: .92rem; }
+    .newlist li { margin: 3px 0; }
+    .newlist small { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <article class="card">
+        <h1 style="margin:0 0 6px">🏅 Badges : rangement + nouveaux</h1>
+        <p class="lead">Aperçu à juger : rien n'est encore dans le jeu. Exemple avec un joueur au <b>niveau 41</b>, 640 bonnes réponses, 12 jours de série…
+            Les pastilles <b style="color:#ff4b4b">NEW</b> sont les badges ajoutés (24 nouveaux : de 36 à 60).</p>
+    </article>
+
+    <article class="card">
+        <div class="phone">
+            <div class="bd-top"><h2>Badges</h2><span id="total"></span></div>
+            <button class="bd-claim" type="button" id="claimBar">🎁 2 badges à récupérer · +30 🪙 ↓</button>
+            <div id="fams"></div>
+        </div>
+    </article>
+
+    <article class="card">
+        <h2 style="margin:0 0 8px">Comment c'est rangé</h2>
+        <p class="note">• Des <b>familles</b> avec un titre, dans cet ordre : Parcours, Bonnes réponses, Série, Objectif du jour, XP, Sans faute,
+            Défis et modes, Entraînement, Ligue et duels, Collection, Révisions et boutique, Événements.<br>
+            • Dans chaque famille, <b>du plus facile au plus dur</b>, et seulement <b>3 cases</b> : le dernier gagné, le <b>prochain</b> (contour violet,
+            avec « 640 / 1 000 ») et celui d'après. « Voir les 8 › » montre toute la famille.<br>
+            • Sous le titre de la famille : la phrase et la barre vers le prochain badge.<br>
+            • Cases plus petites : icône + nom + objectif. Un tap = la phrase complète.<br>
+            • Badges à récupérer : en vert dans leur famille, et le bandeau du haut y mène.</p>
+    </article>
+
+    <article class="card">
+        <h2 style="margin:0 0 8px">Les 24 nouveaux badges</h2>
+        <ul class="newlist" id="newList"></ul>
+        <p class="note" style="margin-top:10px">💰 Chaque badge rapporte 15 🪙 comme aujourd'hui. Les joueurs actuels recevraient d'un coup ceux qu'ils ont déjà mérités
+            (par exemple les 25 niveaux), à récupérer d'un tap.</p>
+    </article>
+</div>
+<script>
+// Joueur d'exemple
+const P = { levels: 41, challenges: 4, right: 640, streak: 12, goal: 9, xp: 3200, flawless: 7, daily: 8, daily10: 1, sprint: 14,
+    bronze: 2, gold: 0, golds: 0, mastered: 0, leagueWins: 1, duels: 3, themes: 0, shiny: 0, reviews: 6, shop: 1, halloween: 1 };
+const nf = n => n.toLocaleString('fr-FR');
+// [icône, nom, objectif lisible, valeur visée, valeur du joueur, nouveau ?, phrase]
+const FAMS = [
+    ['🗺️', 'Parcours', 'niveaux', [
+        ['🌱', 'Premiers pas', '1 niveau', 1, P.levels, 0, 'Terminer un niveau'],
+        ['🏆', 'Défi relevé', '1 défi', 1, P.challenges, 0, 'Réussir un niveau défi'],
+        ['🧭', 'Explorateur', '25 niveaux', 25, P.levels, 1, 'Terminer 25 niveaux du parcours'],
+        ['🏕️', 'Aventurier', '50 niveaux', 50, P.levels, 1, 'Terminer 50 niveaux du parcours'],
+        ['🏔️', 'Grand voyageur', '100 niveaux', 100, P.levels, 1, 'Terminer 100 niveaux du parcours'],
+        ['🗺️', 'Parcours complet', '170 niveaux', 170, P.levels, 0, 'Terminer tous les niveaux']]],
+    ['🧠', 'Bonnes réponses', 'bonnes réponses du 1er coup', [
+        ['👍', 'Bien parti', '25', 25, P.right, 0, '25 bonnes réponses du premier coup'],
+        ['💯', 'Centenaire', '100', 100, P.right, 0, '100 bonnes réponses du premier coup'],
+        ['🧠', 'Mémoire d’éléphant', '500', 500, P.right, 0, '500 bonnes réponses du premier coup'],
+        ['📖', 'Tête bien pleine', '1 000', 1000, P.right, 1, '1 000 bonnes réponses du premier coup'],
+        ['📚', 'Bibliothèque vivante', '2 500', 2500, P.right, 1, '2 500 bonnes réponses du premier coup'],
+        ['🦉', 'Érudit', '5 000', 5000, P.right, 1, '5 000 bonnes réponses du premier coup'],
+        ['🌌', 'Mémoire infinie', '10 000', 10000, P.right, 1, '10 000 bonnes réponses du premier coup']]],
+    ['🔥', 'Série', 'jours de série', [
+        ['📆', 'Semaine parfaite', '7 jours', 7, P.streak, 0, '7 jours de série d’affilée'],
+        ['🌙', 'Un mois d’or', '30 jours', 30, P.streak, 0, '30 jours de série d’affilée'],
+        ['🌋', 'Trimestre d’acier', '90 jours', 90, P.streak, 0, '90 jours de série d’affilée'],
+        ['☄️', 'Six mois de feu', '180 jours', 180, P.streak, 1, '180 jours de série d’affilée'],
+        ['👑', 'Un an de savoir', '365 jours', 365, P.streak, 0, '365 jours de série d’affilée']]],
+    ['⭐', 'Objectif du jour', 'jours avec l’objectif atteint', [
+        ['⭐', 'Objectif atteint', '1 jour', 1, P.goal, 0, 'Atteindre l’objectif du jour'],
+        ['🏅', 'Assidu', '7 jours', 7, P.goal, 0, 'Atteindre l’objectif 7 jours'],
+        ['🎖️', 'Discipline de fer', '30 jours', 30, P.goal, 0, 'Atteindre l’objectif 30 jours'],
+        ['⏰', 'Réglé comme une horloge', '100 jours', 100, P.goal, 1, 'Atteindre l’objectif 100 jours']]],
+    ['💫', 'XP', 'XP', [
+        ['🌱', '100 XP', '100 XP', 100, P.xp, 0, 'Cumuler 100 XP'],
+        ['💫', '500 XP', '500 XP', 500, P.xp, 0, 'Cumuler 500 XP'],
+        ['🌟', '2 000 XP', '2 000 XP', 2000, P.xp, 0, 'Cumuler 2 000 XP'],
+        ['🔥', '5 000 XP', '5 000 XP', 5000, P.xp, 0, 'Cumuler 5 000 XP'],
+        ['🚀', '10 000 XP', '10 000 XP', 10000, P.xp, 1, 'Cumuler 10 000 XP'],
+        ['🪐', '25 000 XP', '25 000 XP', 25000, P.xp, 1, 'Cumuler 25 000 XP'],
+        ['☀️', '50 000 XP', '50 000 XP', 50000, P.xp, 1, 'Cumuler 50 000 XP'],
+        ['🌠', '100 000 XP', '100 000 XP', 100000, P.xp, 1, 'Cumuler 100 000 XP']]],
+    ['✨', 'Sans faute', 'niveaux sans erreur', [
+        ['✨', 'Sans faute', '1 niveau', 1, P.flawless, 0, 'Terminer un niveau sans erreur'],
+        ['💎', 'Perfectionniste', '5 niveaux', 5, P.flawless, 0, 'Terminer 5 niveaux sans erreur'],
+        ['🎯', 'Précision suisse', '25 niveaux', 25, P.flawless, 1, 'Terminer 25 niveaux sans erreur'],
+        ['🏹', 'Sans bavure', '100 niveaux', 100, P.flawless, 1, 'Terminer 100 niveaux sans erreur']]],
+    ['⚡', 'Défis et modes', null, [
+        ['📅', 'Rendez-vous du jour', '1 défi du jour', 1, P.daily, 0, 'Terminer un défi du jour'],
+        ['🗓️', 'Fidèle du jour', '7 défis du jour', 7, P.daily, 0, 'Terminer 7 défis du jour'],
+        ['📌', 'Abonné du jour', '30 défis du jour', 30, P.daily, 1, 'Terminer 30 défis du jour'],
+        ['🎯', 'Dix sur dix', '10/10', 1, P.daily10, 0, '10/10 au défi du jour'],
+        ['⚡', 'Éclair', 'sprint : 10', 10, P.sprint, 0, '10 bonnes réponses en un sprint'],
+        ['🌩️', 'Foudre', 'sprint : 20', 20, P.sprint, 0, '20 bonnes réponses en un sprint'],
+        ['💨', 'Supersonique', 'sprint : 30', 30, P.sprint, 1, '30 bonnes réponses en un sprint']]],
+    ['🎯', 'Entraînement', null, [
+        ['🥉', 'Première médaille', '1 médaille', 1, P.bronze, 1, 'Gagner une médaille d’entraînement'],
+        ['🥇', 'Médaille d’or', '1 or', 1, P.gold, 1, 'Gagner une médaille d’or (toutes les questions d’un thème maîtrisées)'],
+        ['🏆', 'Pluie d’or', '5 thèmes en or', 5, P.golds, 1, 'Médaille d’or dans 5 thèmes'],
+        ['🎓', 'Spécialiste', '1 thème', 1, P.mastered, 0, 'Maîtriser toutes les questions d’un thème du parcours']]],
+    ['🥇', 'Ligue et duels', null, [
+        ['🥇', 'Premier de la ligue', '1 semaine 1er', 1, P.leagueWins, 0, 'Finir une semaine 1er de la Ligue des amis'],
+        ['🏆', 'Champion des amis', '5 semaines', 5, P.leagueWins, 0, 'Finir 5 semaines 1er de la Ligue des amis'],
+        ['👑', 'Légende de la ligue', '10 semaines', 10, P.leagueWins, 0, 'Finir 10 semaines 1er de la Ligue des amis'],
+        ['⚔️', 'Premier duel', '1 duel gagné', 1, P.duels, 1, 'Gagner un duel'],
+        ['🤺', 'Duelliste', '10 duels', 10, P.duels, 1, 'Gagner 10 duels'],
+        ['🛡️', 'Invaincu… ou presque', '50 duels', 50, P.duels, 1, 'Gagner 50 duels']]],
+    ['🃏', 'Collection', null, [
+        ['🃏', 'Collectionneur', '1 thème', 1, P.themes, 0, 'Réunir toutes les cartes d’un thème'],
+        ['✨', 'Tout brille', '1 thème brillant', 1, P.shiny, 0, 'Toutes les cartes d’un thème en brillantes (sauf la carte Maître)'],
+        ['📚', 'Grand collectionneur', '5 thèmes', 5, P.themes, 0, 'Réunir toutes les cartes de 5 thèmes'],
+        ['💠', 'Collection parfaite', 'toutes', 15, P.themes, 0, 'Réunir toutes les cartes']]],
+    ['🔁', 'Révisions et boutique', null, [
+        ['🛒', 'Premier achat', '1 achat', 1, P.shop, 0, 'Acheter un objet à la boutique'],
+        ['🔁', 'Révision en règle', '1 révision', 1, P.reviews, 0, 'Terminer une session de révision'],
+        ['📚', 'Réviseur assidu', '5 révisions', 5, P.reviews, 0, 'Terminer 5 sessions de révision'],
+        ['🧹', 'Rien ne m’échappe', '25 révisions', 25, P.reviews, 1, 'Terminer 25 sessions de révision']]],
+    ['🎉', 'Événements', null, [
+        ['🎃', 'Halloween 2026', 'événement fini', 1, P.halloween, 0, 'Trouver 45 questions de la semaine d’Halloween 2026']]]
+];
+const CLAIM = new Set(['Explorateur', 'Foudre']);   // exemple : 2 badges gagnés pas encore récupérés
+const open = new Set();
+let detail = null;
+function render() {
+    const box = document.getElementById('fams');
+    box.replaceChildren();
+    let got = 0, all = 0;
+    FAMS.forEach(([icon, name, unit, list], fi) => {
+        const done = list.filter(b => b[4] >= b[3]);
+        got += done.length; all += list.length;
+        const sec = document.createElement('section');
+        sec.className = 'fam';
+        if (fi === 0) sec.id = 'firstClaim';
+        const head = document.createElement('div');
+        head.className = 'fam-head';
+        head.innerHTML = `<span>${icon}</span><b>${name}</b><small>${done.length} / ${list.length}</small>`;
+        sec.append(head);
+        const nextI = list.findIndex(b => b[4] < b[3]);
+        const next = list[nextI];
+        const line = document.createElement('p');
+        line.className = 'fam-next' + (next ? '' : ' is-max');
+        if (next) {
+            line.textContent = `Prochain : ${next[0]} ${next[1]} · ${nf(Math.min(next[4], next[3]))} / ${nf(next[3])}${unit ? ' ' + unit : ''}`;
+            const bar = document.createElement('i');
+            bar.style.setProperty('--p', `${Math.min(100, next[4] / next[3] * 100)}%`);
+            line.append(bar);
+        } else line.textContent = '✓ Toute la famille est gagnée !';
+        sec.append(line);
+        // 3 cases : le dernier gagné, le prochain, celui d'après (ou les 3 derniers si tout est gagné)
+        let from = nextI < 0 ? list.length - 3 : Math.max(0, nextI - 1);
+        from = Math.min(from, Math.max(0, list.length - 3));
+        let shown = open.has(fi) ? list : list.slice(from, from + 3);
+        const waiting = list.find(b => b[4] >= b[3] && CLAIM.has(b[1]));   // un badge à récupérer est toujours visible
+        if (waiting && !shown.includes(waiting)) shown = [waiting, ...shown.slice(1)];
+        const row = document.createElement('div');
+        row.className = 'bd-row';
+        shown.forEach(b => {
+            const [ic, nm, goal, target, val, isNew, desc] = b;
+            const has = val >= target;
+            const claim = has && CLAIM.has(nm);
+            const t = document.createElement('button');
+            t.type = 'button';
+            t.className = 'bd' + (claim ? ' is-claim' : has ? '' : b === next ? ' is-next' : ' is-locked');
+            const sub = claim ? '🎁 +15 🪙' : has ? '✓ ' + goal : b === next ? `${nf(val)} / ${nf(target)}` : '🔒 ' + goal;
+            t.innerHTML = `<span class="bd-ic">${ic}</span><span class="bd-name">${nm}</span><span class="bd-sub">${sub}</span>${isNew ? '<span class="bd-new">NEW</span>' : ''}`;
+            t.onclick = () => { detail = detail === nm ? null : nm; render(); };
+            row.append(t);
+        });
+        sec.append(row);
+        const d = list.find(b => b[1] === detail);
+        if (d) {
+            const p = document.createElement('p');
+            p.className = 'bd-detail';
+            p.textContent = `${d[0]} ${d[1]} : ${d[6]}.`;
+            sec.append(p);
+        }
+        if (list.length > 3) {
+            const more = document.createElement('button');
+            more.type = 'button';
+            more.className = 'link-btn list-more bd-more';
+            more.textContent = open.has(fi) ? 'Voir moins' : `Voir les ${list.length} ›`;
+            more.onclick = () => { open.has(fi) ? open.delete(fi) : open.add(fi); render(); };
+            sec.append(more);
+        }
+        box.append(sec);
+    });
+    document.getElementById('total').textContent = `${got} / ${all}`;
+}
+render();
+document.getElementById('claimBar').onclick = () => document.getElementById('firstClaim').scrollIntoView({ behavior: 'smooth' });
+document.getElementById('newList').replaceChildren(...FAMS.flatMap(([, fam, , list]) => list.filter(b => b[5]).map(b => {
+    const li = document.createElement('li');
+    li.innerHTML = `${b[0]} <b>${b[1]}</b> <small>· ${fam} · ${b[6]}</small>`;
+    return li;
+})));
+</script>
+</body>
+</html>

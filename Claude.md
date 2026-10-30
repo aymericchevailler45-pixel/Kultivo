@@ -123,6 +123,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   créatures » ; retirés : Cupidon (nom romain, question « grec »), « Un lion » (Normandie), Élisabeth sans « II » ;
   Cendrillon : phrase verre / vair ; drapeau du Pérou = drapeau OFFICIEL avec le blason (flags/pe.svg, Wikimedia, domaine
   public). Refusés exprès : « mont rochmort », « des bonbons ou un sort » (la question demande l'anglais).
+- FAIT le 30/10 : duels avec un ANCIEN ami (retiré / compte supprimé) cachés (`duelsList` filtre sur `league.friends`, plus de « ? ») ;
+  Ligue des amis raccourcie au-delà de 8 joueurs (`LEAGUE_SHORT_FROM`) : podium, 4e, « ⋯ », celui devant moi, moi, celui
+  derrière, « Voir tous (N) › » (`listsOpen` 'league') ; bouton MODE CLAIR / SOMBRE dans le Profil entre Son et Mon compte
+  (`themeBtn`, `openThemeSheet` : Clair / Sombre / Comme mon téléphone ; clé d'appareil `kultivo_theme`, posée dès le <head> ;
+  CSS : `:root[data-theme="dark"]` + `:root:not([data-theme="light"])` dans le @media ; libellé court « ☀️ Clair » ≤ 400 px).
+  Rébus en mode sombre : RIEN changé (l'utilisateur dira). BADGES : aperçu apercu-badges.html (familles, 3 cases : dernier
+  gagné / prochain violet avec « x / y » / suivant, « Voir les N », 24 nouveaux badges → 60) EN ATTENTE de son avis.
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

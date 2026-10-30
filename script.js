@@ -6688,7 +6688,11 @@ const duelCompare = (s1, t1, s2, t2) => (s1 - s2) || (t2 - t1);
 const duelExpired = row => row.o_score === null && Date.now() - new Date(row.created_at).getTime() > DUEL_HOURS * 3600000;
 const duelHoursLeft = row => Math.max(1, Math.ceil((DUEL_HOURS * 3600000 - (Date.now() - new Date(row.created_at).getTime())) / 3600000));
 const duelFriend = id => league?.friends?.find(f => f.id === id) || null;
-const duelsList = () => (league?.duels || []);
+// Seulement les duels avec un ami ACTUEL (2026-10-30) : un ancien ami (retiré ou compte supprimé) n'apparaît plus avec « ? »
+const duelsList = () => (league?.duels || []).filter(r => {
+    const other = r.challenger === cloudUser?.id ? r.opponent : r.challenger;
+    return (league.friends || []).some(f => f.id === other);
+});
 /** Duels reçus à jouer (pastille de l'onglet Classement). */
 const duelsToPlay = () => cloudUser ? duelsList().filter(r => r.opponent === cloudUser.id && r.o_score === null && !duelExpired(r)) : [];
 
@@ -7026,6 +7030,7 @@ function openDuelPicker() {
 /* Listes longues (amis, duels) : 5 lignes au plus, puis « Voir tous (N) › » (2026-10-24, demande de l'utilisateur :
    sinon la carte devient immense). L'état ouvert / fermé est gardé pendant les mises à jour automatiques. */
 const LIST_MAX = 5;
+const LEAGUE_SHORT_FROM = 8;   // Ligue des amis : liste raccourcie au-delà de 8 joueurs (2026-10-30)
 const listsOpen = new Set();
 function capList(box, ul, key, max = LIST_MAX) {
     const rows = [...ul.children];
@@ -9299,11 +9304,25 @@ function renderLeague() {
     if (rows.length > 3) {
         const leader = Math.max(1, rows[0].xp);
         const list = el('ol', 'league-list');
-        rows.slice(3).forEach((r, k) => {
+        // Beaucoup d'amis (2026-10-30) : le 4e, « ⋯ », puis mes voisins (celui devant, moi, celui derrière) + « Voir tous »
+        const me = rows.findIndex(r => r.me);
+        const short = rows.length > LEAGUE_SHORT_FROM && !listsOpen.has('league');
+        const keep = new Set([3]);
+        if (me >= 3) [me - 1, me, me + 1].forEach(i => { if (i >= 3 && i < rows.length) keep.add(i); });
+        const shows = k => !short || keep.has(k) || (keep.has(k - 1) && keep.has(k + 1));   // pas de « ⋯ » pour une seule ligne
+        let gap = false;
+        rows.slice(3).forEach((r, j) => {
+            const k = j + 3;
+            if (!shows(k)) {
+                if (!gap && [...keep].some(i => i > k)) list.append(el('li', 'league-gap'));
+                gap = true;
+                return;
+            }
+            gap = false;
             const li = el('li', `league-row${r.me ? ' is-me' : ''}${r.friend ? ' is-link' : ''}`);
             if (r.friend) li.addEventListener('click', () => openFriendProfile(r.friend));
             const pos = el('span', 'league-pos');
-            pos.textContent = String(k + 4);
+            pos.textContent = String(k + 1);
             const name = el('span', 'league-name');
             name.textContent = r.me ? `${r.pseudo} (toi)` : r.pseudo;
             const bar = el('span', 'league-bar');
@@ -9317,6 +9336,16 @@ function renderLeague() {
             list.append(li);
         });
         rank.append(list);
+        if (rows.length > LEAGUE_SHORT_FROM) {
+            const more = el('button', 'link-btn list-more');
+            more.type = 'button';
+            more.textContent = listsOpen.has('league') ? 'Voir moins' : `Voir tous (${rows.length}) ›`;
+            more.addEventListener('click', () => {
+                if (listsOpen.has('league')) listsOpen.delete('league'); else listsOpen.add('league');
+                renderLeague();
+            });
+            rank.append(more);
+        }
     }
 
     const myIndex = rows.findIndex(r => r.me);
@@ -10016,6 +10045,53 @@ function toggleSound() {
     playSound('pair');   // petit son pour confirmer que c'est réactivé
 }
 
+/* Mode clair / sombre (2026-10-30) : choix gardé sur l'appareil (lu dès le <head> d'index.html pour éviter un éclair),
+   « phone » = comme le réglage du téléphone. Le bouton montre l'affichage du moment ; un tap ouvre les 3 choix. */
+const THEME_KEY = 'kultivo_theme';
+function themePref() {
+    try { const t = localStorage.getItem(THEME_KEY); return t === 'light' || t === 'dark' ? t : 'phone'; } catch (e) { return 'phone'; }
+}
+const phoneIsDark = () => !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+const themeIsDark = () => { const p = themePref(); return p === 'dark' || (p === 'phone' && phoneIsDark()); };
+function setThemePref(pref) {
+    try { if (pref === 'phone') localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, pref); } catch (e) { /* rien */ }
+    if (pref === 'phone') delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = pref;
+    renderThemeBtn();
+}
+function renderThemeBtn() {
+    const btn = $('themeBtn');
+    if (!btn) return;
+    const small = window.innerWidth <= 400;   // téléphone : 3 boutons sur une ligne, on raccourcit
+    btn.textContent = themeIsDark() ? (small ? '🌙 Sombre' : '🌙 Mode sombre') : (small ? '☀️ Clair' : '☀️ Mode clair');
+    btn.title = 'Affichage clair ou sombre : toucher pour choisir';
+}
+function openThemeSheet() {
+    const body = $('friendBody');
+    body.replaceChildren();
+    const h = el('h2', 'review-title');
+    h.textContent = '🌗 Affichage';
+    const sub = el('p', 'muted review-note');
+    sub.textContent = 'Choisis les couleurs du jeu : claires ou sombres.';
+    body.append(h, sub);
+    const box = el('div', 'theme-choices');
+    [['light', '☀️ Mode clair', 'Fond blanc, toujours'],
+     ['dark', '🌙 Mode sombre', 'Fond bleu nuit, toujours'],
+     ['phone', '📱 Comme mon téléphone', `Suit le réglage du téléphone (en ce moment : ${phoneIsDark() ? 'sombre' : 'clair'})`]].forEach(([id, label, note]) => {
+        const b = el('button', `theme-choice${themePref() === id ? ' is-on' : ''}`);
+        b.type = 'button';
+        const t = el('b');
+        t.textContent = label;
+        const n = el('small');
+        n.textContent = note;
+        b.append(t, n);
+        b.addEventListener('click', () => { setThemePref(id); openThemeSheet(); });
+        box.append(b);
+    });
+    body.append(box);
+    $('friendModal').hidden = false;
+}
+
 /** Pluie de confettis (pas de confettis si l'appareil demande moins d'animations). */
 function launchConfetti(palette) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -10132,6 +10208,9 @@ function bindEvents() {
     $('soundBtn').addEventListener('click', toggleSound);
     $('lessonSoundBtn').addEventListener('click', toggleSound);
     renderSoundBtn();
+    $('themeBtn').addEventListener('click', openThemeSheet);
+    renderThemeBtn();
+    window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener?.('change', renderThemeBtn);   // le téléphone change de mode
 
     // Téléphone : balayer l'écran vers la gauche ou la droite pour changer d'onglet
     let swipe = null;

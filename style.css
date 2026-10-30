@@ -52,7 +52,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
         --bg: #131a2e;
         --surface: #1c2540;
         --ink: #eaf0ff;
@@ -75,6 +75,29 @@
         --locked-deep: #1f2842;
     }
 }
+/* Choix du joueur dans le Profil (2026-10-30) : le mode sombre forcé, même si le téléphone est en clair */
+:root[data-theme="dark"] {
+        --bg: #131a2e;
+        --surface: #1c2540;
+        --ink: #eaf0ff;
+        --muted: #93a0c0;
+        --line: #2c3757;
+        --dots: rgba(234, 240, 255, 0.07);
+        --glow: rgba(88, 204, 2, 0.14);
+
+        --green-tint: #1e3a17;
+        --green-ink: #a6ea6a;
+        --red-tint: #43202a;
+        --red-ink: #ffa3a3;
+        --violet-tint: #2d2350;
+        --violet-ink: #c9b6ff;
+        --blue-ink: #8fd3f5;
+        --orange-ink: #ffc27a;
+        --pink-ink: #ff9ccb;
+
+        --locked: #2a3452;
+        --locked-deep: #1f2842;
+    }
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -260,8 +283,9 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
-    .decor-badge { box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), 0 4px 0 var(--line); }
+    :root:not([data-theme="light"]) .decor-badge { box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), 0 4px 0 var(--line); }
 }
+:root[data-theme="dark"] .decor-badge { box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), 0 4px 0 var(--line); }
 
 .float-1 { animation: floatAnim 4.2s ease-in-out infinite alternate; }
 .float-2 { animation: floatAnim 5.0s ease-in-out infinite alternate-reverse; }
@@ -1699,6 +1723,16 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .hero-toggles { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 8px; }
 .hero-toggles .sound-toggle { align-self: stretch; text-align: center; }
 .hero-toggles .sound-toggle[hidden] { display: none; }
+.hero-toggles .sound-toggle { padding: 6px 8px; white-space: nowrap; }
+@media (max-width: 400px) { .hero-toggles { display: flex; gap: 5px; } .hero-toggles .sound-toggle { flex: 1 1 auto; min-width: 0; font-size: 0.78rem; padding: 6px 3px; } }
+/* Fenêtre « Affichage » : 3 choix (2026-10-30) */
+.theme-choices { display: grid; gap: 10px; margin-top: 12px; }
+.theme-choice { display: grid; gap: 2px; text-align: left; padding: 12px 14px; border: 2px solid var(--line); border-radius: 14px;
+    background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.theme-choice b { font-size: 1rem; }
+.theme-choice small { color: var(--muted); font-weight: 700; }
+.theme-choice.is-on { border-color: var(--green); box-shadow: 0 0 0 3px var(--glow); }
+.theme-choice.is-on b::after { content: ' ✓'; color: var(--green); }
 
 /* Téléphone : tuiles plus serrées, valeurs à taille adaptée pour tenir sur une ligne */
 @media (max-width: 600px) {
@@ -2553,6 +2587,8 @@ button.podium-col { padding: 0; border: 0; background: none; color: inherit; fon
 .title-chip { overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.2; text-align: left; border-radius: 14px; }
 .daily-friends-list li.df-gap { display: block; height: auto; padding: 0; background: none; color: var(--muted); text-align: center; line-height: 0.8; }
 .daily-friends-list li.df-gap::before { content: '⋯'; font-weight: 900; }
+.league-list li.league-gap { color: var(--muted); text-align: center; line-height: 0.8; }
+.league-list li.league-gap::before { content: '⋯'; font-weight: 900; }
 
 /* Mot de passe : bouton « œil » pour afficher / masquer */
 .password-field { position: relative; }
