@@ -153,7 +153,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (`ev.badge` : textes « et le badge » seulement si vrai) ; `ev.intro` / `ev.blurb` pour les textes ; chapeau de Kulti = fez
   (`KULTI_HATS.maghreb`) ; couleur sable (`body.event-maghreb`). Boutique : collection « Médina » (`fr-zellige`, `bg-dunes`,
   `pic-khamsa` 🪬, saison `maghreb` 11-02 → 11-08 dans `VITRINE_SEASONS`, étiquette `VITRINE_SEASON_LABEL`). Rien d'« exclusif » :
-  réutilisable plus tard pour les nouveaux joueurs (l'utilisateur ne veut rien « gâcher » pour l'été). Démo : `?demo=maghreb`.
+  réutilisable plus tard pour les nouveaux joueurs (l’utilisateur ne veut rien « gâcher » pour l’été). Démo : `?demo=maghreb`
+  (montre aussi la collection en vitrine : `vitrineSeason` lit `?demo=` = id de saison).
   Idée validée pour la VRAIE sortie : remise à zéro générale puis niveaux intermédiaires (questions jamais vues) dans le parcours.
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli

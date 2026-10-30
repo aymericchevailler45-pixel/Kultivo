@@ -8370,6 +8370,10 @@ const VITRINE_SEASON_LABEL = { halloween: '🎃 Halloween', noel: '🎄 Noël', 
 const dayGap = (a, b) => Math.round((new Date(`${b}T12:00:00`) - new Date(`${a}T12:00:00`)) / 86400000);
 const vitrineWeek = () => Math.max(0, Math.floor(dayGap(VITRINE_START, weekStart()) / 7));
 function vitrineSeason(k) {
+    // Démo d'un événement (?demo=maghreb) : la vitrine de la semaine montre aussi sa collection (2026-10-30)
+    let demo = null;
+    try { demo = new URLSearchParams(location.search).get('demo'); } catch (err) { /* sans adresse */ }
+    if (demo && k === vitrineWeek() && VITRINE_SEASONS.some(se => se.id === demo)) return VITRINE_SEASONS.find(se => se.id === demo);
     const md = shiftDays(VITRINE_START, 7 * k).slice(5);
     return VITRINE_SEASONS.find(se => (se.from <= se.to ? md >= se.from && md <= se.to : md >= se.from || md <= se.to)) || null;
 }
