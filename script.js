@@ -1751,9 +1751,9 @@ const EVENTS = [{
     // Escale au Maghreb (2026-10-30, aperçu apercu-escale.html, voyage des testeurs) : plus léger qu'Halloween,
     // ni citrouilles, ni missions spéciales, ni badge. Réutilisable : une autre « escale » = un autre pays.
     id: 'maghreb-2026', bank: 'maghreb', name: 'Maghreb', title: 'Escale au Maghreb', icon: '🐪',
-    start: '2026-11-02', end: '2026-11-08', goal: 40, cls: 'event-maghreb', tip: 'tipEventMaghreb2026',
+    start: '2026-11-02', end: '2026-11-08', goal: 50, cls: 'event-maghreb', tip: 'tipEventMaghreb2026',
     intro: 'C’est l’Escale au Maghreb !', blurb: 'Des sessions de 10 questions sur le Maroc, l’Algérie et la Tunisie.',
-    rewards: [{ at: 10, emoji: '🫖' }, { at: 25, emoji: '🌴' }, { at: 40, emoji: '🐪' }],
+    rewards: [{ at: 10, emoji: '🫖' }, { at: 30, emoji: '🌴' }, { at: 50, emoji: '🐪' }],
     decor: ['🐪', '🌴', '🫖', '🕌', '🏜️', '🌙', '🍊', '🏺'],
     card: { id: 'ev-maghreb-2026', theme: 'Escale au Maghreb 2026', icon: '🐪', name: 'Dromadaire 2026', rarity: 'event',
             text: 'Gagnée pendant l’Escale au Maghreb 2026.' }

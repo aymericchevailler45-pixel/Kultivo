@@ -147,9 +147,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (×2 au plus) et les familles des 2 dernières frises jouées passent derrière (`orderRecent` dans la sauvegarde, 6 dernières).
 - FAIT le 30/10 : ESCALE AU MAGHREB (aperçu apercu-escale.html, voyage des testeurs du 1er au 8/11) : 2e entrée d'`EVENTS`
   (`maghreb-2026`, du lundi 2 au dimanche 8 novembre ; Halloween avancé au 1er novembre pour ne pas chevaucher), questions dans
-  `evenements/maghreb.js` (64, ids 31000+, d moyen 2,45, sujets choisis pour NE PAS doublonner parcours / entraînement ;
+  `evenements/maghreb.js` (64, ids 31000+, d moyen 2,45, sujets choisis pour NE PAS doublonner parcours / entraînement ; les collections de toute l’année glissent d’une semaine (Espace le 9/11), celles à date fixe ne bougent pas ;
   `window.EVENT_BANKS.maghreb` : PAS de « const EVENT_BANKS » dans un 2e fichier, sinon tout le jeu plante), objectif 40,
-  emojis 🫖 10 · 🌴 25 · 🐪 40 + carte « Dromadaire 2026 » ; ni citrouilles (`ev.pumpkin` absent), ni missions, ni badge
+  objectif 50 (demande de l’utilisateur), emojis 🫖 10 · 🌴 30 · 🐪 50 + carte « Dromadaire 2026 » ; ni citrouilles (`ev.pumpkin` absent), ni missions, ni badge
   (`ev.badge` : textes « et le badge » seulement si vrai) ; `ev.intro` / `ev.blurb` pour les textes ; chapeau de Kulti = fez
   (`KULTI_HATS.maghreb`) ; couleur sable (`body.event-maghreb`). Boutique : collection « Médina » (`fr-zellige`, `bg-dunes`,
   `pic-khamsa` 🪬, saison `maghreb` 11-02 → 11-08 dans `VITRINE_SEASONS`, étiquette `VITRINE_SEASON_LABEL`). Rien d'« exclusif » :
