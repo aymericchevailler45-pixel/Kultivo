@@ -1479,6 +1479,7 @@ function badgeStats() {
 }
 
 /* BADGES V2 (2026-10-30, aperçu apercu-badges.html) : rangés par familles + 24 nouveaux. En ligne pour tous depuis le 30/10. */
+const QUEST_WEEKS_FROM = '2026-10-26';   // quête en duo : 1re semaine complète après la remise à zéro (2026-10-30)
 const BADGES_V2 = true;   // mis en ligne pour tous le 2026-10-30 (avant : bac à sable seulement)
 function medalCounts() {
     const m = THEME_DECOR.map(({ theme }) => (trainingBank(theme).length ? trainMedalOf(theme) : 0));
@@ -8817,7 +8818,8 @@ function profileSummary() {
         days: myPlayedDays(),   // série d'amis 🔥🤝
         // Objectif de la quête en duo : semaine EN COURS comprise (2026-10-30), sinon un partenaire qui n'a pas rouvert le jeu
         // le lundi n'avait pas encore « la semaine dernière » dans son résumé
-        weeks: Object.fromEntries([0, 7, 14, 21].map(k => [shiftDays(weekStart(), -k), weekXp(shiftDays(weekStart(), -k))])),
+        // Semaines d'avant le 26/10 non envoyées (la remise à zéro du 20/10 laisse une semaine du 19 à moitié jouée)
+        weeks: Object.fromEntries([0, 7, 14, 21].map(k => shiftDays(weekStart(), -k)).filter(w => w >= QUEST_WEEKS_FROM).map(w => [w, weekXp(w)])),
     };
 }
 
