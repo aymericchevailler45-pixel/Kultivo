@@ -145,6 +145,16 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   semaine, guerre de Troie. Plus tard peut-être : températures, population des villes, Coupe du monde.
   Frises toujours les mêmes (niv. 85-105 : rois, films, consoles, albums) : le tirage donnait poids 1 + cartes ratées → plafonné
   (×2 au plus) et les familles des 2 dernières frises jouées passent derrière (`orderRecent` dans la sauvegarde, 6 dernières).
+- FAIT le 30/10 : ESCALE AU MAGHREB (aperçu apercu-escale.html, voyage des testeurs du 1er au 8/11) : 2e entrée d'`EVENTS`
+  (`maghreb-2026`, du lundi 2 au dimanche 8 novembre ; Halloween avancé au 1er novembre pour ne pas chevaucher), questions dans
+  `evenements/maghreb.js` (64, ids 31000+, d moyen 2,45, sujets choisis pour NE PAS doublonner parcours / entraînement ;
+  `window.EVENT_BANKS.maghreb` : PAS de « const EVENT_BANKS » dans un 2e fichier, sinon tout le jeu plante), objectif 40,
+  emojis 🫖 10 · 🌴 25 · 🐪 40 + carte « Dromadaire 2026 » ; ni citrouilles (`ev.pumpkin` absent), ni missions, ni badge
+  (`ev.badge` : textes « et le badge » seulement si vrai) ; `ev.intro` / `ev.blurb` pour les textes ; chapeau de Kulti = fez
+  (`KULTI_HATS.maghreb`) ; couleur sable (`body.event-maghreb`). Boutique : collection « Médina » (`fr-zellige`, `bg-dunes`,
+  `pic-khamsa` 🪬, saison `maghreb` 11-02 → 11-08 dans `VITRINE_SEASONS`, étiquette `VITRINE_SEASON_LABEL`). Rien d'« exclusif » :
+  réutilisable plus tard pour les nouveaux joueurs (l'utilisateur ne veut rien « gâcher » pour l'été). Démo : `?demo=maghreb`.
+  Idée validée pour la VRAIE sortie : remise à zéro générale puis niveaux intermédiaires (questions jamais vues) dans le parcours.
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

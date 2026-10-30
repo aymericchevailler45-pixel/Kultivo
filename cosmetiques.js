@@ -90,6 +90,7 @@ const AV_ITEMS = [
     { id: 'fr-pumpkins', type: 'frame', kind: 'shop', name: 'Citrouilles',     price: 600, fx: 'deco', season: 'halloween' },
     { id: 'fr-snowflakes', type: 'frame', kind: 'shop', name: 'Flocons',       price: 600, fx: 'deco', season: 'noel' },
     { id: 'fr-hearts',   type: 'frame', kind: 'shop', name: 'Cœurs',           price: 600, fx: 'deco', season: 'valentin' },
+    { id: 'fr-zellige',  type: 'frame', kind: 'shop', name: 'Zellige',         price: 600, fx: 'tag', season: 'maghreb' },
 
     // ---------- Fonds de la boutique ----------
     { id: 'bg-galaxy',   type: 'bg', kind: 'shop', name: 'Galaxie',           price: 800 },
@@ -98,6 +99,7 @@ const AV_ITEMS = [
     { id: 'bg-marble',   type: 'bg', kind: 'shop', name: 'Marbre',            price: 800 },
     { id: 'bg-forest',   type: 'bg', kind: 'shop', name: 'Forêt',             price: 500 },
     { id: 'bg-neon',     type: 'bg', kind: 'shop', name: 'Néon',              price: 1000 },
+    { id: 'bg-dunes',    type: 'bg', kind: 'shop', name: 'Dunes',             price: 600, season: 'maghreb' },
     { id: 'bg-aurora',   type: 'bg', kind: 'shop', name: 'Aurore',            price: 500 },
     { id: 'bg-jade',     type: 'bg', kind: 'shop', name: 'Jade',              price: 800 },
     { id: 'bg-lavender', type: 'bg', kind: 'shop', name: 'Lavande',           price: 500 },
@@ -121,6 +123,7 @@ const AV_ITEMS = [
     { id: 'pic-peacock',   type: 'pic', kind: 'shop', name: 'Paon',        emoji: '🦚', price: 300 },
     { id: 'pic-planet',    type: 'pic', kind: 'shop', name: 'Planète',     emoji: '🪐', price: 300 },
     { id: 'pic-mermaid',   type: 'pic', kind: 'shop', name: 'Sirène',      emoji: '🧜', price: 300 },
+    { id: 'pic-khamsa',    type: 'pic', kind: 'shop', name: 'Khamsa',      emoji: '🪬', price: 300, season: 'maghreb' },
     { id: 'pic-parrot',    type: 'pic', kind: 'shop', name: 'Perroquet',   emoji: '🦜', price: 300 },
     { id: 'pic-hero',      type: 'pic', kind: 'shop', name: 'Super-héros', emoji: '🦸', price: 300 },
     { id: 'pic-rainbow',   type: 'pic', kind: 'shop', name: 'Arc-en-ciel', emoji: '🌈', price: 300 },
@@ -160,6 +163,7 @@ const AV_COLLECTIONS = [
     { id: 'chine',     name: 'Nouvel an chinois', icon: '🐉', items: ['fr-scales', 'bg-lava', 'pic-dragon'], season: 'chine' },
     { id: 'valentin',  name: 'Saint-Valentin',   icon: '💖', items: ['fr-hearts', 'bg-hearts', 'pic-love'], season: 'valentin' },
     { id: 'printemps', name: 'Printemps',        icon: '🌸', items: ['fr-flowers', 'bg-cherry', 'pic-butterfly'], season: 'printemps' },
+    { id: 'medina',    name: 'Médina',           icon: '🕌', items: ['fr-zellige', 'bg-dunes', 'pic-khamsa'], season: 'maghreb' },   // Escale au Maghreb (2026-10-30)
     // Toute l'année
     { id: 'espace',    name: 'Espace',       icon: '🌌', items: ['fr-stars', 'bg-galaxy', 'pic-planet'] },
     { id: 'ocean',     name: 'Océan',        icon: '🌊', items: ['fr-waves', 'bg-ocean', 'pic-dolphin'] },
@@ -189,5 +193,6 @@ const VITRINE_SEASONS = [
     { id: 'nouvelan',  from: '12-26', to: '01-01' },
     { id: 'chine',     from: '01-30', to: '02-07' },
     { id: 'valentin',  from: '02-08', to: '02-14' },
-    { id: 'printemps', from: '03-16', to: '03-29' }
+    { id: 'printemps', from: '03-16', to: '03-29' },
+    { id: 'maghreb',   from: '11-02', to: '11-08' }    // Escale au Maghreb : semaine du 2 novembre (2026-10-30)
 ];

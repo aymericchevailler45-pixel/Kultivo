@@ -15,6 +15,7 @@ const KULTI_FACES = {
 // Chapeaux des fêtes (clé = `bank` de l'événement) : posés sur le cerveau, même repère 36 × 36
 const KULTI_HATS = {
     halloween: '<svg class="kulti-hat" viewBox="0 0 36 36" aria-hidden="true"><ellipse cx="16" cy="6.2" rx="10" ry="2.2" fill="#2c1a3d"/><path d="M10.5 6 Q14 -2 17.5 -7 Q20 -9.5 23.5 -8 Q20.5 -6.5 20.5 -3 L22 6 Z" fill="#3b2352"/><rect x="11.2" y="3.4" width="10.4" height="2.2" rx=".6" fill="#ff8a00"/><rect x="15.2" y="3.1" width="2.6" height="2.8" rx=".4" fill="#ffd36b"/></svg>',
+    maghreb: '<svg class="kulti-hat" viewBox="0 0 36 36" aria-hidden="true"><path d="M11 6.5 L12.6 -4 Q17 -5.6 21.4 -4 L23 6.5 Z" fill="#c8102e"/><ellipse cx="17" cy="-4.1" rx="4.4" ry="1.2" fill="#9e0b22"/><ellipse cx="17" cy="6.4" rx="6.2" ry="1.4" fill="#9e0b22"/><path d="M17 -4.4 Q21.5 -3 22 2.5" stroke="#1b1b1b" stroke-width=".9" fill="none"/><circle cx="22" cy="3" r="1.2" fill="#1b1b1b"/></svg>',
     noel: '<svg class="kulti-hat" viewBox="0 0 36 36" aria-hidden="true"><path d="M8.5 7 Q12 -4 22 -5 Q28 -4.5 28.5 2 L27 7 Z" fill="#e0242f"/><rect x="7.5" y="5.2" width="21" height="3.4" rx="1.7" fill="#fff"/><circle cx="28.4" cy="1.6" r="2.4" fill="#fff"/></svg>'
 };
 const KULTI_EYE_L = [13, 14.8], KULTI_EYE_R = [22.2, 14.8];

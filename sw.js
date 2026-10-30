@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v54';
+const CACHE = 'kultivo-v55';
 const FILES = [
     './',
     './index.html',
@@ -379,6 +379,12 @@ const FILES = [
     './flags/cm.svg',
     './flags/cu.svg',
     './evenements/halloween.js',
+    './evenements/maghreb.js',
+    './emoji/1f42a.svg',
+    './emoji/1fad6.svg',
+    './emoji/1f334.svg',
+    './emoji/1f9ff.svg',
+    './emoji/1faac.svg',
     './emoji/1f383.svg',
     './emoji/1f436.svg',
     './emoji/1f438.svg',

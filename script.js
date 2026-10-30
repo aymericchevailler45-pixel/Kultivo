@@ -1733,7 +1733,8 @@ function showToast(text) {
 
 const EVENTS = [{
     id: 'halloween-2026', bank: 'halloween', name: 'Halloween', title: 'Semaine d’Halloween', icon: '🎃',
-    start: '2026-10-26', end: '2026-11-02', goal: 45, cls: 'event-halloween', tip: 'tipEventHalloween2026',
+    start: '2026-10-26', end: '2026-11-01', goal: 45, cls: 'event-halloween', tip: 'tipEventHalloween2026', badge: true,
+    // (fin avancée du 2 au 1er novembre le 2026-10-30 : l'Escale au Maghreb commence le lundi 2)
     // Dessins d'avatar gagnés en route (le dernier palier = l'objectif, avec la carte et le badge)
     rewards: [{ at: 10, emoji: '🎃' }, { at: 20, emoji: '🦇' }, { at: 30, emoji: '🧙' }, { at: 45, emoji: '💀' }],
     pumpkin: '🎃',
@@ -1746,7 +1747,18 @@ const EVENTS = [{
     decor: ['🎃', '👻', '🦇', '🕷️', '🕸️', '💀', '🧙', '🍬', '🌕', '⚰️'],
     card: { id: 'ev-halloween-2026', theme: 'Halloween 2026', icon: '🎃', name: 'Citrouille 2026', rarity: 'event',
             text: 'Gagnée pendant la semaine d’Halloween 2026.' }
+}, {
+    // Escale au Maghreb (2026-10-30, aperçu apercu-escale.html, voyage des testeurs) : plus léger qu'Halloween,
+    // ni citrouilles, ni missions spéciales, ni badge. Réutilisable : une autre « escale » = un autre pays.
+    id: 'maghreb-2026', bank: 'maghreb', name: 'Maghreb', title: 'Escale au Maghreb', icon: '🐪',
+    start: '2026-11-02', end: '2026-11-08', goal: 40, cls: 'event-maghreb', tip: 'tipEventMaghreb2026',
+    intro: 'C’est l’Escale au Maghreb !', blurb: 'Des sessions de 10 questions sur le Maroc, l’Algérie et la Tunisie.',
+    rewards: [{ at: 10, emoji: '🫖' }, { at: 25, emoji: '🌴' }, { at: 40, emoji: '🐪' }],
+    decor: ['🐪', '🌴', '🫖', '🕌', '🏜️', '🌙', '🍊', '🏺'],
+    card: { id: 'ev-maghreb-2026', theme: 'Escale au Maghreb 2026', icon: '🐪', name: 'Dromadaire 2026', rarity: 'event',
+            text: 'Gagnée pendant l’Escale au Maghreb 2026.' }
 }];
+const evBadgeText = ev => (ev.badge ? ` et le badge ${ev.name} 2026` : '');
 const EVENT_CARDS = EVENTS.map(e => e.card);
 const EVENT_SIZE = 10;   // questions par session
 
@@ -1754,7 +1766,8 @@ function currentEvent() {
     let demo = null;
     try { demo = new URLSearchParams(location.search).get('demo'); } catch (err) { /* sans adresse */ }
     const today = todayKey();
-    return EVENTS.find(e => demo === e.bank || demo === 'lundi' || BAC || (today >= e.start && today <= e.end)) || null;
+    return EVENTS.find(e => demo === e.bank) || EVENTS.find(e => today >= e.start && today <= e.end)
+        || (demo === 'lundi' || BAC ? EVENTS[0] : null);
 }
 const eventQuestions = ev => (window.EVENT_BANKS && window.EVENT_BANKS[ev.bank]) || [];
 function eventData(ev) {
@@ -1807,7 +1820,7 @@ const pumpkinsLeft = ev => PUMPKINS_PER_DAY - Object.keys(pumpkinData(ev).got).l
 function placePumpkins() {
     const ev = currentEvent();
     let pk = document.getElementById('pumpkin');
-    const spot = ev ? pumpkinSpots(ev).find(sp => !$(sp.screen).hidden && !pumpkinData(ev).got[sp.screen]) : null;
+    const spot = ev && ev.pumpkin ? pumpkinSpots(ev).find(sp => !$(sp.screen).hidden && !pumpkinData(ev).got[sp.screen]) : null;
     const covered = document.querySelector('.modal-overlay:not([hidden]), .tour:not([hidden]), .chest-overlay:not([hidden])') || $('topbar').hidden;
     if (!spot || covered) { if (pk) pk.remove(); return; }
     if (pk && pk.dataset.screen === spot.screen) return;
@@ -1902,7 +1915,7 @@ function showEventTip() {
     if (challengesTab === 'event') { showEventPageTip(); return; }
     startTip(ev.tip, [{
         target: () => $('eventTab'),
-        text: `${ev.icon} C’est la ${ev.title.charAt(0).toLowerCase()}${ev.title.slice(1)} ! Touche ici : des questions spéciales, qui ne coûtent pas de gouttes 💧, et une carte à gagner jusqu’au ${shortDate(ev.end)}.`
+        text: `${ev.icon} ${ev.intro || `C’est la ${ev.title.charAt(0).toLowerCase()}${ev.title.slice(1)} !`} Touche ici : des questions spéciales, qui ne coûtent pas de gouttes 💧, et une carte à gagner jusqu’au ${shortDate(ev.end)}.`
     }], 'Voir l’événement');
 }
 function showEventPageTip() {
@@ -1911,7 +1924,7 @@ function showEventPageTip() {
     if (!ev || d[`${ev.tip}Page`] || !tipAllowed('challengesScreen') || $('eventPage').hidden) return;
     startTip(`${ev.tip}Page`, [{
         target: () => document.querySelector('.event-card'),
-        text: `🎁 Chaque question trouvée compte une fois. Une question ratée ne revient pas dans la session, mais dans une prochaine. Trouve ${ev.goal} questions différentes pour gagner la carte « ${ev.card.name} » et le badge ${ev.name} 2026 !`
+        text: `🎁 Chaque question trouvée compte une fois. Une question ratée ne revient pas dans la session, mais dans une prochaine. Trouve ${ev.goal} questions différentes pour gagner la carte « ${ev.card.name} »${evBadgeText(ev)} !`
     }]);
 }
 
@@ -1928,7 +1941,7 @@ function renderEvent() {
     const h = el('h2');
     h.textContent = `${ev.icon} ${ev.title}`;
     const p = el('p');
-    p.textContent = `Des sessions de ${EVENT_SIZE} questions frissonnantes. Elles ne coûtent pas de gouttes 💧 et il n’y a pas de cœurs. Jusqu’au ${shortDate(ev.end)}.`;
+    p.textContent = `${ev.blurb || `Des sessions de ${EVENT_SIZE} questions frissonnantes.`} Elles ne coûtent pas de gouttes 💧 et il n’y a pas de cœurs. Jusqu’au ${shortDate(ev.end)}.`;
     const n = Math.min(Object.keys(ed.found).length, ev.goal);
     const meter = el('div', 'meter');
     const fill = el('div', 'meter-fill');
@@ -1957,8 +1970,8 @@ function renderEvent() {
     const face = cardFace(ev.card, false, false);
     const rtext = el('p');
     rtext.textContent = ed.won
-        ? '✅ Carte gagnée ! Elle est dans ta collection, et le badge dans ton profil.'
-        : `🎁 Trouve ${ev.goal} questions différentes : la carte « ${ev.card.name} » et le badge ${ev.name} 2026. Seulement cette semaine !`;
+        ? `✅ Carte gagnée ! Elle est dans ta collection${ev.badge ? ', et le badge dans ton profil' : ''}.`
+        : `🎁 Trouve ${ev.goal} questions différentes : la carte « ${ev.card.name} »${evBadgeText(ev)}. Seulement cette semaine !`;
     reward.append(face, rtext);
     const actions = el('div', 'card-actions');
     const btn = el('button', 'btn btn-green');
@@ -1966,7 +1979,7 @@ function renderEvent() {
     btn.textContent = ed.won ? 'Rejouer pour le plaisir' : 'Jouer';
     btn.addEventListener('click', openEventStart);
     actions.append(btn);
-    card.append(h, p, meter, count, steps, stepsText, reward, pumpkins, actions);
+    card.append(h, p, meter, count, steps, stepsText, reward, ...(ev.pumpkin ? [pumpkins] : []), actions);
     page.append(card);
     const friends = renderEventFriends(ev, n);
     if (friends) page.append(friends);
@@ -2057,7 +2070,7 @@ function endEvent() {
     setEnd({
         emoji: won ? '🏆' : ev.icon,
         title: won ? 'Carte gagnée !' : `${ev.icon} ${ev.name}`,
-        text: won ? `Tu as gagné la carte « ${ev.card.name} » et le badge ${ev.name} 2026 !`
+        text: won ? `Tu as gagné la carte « ${ev.card.name} »${evBadgeText(ev)} !`
             : `${right.length} trouvées sur ${state.total}${total > before ? ` (+${total - before} nouvelles)` : ''} · ${Math.min(total, ev.goal)} / ${ev.goal} questions trouvées pour la carte`,
         stats: [statXp(), statAccuracy(), statTime()],
         extra: [drawingsText, rewardSummary()].filter(Boolean).join('\n'),
@@ -4755,7 +4768,7 @@ function renderShopV2() {
             owned ? null : () => buyAvItem(it), owned || d.coins < it.price, owned, cellCls);
     };
     const coll = AV_COLL[plan.coll];
-    const pill = plan.season ? VITRINE_SEASON_LABEL[plan.season] : plan.back ? 'Revient' : 'Nouveau';
+    const pill = plan.season ? (VITRINE_SEASON_LABEL[plan.season] || 'De saison') : plan.back ? 'Revient' : 'Nouveau';
     const pillCls = plan.season ? 'is-event' : plan.back ? 'is-back' : '';
     plan.items.forEach(id => row.append(itemCell(AVI[id], pill, pillCls, plan.season ? 'is-event' : '')));
     const v = vitrineCard();
@@ -8353,7 +8366,7 @@ function avPreview(it, cls = '') {
 const VITRINE_START = '2026-10-26';
 const VITRINE_CARD_ROT = ['common', 'rare', 'epic', 'legendary'];
 const VITRINE_CARD_PRICE = { common: 60, rare: 150, epic: 400, legendary: 1000 };
-const VITRINE_SEASON_LABEL = { halloween: '🎃 Halloween', noel: '🎄 Noël', valentin: '💖 Saint-Valentin' };
+const VITRINE_SEASON_LABEL = { halloween: '🎃 Halloween', noel: '🎄 Noël', valentin: '💖 Saint-Valentin', maghreb: '🐪 Maghreb' };
 const dayGap = (a, b) => Math.round((new Date(`${b}T12:00:00`) - new Date(`${a}T12:00:00`)) / 86400000);
 const vitrineWeek = () => Math.max(0, Math.floor(dayGap(VITRINE_START, weekStart()) / 7));
 function vitrineSeason(k) {
@@ -10851,7 +10864,7 @@ function initBac() {
 
 const PATCH_NOTES = [
     // Court et clair (2026-10-25) : ce que les bulles d'explication disent déjà (citrouilles, règles d'Halloween) n'est pas répété
-    ['🎃', 'Halloween, jusqu’au 2 novembre', 'Un événement spécial dans Défis, avec une carte et des emojis d’avatar à gagner.'],
+    ['🎃', 'Halloween, jusqu’au 1er novembre', 'Un événement spécial dans Défis, avec une carte et des emojis d’avatar à gagner.'],
     ['🛍️', 'Nouvelle boutique', 'Chaque lundi, une collection assortie pour ton avatar (cadre, fond, emoji) et ta carte de la semaine.'],
     ['🎨', 'Ton avatar', 'Des fonds, des emojis et des cadres à débloquer en jouant. Bouton « ✏️ Modifier » à côté de ton nom.'],
     ['🃏', '30 nouvelles cartes', '12 cartes par thème désormais, 180 en tout.'],

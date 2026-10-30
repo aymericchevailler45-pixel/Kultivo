@@ -3661,3 +3661,16 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .order-card.has-flag .flag-img { display: block; height: 34px; width: auto; border-radius: 4px; box-shadow: 0 0 0 1px var(--line); }
 .order-answer b.has-flag .flag-img { display: inline-block; height: 26px; width: auto; vertical-align: middle; border-radius: 3px; box-shadow: 0 0 0 1px var(--line); }
 .order-yours .flag-img { display: inline-block; height: 18px; width: auto; vertical-align: middle; border-radius: 2px; }
+
+/* ===== Escale au Maghreb (2-8 novembre 2026) : couleur sable, bandeau orangé ; collection Médina ===== */
+body.event-maghreb main,
+body.event-maghreb .lesson {
+    background: linear-gradient(180deg, rgba(255, 179, 71, 0.20), rgba(233, 173, 92, 0.16) 55%, rgba(224, 144, 42, 0.18));
+}
+body.event-maghreb .decor-badge { filter: drop-shadow(0 4px 10px rgba(224, 144, 42, 0.35)); }
+body.event-maghreb .event-banner { background: linear-gradient(90deg, #c2410c, #e0902a); color: #fff; box-shadow: 0 4px 0 #8a2e08, 0 6px 16px rgba(0, 0, 0, 0.2); }
+body.event-maghreb .topbar { box-shadow: inset 0 -3px 0 #e0902a; }
+body.event-maghreb .nav-btn.is-active { box-shadow: inset 0 -3px 0 #e0902a; }
+.league-avatar.fr-zellige::before { background: repeating-conic-gradient(#0e7c7b 0 25%, #f6ead2 0 50%) 0 0 / 7px 7px; }
+.league-avatar.fr-zellige::after { background-image: url(emoji/1f54c.svg); }
+.league-avatar.bg-dunes { background: linear-gradient(180deg, #ffb35c 0%, #ff7b54 48%, #eab06a 49%, #c9863a 100%); }
