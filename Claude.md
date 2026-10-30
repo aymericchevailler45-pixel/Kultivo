@@ -130,7 +130,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   CSS : `:root[data-theme="dark"]` + `:root:not([data-theme="light"])` dans le @media ; libellé court « ☀️ Clair » ≤ 400 px).
   Rébus en mode sombre : RIEN changé (l'utilisateur dira). BADGES : aperçu apercu-badges.html (familles, 3 cases : dernier
   gagné / prochain violet avec « x / y » / suivant, « Voir les N », 24 nouveaux badges → 60) EN ATTENTE de son avis.
-  Badges V2 codés SEULEMENT dans le bac à sable (`BADGES_V2 = BAC`, `BADGES_NEW`, `BADGE_FAMS`, `renderBadgesV2`, `activeBadges`,
+  Badges V2 EN LIGNE POUR TOUS le 30/10 (`BADGES_V2 = true`, `BADGES_NEW`, `BADGE_FAMS`, `renderBadgesV2`, `activeBadges`,
   `medalCounts`) : pour l’activer pour tous, mettre `BADGES_V2 = true`.
   Retouches 30/10 : plus d'espace sous la barre « Prochain », pas de message « toute la famille est gagnée » ; un badge à
   récupérer reste visible avec le prochain à côté.
