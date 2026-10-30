@@ -3632,11 +3632,11 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .bdf-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .bdf-head b { font-size: 1.02rem; font-weight: 900; flex: 1; }
 .bdf-head small { color: var(--muted); font-weight: 800; }
-.bdf-next { margin: 0 0 14px; font-size: .85rem; font-weight: 800; color: var(--muted); line-height: 1.35; }
+.bdf-next { margin: 0; font-size: .85rem; font-weight: 800; color: var(--muted); line-height: 1.35; }
 .bdf-next i { display: block; height: 7px; margin-top: 4px; border-radius: 99px; background: var(--line); overflow: hidden; }
 .bdf-next i::before { content: ''; display: block; height: 100%; width: var(--p); background: var(--violet); border-radius: inherit; }
 .bdf-next.is-max { color: var(--green-ink); }
-.bdf-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.bdf-row { margin-top: 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .bdf-tile { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 4px 8px; border: 2px solid var(--gold);
     border-radius: 14px; background: var(--surface); text-align: center; cursor: pointer; font: inherit; color: var(--ink); }
 .bdf-ic { font-size: 1.6rem; line-height: 1.2; }
