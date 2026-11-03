@@ -173,6 +173,19 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   LEVEL_INSERTS, un lot par bloc, monter LEVEL_LAYOUT et compléter migrateLevelLayout pour passer de la version 2 à 3).
   À revoir quand beaucoup de niveaux seront ajoutés : cartes par coffre. Limite connue : « Élisabeth » sans numéro est accepté
   (faute de frappe) pour Élisabeth Ire, car il faut accepter « Elizabeth I ».
+- FAIT le 03/11 (suite, en l'absence de l'utilisateur) : PARCOURS DE 230 NIVEAUX. 2e vague = 4 blocs de 10 insérés après les
+  anciens 100, 110, 120 et 130 (levels.js : `LEVEL_WAVES = [[80, 90], [100, 110, 120, 130]]`, `LEVEL_ORIGINAL = 170`,
+  `levelFromLayout(n, layout)` ; lots ids 4100-4149 → 121-130, 4150-4199 → 141-150, 4200-4249 → 161-170, 4250-4299 → 181-190).
+  196 questions NOUVELLES (lot 4, sujets vérifiés avec used.py + check4.py), moyennes 3,27 / 3,49 / 3,71 / 3,99 : la courbe monte
+  d'environ +0,1 par dizaine de 101 à 190 (puis 4,03 → 4,49 jusqu'au 230). 14 drapeaux nouveaux (lr mv mu zw kw ad py mm li bz fj
+  gt hn ne). Réserve : scratchpad lot4_pool2.js (~130 questions écrites et vérifiées, pas utilisées) pour une prochaine vague.
+  `LEVEL_LAYOUT = 3` : `migrateLevelLayout` part de la disposition de la sauvegarde (1 = 170, 2 = 190) → 230 directement.
+  Seuils de niveau gardés « à difficulté égale » : 👻 niveau 160 (ancien 120) ; couleurs 10…120, 🗿 80, cadre Explorateur 95
+  inchangés (aucune perte possible : la conversion ne fait que monter les numéros) ; frises `orderSizes` en anciens numéros
+  (`levelRenumber(86)`, `levelRenumber(96)`). COFFRES DU PARCOURS : 2 cartes (3 après un défi) au lieu de 3 / 4 (`chestSize`) :
+  46 coffres = 115 cartes, autant qu'avec 170 niveaux. Supabase : limite des cadeaux de niveau montée à 400 (parcours-190.sql,
+  lancé par l'utilisateur). CORRECTION : nom de personne avec initiales accepté (`initialsMatch` : « JF Kennedy »,
+  « J. F. Kennedy », « John Fitzgerald Kennedy » pour « John F. Kennedy » ; les initiales doivent toutes correspondre).
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

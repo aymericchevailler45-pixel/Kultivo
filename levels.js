@@ -42,7 +42,7 @@ const AUTO_LEVEL_NAMES = true;   // false = garder les noms de niveaux de questi
    questions + 15 niveaux Paires + 15 niveaux Ordre + 15 défis, le dernier
    niveau étant un défi).
    null = automatique : environ 5 questions par niveau. */
-const TOTAL_LEVELS = 190;   // 170 → 190 le 2026-11-03 (20 niveaux insérés après le 80 et après le 90)
+const TOTAL_LEVELS = 230;   // 170 → 190 → 230 le 2026-11-03 (60 niveaux insérés après les anciens 80, 90, 100, 110, 120, 130)
 
 /* Lots de questions : chaque lot remplit ses propres niveaux, pour qu'un ajout futur ne change JAMAIS les niveaux
    déjà joués. 2026-10-20 : sauvegardes remises à zéro → tout le parcours (170 niveaux) refait d'un seul lot, avec une
@@ -56,13 +56,40 @@ const LEVEL_LOTS = [
     { from: 4000, to: 4049, first: 81, last: 90, hardFrom: 1, hardCurve: 1,
       names: ['Entre-deux', 'Pas à pas', 'Petits sommets', 'Chemins de traverse', 'Tour d’horizon', 'Escale', 'Bonne allure'] },
     { from: 4050, to: 4099, first: 101, last: 110, hardFrom: 1, hardCurve: 1,
-      names: ['Seconde escale', 'Belle lancée', 'Nouveaux horizons', 'À mi-hauteur', 'Pleine forme', 'Vent arrière', 'Cap tenu'] }
+      names: ['Seconde escale', 'Belle lancée', 'Nouveaux horizons', 'À mi-hauteur', 'Pleine forme', 'Vent arrière', 'Cap tenu'] },
+    // Lot 4 (2026-11-03, 2e vague) : un bloc après chacun des anciens 100, 110, 120 et 130 (ids 4100+, sujets jamais utilisés)
+    { from: 4100, to: 4149, first: 121, last: 130, hardFrom: 1, hardCurve: 1,
+      names: ['Nouvel élan', 'Plein cap', 'Les éclaireurs', 'Sur la crête', 'Belle échappée', 'Grand angle', 'Pas de géant'] },
+    { from: 4150, to: 4199, first: 141, last: 150, hardFrom: 1, hardCurve: 1,
+      names: ['Vents porteurs', 'Terres lointaines', 'Esprit d’aventure', 'Le grand saut', 'Sur la route', 'Bel horizon', 'Pleins feux'] },
+    { from: 4200, to: 4249, first: 161, last: 170, hardFrom: 1, hardCurve: 1,
+      names: ['Haute mer', 'Les veilleurs', 'Sommets en vue', 'Le col', 'Fin limier', 'Ligne de crête', 'Œil de lynx'] },
+    { from: 4250, to: 4299, first: 181, last: 190, hardFrom: 1, hardCurve: 1,
+      names: ['Les vigies', 'Dernier relais', 'Toutes voiles', 'Au long cours', 'Hautes terres', 'Cap sur les cimes', 'Le belvédère'] }
 ];
-/* Blocs de 10 niveaux insérés APRÈS ces anciens numéros (2026-11-03) : l'ancien niveau 81 devient le 91, l'ancien 91 le 111…
-   Le jeu convertit les sauvegardes une seule fois (LEVEL_LAYOUT dans script.js). Pour une nouvelle vague : ajouter les
-   numéros ICI (toujours en ancienne numérotation, celle du lot 1) + un lot par bloc, et monter LEVEL_LAYOUT. */
-const LEVEL_INSERTS = [80, 90];
+/* Blocs de 10 niveaux insérés APRÈS ces anciens numéros (numérotation d'origine du lot 1, 170 niveaux), vague par vague.
+   1re vague (2026-11-03) : après 80 et 90 (parcours de 190) ; 2e vague (même jour) : après 100, 110, 120 et 130 (230).
+   L'ancien niveau 81 devient le 91, l'ancien 101 le 131… Le jeu convertit les sauvegardes une seule fois, quelle que soit
+   la disposition d'où elles viennent (LEVEL_LAYOUT dans script.js = nombre de vagues + 1, levelFromLayout).
+   Pour une nouvelle vague : ajouter une ligne ICI (anciens numéros) + un lot par bloc, et monter LEVEL_LAYOUT. */
+const LEVEL_WAVES = [[80, 90], [100, 110, 120, 130]];
+const LEVEL_ORIGINAL = 170;   // niveaux du lot 1 (numérotation d'origine)
+const LEVEL_INSERTS = LEVEL_WAVES.flat();
 const levelRenumber = n => n + 10 * LEVEL_INSERTS.filter(x => n > x).length;
+/** Niveau n d'une sauvegarde faite avec la disposition `layout` (1 = 170 niveaux d'origine, 2 = après la 1re vague…)
+    → son numéro aujourd'hui. Un niveau inséré garde sa place dans son bloc. */
+function levelFromLayout(n, layout) {
+    if (!(n >= 1)) return n;
+    const ins = LEVEL_WAVES.slice(0, Math.max(0, layout - 1)).flat();
+    const keys = [];
+    for (let o = 1; o <= LEVEL_ORIGINAL; o++) {
+        keys.push([o, 0]);
+        if (ins.includes(o)) for (let j = 1; j <= 10; j++) keys.push([o, j]);
+    }
+    if (n > keys.length) return n - keys.length + levelRenumber(LEVEL_ORIGINAL);
+    const [o, j] = keys[n - 1];
+    return levelRenumber(o) + j;
+}
 
 
 (function assignLevels() {

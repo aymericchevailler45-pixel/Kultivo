@@ -135,26 +135,28 @@ const isOrder = n => n % CHALLENGE_EVERY === ORDER_AT;
 const orderSize = level => level < 40 ? 4 : level < 85 ? 5 : 6;
 /* Cartes de chacune des 3 frises (2026-10-25, demande de l'utilisateur : le niveau 86 passait d'un coup à 3 frises de 6) :
    on ajoute une carte à une frise à la fois. 6-26 : 4·4·4 ; 36 : 4·4·5 ; 46 : 4·5·5 ; 56-66 : 5·5·5 ; 76 : 5·5·6 ;
-   86 : 5·6·6 ; 96 et plus : 6·6·6. */
+   ancien 86 : 5·6·6 ; ancien 96 et plus : 6·6·6 (anciens numéros : levelRenumber suit les niveaux insérés, 2026-11-03). */
 function orderSizes(level) {
+    const R = typeof levelRenumber === 'function' ? levelRenumber : n => n;
     if (level < 36) return [4, 4, 4];
     if (level < 46) return [4, 4, 5];
     if (level < 56) return [4, 5, 5];
     if (level < 76) return [5, 5, 5];
-    if (level < 86) return [5, 5, 6];
-    if (level < 96) return [5, 6, 6];
+    if (level < R(86)) return [5, 5, 6];
+    if (level < R(96)) return [5, 6, 6];
     return [6, 6, 6];
 }
 
-// Coffres du parcours : un coffre après chaque niveau multiple de 5 (3 cartes ; 4 après un défi, dont une rare ou mieux)
+// Coffres du parcours : un coffre après chaque niveau multiple de 5 (2 cartes ; 3 après un défi, dont une rare ou mieux).
+// 2026-11-03 : 3 / 4 → 2 / 3 avec le parcours de 230 niveaux (46 coffres = 115 cartes, autant qu'avec 170 niveaux à 3 / 4).
 const CHEST_EVERY = 5;
-const chestSize = n => n % CHALLENGE_EVERY === 0 ? 4 : 3;
+const chestSize = n => n % CHALLENGE_EVERY === 0 ? 3 : 2;
 const SHOP_CHEST = { price: 150, size: 3 };   // coffre de la boutique : 3 cartes, dont une rare ou mieux
 const GOAL_CARDS = 1;                          // carte offerte avec la récompense de l'objectif du jour
 
 // Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
-// Limité à 8 étapes (départ au niveau 81 au mieux, sur 190) pour garder du jeu à faire.
-const PLACEMENT_MAX_STEPS = 8;   // départ au niveau 81 au mieux (sur 190)
+// Limité à 8 étapes (départ au niveau 81 au mieux, sur 230) pour garder du jeu à faire.
+const PLACEMENT_MAX_STEPS = 8;   // départ au niveau 81 au mieux (sur 230)
 const PLACEMENT_CHESTS_NOW = 3;   // coffres sautés donnés tout de suite ; les autres = cartes bonus dans les coffres suivants
 const CHEST_BONUS_MAX = 3;        // cartes bonus ajoutées au plus par coffre du parcours
 const PLACEMENT_XP_PER_LEVEL = 40; // XP données par niveau sauté (≈ un niveau joué), au total seulement (pas dans la semaine)
@@ -570,6 +572,29 @@ function looksLikeName(raw) {
     const main = words.filter(w => !NAME_PARTICLES.has(w.toLowerCase()));
     return main.length >= 2 && main.length <= 3 && main.every(w => /^\p{Lu}/u.test(w));
 }
+/** Nom de personne écrit avec des initiales (2026-11-03, signalement « jf kennedy ») : « JF Kennedy », « J. F. Kennedy »,
+    « J Fitzgerald Kennedy » ou « John Fitzgerald Kennedy » pour « John F. Kennedy ». Le nom de famille doit être là (sa marge
+    habituelle) ; les prénoms sont tous en initiales, ou un par un en entier / en initiale. 'exact', 'typo' ou null. */
+function initialsMatch(typed, ans) {
+    const tw = typed.split(' '), aw = ans.split(' ');
+    if (aw.length < 2 || tw.length < 2) return null;
+    const last = aw[aw.length - 1], tLast = tw[tw.length - 1];
+    if (last.length < 3 || /\d/.test(last) || !(tLast === last || wordClose(tLast, last))) return null;
+    const given = aw.slice(0, -1), tGiven = tw.slice(0, -1);
+    if ([...given, ...tGiven].some(w => /\d/.test(w))) return null;
+    let ok = tGiven.join('') === given.map(w => w[0]).join('');   // « jf kennedy », « j f kennedy »
+    let close = false;
+    if (!ok && tGiven.length === given.length) {
+        ok = tGiven.every((w, i) => {
+            const g = given[i];
+            if (w === g || (w.length === 1 && w === g[0]) || (g.length === 1 && w[0] === g)) return true;
+            if (wordClose(w, g)) { close = true; return true; }
+            return false;
+        });
+    }
+    if (!ok) return null;
+    return close || tLast !== last ? 'typo' : 'exact';
+}
 const dropLeadingVerb = str => { const w = str.split(' '); return w.length > 1 && (w[0] === 'avoir' || w[0] === 'etre') ? w.slice(1).join(' ') : str; };
 
 function judgeV2(input, rawAnswers, question = '') {
@@ -584,6 +609,7 @@ function judgeV2(input, rawAnswers, question = '') {
     const questionWords = new Set(stripArticles(normalize(question)).split(' '));
     let typo = false;
     const answers = [];   // [réponse sans articles, réponse complète (pour les « de / du »)]
+    const names = [];     // réponses qui sont des noms de personnes (initiales acceptées)
     for (const raw of rawAnswers) {
         const ans = keep(raw);
         if (!ans) continue;
@@ -593,6 +619,7 @@ function judgeV2(input, rawAnswers, question = '') {
         if (!expression && looksLikeName(raw)) {   // nom avant le prénom : « Sartre Jean-Paul », « Khan Kubilaï »
             const w = ans.split(' ');
             if (w.length >= 2) { const turned = [w[w.length - 1], ...w.slice(0, -1)].join(' '); answers.push([turned, turned]); }
+            names.push(ans);
         }
     }
     for (const [ans, ansFull] of answers) {
@@ -605,6 +632,11 @@ function judgeV2(input, rawAnswers, question = '') {
         const numbersAns = ans.match(/\d+(?:\.\d+)?/g) || [];
         const sameNumbers = numbersAns.join(' ') === (typed.match(/\d+(?:\.\d+)?/g) || []).join(' ');
         if (sameNumbers && answerClose(typed, ans)) typo = true;
+    }
+    for (const ans of names) {
+        const r = initialsMatch(typed, ans);
+        if (r === 'exact') return 'exact';
+        if (r === 'typo') typo = true;
     }
     return typo ? 'typo' : 'wrong';
 }
@@ -736,15 +768,17 @@ function normalizeData(data) {
     return data;
 }
 
-/* Niveaux insérés dans le parcours (2026-11-03 : 10 après l'ancien 80, 10 après l'ancien 90 ; levels.js, LEVEL_INSERTS).
+/* Niveaux insérés dans le parcours (2026-11-03 : 1re vague après les anciens 80 et 90, 2e vague après 100, 110, 120 et 130 ;
+   levels.js, LEVEL_WAVES). Une sauvegarde de n'importe quelle disposition passe directement à la dernière (levelFromLayout).
    Une sauvegarde d'avant (sans « levelLayout ») est convertie UNE fois : niveaux faits, coffres ouverts, niveau en cours,
    placement prennent leur nouveau numéro (levelRenumber). Les niveaux insérés derrière un joueur restent « à faire »
    (facultatifs, jouables quand il veut) et leurs coffres ne s'ouvrent qu'en les terminant. Un joueur pile au début d'un
    bloc inséré (ex. : il allait jouer l'ancien 81) commence ce bloc. Pas de « levelLayout » dans defaultData : sinon une
    vieille sauvegarde, complétée par defaultData au chargement, paraîtrait déjà convertie. */
-const LEVEL_LAYOUT = 2;
+const LEVEL_LAYOUT = 3;   // 2 = 1re vague (190 niveaux), 3 = 2e vague (230 niveaux), le 2026-11-03
 function migrateLevelLayout(data) {
-    const R = typeof levelRenumber === 'function' ? levelRenumber : n => n;
+    const from = data.levelLayout || 1;
+    const R = typeof levelFromLayout === 'function' ? n => levelFromLayout(n, from) : n => n;
     const remap = obj => Object.fromEntries(Object.entries(obj || {}).map(([k, v]) => [String(R(Number(k))), v]));
     data.done = remap(data.done);
     data.chests = remap(data.chests);
