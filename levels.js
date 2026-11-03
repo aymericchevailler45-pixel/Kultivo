@@ -42,7 +42,7 @@ const AUTO_LEVEL_NAMES = true;   // false = garder les noms de niveaux de questi
    questions + 15 niveaux Paires + 15 niveaux Ordre + 15 défis, le dernier
    niveau étant un défi).
    null = automatique : environ 5 questions par niveau. */
-const TOTAL_LEVELS = 170;
+const TOTAL_LEVELS = 190;   // 170 → 190 le 2026-11-03 (20 niveaux insérés après le 80 et après le 90)
 
 /* Lots de questions : chaque lot remplit ses propres niveaux, pour qu'un ajout futur ne change JAMAIS les niveaux
    déjà joués. 2026-10-20 : sauvegardes remises à zéro → tout le parcours (170 niveaux) refait d'un seul lot, avec une
@@ -50,8 +50,19 @@ const TOTAL_LEVELS = 170;
    hardFrom : où arrivent les questions très pointues (part des niveaux) ; hardCurve > 1 : elles arrivent doucement,
    puis de plus en plus souvent. */
 const LEVEL_LOTS = [
-    { from: 0, to: 3999, first: 1, last: 170, hardFrom: 0.25, hardCurve: 2 }
+    // Lot 1 : réparti EXACTEMENT comme avant sur 170 niveaux (numérotation d'origine), puis renuméroté (LEVEL_INSERTS)
+    { from: 0, to: 3999, first: 1, last: 170, hardFrom: 0.25, hardCurve: 2, renumber: true },
+    // Lot 3 (2026-11-03) : blocs de 10 niveaux insérés pour adoucir la courbe (ids 4000+, sujets jamais utilisés)
+    { from: 4000, to: 4049, first: 81, last: 90, hardFrom: 1, hardCurve: 1,
+      names: ['Entre-deux', 'Pas à pas', 'Petits sommets', 'Chemins de traverse', 'Tour d’horizon', 'Escale', 'Bonne allure'] },
+    { from: 4050, to: 4099, first: 101, last: 110, hardFrom: 1, hardCurve: 1,
+      names: ['Seconde escale', 'Belle lancée', 'Nouveaux horizons', 'À mi-hauteur', 'Pleine forme', 'Vent arrière', 'Cap tenu'] }
 ];
+/* Blocs de 10 niveaux insérés APRÈS ces anciens numéros (2026-11-03) : l'ancien niveau 81 devient le 91, l'ancien 91 le 111…
+   Le jeu convertit les sauvegardes une seule fois (LEVEL_LAYOUT dans script.js). Pour une nouvelle vague : ajouter les
+   numéros ICI (toujours en ancienne numérotation, celle du lot 1) + un lot par bloc, et monter LEVEL_LAYOUT. */
+const LEVEL_INSERTS = [80, 90];
+const levelRenumber = n => n + 10 * LEVEL_INSERTS.filter(x => n > x).length;
 
 
 (function assignLevels() {
@@ -97,7 +108,7 @@ const LEVEL_LOTS = [
         'Cerveau d’or', 'Dernière ligne droite', 'Avant l’apothéose', 'Le dernier pas'
     ];
 
-function assignLot(QS, firstLevel, lastLotLevel, HARD_FROM, HARD_CURVE = 1) {
+function assignLot(QS, firstLevel, lastLotLevel, HARD_FROM, HARD_CURVE = 1, lot = {}) {
 
     const oldMax = Math.max(1, ...QS.map(q => q.niveau || 1));
     const difficultyOf = q =>
@@ -191,15 +202,20 @@ function assignLot(QS, firstLevel, lastLotLevel, HARD_FROM, HARD_CURVE = 1) {
     }
     // Sécurité : s'il reste des questions (cas très rares), on les ajoute au dernier niveau
     [...pool, ...hardPool].forEach(q => { q.niveau = assigned[assigned.length - 1]; });
-    allAssigned.push(...assigned);
+    // Lot 1 : on garde sa répartition d'origine et on décale seulement les numéros (niveaux insérés)
+    if (lot.renumber) QS.forEach(q => { q.niveau = levelRenumber(q.niveau); });
+    assigned.forEach((lvl, i) => allAssigned.push({
+        lvl: lot.renumber ? levelRenumber(lvl) : lvl,
+        name: lot.names ? lot.names[i] : NAMES[i]
+    }));
 }
 
 function finish() {
-    const assigned = allAssigned;
+    const assigned = allAssigned.map(x => x.lvl).sort((a, b) => a - b);
     // 5) Noms des niveaux
     if (AUTO_LEVEL_NAMES) {
         Object.keys(LEVEL_NAMES).forEach(k => delete LEVEL_NAMES[k]);
-        assigned.forEach((lvl, i) => { LEVEL_NAMES[lvl] = NAMES[i] || ('Niveau ' + lvl); });
+        allAssigned.forEach(({ lvl, name }) => { LEVEL_NAMES[lvl] = name || ('Niveau ' + lvl); });
     }
     const lastLevel = TOTAL_LEVELS || assigned[assigned.length - 1];
     for (let lvl = PAIRS_AT; lvl <= lastLevel; lvl += EVERY) LEVEL_NAMES[lvl] = 'Paires à associer';
@@ -209,7 +225,7 @@ function finish() {
 
     LEVEL_LOTS.forEach(lot => {
         const lotQuestions = QUESTIONS.filter(q => q.id >= lot.from && q.id <= lot.to);
-        if (lotQuestions.length) assignLot(lotQuestions, lot.first, lot.last, lot.hardFrom, lot.hardCurve);
+        if (lotQuestions.length) assignLot(lotQuestions, lot.first, lot.last, lot.hardFrom, lot.hardCurve, lot);
     });
     finish();
 })();

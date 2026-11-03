@@ -158,6 +158,21 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   réutilisable plus tard pour les nouveaux joueurs (l’utilisateur ne veut rien « gâcher » pour l’été). Démo : `?demo=maghreb`
   (montre aussi la collection en vitrine : `vitrineSeason` lit `?demo=` = id de saison).
   Idée validée pour la VRAIE sortie : remise à zéro générale puis niveaux intermédiaires (questions jamais vues) dans le parcours.
+- FAIT le 03/11 : PARCOURS DE 190 NIVEAUX (demande de l'utilisateur : courbe plus douce, +0,1 par dizaine à terme).
+  2 blocs de 10 niveaux INSÉRÉS après l'ancien 80 et l'ancien 90 (levels.js : `LEVEL_INSERTS = [80, 90]`, `levelRenumber`,
+  lot 1 réparti EXACTEMENT comme avant puis renuméroté (vérifié : 793/793 questions et 153/153 noms au bon endroit),
+  lots ids 4000-4049 → niveaux 81-90 et 4050-4099 → 101-110, avec leurs `names`). 97 questions NOUVELLES (questions.js,
+  lot 3, sujets vérifiés absents du jeu avec scratchpad/used.py : REPONSE / TEXTE / LIBRE), d moyen 2,71 (bloc A) et 2,96 (B).
+  7 drapeaux nouveaux (at, mc, va, cy, al, sa, kh). Sauvegardes converties UNE fois (`LEVEL_LAYOUT = 2`, `migrateLevelLayout`
+  dans normalizeData ; PAS de levelLayout dans defaultData) : done, chests, replayDay.levels, unlocked (= R(unlocked-1)+1 : un
+  joueur au début d'un bloc le commence), placement.start. Niveaux insérés derrière un joueur = facultatifs (`is-optional` :
+  même couleur, sans anneau ; les recherches du niveau en cours utilisent `.node.is-current:not(.is-optional)`), leurs coffres
+  ne s'ouvrent qu'en les faisant. Récompenses d'avatar décalées : 👻 niveau 140 (au lieu de 120), cadre Explorateur 95 (85).
+  Supabase : `supabase/parcours-190.sql` (limite des cadeaux à 190, lancé par l'utilisateur). Défi du jour / duels : listes
+  figées ids < 4000 (inchangées). PROCHAINES VAGUES : plus bas puis plus haut (ajouter les numéros d'origine dans
+  LEVEL_INSERTS, un lot par bloc, monter LEVEL_LAYOUT et compléter migrateLevelLayout pour passer de la version 2 à 3).
+  À revoir quand beaucoup de niveaux seront ajoutés : cartes par coffre. Limite connue : « Élisabeth » sans numéro est accepté
+  (faute de frappe) pour Élisabeth Ire, car il faut accepter « Elizabeth I ».
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

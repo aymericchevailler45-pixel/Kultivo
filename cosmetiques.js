@@ -37,7 +37,7 @@ const AV_EARN_PICS = [
     ['👽', 'Donne 500 bonnes réponses du premier coup', s => s.right >= 500],
     ['🦄', 'Fais une série de 30 jours', s => s.bestStreak >= 30],
     ['🎨', 'Complète un thème de cartes', s => s.themesComplete >= 1],
-    ['👻', 'Termine le niveau 120', s => s.maxDone >= 120]
+    ['👻', 'Termine le niveau 140', s => s.maxDone >= 140]   // 120 → 140 le 2026-11-03 (20 niveaux insérés avant)
 ];
 
 // type : 'frame' (cadre) | 'bg' (fond) | 'pic' (dessin) ; kind : 'earn' (à gagner) | 'shop' (boutique)
@@ -53,7 +53,7 @@ const AV_ITEMS = [
     { id: 'fr-diamond',     type: 'frame', kind: 'earn', name: 'Diamant',         fx: 'tag',    how: 'Finis 25 semaines 1er de la ligue des amis', test: s => s.leagueWins >= 25 },
     { id: 'fr-swords',      type: 'frame', kind: 'earn', name: 'Épées',           fx: 'tag',    how: 'Gagne 10 duels',                             test: s => s.duelsWon >= 10 },
     { id: 'fr-gladiator',   type: 'frame', kind: 'earn', name: 'Gladiateur',      fx: 'tag',    how: 'Gagne 50 duels',                             test: s => s.duelsWon >= 50 },
-    { id: 'fr-explorer',    type: 'frame', kind: 'earn', name: 'Explorateur',     fx: 'tag',    how: 'Termine le niveau 85 (la moitié du parcours)', test: s => s.maxDone >= 85 },
+    { id: 'fr-explorer',    type: 'frame', kind: 'earn', name: 'Explorateur',     fx: 'tag',    how: 'Termine le niveau 95 (la moitié du parcours)', test: s => s.maxDone >= 95 },   // 85 → 95 (parcours de 190)
     { id: 'fr-globe',       type: 'frame', kind: 'earn', name: 'Globe-trotteur',  fx: 'tag',    how: 'Termine tout le parcours',                   test: s => s.mapComplete },
     { id: 'fr-master',      type: 'frame', kind: 'earn', name: 'Maître',          fx: 'tag',    how: 'Gagne une carte Maître (palier 5 d’entraînement)', test: s => s.masters >= 1 },
     { id: 'fr-grandmaster', type: 'frame', kind: 'earn', name: 'Grand Maître',    fx: 'tag',    how: 'Gagne 5 cartes Maître',                      test: s => s.masters >= 5 },

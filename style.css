@@ -3674,3 +3674,7 @@ body.event-maghreb .nav-btn.is-active { box-shadow: inset 0 -3px 0 #e0902a; }
 .league-avatar.fr-zellige::before { background: repeating-conic-gradient(#0e7c7b 0 25%, #f6ead2 0 50%) 0 0 / 7px 7px; }
 .league-avatar.fr-zellige::after { background-image: url(emoji/1f54c.svg); }
 .league-avatar.bg-dunes { background: linear-gradient(180deg, #ffb35c 0%, #ff7b54 48%, #eab06a 49%, #c9863a 100%); }
+
+/* Niveaux insérés derrière le joueur (2026-11-03) : jouables quand il veut, sans l'anneau du niveau en cours */
+.node.is-optional::after { display: none; }
+.node.is-optional { opacity: 0.85; }

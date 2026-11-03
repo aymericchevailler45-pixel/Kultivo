@@ -153,8 +153,8 @@ const SHOP_CHEST = { price: 150, size: 3 };   // coffre de la boutique : 3 carte
 const GOAL_CARDS = 1;                          // carte offerte avec la récompense de l'objectif du jour
 
 // Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
-// Limité à 8 étapes (départ au niveau 81 au mieux, sur 170) pour garder du jeu à faire.
-const PLACEMENT_MAX_STEPS = 8;   // départ au niveau 81 au mieux (sur 170)
+// Limité à 8 étapes (départ au niveau 81 au mieux, sur 190) pour garder du jeu à faire.
+const PLACEMENT_MAX_STEPS = 8;   // départ au niveau 81 au mieux (sur 190)
 const PLACEMENT_CHESTS_NOW = 3;   // coffres sautés donnés tout de suite ; les autres = cartes bonus dans les coffres suivants
 const CHEST_BONUS_MAX = 3;        // cartes bonus ajoutées au plus par coffre du parcours
 const PLACEMENT_XP_PER_LEVEL = 40; // XP données par niveau sauté (≈ un niveau joué), au total seulement (pas dans la semaine)
@@ -728,11 +728,30 @@ function normalizeData(data) {
         data.coins = 0;
     }
 
+    if ((data.levelLayout || 1) < LEVEL_LAYOUT) migrateLevelLayout(data);
     const doneLevels = Object.keys(data.done).map(Number).filter(n => data.done[n]);
     const lastDone = doneLevels.length ? Math.max(...doneLevels) : 0;
     data.unlocked = Math.max(1, data.unlocked || 1, Math.min(lastDone + 1, MAX_LEVEL));
     data.unlocked = Math.min(data.unlocked, MAX_LEVEL);
     return data;
+}
+
+/* Niveaux insérés dans le parcours (2026-11-03 : 10 après l'ancien 80, 10 après l'ancien 90 ; levels.js, LEVEL_INSERTS).
+   Une sauvegarde d'avant (sans « levelLayout ») est convertie UNE fois : niveaux faits, coffres ouverts, niveau en cours,
+   placement prennent leur nouveau numéro (levelRenumber). Les niveaux insérés derrière un joueur restent « à faire »
+   (facultatifs, jouables quand il veut) et leurs coffres ne s'ouvrent qu'en les terminant. Un joueur pile au début d'un
+   bloc inséré (ex. : il allait jouer l'ancien 81) commence ce bloc. Pas de « levelLayout » dans defaultData : sinon une
+   vieille sauvegarde, complétée par defaultData au chargement, paraîtrait déjà convertie. */
+const LEVEL_LAYOUT = 2;
+function migrateLevelLayout(data) {
+    const R = typeof levelRenumber === 'function' ? levelRenumber : n => n;
+    const remap = obj => Object.fromEntries(Object.entries(obj || {}).map(([k, v]) => [String(R(Number(k))), v]));
+    data.done = remap(data.done);
+    data.chests = remap(data.chests);
+    if (data.replayDay && data.replayDay.levels) data.replayDay.levels = remap(data.replayDay.levels);
+    data.unlocked = R(Math.max(1, data.unlocked || 1) - 1) + 1;
+    if (data.placement && data.placement.start) data.placement.start = R(data.placement.start - 1) + 1;
+    data.levelLayout = LEVEL_LAYOUT;
 }
 
 /** Récupère la progression de l'ancienne version (clés cultureG_*). */
@@ -1827,7 +1846,7 @@ function placePumpkins() {
     if (pk && pk.dataset.screen === spot.screen) return;
     if (pk) pk.remove();
     const screen = $(spot.screen);
-    const current = spot.screen === 'mapScreen' ? document.querySelector('.node.is-current') : null;
+    const current = spot.screen === 'mapScreen' ? document.querySelector('.node.is-current:not(.is-optional)') : null;
     if (spot.screen === 'mapScreen' && !current) return;
     pk = el('button', `pumpkin is-${spot.side}`);
     pk.id = 'pumpkin';
@@ -2532,7 +2551,7 @@ function showFact(theme, badge) {
 /** Bouton « 📍 Mon niveau » : visible seulement si le niveau en cours est hors de l'écran (flèche = direction). */
 function updateToCurrentBtn() {
     const btn = $('toCurrentBtn');
-    const current = document.querySelector('.node.is-current');
+    const current = document.querySelector('.node.is-current:not(.is-optional)');
     if ($('mapScreen').hidden || !current) { btn.hidden = true; return; }
     const r = current.getBoundingClientRect();
     const above = r.bottom < 60;
@@ -2877,7 +2896,8 @@ function renderMap() {
         li.dataset.level = String(n);
         li.style.setProperty('--x', info.challenge ? '0px' : `${Math.round(Math.sin(n * 1.3) * 52)}px`);
 
-        const status = locked ? 'is-locked' : done ? 'is-done' : 'is-current';
+        // Niveau pas fait AVANT le niveau en cours (niveaux insérés le 2026-11-03) : facultatif, même couleur, sans anneau
+        const status = locked ? 'is-locked' : done ? 'is-done' : n === state.data.unlocked ? 'is-current' : 'is-current is-optional';
         const btn = el('button', `node ${status}${info.challenge ? ' is-challenge' : ''}${info.pairs ? ' is-pairs' : ''}${info.order ? ' is-order' : ''}`);
         btn.type = 'button';
         btn.disabled = locked;
@@ -3139,7 +3159,7 @@ function kultiPool() {
     const d = state.data;
     const all = allQuestionsPool();
     const seen = all.filter(q => d.stats[q.id]);
-    return seen.length >= 40 ? seen : all.filter(q => d.stats[q.id] || (q.id < 4000 && (q.niveau || 999) <= d.unlocked));
+    return seen.length >= 40 ? seen : all.filter(q => d.stats[q.id] || (q.id < 10000 && (q.niveau || 999) <= d.unlocked));
 }
 const kultiMissed = () => allQuestionsPool().filter(q => missCount(q.id) > 0 && streakOf(q.id) === 0 && !isLater(q.id));
 const kultiPlain = q => !q.photo && !q.flag && !q.rebus;
@@ -9662,7 +9682,7 @@ function renderLeague() {
 // Chaque étape : l'élément mis en lumière (ou rien = bulle au centre) et le texte
 // (espaces insécables avant « : » et « ! » : jamais seuls en début de ligne)
 const TOUR_STEPS = [
-    { target: () => document.querySelector('.node.is-current'),
+    { target: () => document.querySelector('.node.is-current:not(.is-optional)'),
       text: 'Voici ton parcours 🗺️ Chaque rond est un niveau de questions. Touche celui qui brille pour jouer\u00a0!' },
     { target: () => document.querySelector('.node.is-pairs:not(.is-done)'),
       text: 'Les carrés bleus 🔗 sont des niveaux spéciaux\u00a0: des paires à associer (pays et capitales, films et réalisateurs…).' },
@@ -9726,7 +9746,7 @@ function maybeShowReviewTip() {
 /* Explication ponctuelle : la 1re fois que le niveau en cours affiche « + X révisions » */
 let reviewsTipPending = false;
 const currentReviewsLabel = () => {
-    const node = document.querySelector('.node.is-current:not(.is-pairs):not(.is-order):not(.is-challenge)');
+    const node = document.querySelector('.node.is-current:not(.is-optional):not(.is-pairs):not(.is-order):not(.is-challenge)');
     const meta = node && node.closest('.stop')?.querySelector('.stop-meta');
     return meta && meta.textContent.includes('révision') ? meta : null;
 };
@@ -9858,7 +9878,7 @@ function endTour() {
     }
     if (tourFlag !== 'tourDone') return;
     // Retour au niveau qui attend le joueur (niveau 1 ou celui du placement) : le tutoriel a fait défiler la carte
-    const current = document.querySelector('.node.is-current');
+    const current = document.querySelector('.node.is-current:not(.is-optional)');
     if (current) current.scrollIntoView({ block: 'center', behavior: 'smooth' });
     if (readyChests().length) setTimeout(maybeShowChestTip, 600);   // après un placement : coffres des niveaux sautés
 }
@@ -10630,7 +10650,7 @@ function bindEvents() {
 
     // Parcours : bouton « Mon niveau » quand le niveau en cours n'est plus à l'écran
     $('toCurrentBtn').addEventListener('click', () => {
-        const current = document.querySelector('.node.is-current');
+        const current = document.querySelector('.node.is-current:not(.is-optional)');
         if (current) current.scrollIntoView({ block: 'center', behavior: 'smooth' });
     });
     window.addEventListener('scroll', updateToCurrentBtn, { passive: true });
@@ -11001,7 +11021,7 @@ function init() {
     // Une fois tout affiché (polices, images), on recentre le niveau en cours, sauf si le joueur a déjà défilé
     const firstY = window.scrollY;
     window.addEventListener('load', () => {
-        const current = document.querySelector('.node.is-current');
+        const current = document.querySelector('.node.is-current:not(.is-optional)');
         if (current && !$('mapScreen').hidden && Math.abs(window.scrollY - firstY) < 5) {
             current.scrollIntoView({ block: 'center' });
             updateToCurrentBtn();
