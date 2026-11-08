@@ -197,6 +197,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   l'échange avec le bloc A (A ≥ 2,70) l'a fait retomber. 4) Ensuite : niveaux 1-80 (encore +0,2 par dizaine) = 8 blocs,
   ~390 questions FACILES (d 1,4-2,7) à écrire ; tous les testeurs sont au-delà → à faire plutôt juste avant la vraie sortie
   (remise à zéro, plus de conversion). Après 190 : +0,15 à +0,2, pas urgent.
+- FAIT le 08/11 : DÉCOR « BIENVENUE BÉBÉ » (un testeur attend un bébé, sexe connu dans la semaine) : du 9 au 15/11/2026, pour
+  TOUT LE MONDE, seulement le décor (parcours + leçons) façon « Un gars, une fille » : icônes bleues à gauche, roses à droite
+  (`BABY_DECOR`, `babyDecorOn`, classes `baby-blue` / `baby-pink`, `body.deco-baby` = fond bleu → rose), tap = anecdote sur
+  les bébés (`showBabyFact`). Un événement en cours passe avant. Démo : `?demo=bebe` (`currentEvent` renvoie null).
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de

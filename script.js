@@ -1819,6 +1819,7 @@ const EVENT_SIZE = 10;   // questions par session
 function currentEvent() {
     let demo = null;
     try { demo = new URLSearchParams(location.search).get('demo'); } catch (err) { /* sans adresse */ }
+    if (demo === 'bebe') return null;   // démo du décor « Bienvenue bébé » : sans événement
     const today = todayKey();
     return EVENTS.find(e => demo === e.bank) || EVENTS.find(e => today >= e.start && today <= e.end)
         || (demo === 'lundi' || BAC ? EVENTS[0] : null);
@@ -1929,10 +1930,45 @@ function unlockEventAvatars(ev, total) {
     return fresh;
 }
 
+/* Décor « Bienvenue bébé » (2026-11-08, un testeur attend un bébé) : semaine du 9 au 15 novembre 2026, pour tout le monde,
+   seulement le décor du parcours et des leçons, façon « Un gars, une fille » : icônes bleues à gauche, roses à droite,
+   fond qui passe du bleu au rose. Rien d'autre (ni questions ni récompense). Démo : ?demo=bebe. */
+const BABY_DECOR = {
+    start: '2026-11-09', end: '2026-11-15',
+    blue: ['🍼', '👶', '🧸', '💙', '🐳', '🚂', '🧦', '⭐'],
+    pink: ['🍼', '👶', '🧸', '💗', '🎀', '🦄', '🧦', '🌸'],
+    facts: [
+        'À la naissance, un bébé a environ 300 os : certains se soudent en grandissant, et l’adulte n’en a plus que 206.',
+        'Un nouveau-né voit flou : il distingue surtout ce qui est à 20-30 cm… la distance du visage de ses parents.',
+        'Les bébés naissent sans rotules en os : elles sont en cartilage et ne durcissent que vers 3 à 5 ans.',
+        'Le bleu pour les garçons et le rose pour les filles ne s’est vraiment imposé qu’au milieu du XXe siècle.',
+        'Les nouveau-nés pleurent presque sans larmes : leurs glandes lacrymales ne fonctionnent bien qu’après quelques semaines.',
+        '« Un gars, une fille » : Jean Dujardin et Alexandra Lamy, aussi en couple dans la vraie vie à l’époque de la série.'
+    ]
+};
+function babyDecorOn() {
+    if (currentEvent()) return false;
+    let demo = null;
+    try { demo = new URLSearchParams(location.search).get('demo'); } catch (err) { /* sans adresse */ }
+    const today = todayKey();
+    return demo === 'bebe' || (today >= BABY_DECOR.start && today <= BABY_DECOR.end);
+}
+function showBabyFact(badge) {
+    const blue = badge.classList.contains('baby-blue');
+    $('factTitle').textContent = blue ? '💙 Bienvenue bébé !' : '💗 Bienvenue bébé !';
+    $('factText').textContent = BABY_DECOR.facts[Number(badge.dataset.fact || 0) % BABY_DECOR.facts.length].replace(/ ([»:!?])/g, ' $1');
+    const bubble = $('factBubble');
+    bubble.hidden = false;
+    const r = badge.getBoundingClientRect();
+    const top = r.bottom + 10 + bubble.offsetHeight < window.innerHeight - 90 ? r.bottom + 10 : r.top - 10 - bubble.offsetHeight;
+    bubble.style.top = `${Math.max(70, top)}px`;
+}
+
 /** Décor, bandeau et sous-onglet selon l'événement en cours (appelé au lancement). */
 function applyEventLook() {
     const ev = currentEvent();
     EVENTS.forEach(e => document.body.classList.toggle(e.cls, !!ev && ev.id === e.id));
+    document.body.classList.toggle('deco-baby', babyDecorOn());
     $('eventTab').hidden = !ev;
     if (ev) $('eventTab').textContent = `${ev.icon} ${ev.name}`;
 }
@@ -2600,7 +2636,14 @@ function buildDecor(container, count) {
     for (let i = 0; i < count; i++) {
         const badge = el('span', `decor-badge ${i % 2 === 0 ? 'left' : 'right'} float-${(i % 3) + 1}`);
         const ev = currentEvent();
-        if (ev) {   // événement en cours : tout le décor à son thème, avec ses anecdotes
+        if (!ev && babyDecorOn()) {   // semaine « Bienvenue bébé » : bleu à gauche, rose à droite
+            const left = i % 2 === 0;
+            const set = left ? BABY_DECOR.blue : BABY_DECOR.pink;
+            badge.textContent = set[Math.floor(i / 2) % set.length];
+            badge.classList.add(left ? 'baby-blue' : 'baby-pink');
+            badge.dataset.baby = '1';
+            badge.dataset.fact = String(i);
+        } else if (ev) {   // événement en cours : tout le décor à son thème, avec ses anecdotes
             badge.textContent = ev.decor[(i * 7 + 3) % ev.decor.length];
             badge.dataset.event = ev.id;
             badge.dataset.fact = String(i);
@@ -10692,7 +10735,7 @@ function bindEvents() {
     // Petits décors du parcours : un tap = une anecdote sur le thème ; un tap n'importe où la referme
     $('mapDecor').addEventListener('click', e => {
         const badge = e.target.closest('.decor-badge');
-        if (badge) badge.dataset.event ? showEventFact(badge) : showFact(badge.dataset.theme, badge);
+        if (badge) badge.dataset.baby ? showBabyFact(badge) : badge.dataset.event ? showEventFact(badge) : showFact(badge.dataset.theme, badge);
     });
     document.addEventListener('pointerdown', e => {
         if (!$('factBubble').hidden && !e.target.closest('.decor-badge') && !e.target.closest('.map-kulti')) $('factBubble').hidden = true;
