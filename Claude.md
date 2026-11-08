@@ -186,6 +186,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   46 coffres = 115 cartes, autant qu'avec 170 niveaux. Supabase : limite des cadeaux de niveau montée à 400 (parcours-190.sql,
   lancé par l'utilisateur). CORRECTION : nom de personne avec initiales accepté (`initialsMatch` : « JF Kennedy »,
   « J. F. Kennedy », « John Fitzgerald Kennedy » pour « John F. Kennedy » ; les initiales doivent toutes correspondre).
+- À REPRENDRE LE 09/11 (demandé le 08/11, « on en reparle demain ») : 1) PLACEMENT : garder le départ max au 81
+  (8 étapes, 1/3 de 230) ou passer à 10 étapes (départ jusqu'au 101) ; mon avis : garder 81. 2) COULEURS : aujourd'hui 12 au
+  départ + 1 tous les 10 niveaux du 10 au 120, rien après ; idée : les espacer jusqu'au 230 (ex. tous les 20) — ATTENTION
+  les couleurs gagnées ne sont pas enregistrées (`avHas` recalcule avec `maxDone`) : enregistrer celles déjà acquises avant
+  de monter un seuil. Aussi en discussion : bloc B (101-110, d 2,96) aussi facile que 91-100 (2,96) puis +0,25 au 111-120 ;
+  réserve de 132 questions (d moyen 3,31) dans le scratchpad lot4_pool2.js.
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de
