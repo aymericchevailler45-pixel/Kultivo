@@ -192,6 +192,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   les couleurs gagnées ne sont pas enregistrées (`avHas` recalcule avec `maxDone`) : enregistrer celles déjà acquises avant
   de monter un seuil. Aussi en discussion : bloc B (101-110, d 2,96) aussi facile que 91-100 (2,96) puis +0,25 au 111-120 ;
   réserve de 132 questions (d moyen 3,31) dans le scratchpad lot4_pool2.js.
+  3) PROPOSÉ le 08/11, en attente du « oui » : bloc B (ids 4050-4099, niveaux 101-110) de 2,96 à ~3,08 en échangeant ~10
+  questions faciles contre des questions de la réserve (3,2-3,6) → 2,96 / 3,08 / 3,21. Erreur de ma part : B devait être ~3,08,
+  l'échange avec le bloc A (A ≥ 2,70) l'a fait retomber. 4) Ensuite : niveaux 1-80 (encore +0,2 par dizaine) = 8 blocs,
+  ~390 questions FACILES (d 1,4-2,7) à écrire ; tous les testeurs sont au-delà → à faire plutôt juste avant la vraie sortie
+  (remise à zéro, plus de conversion). Après 190 : +0,15 à +0,2, pas urgent.
 - GARDÉ EN TÊTE (28/10, « on en reparle ») : CALENDRIER DE L'AVENT 1-24 décembre (une case par jour joué, récompense le 24 si
   aucun jour manqué) → en reparler EN NOVEMBRE avec Noël. « Secouer » un ami 👋 (série d'amis en danger) → quand l'appli
   sera sur le Play Store (vraie notification). Refusés : envoyer une question à un ami, rival sur l'écran de fin, album de
