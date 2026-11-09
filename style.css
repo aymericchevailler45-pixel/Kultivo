@@ -3586,6 +3586,8 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .medal-count span { flex: none; font-size: 0.85rem; font-weight: 700; color: var(--muted); }
 .train-tier { white-space: pre-line; }
 .train-meds { margin-top: auto; }   /* médailles toujours en bas de la case : pas de blanc dessous */
+.train-foot { display: flex; flex-direction: column; gap: 4px; margin-top: auto; margin-bottom: -12px; padding-bottom: 12px; cursor: pointer; }   /* zone « médailles » jusqu'au bas de la case */
+.train-tile:has(.train-foot:active) { transform: none; box-shadow: 0 3px 0 var(--line); }
 /* Dos des cartes « signé » (2026-10-28) : cadre fin + KULTIVO en bas (grandes cartes seulement) */
 .flip-back .flip-ring { position: absolute; inset: 7px; border: 2px solid rgba(255, 255, 255, 0.35); border-radius: 7px; pointer-events: none; }
 .flip-back .flip-word { position: absolute; bottom: 9px; left: 0; right: 0; text-align: center; color: #fff; font-weight: 900; font-size: 0.72rem; letter-spacing: 0.18em; opacity: 0.9; }

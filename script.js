@@ -8621,19 +8621,24 @@ function renderTraining() {
                 bar.append(seg);
             }
             bar.setAttribute('aria-label', `Palier ${pr.tier} sur ${TRAIN_TIERS}`);
-            tile.append(label, bar, medalRow(theme, icon));
+            // Sous le trait (médailles, palier du jour, à revoir) : la page des médailles ; au-dessus : le palier (09/11, demande)
+            const foot = el('div', 'train-foot');
+            foot.append(medalRow(theme, icon));
             if (pr.blockedToday) {
                 const today = el('span', 'train-today');
                 today.textContent = '✅ Palier du jour réussi · suite demain';
-                tile.append(today);
+                foot.append(today);
             }
             const errors = bank.filter(q => missCount(q.id) > 0).length;
             if (errors) {
                 const rev = el('span', 'train-errors');
                 rev.textContent = `↻ ${errors} à revoir`;
                 rev.title = 'Questions ratées : elles reviennent dans tes prochaines sessions';
-                tile.append(rev);
+                foot.append(rev);
             }
+            foot.addEventListener('click', e => { e.stopPropagation(); openMedalsSheet(theme, icon); });
+            foot.addEventListener('pointerdown', e => e.stopPropagation());
+            tile.append(label, bar, foot);
         }
         tile.addEventListener('click', () => (bank.length ? confirmTraining(theme, icon) : startTraining(theme)));
         grid.append(tile);
