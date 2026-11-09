@@ -334,7 +334,7 @@ LANGUE-FRANCAISE — 150 questions nouvelles (de la plus facile à la plus dure,
 
 84. [2.4] Quelle expression avec un chat veut dire « avoir des choses plus importantes à faire » ?
    → Avoir d’autres chats à fouetter / D’autres chats à fouetter
-   (Une expression qui date du XVIIIe siècle.)
+   (Fouetter un chat était une occupation sans aucune importance.)
 
 85. [2.4] Quelle expression avec un chat veut dire « dire les choses franchement » ?
    → Appeler un chat un chat

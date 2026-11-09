@@ -90,7 +90,7 @@ GEOGRAPHIE — 150 questions nouvelles (de la plus facile à la plus dure, note 
 
 23. [1.9] Comment appelle-t-on une zone où tous ont la même heure légale ?
    → Un fuseau horaire / Fuseau horaire
-   (La France (métropole) en a un, mais ses outre-mer en couvrent 12.)
+   (Grâce à ses outre-mer, la France en compte 12 : un record mondial.)
 
 24. [1.9] Quelle région du nord de la France a pour capitale Lille ?
    → Hauts-de-France / Hauts de France
@@ -588,7 +588,7 @@ GEOGRAPHIE — 150 questions nouvelles (de la plus facile à la plus dure, note 
    → Le Drakensberg / Drakensberg
    (Point culminant : 3 482 m, au Lesotho.)
 
-148. [3.8] Quel fleuve sibérien passe par Iakoutsk, la ville la plus froide du monde ?
+148. [3.8] Quel fleuve sibérien passe par Iakoutsk, la grande ville la plus froide du monde ?
    → La Léna / Léna / Lena
    (Lénine aurait tiré son nom de ce fleuve.)
 

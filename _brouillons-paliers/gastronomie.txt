@@ -252,7 +252,7 @@ GASTRONOMIE — 150 questions nouvelles (de la plus facile à la plus dure, note
    → 13 / Treize
    (Les « treize desserts », en souvenir du Christ et des apôtres.)
 
-64. [2.1] Quel jambon sec AOP du Pays basque est frotté au piment d’Espelette ?
+64. [2.1] Quel jambon sec IGP du Pays basque est frotté au piment d’Espelette ?
    → Le jambon de Bayonne / Jambon de Bayonne
    (Séché au moins 7 mois.)
 
@@ -274,7 +274,7 @@ GASTRONOMIE — 150 questions nouvelles (de la plus facile à la plus dure, note
 
 69. [2.1] Quel couteau aveyronnais est décoré d’une abeille (ou d’une mouche) sur le manche ?
    → Le Laguiole / Laguiole / Couteau Laguiole
-   (Le nom n’est pas protégé : beaucoup sont fabriqués ailleurs.)
+   (Beaucoup de « Laguiole » sont pourtant fabriqués loin de l’Aveyron.)
 
 70. [2.2] Quel poisson plat est cuit au beurre noisette dans un plat classique « meunière » ?
    → La sole / Sole / Sole meunière
@@ -304,7 +304,7 @@ GASTRONOMIE — 150 questions nouvelles (de la plus facile à la plus dure, note
    → La Cocotte-Minute / Cocotte-Minute / Autocuiseur / Cocotte minute
    (Une marque de SEB devenue un nom courant.)
 
-77. [2.3] Quelle charcuterie d’Alsace ou de Troyes, faite de tripes, a une association à 5 A ?
+77. [2.3] Quelle charcuterie de Troyes ou de Cambrai, faite de tripes, a une association à 5 A ?
    → L’andouillette / Andouillette
    (AAAAA : Association amicale des amateurs d’andouillette authentique.)
 
@@ -462,7 +462,7 @@ GASTRONOMIE — 150 questions nouvelles (de la plus facile à la plus dure, note
 
 116. [3.0] Quel chef français a été le premier à avoir trois restaurants trois étoiles en même temps ?
    → Alain Ducasse / Ducasse
-   (À Monaco, Paris et New York, à la fin des années 1990.)
+   (À Monaco, Paris et New York, en 2005.)
 
 117. [3.0] Quelle boisson bretonne au miel fermenté est une sorte d’hydromel ?
    → Le chouchen / Chouchen
@@ -538,7 +538,7 @@ GASTRONOMIE — 150 questions nouvelles (de la plus facile à la plus dure, note
 
 135. [3.5] Quelle sauce au beurre et aux jaunes d’œufs nappe les œufs Bénédicte ?
    → La sauce hollandaise / Hollandaise / Sauce hollandaise
-   (La béarnaise est la même, avec de l’estragon.)
+   (La béarnaise en est une cousine, à l’échalote et à l’estragon.)
 
 136. [3.5] Quelle sauce au beurre et à l’échalote est une spécialité nantaise pour le poisson ?
    → Le beurre blanc / Beurre blanc / Beurre nantais

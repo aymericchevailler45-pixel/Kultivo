@@ -126,7 +126,7 @@ TECHNOLOGIE — 150 questions nouvelles (de la plus facile à la plus dure, note
 
 32. [1.5] Quel petit bloc de l’écran d’accueil affiche directement la météo ou l’heure ?
    → Un widget / Widget
-   (Contraction de « window gadget ».)
+   (Mot anglais qui veut dire à peu près « petit bidule ».)
 
 33. [1.5] Quel appareil, à l’entrée d’un immeuble, permet de parler au visiteur avant de lui ouvrir ?
    → L’interphone / Interphone / Visiophone
@@ -234,7 +234,7 @@ TECHNOLOGIE — 150 questions nouvelles (de la plus facile à la plus dure, note
 
 59. [2.0] Quel support de stockage à disques magnétiques tournants est remplacé par le SSD ?
    → Le disque dur / Disque dur / HDD
-   (Ses plateaux tournent jusqu’à 7 200 tours par minute.)
+   (Ses plateaux tournent souvent à 5 400 ou 7 200 tours par minute.)
 
 60. [2.0] Quel casque permet de s’immerger dans un monde en 3D ?
    → Le casque de réalité virtuelle / Casque VR / Casque de réalité virtuelle / Réalité virtuelle
@@ -328,7 +328,7 @@ TECHNOLOGIE — 150 questions nouvelles (de la plus facile à la plus dure, note
    → Le reflex / Reflex
    (Peu à peu remplacé par les « hybrides », sans miroir.)
 
-83. [2.3] Quelle entreprise américaine a donné son nom à la photocopie ?
+83. [2.3] Quelle entreprise américaine a lancé la première photocopieuse de bureau ?
    → Xerox
    (On dit « to xerox » en anglais.)
 

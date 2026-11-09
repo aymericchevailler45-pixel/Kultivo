@@ -64,7 +64,7 @@ HISTOIRE — 150 questions nouvelles (de la plus facile à la plus dure, note de
    → Radio Londres / BBC / Radio-Londres
    (« Ici Londres, les Français parlent aux Français ».)
 
-17. [1.5] Quel fils adoptif de César aurait participé à son assassinat, d’après la phrase « Toi aussi, mon fils » ?
+17. [1.5] Quel protégé de César, qu’il traitait comme un fils, aurait participé à son assassinat, d’après la phrase « Toi aussi, mon fils » ?
    → Brutus / Marcus Junius Brutus
    (César fut poignardé de 23 coups.)
 
@@ -96,9 +96,9 @@ HISTOIRE — 150 questions nouvelles (de la plus facile à la plus dure, note de
    → Leclerc / Le général Leclerc / Philippe Leclerc de Hauteclocque
    (Avec l’aide des résistants parisiens insurgés.)
 
-25. [1.6] Quelle grande rafle de juillet 1942 a enfermé plus de 13 000 Juifs dans un vélodrome parisien ?
+25. [1.6] Quelle grande rafle de juillet 1942 a enfermé des milliers de Juifs dans un vélodrome parisien ?
    → La rafle du Vél’ d’Hiv / Vel d’Hiv / Rafle du Vel d’Hiv / Vélodrome d’Hiver
-   (Menée par la police française.)
+   (Plus de 13 000 personnes arrêtées par la police française.)
 
 26. [1.6] Quel pont aérien a ravitaillé Berlin-Ouest pendant le blocus soviétique de 1948-1949 ?
    → Le pont aérien de Berlin / Pont aérien / Blocus de Berlin
@@ -398,7 +398,7 @@ HISTOIRE — 150 questions nouvelles (de la plus facile à la plus dure, note de
 
 100. [2.7] Quelle fête du 14 juillet 1790 célébrait l’unité nationale au Champ-de-Mars ?
    → La fête de la Fédération / Fête de la Fédération
-   (C’est elle, et non la prise de la Bastille, que commémore officiellement le 14 Juillet.)
+   (Le 14 Juillet rappelle à la fois elle et la prise de la Bastille.)
 
 101. [2.7] Comment appelait-on les révolutionnaires parisiens en pantalon, et non en culotte ?
    → Les sans-culottes / Sans-culottes / Sans-culotte
@@ -406,7 +406,7 @@ HISTOIRE — 150 questions nouvelles (de la plus facile à la plus dure, note de
 
 102. [2.7] Quelle longue guerre a opposé l’Iran et l’Irak de 1980 à 1988 ?
    → La guerre Iran-Irak / Guerre Iran-Irak / Guerre Irak-Iran
-   (Environ un million de morts.)
+   (Plusieurs centaines de milliers de morts.)
 
 103. [2.8] Quel roi de Macédoine était le père d’Alexandre le Grand ?
    → Philippe II / Philippe II de Macédoine
@@ -482,7 +482,7 @@ HISTOIRE — 150 questions nouvelles (de la plus facile à la plus dure, note de
 
 121. [3.0] Quelle bataille de 1346 est une grande défaite française face aux archers anglais ?
    → Crécy / Bataille de Crécy
-   (Début de la guerre de Cent Ans.)
+   (Au début de la guerre de Cent Ans (commencée en 1337).)
 
 122. [3.0] Quel maréchal de Napoléon, « le brave des braves », a été fusillé en 1815 ?
    → Michel Ney / Ney / Maréchal Ney
