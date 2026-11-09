@@ -197,6 +197,16 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   l'échange avec le bloc A (A ≥ 2,70) l'a fait retomber. 4) Ensuite : niveaux 1-80 (encore +0,2 par dizaine) = 8 blocs,
   ~390 questions FACILES (d 1,4-2,7) à écrire ; tous les testeurs sont au-delà → à faire plutôt juste avant la vraie sortie
   (remise à zéro, plus de conversion). Après 190 : +0,15 à +0,2, pas urgent.
+- À VOIR APRÈS les sujets du 09/11 (notés le 09/11, demandés par l'utilisateur) :
+  1) PIÈCES : impression d'en gagner beaucoup (~2 500 🪙 en une semaine, mais pour ~6 000 XP, ce qui est énorme) → refaire le
+     calcul des sources (1 🪙 / 8 XP, objectif du jour, missions, duels, badges, podium, Kulti…) avant de toucher.
+  2) COFFRE DE CARTES de la boutique à 150 🪙 (`SHOP_CHEST`) : à monter un peu.
+  3) RÉVISIONS (« ↻ à revoir ») : trop d'XP trop vite (ex. 3 questions → ~30 XP, plusieurs fois d'affilée en quelques
+     secondes) → à revoir ENSEMBLE (plafond par jour ? XP réduite comme les niveaux refaits ?).
+  4) ENTRAÎNEMENT : médaille d'or gagnée, puis une erreur dans un entraînement suivant → 149/150 maîtrisées et la médaille
+     a DISPARU. Une médaille gagnée doit RESTER (enregistrée, comme `trainMedals`) ; à décider avec lui si une question
+     maîtrisée peut redevenir « pas maîtrisée » (aujourd'hui la maîtrise suit la série de bonnes réponses).
+- FAIT le 09/11 : bulle de Kulti (« Kulti s'est trompé ») lisible en mode sombre (fond rose foncé #4a2330).
 - FAIT le 08/11 : DÉCOR « BIENVENUE BÉBÉ » (un testeur attend un bébé, sexe connu dans la semaine) : du 9 au 15/11/2026, pour
   TOUT LE MONDE, seulement le décor (parcours + leçons) façon « Un gars, une fille » : icônes bleues à gauche, roses à droite
   (`BABY_DECOR`, `babyDecorOn`, classes `baby-blue` / `baby-pink`, `body.deco-baby` = fond bleu → rose), tap = anecdote sur
