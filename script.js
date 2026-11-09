@@ -5160,12 +5160,26 @@ function canTakePlacement() {
     return !d.placement && !Object.values(d.done).some(Boolean);
 }
 
-/** 3 questions tirées dans les niveaux de l'étape (ex. étape 0 : niveaux 1 à 19). */
+/* Questions FIXES du test de placement (2026-11-09, choisies avec l'utilisateur) : 3 par étape, toujours dans cet ordre,
+   chacune à la difficulté moyenne des niveaux de son étape, culture générale « classique », réponses faciles à écrire,
+   3 thèmes différents par étape. Une question introuvable est remplacée par une question tirée au sort dans l'étape. */
+const PLACEMENT_SET = [
+    [26, 402, 390],        // 1-19 : Roi-Soleil, planète rouge, capitale de l'Allemagne
+    [324, 340, 4477],      // 21-39 : Avatar, Moonwalk, potion magique
+    [616, 685, 4500],      // 41-59 : Vésuve, judo, Mona Lisa
+    [394, 371, 1153],      // 61-79 : Ulysse, escrime, pois chiche
+    [400, 2115, 116],      // 81-99 : Lincoln, drapeau de l'Inde, synonyme
+    [126, 43, 523],        // 101-119 : Nymphéas, Gibraltar, Web
+    [1118, 1157, 1120]     // 121-139 (3 sur 3) : Fahrenheit 451, Abbey Road, Carcassonne
+];
+/** Les 3 questions de l'étape (ex. étape 0 : niveaux 1 à 19). */
 function placementCards(step) {
     const from = step * PLACEMENT_STEP_LEVELS + 1;
     const to = from + PLACEMENT_STEP_LEVELS - 2;
     const pool = QUESTIONS.filter(q => q.niveau >= from && q.niveau <= to);
-    return shuffle(pool).slice(0, PLACEMENT_PER_STEP).map(q => ({ q, review: false }));
+    const fixed = (PLACEMENT_SET[step] || []).map(id => QUESTIONS.find(q => q.id === id)).filter(Boolean);
+    const extra = shuffle(pool.filter(q => !fixed.includes(q))).slice(0, Math.max(0, PLACEMENT_PER_STEP - fixed.length));
+    return [...fixed, ...extra].slice(0, PLACEMENT_PER_STEP).map(q => ({ q, review: false }));
 }
 
 function openPlacementModal(welcome = false) {

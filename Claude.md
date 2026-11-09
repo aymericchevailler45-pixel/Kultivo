@@ -214,6 +214,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   départ max 141 (difficulté ~2,8 comme l'ancien 81 sur 170) ; 2 bonnes sur 3 par étape, 3 sur 3 à la dernière (`placementNeed`) ;
   15 questions au plus si tout est juste. Bac à sable : option « Refaire le test de placement » (2e question du menu 🧪 ; la
   copie ne recule pas, on voit seulement le niveau obtenu).
+  QUESTIONS FIXES du placement (09/11, validées avec l'utilisateur ; `PLACEMENT_SET`) : 26 Roi-Soleil, 402 planète rouge, 390 Berlin /
+  324 Avatar, 340 Moonwalk, 4477 potion magique / 616 Vésuve, 685 judo, 4500 Mona Lisa / 394 Ulysse, 371 escrime (à la place
+  d'Attila, jugé pointu), 1153 pois chiche / 400 Lincoln, 2115 drapeau Inde, 116 synonyme / 126 Nymphéas, 43 Gibraltar, 523 Web /
+  1118 Fahrenheit 451, 1157 Abbey Road, 1120 Carcassonne. Chacune à la difficulté moyenne de son étape.
 - PUIS RAMENÉ À 300 NIVEAUX le 09/11 (l'utilisateur voulait 300, pas 310) : bloc après l'ancien 10 (ids 4400-4449) retiré,
   gardé dans le scratchpad reserve_bloc10.js. levels.js : `LEVEL_LAYOUT_INSERTS` (une liste par disposition, 1 à 5) remplace
   LEVEL_WAVES ; `levelFromLayout(n, layout, near)` renvoie null pour un niveau d'un bloc retiré (near = niveau d'origine juste
