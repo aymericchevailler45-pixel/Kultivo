@@ -3537,6 +3537,15 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .kulti-said-bubble::before { content: ''; position: absolute; left: -9px; top: 50%; width: 14px; height: 14px; margin-top: -7px;
     border-left: 2px solid #f3b4c0; border-bottom: 2px solid #f3b4c0; background: #fff0f3; transform: rotate(45deg); }
 .kulti-said-bubble b { color: var(--red-ink, #c0392b); text-decoration: line-through; text-decoration-thickness: 2px; }
+/* Mode sombre (2026-11-09) : le fond rose clair restait clair alors que le texte devenait blanc → bulle rose foncé */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .kulti-said-bubble,
+    :root:not([data-theme="light"]) .kulti-said-bubble::before { background: #4a2330; border-color: #b0566e; }
+    :root:not([data-theme="light"]) .kulti-said-bubble b { color: #ff8a8a; }
+}
+:root[data-theme="dark"] .kulti-said-bubble,
+:root[data-theme="dark"] .kulti-said-bubble::before { background: #4a2330; border-color: #b0566e; }
+:root[data-theme="dark"] .kulti-said-bubble b { color: #ff8a8a; }
 /* Missions : barre en 3 morceaux (2026-10-28) */
 .quest-row-bar.is-steps { gap: 4px; background: none; border-radius: 0; }
 .quest-row-bar.is-steps i { flex: 1; border-radius: 6px; background: var(--line); }
