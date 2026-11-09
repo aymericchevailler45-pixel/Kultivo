@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Sciences (ids 11151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Sciences (ids 11151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 11151, theme: "Sciences", d: 1.0, q: "Combien de pattes a un insecte ?", a: ["6", "Six"], exp: "Les araignées, elles, en ont 8 : ce ne sont pas des insectes." },
     { id: 11152, theme: "Sciences", d: 1.1, q: "Quel animal australien porte son petit dans une poche ventrale et se déplace en sautant ?", a: ["Le kangourou", "Kangourou"], exp: "Le petit s’appelle un joey." },

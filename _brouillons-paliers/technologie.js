@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Technologie (ids 13151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Technologie (ids 13151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 13151, theme: "Technologie", d: 1.0, q: "Quel mode du téléphone coupe le réseau pendant un vol ?", a: ["Le mode avion", "Mode avion"], exp: "Le Wi-Fi peut quand même être rallumé." },
     { id: 13152, theme: "Technologie", d: 1.0, q: "Quel appareil met des documents sur papier depuis l’ordinateur ?", a: ["L’imprimante", "Imprimante"], exp: "Jet d’encre ou laser." },

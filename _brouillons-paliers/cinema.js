@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Cinéma (ids 17151-17300) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Cinéma (ids 17151-17300) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 17151, theme: "Cinéma", d: 1.0, q: "Quel bonhomme de neige adore les câlins dans « La Reine des neiges » ?", a: ["Olaf"], exp: "Il rêve de découvrir l’été… sans savoir qu’il fondrait." },
     { id: 17152, theme: "Cinéma", d: 1.1, q: "Quel petit extraterrestre bleu est adopté par Lilo à Hawaï ?", a: ["Stitch", "Expérience 626"], exp: "« Lilo et Stitch », Disney, 2002 ; remake en prises de vue réelles en 2025." },

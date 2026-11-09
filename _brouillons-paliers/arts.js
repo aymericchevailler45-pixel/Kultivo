@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Arts (ids 20151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Arts (ids 20151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 20151, theme: "Arts", d: 1.1, q: "Quel personnage de théâtre italien porte un costume à losanges de couleurs ?", a: ["Arlequin", "Arlecchino"], exp: "Valet farceur de la commedia dell’arte." },
     { id: 20152, theme: "Arts", d: 1.2, q: "Comment appelle-t-on l’artiste qui marche sur un fil tendu en hauteur ?", a: ["Un funambule", "Funambule", "Équilibriste"], exp: "Philippe Petit a marché entre les tours du World Trade Center en 1974." },

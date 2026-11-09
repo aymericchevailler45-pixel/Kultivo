@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Sport (ids 19151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Sport (ids 19151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 19151, theme: "Sport", d: 1.0, q: "Quel carton l’arbitre de football sort-il pour expulser un joueur ?", a: ["Le carton rouge", "Carton rouge", "Rouge"], exp: "Deux cartons jaunes valent aussi un rouge." },
     { id: 19152, theme: "Sport", d: 1.1, q: "Quel carton l’arbitre sort-il pour un simple avertissement ?", a: ["Le carton jaune", "Carton jaune", "Jaune"], exp: "Inventé par l’arbitre anglais Ken Aston, pour la Coupe du monde 1970." },

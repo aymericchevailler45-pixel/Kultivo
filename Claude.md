@@ -278,7 +278,15 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Cinéma bien ; Musique trop dure (corrigé) ; Géo trop de capitales et notes trop basses (corrigé). RESTE À FAIRE avant de les
   mettre dans le jeu : vérifier en ligne les faits précis, coder TRAIN_TIERS = 10 + conversion des sauvegardes (trainTier,
   trainTierWon, trainChests) + carte Maître au 10, puis ajouter les questions dans entrainement/*.js.
-- 10 PALIERS, DÉCISIONS DU 09/11 (à coder ; rien en ligne) : conversion palier N/5 → 2N/10 ; RATTRAPAGE seulement pour les joueurs
+- 10 PALIERS EN LIGNE le 09/11 (v=20261109t, cache kultivo-v82) : `TRAIN_TIERS = 10`, `TRAIN_TIER_NAMES` (10 noms),
+  1 880 questions ajoutées à entrainement/*.js (bloc « lot des paliers 6-10 » en fin de fichier ; les brouillons
+  `_brouillons-paliers/` sont donc DANS le jeu maintenant) ; conversion UNE fois `migrateTrainLayout` (`TRAIN_LAYOUT = 2`, clé
+  `trainLayout` absente de defaultData) ; rattrapage `trainCatchup` + `TRAIN_CATCHUP = 3` dans pickTrainingCards ; coffres
+  `trainChestSize` (1 carte, 2 aux paliers 5 et 10 ; trainChests = t : coffres donnés pour 1 … t − 1, 11 = tout donné) ;
+  « Quoi de neuf ? » : `NOTES_DAY` (indépendant de PATCH_DAY, qui garde les réglages du 26/10) + nouvelles `PATCH_NOTES`.
+  Faux amis ajoutés : android/androïde, cross/crosse. Limite : « pralines » accepté pour « praliné » (même mot sans accents).
+  Test conversion (migr10.js) : palier 3 en cours → 5, or 150/150 → bronze, palier 4 réussi → 8 + coffres dus 1+1.
+- 10 PALIERS, DÉCISIONS DU 09/11 : conversion palier N/5 → 2N/10 ; RATTRAPAGE seulement pour les joueurs
   convertis : jusqu'à 3 questions jamais vues des paliers validés d'office par session (à la place de questions du palier en cours),
   s'arrête quand tout est vu ; aucune carte pour les paliers sautés. CARTES : 1 par palier, 2 aux paliers 5 et 10, carte Maître au 10.
   NOMS : Découverte, Curieux, Initié, Amateur, Confirmé, Averti, Expert, Érudit, Virtuose, Maître. MÉDAILLES : 1/3, 2/3, 100 % des

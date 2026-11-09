@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Langue française (ids 21151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Langue française (ids 21151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 21152, theme: "Langue française", d: 1.1, q: "Quelle expression veut dire « rêvasser, être distrait » ?", a: ["Être dans la lune", "Etre dans la lune", "Dans la lune", "Avoir la tête dans les nuages", "La tête dans les nuages", "Être dans les nuages", "Avoir la tête ailleurs", "Être tête en l’air", "Tête en l’air", "Être ailleurs", "Rêvasser"], exp: "On dit aussi « être dans les nuages »." },
     { id: 21153, theme: "Langue française", d: 1.1, q: "Quelle expression veut dire « dormir tard le matin » ?", a: ["Faire la grasse matinée", "Grasse matinée", "Faire la grasse mat", "Traîner au lit"], exp: "« Gras » voulait dire « paresseux, mou »." },

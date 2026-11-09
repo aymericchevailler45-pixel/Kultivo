@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Littérature (ids 15151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Littérature (ids 15151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 15151, theme: "Littérature", d: 1.0, q: "Quel petit ours en salopette rouge vit des aventures du quotidien avec sa maman et son papa ?", a: ["Petit Ours Brun", "Petit Ours brun"], exp: "Créé en 1975 dans le magazine « Pomme d’Api »." },
     { id: 15152, theme: "Littérature", d: 1.1, q: "Quel éléphant, roi en costume vert, a été créé par Jean de Brunhoff ?", a: ["Babar"], exp: "Premier album en 1931." },

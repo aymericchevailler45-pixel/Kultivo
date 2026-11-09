@@ -635,7 +635,7 @@ const isProperRaw = raw => {
 /** Même mot au genre ou au nombre près (un e, s, x ou « es » en plus) : « noir » / « noire », « jaunes » / « jaune ». */
 const sameWord = (x, y) => x === y || [x, y].some((u, i) => { const v = i ? x : y; return ['e', 's', 'x', 'es'].some(end => u === v + end); });
 // Faux amis : un « e » ou un « s » en plus, mais un tout autre mot
-const FALSE_FRIENDS = new Set(['rein|reine', 'reins|reine', 'rose|rosee', 'cour|course', 'mer|mere', 'pain|paine', 'port|porte', 'vers|verse', 'bal|bale', 'fil|file', 'mur|mure', 'sol|sole', 'tour|tours']);
+const FALSE_FRIENDS = new Set(['rein|reine', 'reins|reine', 'rose|rosee', 'cour|course', 'mer|mere', 'pain|paine', 'port|porte', 'vers|verse', 'bal|bale', 'fil|file', 'mur|mure', 'sol|sole', 'tour|tours', 'android|androide', 'cross|crosse']);
 const falseFriends = (a, b) => FALSE_FRIENDS.has(`${a}|${b}`) || FALSE_FRIENDS.has(`${b}|${a}`);
 const sameStem = (a, b) => { const p = a.split(' '), q = b.split(' '); return p.length === q.length && p.every((w, i) => sameWord(w, q[i]) && !falseFriends(w, q[i])); };
 const ORDER_MATTERS = /rébus|titre|film|roman|livre|œuvre|oeuvre|chanson|album|pièce|tableau|fable|conte|série|opéra|jeu vidéo|bande dessinée|BD/i;
@@ -766,7 +766,8 @@ function defaultData() {
         chests: {},                      // coffres du parcours ouverts : n° du niveau -> date
         podium: {},                      // classement : lundi de la semaine -> place obtenue (0 = rien)
         avatar: null,                    // avatar choisi : { hue: 0-359, emoji: '🦉' ou null = initiale }
-        trainTier: {},                   // entraînement : thème -> palier débloqué (1 à 5)
+        trainTier: {},                   // entraînement : thème -> palier débloqué (1 à 10)
+        trainCatchup: {},                // entraînement (10/11) : thème -> rattrapage des questions jamais vues des paliers validés à la conversion
         trainTierDay: {},                // entraînement : thème -> jour du dernier palier RÉUSSI (1 par jour)
         trainTierWon: {},                // entraînement (09/11) : thème -> dernier palier réussi ; le suivant s'ouvre un autre jour
         tipTraining: false,              // explication des paliers déjà vue (ancienne version, 1 bulle)
@@ -826,7 +827,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainTierWon', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone', 'duelStarted']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainTierWon', 'trainChests', 'trainMedals', 'trainCatchup', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone', 'duelStarted']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -860,6 +861,7 @@ function normalizeData(data) {
     }
 
     if ((data.levelLayout || 1) < LEVEL_LAYOUT) migrateLevelLayout(data);
+    if ((data.trainLayout || 1) < TRAIN_LAYOUT) migrateTrainLayout(data);
     const doneLevels = Object.keys(data.done).map(Number).filter(n => data.done[n]);
     const lastDone = doneLevels.length ? Math.max(...doneLevels) : 0;
     data.unlocked = Math.max(1, data.unlocked || 1, Math.min(lastDone + 1, MAX_LEVEL));
@@ -886,6 +888,45 @@ function migrateLevelLayout(data) {
     data.unlocked = R(Math.max(1, data.unlocked || 1) - 1) + 1;
     if (data.placement && data.placement.start) data.placement.start = R(data.placement.start - 1) + 1;
     data.levelLayout = LEVEL_LAYOUT;
+}
+
+/* Entraînement : 5 → 10 paliers (2026-11-10, décisions de l'utilisateur). Une sauvegarde d'avant (sans « trainLayout ») est
+   convertie UNE fois : palier N réussi sur 5 → palier 2N réussi sur 10 (le palier en cours N devient 2N − 1), coffres des paliers
+   validés marqués comme donnés (aucune carte en plus), rattrapage des questions jamais vues de ces paliers (trainCatchup),
+   médailles RECALCULÉES sur toutes les questions du thème (une seule fois ; les badges restent). Pas de « trainLayout » dans
+   defaultData (même raison que levelLayout). L'ancien palier réussi se calcule sur les anciennes questions (x001-x150, 5 paliers). */
+const TRAIN_LAYOUT = 2;
+function migrateTrainLayout(data) {
+    const bankAll = typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS;
+    const right = id => (data.stats[id]?.right || 0) >= 1;
+    const mastered = id => !!data.stats[id]?.mastered || (data.stats[id]?.streak || 0) >= 2;
+    const today = todayKey();
+    for (const { theme } of THEME_DECOR) {
+        const bank = bankAll.filter(q => q.theme === theme).sort((a, b) => a.d - b.d || a.id - b.id);
+        if (!bank.length) continue;
+        if (data.trainTier[theme] || data.trainTierWon[theme] !== undefined) {
+            const oldTier = Math.min(5, Math.max(1, data.trainTier[theme] || 1));
+            let oldWon = data.trainTierWon[theme];
+            if (oldWon === undefined) {   // jamais calculé : on le calcule sur les 5 anciens paliers
+                const old = bank.filter(q => q.id % 1000 <= 150);
+                const size = Math.ceil(old.length / 5) || 1;
+                const qs = old.slice((oldTier - 1) * size, oldTier * size);
+                const ready = qs.length > 0 && qs.filter(q => right(q.id)).length >= Math.ceil(qs.length * 2 / 3);
+                oldWon = ready && data.trainTierDay[theme] !== today ? oldTier : oldTier - 1;
+            }
+            oldWon = Math.max(0, Math.min(oldTier, oldWon));
+            data.trainTierWon[theme] = oldWon * 2;
+            data.trainTier[theme] = Math.max(1, oldWon === oldTier ? oldTier * 2 : oldTier * 2 - 1);
+            const given = Math.max(1, data.trainChests[theme] || 1);   // ancien : coffres donnés pour les paliers 1 … given − 1
+            data.trainChests[theme] = oldWon >= 5 ? TRAIN_TIERS + 1 : Math.min(2 * (given - 1), oldWon * 2) + 1;
+            if (oldWon >= 1) data.trainCatchup[theme] = true;
+        }
+        if (data.trainMedals[theme]) {   // médailles recalculées une fois sur toutes les questions du thème
+            const have = bank.filter(q => mastered(q.id)).length;
+            data.trainMedals[theme] = [1 / 3, 2 / 3, 1].filter(part => have >= Math.ceil(bank.length * part)).length;
+        }
+    }
+    data.trainLayout = TRAIN_LAYOUT;
 }
 
 /** Récupère la progression de l'ancienne version (clés cultureG_*). */
@@ -4322,7 +4363,7 @@ function openCardView(card, onBack = null, friendShiny = false) {
     $('chestStage').replaceChildren(cardFace(card, true, onBack ? friendShiny : isShiny(card)));
     const count = onBack ? 0 : (state.data.cards[card.id] || 0);
     $('chestNote').textContent = onBack ? (friendShiny ? '✨ Carte brillante' : '')
-        : card.rarity === 'master' ? '🏆 Gagnée en réussissant le palier 5 de l’entraînement.'
+        : card.rarity === 'master' ? `🏆 Gagnée en réussissant le palier ${TRAIN_TIERS} de l’entraînement.`
         : card.rarity === 'event' ? '🎉 Carte d’événement : on ne pouvait la gagner que cette semaine-là.'
         : !count ? '' : count >= SHINY_AT ? `✨ Carte brillante (${count} exemplaires)`
         : `${count} / ${SHINY_AT} exemplaires : à ${SHINY_AT}, elle devient brillante ✨`;
@@ -4389,7 +4430,7 @@ function openLockedMaster(card) {
     const box = el('div', 'kcard is-big is-missing is-locked rarity-master');
     box.textContent = '🔒';
     $('chestStage').replaceChildren(box);
-    $('chestNote').textContent = `Réussis le palier 5 en ${card.theme}, dans Défis → Entraînement, pour la gagner.`;
+    $('chestNote').textContent = `Réussis le palier ${TRAIN_TIERS} en ${card.theme}, dans Défis → Entraînement, pour la gagner.`;
     $('chestBtn').textContent = 'Compris';
     $('chestModal').hidden = false;
 }
@@ -8064,20 +8105,21 @@ function openTitlesModal() {
 }
 
 /* ---------- Entraînement par thème (banque séparée : entrainement/*.js) ----------
-   5 paliers par thème (questions triées par difficulté). Pour monter : réussir les 2/3 du palier (au moins une
+   10 paliers par thème depuis le 2026-11-10 (questions triées par difficulté ; 5 avant). Pour monter : réussir les 2/3 du palier (au moins une
    fois) ET en maîtriser 1/3 (réussies encore un autre jour). Session de 10, uniquement la banque d'entraînement
    (le parcours a ses propres révisions) : au plus 2 révisions (erreurs d'abord), le reste en nouveautés.
    Sans cœurs, XP réduits. */
-const TRAIN_TIERS = 5;
+const TRAIN_TIERS = 10;   // 10 paliers partout depuis le 2026-11-10 (avant : 5 ; conversion migrateTrainLayout)
 const TRAIN_SESSION = 10;
 const TRAIN_MAX_REVIEWS = 2;
-const TRAIN_TIER_NAMES = ['Découverte', 'Initié', 'Confirmé', 'Expert', 'Maître'];
+const TRAIN_CATCHUP = 3;   // rattrapage : questions jamais vues des paliers validés à la conversion (par session)
+const TRAIN_TIER_NAMES = ['Découverte', 'Curieux', 'Initié', 'Amateur', 'Confirmé', 'Averti', 'Expert', 'Érudit', 'Virtuose', 'Maître'];
 const XP_TRAINING = 2;
 
 const trainingBank = theme => (typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS)
     .filter(q => q.theme === theme).sort((a, b) => a.d - b.d || a.id - b.id);
 
-/** Les 5 paliers d'un thème (du plus facile au plus dur). */
+/** Les 10 paliers d'un thème (du plus facile au plus dur). */
 function trainingTiers(theme) {
     const bank = trainingBank(theme);
     const size = Math.ceil(bank.length / TRAIN_TIERS) || 1;
@@ -8135,17 +8177,15 @@ function trainingProgress(theme) {
 
 const masterCard = theme => CARDS.find(c => c.theme === theme && c.rarity === 'master');
 
-/** Coffres de palier pas encore donnés pour ce thème : 2 cartes du thème par palier gagné,
-    + la carte Maître au palier 5. Les marque comme donnés (l'ouverture enregistre la sauvegarde). */
+/** Coffres de palier pas encore donnés pour ce thème (2026-11-10) : 1 carte du thème par palier réussi, 2 aux paliers 5 et 10
+    (+ la carte Maître au dernier palier, donnée par endTraining). trainChests = t : coffres donnés pour les paliers 1 … t − 1.
+    Les marque comme donnés (l'ouverture enregistre la sauvegarde). */
+const trainChestSize = won => (won === 5 || won === TRAIN_TIERS ? 2 : 1);
 function trainChestBoxes(theme) {
-    const cur = trainTierOf(theme);
-    const tier = cur < TRAIN_TIERS && trainWonOf(theme) >= cur ? cur + 1 : cur;   // palier réussi = coffre tout de suite
+    const tier = Math.min(TRAIN_TIERS + 1, trainWonOf(theme) + 1);   // palier réussi = coffre tout de suite
     const from = state.data.trainChests[theme] || 1;
     const boxes = [];
-    for (let t = from + 1; t <= tier; t++) {
-        const box = { size: 2, theme };
-        boxes.push(box);
-    }
+    for (let t = from + 1; t <= tier; t++) boxes.push({ size: trainChestSize(t - 1), theme });
     if (tier > from) state.data.trainChests[theme] = tier;
     return boxes;
 }
@@ -8249,7 +8289,7 @@ function openMedalsSheet(theme, icon) {
         const got = !!state.data.cards[master.id];
         const mc = el('p', 'medal-note is-master');
         mc.textContent = got ? '🏆 Carte Maître du thème : obtenue !'
-            : `🏆 Et la carte Maître du thème : réussis le palier 5 (tu es au palier ${pr.tier} / ${TRAIN_TIERS}).`;
+            : `🏆 Et la carte Maître du thème : réussis le palier ${TRAIN_TIERS} (tu es au palier ${pr.tier} / ${TRAIN_TIERS}).`;
         body.append(mc);
     }
     $('friendModal').hidden = false;
@@ -8281,11 +8321,17 @@ function pickTrainingCards(theme) {
     const missed = shuffle(open.filter(q => missCount(q.id) > 0 && !isLater(q.id))).sort((a, b) => missCount(b.id) - missCount(a.id));
     const due = shuffle(open.filter(q => seen(q) && missCount(q.id) === 0 && isDue(q) && !isMastered(q.id) && !isLater(q.id)));
     take([...missed, ...due], TRAIN_MAX_REVIEWS);
+    // 2) Rattrapage (2026-11-10, joueurs convertis de 5 à 10 paliers) : jusqu'à 3 questions jamais vues des paliers validés
+    if (state.data.trainCatchup[theme]) {
+        const behind = shuffle(tiers.slice(0, cur - 1).flat().filter(q => !seen(q)));
+        if (behind.length) take(behind, TRAIN_CATCHUP);
+        else { delete state.data.trainCatchup[theme]; saveData(); }
+    }
     // 3) Nouveautés : palier en cours d'abord, puis paliers d'avant
     take(shuffle((tiers[cur - 1] || []).filter(q => !seen(q))), TRAIN_SESSION);
     take(shuffle(open.filter(q => !seen(q))), TRAIN_SESSION);
     // 4) Plus rien de neuf : on s'exerce sur le palier en cours (les moins sues d'abord), puis le reste.
-    //    Palier 5 réussi (2026-10-26) : les 150 questions du thème à égalité, les moins sues d'abord (vers la médaille d'or)
+    //    Dernier palier réussi (2026-10-26) : toutes les questions du thème à égalité, les moins sues d'abord (vers la médaille d'or)
     const allDone = cur >= TRAIN_TIERS && trainingProgress(theme).ready;
     take(shuffle(allDone ? open : tiers[cur - 1] || []).sort((a, b) => streakOf(a.id) - streakOf(b.id)), TRAIN_SESSION);
     take(shuffle(open), TRAIN_SESSION);
@@ -8347,7 +8393,7 @@ function endTraining() {
     const icon = (THEME_DECOR.find(t => t.theme === theme) || {}).icon || '🎯';
     const master = masterCard(theme);
     const masterMissing = !!master && !state.data.cards[master.id];
-    const masterNow = won && tier >= TRAIN_TIERS && masterMissing;   // palier 5 RÉUSSI : la carte Maître
+    const masterNow = won && tier >= TRAIN_TIERS && masterMissing;   // dernier palier RÉUSSI : la carte Maître
     // Palier du jour déjà réussi (ou validé demain) : la suite attend demain → on propose un autre thème
     const waitTomorrow = !won && pr.ready && pr.blockedToday && (tier < TRAIN_TIERS || masterMissing);
     let emoji = '🎯', title = `Entraînement · ${theme}`, text;
@@ -8359,8 +8405,8 @@ function endTraining() {
         playSound('win');
     } else if (masterNow) {
         emoji = '🏆';
-        title = 'Palier 5 réussi !';
-        text = `🏆 ${theme} : palier 5 réussi ! Tu gagnes la carte Maître.`;
+        title = `Palier ${TRAIN_TIERS} réussi !`;
+        text = `🏆 ${theme} : palier ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[TRAIN_TIERS - 1]} réussi ! Tu gagnes la carte Maître.`;
         launchConfetti();
         playSound('win');
     } else if (waitTomorrow) {
@@ -8375,7 +8421,7 @@ function endTraining() {
     } else {
         text = tier < TRAIN_TIERS
             ? `${icon} Pour réussir le palier ${tier} : ${trainingLeftText(pr)}.`
-            : `${icon} Pour réussir le palier 5 et gagner la carte Maître : ${trainingLeftText(pr)}.`;
+            : `${icon} Pour réussir le palier ${TRAIN_TIERS} et gagner la carte Maître : ${trainingLeftText(pr)}.`;
     }
     // Médaille du thème (bronze, argent, or) gagnée pendant cette session ?
     const medal = trainMedalOf(theme);
@@ -8405,7 +8451,7 @@ function endTraining() {
         secondary: later ? 'Continuer quand même' : 'Retour aux thèmes',
         onSecondary: later ? () => startTraining(theme) : toThemes
     });
-    // Coffre du palier réussi (2 cartes du thème ; au palier 5, la carte Maître)
+    // Coffre du palier réussi (1 carte du thème, 2 aux paliers 5 et 10 ; au dernier palier, la carte Maître)
     const boxes = trainChestBoxes(theme);
     if (masterNow) boxes.push({ size: 0, fixed: [master] });
     if (boxes.length) {
@@ -8489,7 +8535,7 @@ function showProfileTip() {
         text: '🎖️ Tes badges : quand l’un d’eux a une pastille, touche-le pour récupérer ta récompense.'
     }, {
         target: () => firstVisible('.profile-tab[data-tab="cards"]', '.card-collection'),
-        text: '🃏 Tes cartes, gagnées dans les coffres. Chaque exemplaire en plus te rapproche d’une carte brillante (1/3, 2/3…) : à 3, touche-la pour la transformer ✨. Au-delà, une carte en trop rapporte des pièces. 🔒 La carte Maître se gagne en réussissant le palier 5 de l’entraînement.'
+        text: '🃏 Tes cartes, gagnées dans les coffres. Chaque exemplaire en plus te rapproche d’une carte brillante (1/3, 2/3…) : à 3, touche-la pour la transformer ✨. Au-delà, une carte en trop rapporte des pièces. 🔒 La carte Maître se gagne en réussissant le palier 10 de l’entraînement.'
     }];
     if (!cloudUser) steps.push({
         target: () => $('cloudBtn'),
@@ -8526,7 +8572,7 @@ function showTrainingTip() {
         text: '🎯 Ici, des questions à part, différentes du parcours, pour t’entraîner sur le thème de ton choix.'
     }, {
         target: () => document.querySelector('.train-tile'),
-        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier : le suivant s’ouvre le lendemain (un palier par jour) : 🎁 un coffre de cartes du thème à chaque palier, et 🏆 la carte Maître en réussissant le palier 5 !'
+        text: '🪜 Chaque thème a 10 paliers. Réussis les 2/3 des questions d’un palier : le suivant s’ouvre le lendemain (un palier par jour) : 🎁 une carte du thème à chaque palier (2 aux paliers 5 et 10), et 🏆 la carte Maître en réussissant le palier 10 !'
     }, {
         target: () => document.querySelector('.train-tile'),
         text: '↻ Tes erreurs reviennent dans les sessions suivantes, jusqu’à ce que tu les saches.'
@@ -8562,7 +8608,7 @@ function renderTraining() {
             const pr = trainingProgress(theme);
             const label = el('span', 'train-tier');
             label.textContent = `Palier ${pr.tier} / ${TRAIN_TIERS}\n${TRAIN_TIER_NAMES[pr.tier - 1]}`;   // toujours 2 lignes : cases de même allure
-            // 5 morceaux : pleins = paliers passés, le palier en cours se remplit selon ce qu'il reste à faire
+            // 10 morceaux : pleins = paliers passés, le palier en cours se remplit selon ce qu'il reste à faire
             const bar = el('div', 'train-steps');
             const goal = pr.needRight + pr.needMastered;
             const done = Math.min(pr.right, pr.needRight) + Math.min(pr.mastered, pr.needMastered);
@@ -11257,26 +11303,20 @@ function initBac() {
                   fake('bac3', 'Inès', 200, '🦄', 'bg-or', 'fr-diamond', 180, 45), fake('bac4', 'Noé', 120, '🐢', 'bg-ocean', 'fr-checker', 90, 5)] };
 }
 
+/* « Quoi de neuf ? » (2026-11-09 : 10 paliers d'entraînement, texte validé par l'utilisateur, sans la ligne sur la correction).
+   NOTES_DAY = date de la dernière annonce (indépendante de PATCH_DAY, qui active encore la mise à jour du 26/10). */
+const NOTES_DAY = '2026-11-09';
 const PATCH_NOTES = [
-    // Court et clair (2026-10-25) : ce que les bulles d'explication disent déjà (citrouilles, règles d'Halloween) n'est pas répété
-    ['🎃', 'Halloween, jusqu’au 1er novembre', 'Un événement spécial dans Défis, avec une carte et des emojis d’avatar à gagner.'],
-    ['🛍️', 'Nouvelle boutique', 'Chaque lundi, une collection assortie pour ton avatar (cadre, fond, emoji) et ta carte de la semaine.'],
-    ['🎨', 'Ton avatar', 'Des fonds, des emojis et des cadres à débloquer en jouant. Bouton « ✏️ Modifier » à côté de ton nom.'],
-    ['🃏', '30 nouvelles cartes', '12 cartes par thème désormais, 180 en tout.'],
-    ['🔤', 'Indices plus pratiques', 'Avec un indice, tape seulement les lettres qui manquent : elles se placent dans la grille.'],
-    ['✍️', 'Correction plus précise', 'Un nouveau système reconnaît mieux les fautes de frappe dans tes réponses.'],
-    ['⏳', 'Frises', 'Reste appuyé sur une carte placée pour la déplacer. Et la difficulté monte plus doucement.'],
-    ['👆', 'Coup de pouce', 'Dans les frises et les paires : place une carte ou révèle une paire de ton choix.'],
-    ['🔁', 'Niveaux déjà réussis', 'Les refaire rapporte moins d’XP. S’ils font partie de tes 20 derniers niveaux, ils comptent pour tes missions.'],
-    ['🎖️', 'Titres revus', 'Il faut plus d’XP pour chaque titre. Ton XP, elle, ne change pas.'],
-    ['🪙', 'Pièces', 'Un peu moins par niveau, plus pour l’objectif du jour. Les indices sont moins chers en stock qu’au dernier moment.'],
-    ['📅', 'Toutes les questions', 'Défi du jour, sprint et duels piochent aussi dans les questions de l’entraînement.']
+    ['🎯', 'L’entraînement passe à 10 paliers', 'Près de 1 900 nouvelles questions : la plupart des thèmes ont maintenant 300 questions. Nouveaux paliers : Curieux, Amateur, Averti, Érudit et Virtuose. Le dernier, Maître, donne la carte Maître.'],
+    ['🔄', 'Ta progression est gardée', 'Ton palier est converti : le palier 3 sur 5 devient le palier 6 sur 10. Les nouvelles questions des paliers déjà validés arrivent petit à petit dans tes sessions.'],
+    ['🏅', 'Médailles recalculées', 'Elles comptent maintenant sur toutes les questions du thème. Si ton or est redevenu bronze ou argent, à toi de le reconquérir ! Tes badges, eux, restent.'],
+    ['🃏', 'Les cartes', '1 carte par palier réussi, et 2 aux paliers 5 et 10.']
 ];
 function maybeShowPatchNotes() {
     const d = state.data;
-    if (!patched() || (d.patchSeen === PATCH_DAY && !demoLundi) || !d.onboarded) return;
-    const oldPlayer = demoLundi || Object.keys(d.activeDays || {}).some(k => k < PATCH_DAY);
-    if (!oldPlayer) { d.patchSeen = PATCH_DAY; saveData(); return; }   // nouveau joueur : rien à annoncer
+    if ((d.patchSeen === NOTES_DAY && !demoLundi) || !d.onboarded) return;
+    const oldPlayer = demoLundi || Object.keys(d.activeDays || {}).some(k => k < NOTES_DAY);
+    if (!oldPlayer) { d.patchSeen = NOTES_DAY; saveData(); return; }   // nouveau joueur : rien à annoncer
     if (document.querySelector('.modal-overlay:not([hidden]), .tour:not([hidden])') || !$('studyScreen').hidden) {
         setTimeout(maybeShowPatchNotes, 3000);   // une autre fenêtre est ouverte : on réessaie plus tard
         return;
@@ -11301,7 +11341,7 @@ function maybeShowPatchNotes() {
 function closePatchNotes() {
     $('patchModal').hidden = true;
     if (demoLundi) return;   // démo : la fenêtre reviendra pour de vrai lundi
-    state.data.patchSeen = PATCH_DAY;
+    state.data.patchSeen = NOTES_DAY;
     saveData();
 }
 

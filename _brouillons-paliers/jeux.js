@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Jeux (ids 16151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Jeux (ids 16151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 16151, theme: "Jeux", d: 1.0, q: "Quel jeu d’enfants consiste à se cacher pendant que l’un compte ?", a: ["Cache-cache", "Le cache-cache"], exp: "Joué dans le monde entier, sous plein de noms." },
     { id: 16152, theme: "Jeux", d: 1.0, q: "Quel jeu à deux sur une grille de 3 × 3 se joue avec des croix et des ronds ?", a: ["Le morpion", "Morpion", "Tic-tac-toe"], exp: "Entre deux joueurs parfaits, c’est toujours match nul." },
@@ -135,7 +135,7 @@ TRAINING_QUESTIONS.push(
     { id: 16290, theme: "Jeux", d: 2.3, q: "Quel jeu d’arcade fait détruire des rochers dans l’espace avec un petit vaisseau triangulaire ?", a: ["Asteroids"], exp: "Atari, 1979." },
     { id: 16291, theme: "Jeux", d: 2.4, q: "Quel jeu Zelda de 2000 donne trois jours avant que la Lune s’écrase ?", a: ["Majora’s Mask", "Zelda Majora’s Mask", "Majoras Mask"], exp: "On peut remonter le temps avec l’ocarina." },
     { id: 16292, theme: "Jeux", d: 2.4, q: "Quelle championne d’arène rousse, de type Eau, accompagne aussi Sacha dans le dessin animé ?", a: ["Ondine", "Misty"], exp: "Championne de l’arène d’Azuria." },
-    { id: 16293, theme: "Jeux", d: 2.4, q: "Quelles deux versions de Pokémon sont sorties en France en 1999 ?", a: ["Rouge et Bleu", "Pokémon Rouge et Bleu", "Rouge", "Bleu"], exp: "Au Japon, il y avait Rouge et Vert dès 1996." },
+    { id: 16293, theme: "Jeux", d: 2.4, q: "Quelles deux versions de Pokémon sont sorties en France en 1999 ?", a: ["Rouge et Bleu", "Pokémon Rouge et Bleu"], exp: "Au Japon, il y avait Rouge et Vert dès 1996." },
     { id: 16294, theme: "Jeux", d: 2.5, q: "Quel duo de Naughty Dog met en scène un garçon et une belette orange qui parle ?", a: ["Jak and Daxter", "Jak et Daxter"], exp: "Sur PlayStation 2, en 2001." },
     { id: 16295, theme: "Jeux", d: 2.5, q: "Quel duo PlayStation réunit un Lombax et un petit robot ?", a: ["Ratchet & Clank", "Ratchet et Clank", "Ratchet and Clank"], exp: "Avec des armes de plus en plus folles." },
     { id: 16296, theme: "Jeux", d: 2.5, q: "Quel duo de Rare réunit un ours et un oiseau rouge dans son sac à dos ?", a: ["Banjo-Kazooie", "Banjo et Kazooie"], exp: "Sur Nintendo 64, en 1998." },

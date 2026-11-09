@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Musique (ids 14151-14300) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Musique (ids 14151-14300) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 14151, theme: "Musique", d: 1.0, q: "Quelle chanson enfantine demande à un moine « Dormez-vous ? » ?", a: ["Frère Jacques"], exp: "Chantée en canon dans le monde entier." },
     { id: 14152, theme: "Musique", d: 1.0, q: "Quel chant de Noël anglais parle de clochettes sur un traîneau ?", a: ["Jingle Bells"], exp: "Écrit vers 1857 par l’Américain James Lord Pierpont." },

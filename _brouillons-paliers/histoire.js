@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Histoire (ids 10151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Histoire (ids 10151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 10151, theme: "Histoire", d: 1.1, q: "Quel homme préhistorique, cousin du nôtre, doit son nom à une vallée allemande ?", a: ["Néandertal", "L’homme de Néandertal", "Neandertal", "Neanderthal"], exp: "Il a disparu il y a environ 40 000 ans." },
     { id: 10152, theme: "Histoire", d: 1.2, q: "Quel bateau long et fin, à tête de dragon, utilisaient les Vikings ?", a: ["Le drakkar", "Drakkar"], exp: "Les Vikings l’appelaient plutôt « langskip »." },

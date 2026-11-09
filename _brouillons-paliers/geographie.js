@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Géographie (ids 12151-12300) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Géographie (ids 12151-12300) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 12151, theme: "Géographie", d: 1.0, q: "Quelle région a pour préfecture Paris ?", a: ["Île-de-France", "Ile de France"], exp: "La région la plus peuplée de France, environ 12 millions d’habitants." },
     { id: 12152, theme: "Géographie", d: 2.4, q: "Quelle forêt de conifères couvre le nord de la Russie et du Canada ?", a: ["La taïga", "Taïga", "Taiga"], exp: "La plus grande forêt du monde." },

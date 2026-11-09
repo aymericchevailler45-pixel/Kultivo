@@ -1,4 +1,4 @@
-/* Paliers 6-10 · Gastronomie (ids 18151+) — brouillon, PAS dans le jeu */
+/* Paliers 6-10 · Gastronomie (ids 18151+) — copie de travail : ces questions SONT dans le jeu (entrainement/) depuis le 09/11 */
 TRAINING_QUESTIONS.push(
     { id: 18151, theme: "Gastronomie", d: 1.0, q: "Comment appelle-t-on le pain au chocolat dans le Sud-Ouest ?", a: ["Une chocolatine", "Chocolatine"], exp: "Un débat qui divise la France depuis longtemps." },
     { id: 18152, theme: "Gastronomie", d: 1.0, q: "Quel croque-monsieur porte en plus un œuf au plat ?", a: ["Le croque-madame", "Croque-madame", "Croque madame"], exp: "L’œuf rappellerait un chapeau de dame." },
