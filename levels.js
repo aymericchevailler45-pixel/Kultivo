@@ -42,7 +42,7 @@ const AUTO_LEVEL_NAMES = true;   // false = garder les noms de niveaux de questi
    questions + 15 niveaux Paires + 15 niveaux Ordre + 15 défis, le dernier
    niveau étant un défi).
    null = automatique : environ 5 questions par niveau. */
-const TOTAL_LEVELS = 310;   // 170 → 190 → 230 (03/11) → 310 (09/11) : 140 niveaux insérés en trois vagues (LEVEL_WAVES)
+const TOTAL_LEVELS = 300;   // 170 → 190 → 230 (03/11) → 310 → 300 (09/11) : 130 niveaux insérés (LEVEL_LAYOUT_INSERTS)
 
 /* Lots de questions : chaque lot remplit ses propres niveaux, pour qu'un ajout futur ne change JAMAIS les niveaux
    déjà joués. 2026-10-20 : sauvegardes remises à zéro → tout le parcours (170 niveaux) refait d'un seul lot, avec une
@@ -67,8 +67,7 @@ const LEVEL_LOTS = [
     { from: 4250, to: 4299, also: [4330, 4339], after: 130, hardFrom: 1, hardCurve: 1,
       names: ['Les vigies', 'Dernier relais', 'Toutes voiles', 'Au long cours', 'Hautes terres', 'Cap sur les cimes', 'Le belvédère'] },
     // Lot 5 (2026-11-09, 3e vague) : un bloc facile après chacun des anciens 10, 20, …, 70 et un bloc dur après l'ancien 150
-    { from: 4400, to: 4449, after: 10, hardFrom: 1, hardCurve: 1,
-      names: ['Petit à petit', 'Bon départ', 'Premières pistes', 'En route', 'Coup d’essai', 'Tour de chauffe', 'Pas de souris'] },
+    // (bloc après l'ancien 10, ids 4400-4449 : retiré le 09/11, l'utilisateur voulait 300 niveaux et pas 310)
     { from: 4450, to: 4499, after: 20, hardFrom: 1, hardCurve: 1,
       names: ['Grains de savoir', 'Du bon pied', 'Tout en douceur', 'Petit trot', 'Fil rouge', 'Bonne pioche', 'Clins d’œil'] },
     { from: 4500, to: 4549, after: 30, hardFrom: 1, hardCurve: 1,
@@ -86,20 +85,30 @@ const LEVEL_LOTS = [
 ];
 /* Blocs de 10 niveaux insérés APRÈS ces anciens numéros (numérotation d'origine du lot 1, 170 niveaux), vague par vague.
    1re vague (2026-11-03) : après 80 et 90 (parcours de 190) ; 2e vague (même jour) : après 100, 110, 120 et 130 (230) ;
-   3e vague (2026-11-09) : après 10, 20, …, 70 (blocs faciles) et après 150 (bloc dur) : 310 niveaux.
+   3e vague (2026-11-09) : après 10, 20, …, 70 (blocs faciles) et après 150 (bloc dur) : 310 niveaux, puis le bloc après 10
+   retiré le même jour (300 niveaux). Chaque disposition a sa liste dans LEVEL_LAYOUT_INSERTS (un bloc peut donc disparaître :
+   ses niveaux faits et ses coffres sont oubliés, la suite reprend sa place).
    Un lot inséré dit `after: <ancien numéro>` : ses niveaux sont levelRenumber(after) + 1 à + 10.
    L'ancien niveau 81 devient le 91, l'ancien 101 le 131… Le jeu convertit les sauvegardes une seule fois, quelle que soit
    la disposition d'où elles viennent (LEVEL_LAYOUT dans script.js = nombre de vagues + 1, levelFromLayout).
    Pour une nouvelle vague : ajouter une ligne ICI (anciens numéros) + un lot par bloc, et monter LEVEL_LAYOUT. */
-const LEVEL_WAVES = [[80, 90], [100, 110, 120, 130], [10, 20, 30, 40, 50, 60, 70, 150]];
+// Points d'insertion (anciens numéros) de chaque disposition : index 0 = disposition 1 (170 niveaux), etc.
+const LEVEL_LAYOUT_INSERTS = [
+    [],                                                                          // 1 : 170 niveaux
+    [80, 90],                                                                    // 2 : 190 (03/11)
+    [80, 90, 100, 110, 120, 130],                                                // 3 : 230 (03/11)
+    [80, 90, 100, 110, 120, 130, 10, 20, 30, 40, 50, 60, 70, 150],               // 4 : 310 (09/11, une heure)
+    [80, 90, 100, 110, 120, 130, 20, 30, 40, 50, 60, 70, 150]                    // 5 : 300 (09/11)
+];
 const LEVEL_ORIGINAL = 170;   // niveaux du lot 1 (numérotation d'origine)
-const LEVEL_INSERTS = LEVEL_WAVES.flat();
+const LEVEL_INSERTS = LEVEL_LAYOUT_INSERTS[LEVEL_LAYOUT_INSERTS.length - 1];
 const levelRenumber = n => n + 10 * LEVEL_INSERTS.filter(x => n > x).length;
 /** Niveau n d'une sauvegarde faite avec la disposition `layout` (1 = 170 niveaux d'origine, 2 = après la 1re vague…)
-    → son numéro aujourd'hui. Un niveau inséré garde sa place dans son bloc. */
-function levelFromLayout(n, layout) {
+    → son numéro aujourd'hui. Un niveau inséré garde sa place dans son bloc. Niveau d'un bloc retiré depuis : null, ou, avec
+    `near`, le numéro du niveau d'origine juste avant ce bloc. */
+function levelFromLayout(n, layout, near = false) {
     if (!(n >= 1)) return n;
-    const ins = LEVEL_WAVES.slice(0, Math.max(0, layout - 1)).flat();
+    const ins = LEVEL_LAYOUT_INSERTS[Math.min(LEVEL_LAYOUT_INSERTS.length, Math.max(1, layout)) - 1];
     const keys = [];
     for (let o = 1; o <= LEVEL_ORIGINAL; o++) {
         keys.push([o, 0]);
@@ -107,6 +116,7 @@ function levelFromLayout(n, layout) {
     }
     if (n > keys.length) return n - keys.length + levelRenumber(LEVEL_ORIGINAL);
     const [o, j] = keys[n - 1];
+    if (j && !LEVEL_INSERTS.includes(o)) return near ? levelRenumber(o) : null;
     return levelRenumber(o) + j;
 }
 

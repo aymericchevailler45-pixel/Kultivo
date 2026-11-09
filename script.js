@@ -775,11 +775,12 @@ function normalizeData(data) {
    (facultatifs, jouables quand il veut) et leurs coffres ne s'ouvrent qu'en les terminant. Un joueur pile au début d'un
    bloc inséré (ex. : il allait jouer l'ancien 81) commence ce bloc. Pas de « levelLayout » dans defaultData : sinon une
    vieille sauvegarde, complétée par defaultData au chargement, paraîtrait déjà convertie. */
-const LEVEL_LAYOUT = 4;   // 2 = 1re vague (190 niveaux), 3 = 2e vague (230), 4 = 3e vague (310 niveaux, 09/11)
+const LEVEL_LAYOUT = 5;   // 2 = 190 niveaux, 3 = 230, 4 = 310 (une heure le 09/11), 5 = 300 (bloc après l'ancien 10 retiré)
 function migrateLevelLayout(data) {
     const from = data.levelLayout || 1;
-    const R = typeof levelFromLayout === 'function' ? n => levelFromLayout(n, from) : n => n;
-    const remap = obj => Object.fromEntries(Object.entries(obj || {}).map(([k, v]) => [String(R(Number(k))), v]));
+    const R = typeof levelFromLayout === 'function' ? n => levelFromLayout(n, from, true) : n => n;
+    const F = typeof levelFromLayout === 'function' ? n => levelFromLayout(n, from) : n => n;   // null = niveau d'un bloc retiré
+    const remap = obj => Object.fromEntries(Object.entries(obj || {}).map(([k, v]) => [F(Number(k)), v]).filter(([k]) => k !== null).map(([k, v]) => [String(k), v]));
     data.done = remap(data.done);
     data.chests = remap(data.chests);
     if (data.replayDay && data.replayDay.levels) data.replayDay.levels = remap(data.replayDay.levels);

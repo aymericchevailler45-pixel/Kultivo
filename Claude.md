@@ -206,6 +206,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   4) ENTRAÎNEMENT : médaille d'or gagnée, puis une erreur dans un entraînement suivant → 149/150 maîtrisées et la médaille
      a DISPARU. Une médaille gagnée doit RESTER (enregistrée, comme `trainMedals`) ; à décider avec lui si une question
      maîtrisée peut redevenir « pas maîtrisée » (aujourd'hui la maîtrise suit la série de bonnes réponses).
+- PUIS RAMENÉ À 300 NIVEAUX le 09/11 (l'utilisateur voulait 300, pas 310) : bloc après l'ancien 10 (ids 4400-4449) retiré,
+  gardé dans le scratchpad reserve_bloc10.js. levels.js : `LEVEL_LAYOUT_INSERTS` (une liste par disposition, 1 à 5) remplace
+  LEVEL_WAVES ; `levelFromLayout(n, layout, near)` renvoie null pour un niveau d'un bloc retiré (near = niveau d'origine juste
+  avant) ; `LEVEL_LAYOUT = 5` (dans migrateLevelLayout, les niveaux faits / coffres d'un bloc retiré sont oubliés). Seuils
+  recalculés : couleurs 10, 20, 40, 60, 80, 100, 120, 140, 150, 160, 170, 180 ; 🚂 20, 🔭 80, 🗿 140, 👻 220, Explorateur 155.
+  Courbe : 1,33 / 1,50 / 1,62 / … / 4,49 (+0,1 environ par dizaine, sauf 1-10 → 11-20 : +0,17).
 - FAIT le 09/11 (demande de l'utilisateur, « genre 300 niveaux ») : PARCOURS DE 310 NIVEAUX, 3e vague = 8 blocs de 10 :
   7 FACILES après les anciens 10, 20, …, 70 (ids 4400-4749, 50 par bloc ; moyennes 1,40 / 1,62 / 1,83 / 2,02 / 2,24 / 2,45 / 2,68)
   + 1 DUR après l'ancien 150 (ids 4750-4799, 4,24). 383 questions nouvelles (scratchpad lot5_easy*.js, lot5_hard*.js, lot5_build.py,

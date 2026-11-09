@@ -19,25 +19,25 @@ const AV_EARN_PICS = [
     ['🎸', 'Termine une leçon sans faute', s => s.flawless >= 1],
     ['🥐', 'Joue un défi du jour', s => s.dailyDone >= 1],
     ['🧩', 'Termine une révision', s => s.reviews >= 1],
-    ['🚂', 'Termine le niveau 30', s => s.maxDone >= 30],   // 20 → 30 (09/11, niveaux insérés avant)
+    ['🚂', 'Termine le niveau 20', s => s.maxDone >= 20],   // ancien 20 (aucun bloc inséré avant depuis le 09/11)
     ['🦈', 'Réussis un niveau défi 🏆', s => s.challengesDone >= 1],
     ['🐍', 'Fais 8 bonnes réponses en un sprint', s => s.bestSprint >= 8],
     ['🎷', 'Atteins l’objectif du jour 7 fois', s => s.goalDays >= 7],
     ['🐋', 'Donne 100 bonnes réponses du premier coup', s => s.right >= 100],
     ['🦖', 'Fais une série de 7 jours', s => s.bestStreak >= 7],
-    ['🔭', 'Termine le niveau 90', s => s.maxDone >= 90],   // 50 → 90 (09/11)
+    ['🔭', 'Termine le niveau 80', s => s.maxDone >= 80],   // ancien 50 → 80 (09/11)
     ['🐎', 'Joue 7 défis du jour', s => s.dailyDone >= 7],
     ['🧲', 'Termine 5 révisions', s => s.reviews >= 5],
     ['🤖', 'Gagne un duel', s => s.duelsWon >= 1],
     ['🦁', 'Termine 5 leçons sans faute', s => s.flawless >= 5],
-    ['🗿', 'Termine le niveau 150', s => s.maxDone >= 150],   // 80 → 150 (09/11)
+    ['🗿', 'Termine le niveau 140', s => s.maxDone >= 140],   // ancien 80 → 140 (09/11)
     ['🚀', 'Fais 10 bonnes réponses en un sprint', s => s.bestSprint >= 10],
     ['🌋', 'Fais 10/10 au défi du jour', s => s.dailyPerfect],
     ['🏆', 'Finis une semaine 1er de la ligue des amis', s => s.leagueWins >= 1],
     ['👽', 'Donne 500 bonnes réponses du premier coup', s => s.right >= 500],
     ['🦄', 'Fais une série de 30 jours', s => s.bestStreak >= 30],
     ['🎨', 'Complète un thème de cartes', s => s.themesComplete >= 1],
-    ['👻', 'Termine le niveau 230', s => s.maxDone >= 230]   // 120 → 140 → 160 → 230 (niveaux insérés avant : même difficulté)
+    ['👻', 'Termine le niveau 220', s => s.maxDone >= 220]   // ancien 120 → 220 (niveaux insérés avant : même difficulté)
 ];
 
 // type : 'frame' (cadre) | 'bg' (fond) | 'pic' (dessin) ; kind : 'earn' (à gagner) | 'shop' (boutique)
@@ -53,7 +53,7 @@ const AV_ITEMS = [
     { id: 'fr-diamond',     type: 'frame', kind: 'earn', name: 'Diamant',         fx: 'tag',    how: 'Finis 25 semaines 1er de la ligue des amis', test: s => s.leagueWins >= 25 },
     { id: 'fr-swords',      type: 'frame', kind: 'earn', name: 'Épées',           fx: 'tag',    how: 'Gagne 10 duels',                             test: s => s.duelsWon >= 10 },
     { id: 'fr-gladiator',   type: 'frame', kind: 'earn', name: 'Gladiateur',      fx: 'tag',    how: 'Gagne 50 duels',                             test: s => s.duelsWon >= 50 },
-    { id: 'fr-explorer',    type: 'frame', kind: 'earn', name: 'Explorateur',     fx: 'tag',    how: 'Termine le niveau 165', test: s => s.maxDone >= 165 },   // 85 → 95 → 165 (niveaux insérés avant ; la moitié du parcours d'origine)
+    { id: 'fr-explorer',    type: 'frame', kind: 'earn', name: 'Explorateur',     fx: 'tag',    how: 'Termine le niveau 155', test: s => s.maxDone >= 155 },   // ancien 85 → 155 (niveaux insérés avant ; la moitié du parcours d'origine)
     { id: 'fr-globe',       type: 'frame', kind: 'earn', name: 'Globe-trotteur',  fx: 'tag',    how: 'Termine tout le parcours',                   test: s => s.mapComplete },
     { id: 'fr-master',      type: 'frame', kind: 'earn', name: 'Maître',          fx: 'tag',    how: 'Gagne une carte Maître (palier 5 d’entraînement)', test: s => s.masters >= 1 },
     { id: 'fr-grandmaster', type: 'frame', kind: 'earn', name: 'Grand Maître',    fx: 'tag',    how: 'Gagne 5 cartes Maître',                      test: s => s.masters >= 5 },
