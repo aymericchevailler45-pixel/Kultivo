@@ -5,7 +5,7 @@ TRAINING_QUESTIONS.push(
     { id: 14153, theme: "Musique", d: 1.1, q: "Quel chant de Noël français commence par « Quand tu descendras du ciel » ?", a: ["Petit Papa Noël"], exp: "Chanté par Tino Rossi en 1946, record de ventes en France." },
     { id: 14154, theme: "Musique", d: 1.1, q: "Quel chant de Noël allemand s’appelle « Stille Nacht » en VO ?", a: ["Douce nuit", "Douce nuit, sainte nuit"], exp: "Créé en Autriche en 1818." },
     { id: 14155, theme: "Musique", d: 1.2, q: "Quel chant de Noël fait l’éloge du « roi des forêts » ?", a: ["Mon beau sapin"], exp: "Adapté de l’allemand « O Tannenbaum »." },
-    { id: 1.6, theme: "Musique", d: 1.2, q: "Quel instrument africain en forme de calice se joue à mains nues ?", a: ["Le djembé", "Djembé", "Djembe"], exp: "Originaire d’Afrique de l’Ouest." },
+    { id: 14156, theme: "Musique", d: 1.6, q: "Quel instrument africain en forme de calice se joue à mains nues ?", a: ["Le djembé", "Djembé", "Djembe"], exp: "Originaire d’Afrique de l’Ouest." },
     { id: 14157, theme: "Musique", d: 1.2, q: "Quelles petites coquilles en bois claque-t-on dans la main en dansant le flamenco ?", a: ["Les castagnettes", "Castagnettes"], exp: "On les tient par une cordelette autour du pouce." },
     { id: 14158, theme: "Musique", d: 1.3, q: "Quel grand disque de métal suspendu frappe-t-on avec une mailloche ?", a: ["Le gong", "Gong"], exp: "Originaire d’Asie du Sud-Est." },
     { id: 14159, theme: "Musique", d: 1.3, q: "Quelle chanson de Gloria Gaynor (1978) est devenue un hymne de résistance ?", a: ["I Will Survive"], exp: "Hymne des Bleus en 1998." },

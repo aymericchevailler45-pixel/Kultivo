@@ -266,6 +266,16 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - FAIT le 09/11 : bulle de Kulti (« Kulti s'est trompé ») lisible en mode sombre (fond rose foncé #4a2330).
 - FAIT le 09/11 : réponse en chiffres (a[0] = nombre : années, « combien… ») → pavé numérique (`inputMode` decimal dans showCard). COLLECTION COMPLÈTE (09/11, choix A + ruban de C avec le K) : `showCollectionAnim` (calque `#collectionAnim`, file `celebrate`, une fête par thème, remplace la fenêtre + confettis de `checkThemeComplete`), cartes qui se retournent + compteur, la dernière tremble, ruban rouge « Thème complet ! » avec le K ; bac à sable : option « Voir la fête » ; prix de la recharge de gouttes (150) discuté.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
+- ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
+  = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
+  (sur toutes les questions du thème), carte Maître au palier 10. BROUILLONS (pas dans le jeu) : dossier `_brouillons-paliers/`
+  (.js au format du jeu + .txt lisibles), 1 442 questions nouvelles, ids x151+ : Cinéma 150, Musique 150 (rendue plus accessible :
+  moins de compositeurs, plus de tubes), Géographie 150 (28 capitales retirées, notes du vocabulaire remontées), Histoire 85,
+  Sport 111, Sciences 115, Littérature 114, Arts 75, Gastronomie 118, Technologie 85, Jeux 97, Langue française 94, Mythologie 49,
+  Monuments 49 (sans photo), Drapeaux 0. Sujets vérifiés libres avec free.py + check4.py (scratchpad). Avis de l'utilisateur :
+  Cinéma bien ; Musique trop dure (corrigé) ; Géo trop de capitales et notes trop basses (corrigé). RESTE À FAIRE avant de les
+  mettre dans le jeu : vérifier en ligne les faits précis, coder TRAIN_TIERS = 10 + conversion des sauvegardes (trainTier,
+  trainTierWon, trainChests) + carte Maître au 10, puis ajouter les questions dans entrainement/*.js.
 - FAIT le 08/11 : DÉCOR « BIENVENUE BÉBÉ » (un testeur attend un bébé, sexe connu dans la semaine) : du 9 au 15/11/2026, pour
   TOUT LE MONDE, seulement le décor (parcours + leçons) façon « Un gars, une fille » : icônes bleues à gauche, roses à droite
   (`BABY_DECOR`, `babyDecorOn`, classes `baby-blue` / `baby-pink`, `body.deco-baby` = fond bleu → rose), tap = anecdote sur

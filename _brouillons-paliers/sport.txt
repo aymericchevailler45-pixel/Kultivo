@@ -1,0 +1,445 @@
+SPORT — 111 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+
+1. [1.0] Quel carton l’arbitre de football sort-il pour expulser un joueur ?
+   → Le carton rouge / Carton rouge / Rouge
+   (Deux cartons jaunes valent aussi un rouge.)
+
+2. [1.1] Quel carton l’arbitre sort-il pour un simple avertissement ?
+   → Le carton jaune / Carton jaune / Jaune
+   (Inventé par l’arbitre anglais Ken Aston, pour la Coupe du monde 1970.)
+
+3. [1.2] Quel objet l’arbitre utilise-t-il pour arrêter le jeu ?
+   → Le sifflet / Sifflet
+   (Les arbitres de football l’utilisent depuis la fin du XIXe siècle.)
+
+4. [1.3] Comment appelle-t-on le geste de faire passer le ballon entre les jambes d’un adversaire ?
+   → Un petit pont / Petit pont
+   (Le geste technique qui humilie le plus le défenseur.)
+
+5. [1.4] Comment appelle-t-on un tir qui entre dans l’angle supérieur du but ?
+   → La lucarne / Lucarne
+   (« En pleine lucarne ! », crient les commentateurs.)
+
+6. [1.4] Comment appelle-t-on le match entre le Real Madrid et le FC Barcelone ?
+   → Le Clasico / Clasico / El Clásico
+   (Le match de club le plus regardé au monde.)
+
+7. [1.5] Comment appelle-t-on un match entre deux clubs d’une même ville ou région ?
+   → Un derby / Derby
+   (Comme Lyon contre Saint-Étienne, le « derby du Rhône ».)
+
+8. [1.5] Quel est le nom du championnat de France de football de première division ?
+   → La Ligue 1 / Ligue 1
+   (18 clubs depuis 2023.)
+
+9. [1.6] Quel est le championnat de football d’Angleterre, le plus riche du monde ?
+   → La Premier League / Premier League
+   (Créée en 1992.)
+
+10. [1.6] Quel geste de Zidane en finale de la Coupe du monde 2006 lui a valu un carton rouge ?
+   → Un coup de boule / Coup de boule / Coup de tête
+   (Sur l’Italien Marco Materazzi, lors de son dernier match.)
+
+11. [1.6] Quel feu, allumé à Olympie, est porté jusqu’à la ville des Jeux ?
+   → La flamme olympique / Flamme olympique / Flamme
+   (Le relais de la flamme existe depuis 1936.)
+
+12. [1.6] Quelle grande toile tendue sur des ressorts sert à faire des sauts et des figures ?
+   → Le trampoline / Trampoline
+   (Sport olympique depuis 2000.)
+
+13. [1.7] Comment s’appelle le championnat de football d’Italie ?
+   → La Serie A / Serie A
+   (La Juventus est le club le plus titré.)
+
+14. [1.7] Comment s’appelle le championnat de football d’Allemagne ?
+   → La Bundesliga / Bundesliga
+   (Le Bayern Munich y a gagné 11 titres d’affilée (2013-2023).)
+
+15. [1.7] Comment appelle-t-on le gros groupe de coureurs dans une course cycliste ?
+   → Le peloton / Peloton
+   (Ceux qui partent devant forment l’échappée.)
+
+16. [1.8] Comment s’appelle le championnat de football d’Espagne ?
+   → La Liga / Liga
+   (Dominée par le Real Madrid et le FC Barcelone.)
+
+17. [1.8] Quel club allemand a son stade, l’Allianz Arena, qui s’illumine en rouge ?
+   → Le Bayern Munich / Bayern Munich / Bayern
+   (Le club le plus titré d’Allemagne.)
+
+18. [1.8] Quel sport consiste à sauter dans l’eau depuis un tremplin ou une plateforme ?
+   → Le plongeon / Plongeon
+   (La plateforme la plus haute est à 10 m.)
+
+19. [1.8] Quel sport américain se joue avec une batte et un gant, sur un terrain en losange ?
+   → Le baseball / Baseball / Base-ball
+   (Très populaire aussi au Japon et à Cuba.)
+
+20. [1.8] Comment appelle-t-on l’ensemble des sports pratiqués à cheval ?
+   → L’équitation / Équitation / Equitation
+   (Seul sport olympique où hommes et femmes concourent ensemble.)
+
+21. [1.9] Quel est le stade du Real Madrid ?
+   → Santiago-Bernabéu / Santiago Bernabéu / Bernabeu / Bernabéu
+   (Du nom d’un ancien président du club.)
+
+22. [1.9] Quel est le stade de l’AS Saint-Étienne, surnommé « le Chaudron » ?
+   → Geoffroy-Guichard / Stade Geoffroy-Guichard
+   (Du nom du fondateur du groupe Casino.)
+
+23. [1.9] Quelle course automobile d’endurance se court chaque année dans la Sarthe ?
+   → Les 24 Heures du Mans / 24 Heures du Mans / 24 h du Mans
+   (Créée en 1923.)
+
+24. [1.9] Quel sport consiste à gravir de hautes montagnes ?
+   → L’alpinisme / Alpinisme
+   (Né avec la conquête du mont Blanc, en 1786.)
+
+25. [1.9] Comment appelle-t-on le petit groupe de coureurs qui part devant le peloton ?
+   → L’échappée / Échappée / Echappée
+   (Le peloton la rattrape souvent dans les derniers kilomètres.)
+
+26. [2.0] Quel club de football français est surnommé « les Gones » ?
+   → L’Olympique lyonnais / Olympique lyonnais / OL / Lyon
+   (Sept titres de champion de France d’affilée, de 2002 à 2008.)
+
+27. [2.0] Quel attaquant français a remporté le Ballon d’or 2022 ?
+   → Karim Benzema / Benzema
+   (Le 5e Français à le gagner.)
+
+28. [2.0] Contre quelle équipe la France a-t-elle gagné la finale de la Coupe du monde 2018 ?
+   → La Croatie / Croatie
+   (4-2, à Moscou.)
+
+29. [2.0] Au tennis, comment s’appelle le coup frappé du côté opposé à la main qui tient la raquette ?
+   → Le revers / Revers
+   (À une ou à deux mains.)
+
+30. [2.0] Quelle épreuve cycliste se court seul, contre le chronomètre ?
+   → Le contre-la-montre / Contre-la-montre / Contre la montre / Chrono
+   (Les coureurs partent un par un.)
+
+31. [2.0] Quel sport de glisse utilise une planche tirée par une grande aile ?
+   → Le kitesurf / Kitesurf / Kite
+   (Devenu olympique aux Jeux de Paris 2024, à Marseille.)
+
+32. [2.0] Quel sport se joue à deux par équipe, pieds nus sur le sable ?
+   → Le beach-volley / Beach-volley / Beach volley
+   (Olympique depuis 1996 ; à Paris en 2024, au pied de la tour Eiffel.)
+
+33. [2.0] Quelle voile souple permet de s’envoler en courant depuis une pente ?
+   → Le parapente / Parapente
+   (Né en Haute-Savoie dans les années 1970-1980.)
+
+34. [2.0] Quelle course à pied se dispute l’hiver dans la nature, souvent dans la boue ?
+   → Le cross / Cross / Cross-country
+   (Le cross du Figaro a longtemps été le plus célèbre de France.)
+
+35. [2.1] Quel joueur brésilien au grand sourire a gagné le Ballon d’or 2005 ?
+   → Ronaldinho
+   (Il a joué au PSG de 2001 à 2003.)
+
+36. [2.1] Quel sélectionneur a mené la France au titre mondial en 1998 ?
+   → Aimé Jacquet / Jacquet
+   (Très critiqué avant le tournoi, fêté ensuite.)
+
+37. [2.1] Comment s’appelle le championnat de France de rugby de première division ?
+   → Le Top 14 / Top 14
+   (14 clubs, d’où son nom.)
+
+38. [2.1] Quel sport nautique se pratique avec des avirons, dos à l’arrivée ?
+   → L’aviron / Aviron
+   (La course Oxford-Cambridge existe depuis 1829.)
+
+39. [2.1] Au golf, comment appelle-t-on la personne qui porte le sac du joueur ?
+   → Le caddie / Caddie / Cadet
+   (Il conseille aussi sur le choix du club.)
+
+40. [2.1] Comment appelle-t-on la première place sur la grille de départ en F1 ?
+   → La pole position / Pole position / Pole
+   (Elle revient au plus rapide des qualifications.)
+
+41. [2.2] Quel attaquant ivoirien, passé par l’OM, est une légende de Chelsea ?
+   → Didier Drogba / Drogba
+   (Il a aussi contribué à la paix en Côte d’Ivoire.)
+
+42. [2.2] Quel trophée en bois et cuivre récompense le champion de France de rugby ?
+   → Le bouclier de Brennus / Bouclier de Brennus / Brennus
+   (Dessiné par Pierre de Coubertin, du nom de Charles Brennus.)
+
+43. [2.2] Au tennis, comment appelle-t-on le jeu spécial joué à 6 jeux partout ?
+   → Le jeu décisif / Jeu décisif / Tie-break / Tie break
+   (Il se gagne en 7 points, avec 2 d’écart.)
+
+44. [2.2] Comment appelle-t-on le dernier du classement général du Tour de France ?
+   → La lanterne rouge / Lanterne rouge
+   (Comme la lampe à l’arrière du dernier wagon d’un train.)
+
+45. [2.2] Combien de points vaut un panier marqué de loin, derrière la ligne, au basket ?
+   → 3 / Trois
+   (Ligne introduite en NBA en 1979.)
+
+46. [2.2] Comment appelle-t-on le cavalier professionnel des courses de galop ?
+   → Le jockey / Jockey
+   (Il pèse souvent moins de 55 kg.)
+
+47. [2.2] Comment appelle-t-on la phase d’un saut en parachute avant l’ouverture de la voile ?
+   → La chute libre / Chute libre
+   (On y atteint environ 200 km/h.)
+
+48. [2.3] Quel footballeur, Ballon d’or 1995, est devenu président du Liberia ?
+   → George Weah / Weah
+   (Président de 2018 à 2024 ; il avait joué au PSG.)
+
+49. [2.3] Quel gardien italien, champion du monde 2006, a joué plus de 20 ans à la Juventus ?
+   → Gianluigi Buffon / Buffon
+   (Il a pris sa retraite en 2023, à 45 ans.)
+
+50. [2.3] Quel club de rugby est le plus titré de France ?
+   → Le Stade toulousain / Stade toulousain / Toulouse
+   (Plus de 20 boucliers de Brennus.)
+
+51. [2.3] Au baseball, comment appelle-t-on la frappe qui envoie la balle hors du terrain ?
+   → Un home run / Home run / Coup de circuit
+   (Le batteur fait alors le tour des bases sans se presser.)
+
+52. [2.3] Quel pays accueillera les Jeux olympiques d’hiver de 2030 ?
+   → La France / France / Alpes françaises
+   (Dans les Alpes françaises, avec Nice pour certaines épreuves.)
+
+53. [2.4] Quelle équipe a battu la France en finale de la Coupe du monde 2022, aux tirs au but ?
+   → L’Argentine / Argentine
+   (3-3 après prolongation, au Qatar ; triplé de Mbappé.)
+
+54. [2.4] Au tennis, comment appelle-t-on la balle haute qui passe au-dessus de l’adversaire monté au filet ?
+   → Un lob / Lob
+   (La parade au joueur qui monte au filet.)
+
+55. [2.4] Quel coureur américain s’est vu retirer ses sept Tours de France pour dopage ?
+   → Lance Armstrong / Armstrong
+   (Victoires de 1999 à 2005, effacées en 2012.)
+
+56. [2.4] Quelle épreuve d’athlétisme enchaîne un saut, une foulée bondissante et un dernier saut ?
+   → Le triple saut / Triple saut
+   (Teddy Tamgho a été champion du monde en 2013.)
+
+57. [2.4] Quel sport d’hiver se pratique dans un traîneau à deux ou quatre, dans une piste glacée ?
+   → Le bobsleigh / Bobsleigh / Bob
+   (Une équipe jamaïcaine y a participé en 1988 : « Rasta Rockets ».)
+
+58. [2.4] Au football américain, comment appelle-t-on l’essai qui rapporte 6 points ?
+   → Un touchdown / Touchdown
+   (Suivi d’une transformation.)
+
+59. [2.4] Quel pari hippique consiste à trouver les trois premiers d’une course ?
+   → Le tiercé / Tiercé / Tierce
+   (Lancé par le PMU en 1954.)
+
+60. [2.5] Quel rugbyman français barbu était surnommé « l’homme des cavernes » ?
+   → Sébastien Chabal / Chabal
+   (Star de la Coupe du monde 2007.)
+
+61. [2.5] Comment appelle-t-on le Tour d’Espagne cycliste ?
+   → La Vuelta / Vuelta
+   (Avec le Giro et le Tour, l’un des trois grands tours.)
+
+62. [2.5] Quel club de NBA a eu Magic Johnson, Kobe Bryant et LeBron James ?
+   → Les Los Angeles Lakers / Lakers / Los Angeles Lakers / LA Lakers
+   (Ses maillots sont violet et or.)
+
+63. [2.5] Au golf, comment appelle-t-on la zone d’herbe rase autour du trou ?
+   → Le green / Green
+   (On y joue au putter.)
+
+64. [2.5] Quelle discipline consiste à franchir des obstacles urbains en courant et en sautant ?
+   → Le parkour / Parkour / Free running
+   (Popularisée par les Yamakasi et David Belle.)
+
+65. [2.6] Au tennis, quel coup très court fait tomber la balle juste derrière le filet ?
+   → L’amorti / Amorti / Amortie
+   (Arme favorite des joueurs sur terre battue.)
+
+66. [2.6] Quel col des Pyrénées est le plus souvent franchi par le Tour de France ?
+   → Le Tourmalet / Tourmalet / Col du Tourmalet
+   (2 115 m, dans les Hautes-Pyrénées.)
+
+67. [2.6] Quel sprinteur américain a gagné 4 médailles d’or aux JO de 1984, comme Jesse Owens ?
+   → Carl Lewis / Lewis
+   (Neuf titres olympiques au total.)
+
+68. [2.6] Quel agrès de gymnastique féminine a deux barres à des hauteurs différentes ?
+   → Les barres asymétriques / Barres asymétriques
+   (Les hommes, eux, ont les barres parallèles.)
+
+69. [2.6] Quel patineur français a fait un programme de mousquetaire, d’Artagnan, aux JO de 1998 ?
+   → Philippe Candeloro / Candeloro
+   (Médaille de bronze à Nagano.)
+
+70. [2.6] Quel surnom avait l’équipe américaine de basket des JO de 1992, avec Jordan et Magic ?
+   → La Dream Team / Dream Team
+   (À Barcelone : victoires par 44 points d’écart en moyenne.)
+
+71. [2.6] Quel pilote français, quatre fois champion du monde de F1, était surnommé « le Professeur » ?
+   → Alain Prost / Prost
+   (Grand rival d’Ayrton Senna.)
+
+72. [2.7] Quelle Française a gagné Wimbledon et l’Open d’Australie en 2006 ?
+   → Amélie Mauresmo / Mauresmo
+   (Elle a aussi été numéro 1 mondiale.)
+
+73. [2.7] Quel coureur français a été champion du monde sur route en 2020 et 2021 ?
+   → Julian Alaphilippe / Alaphilippe
+   (Il a aussi porté le maillot jaune 14 jours en 2019.)
+
+74. [2.7] Quelle épreuve d’athlétisme féminine réunit sept disciplines ?
+   → L’heptathlon / Heptathlon
+   (Chez les hommes, c’est le décathlon (dix).)
+
+75. [2.7] Quelle discipline équestre est une sorte de « danse » du cheval, notée par des juges ?
+   → Le dressage / Dressage
+   (On l’appelle parfois le « ballet équestre ».)
+
+76. [2.8] Quelle joueuse a gagné 9 fois le simple dames de Wimbledon, un record ?
+   → Martina Navratilova / Navratilova
+   (Née en Tchécoslovaquie, devenue américaine.)
+
+77. [2.8] Quel coureur espagnol a gagné cinq Tours de France d’affilée, de 1991 à 1995 ?
+   → Miguel Indurain / Indurain
+   (Surnommé « Big Mig ».)
+
+78. [2.8] Quelle course de 3 000 m comporte des haies et une rivière à sauter ?
+   → Le steeple / Steeple / 3 000 m steeple
+   (Mahiedine Mekhissi y a gagné trois médailles olympiques.)
+
+79. [2.8] Quelle épreuve nordique associe saut à ski et ski de fond ?
+   → Le combiné nordique / Combiné nordique
+   (Jason Lamy-Chappuis y a été champion olympique en 2010.)
+
+80. [2.8] Comment s’appelle la ligue nord-américaine de hockey sur glace ?
+   → La NHL / NHL / LNH / Ligue nationale de hockey
+   (Le vainqueur gagne la coupe Stanley.)
+
+81. [2.8] Au football américain, comment s’appelle le joueur qui lance le ballon ?
+   → Le quarterback / Quarterback / Quart-arrière
+   (Tom Brady est le plus titré, avec 7 Super Bowls.)
+
+82. [2.8] Quelle est la catégorie reine des championnats de vitesse moto ?
+   → Le MotoGP / MotoGP / Moto GP
+   (Valentino Rossi y a gagné 7 titres.)
+
+83. [2.8] Quel engin volant a une aile triangulaire rigide sous laquelle le pilote est suspendu ?
+   → Le deltaplane / Deltaplane / Aile delta
+   (Sa forme rappelle la lettre grecque delta : Δ.)
+
+84. [2.9] Quel joueur américain colérique criait « You cannot be serious ! » aux arbitres ?
+   → John McEnroe / McEnroe
+   (Grand rival de Björn Borg.)
+
+85. [2.9] Quel nageur français a gagné le 100 m nage libre aux JO de Pékin en 2008 ?
+   → Alain Bernard
+   (Premier Français titré sur cette distance.)
+
+86. [2.9] Quel agrès de gymnastique masculine a deux poignées sur un cheval ?
+   → Le cheval d’arçons / Cheval d’arçons / Cheval d’arcons
+   (Les poignées s’appellent des arçons.)
+
+87. [2.9] Quelle épreuve de ski alpin est entre le slalom géant et la descente ?
+   → Le super-G / Super-G / Super G / Super-géant
+   (Créée dans les années 1980.)
+
+88. [2.9] Quelle grande course de chevaux se court chaque octobre à Longchamp ?
+   → Le prix de l’Arc de Triomphe / Prix de l’Arc de Triomphe / Arc de Triomphe
+   (Une des courses de galop les plus prestigieuses du monde.)
+
+89. [2.9] Quel sport se court avec une carte et une boussole, en passant par des balises ?
+   → La course d’orientation / Course d’orientation / CO
+   (Né en Scandinavie à la fin du XIXe siècle.)
+
+90. [3.0] Quelle championne française des années 1920, surnommée « la Divine », a son nom sur un court de Roland-Garros ?
+   → Suzanne Lenglen / Lenglen
+   (Six fois victorieuse à Wimbledon.)
+
+91. [3.0] Quelle sprinteuse américaine détient le record du monde du 100 m depuis 1988 ?
+   → Florence Griffith-Joyner / Griffith-Joyner / Flo-Jo / FloJo
+   (10 s 49, un record jamais battu.)
+
+92. [3.0] Quelle devise latine des JO veut dire « plus vite, plus haut, plus fort » ?
+   → Citius, Altius, Fortius / Citius Altius Fortius
+   (« Communiter » (ensemble) a été ajouté en 2021.)
+
+93. [3.0] En boxe, comment appelle-t-on le coup de poing qui remonte sous le menton ?
+   → Un uppercut / Uppercut
+   (Les autres coups principaux : direct, crochet.)
+
+94. [3.0] Quel saut de patinage artistique compte trois rotations et demie ?
+   → Le triple axel / Triple axel
+   (Le seul saut qui part en avant.)
+
+95. [3.0] Quel joueur canadien de hockey sur glace était surnommé « The Great One » ?
+   → Wayne Gretzky / Gretzky
+   (Il détient le record de points de l’histoire de la NHL.)
+
+96. [3.0] Dans quelle course américaine le vainqueur boit-il traditionnellement une bouteille de lait ?
+   → Les 500 miles d’Indianapolis / Indianapolis / Indy 500 / 500 miles d’Indianapolis
+   (Une tradition née en 1936.)
+
+97. [3.0] Quel sport d’équipe se joue avec un frisbee, sans arbitre ?
+   → L’ultimate / Ultimate / Ultimate frisbee
+   (Les joueurs arbitrent eux-mêmes : « l’esprit du jeu ».)
+
+98. [3.1] Quel nageur américain moustachu a gagné 7 médailles d’or aux JO de 1972 ?
+   → Mark Spitz / Spitz
+   (Record battu par Michael Phelps (8) en 2008.)
+
+99. [3.1] Quel skipper français a gagné le Vendée Globe 2012-2013, le plus jeune vainqueur ?
+   → François Gabart / Gabart
+   (Il avait 29 ans.)
+
+100. [3.1] Comment appelle-t-on le saut en parachute depuis un immeuble, un pont ou une falaise ?
+   → Le base jump / Base jump / BASE jump
+   (B.A.S.E. : building, antenne, pont (span), falaise (earth).)
+
+101. [3.2] Quel trophée récompense le tour du monde à la voile en équipage le plus rapide ?
+   → Le trophée Jules-Verne / Trophée Jules-Verne / Jules Verne
+   (Clin d’œil au « Tour du monde en 80 jours ».)
+
+102. [3.2] Quel pilote de Gap a été huit fois champion du monde des rallyes entre 2013 et 2021 ?
+   → Sébastien Ogier / Ogier
+   (Successeur de Sébastien Loeb (9 titres).)
+
+103. [3.2] Quel sport d’origine amérindienne se joue avec une crosse munie d’un filet ?
+   → La crosse / Lacrosse / Crosse
+   (Sport national du Canada en été.)
+
+104. [3.3] Au rugby, comment appelle-t-on le regroupement où le ballon est au sol, disputé avec les pieds ?
+   → Un ruck / Ruck
+   (Si le ballon est porté à la main, c’est un maul.)
+
+105. [3.3] Quel coureur tchèque, « la locomotive », a gagné 5 000 m, 10 000 m et marathon aux JO de 1952 ?
+   → Emil Zátopek / Zátopek / Zatopek / Émile Zátopek
+   (C’était son premier marathon.)
+
+106. [3.3] Quel skieur français a gagné le classement général de la Coupe du monde en 2021 ?
+   → Alexis Pinturault / Pinturault
+   (Le premier Français depuis Luc Alphand en 1997.)
+
+107. [3.3] Quel couple français de danse sur glace a été champion olympique en 2022 ?
+   → Gabriella Papadakis et Guillaume Cizeron / Papadakis et Cizeron / Papadakis Cizeron / Papadakis
+   (À Pékin, après une médaille d’argent en 2018.)
+
+108. [3.4] Quel jeu de boules, cousin de la pétanque, se joue avec élan sur un long terrain ?
+   → La boule lyonnaise / Boules lyonnaises / Lyonnaise / Sport-boules
+   (Aussi appelé « sport-boules ».)
+
+109. [3.5] Au rugby, comment appelle-t-on le regroupement debout autour du porteur du ballon ?
+   → Un maul / Maul
+   (Arme favorite des avants après une touche.)
+
+110. [3.5] Quel arbitre anglais a inventé les cartons jaune et rouge, inspiré par des feux de circulation ?
+   → Ken Aston / Aston
+   (Utilisés pour la première fois à la Coupe du monde 1970.)
+
+111. [3.7] Quel pilote danois détient le record de neuf victoires aux 24 Heures du Mans ?
+   → Tom Kristensen / Kristensen
+   (Surnommé « Mister Le Mans ».)

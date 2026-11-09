@@ -1,0 +1,389 @@
+JEUX — 97 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+
+1. [1.0] Quel jeu d’enfants consiste à se cacher pendant que l’un compte ?
+   → Cache-cache / Le cache-cache
+   (Joué dans le monde entier, sous plein de noms.)
+
+2. [1.0] Quel jeu à deux sur une grille de 3 × 3 se joue avec des croix et des ronds ?
+   → Le morpion / Morpion / Tic-tac-toe
+   (Entre deux joueurs parfaits, c’est toujours match nul.)
+
+3. [1.1] Quel jeu de mots consiste à deviner un mot lettre par lettre avant que le dessin soit fini ?
+   → Le pendu / Pendu
+   (Commencer par E, A, S est une bonne stratégie en français.)
+
+4. [1.1] Quelles petites briques danoises s’emboîtent pour construire de tout ?
+   → Les Lego / Lego / Legos
+   (Du danois « leg godt » : « joue bien ».)
+
+5. [1.1] Quels petits personnages allemands en plastique, au sourire fixe, sont nés en 1974 ?
+   → Les Playmobil / Playmobil
+   (Plus de 3 milliards de figurines fabriquées.)
+
+6. [1.2] Quel jouet monte et descend le long d’une ficelle ?
+   → Le yo-yo / Yo-yo / Yoyo
+   (Un des plus vieux jouets du monde, connu dans la Grèce antique.)
+
+7. [1.2] Quel jeu de bar se joue avec des petits joueurs fixés sur des barres qu’on fait tourner ?
+   → Le baby-foot / Baby-foot / Babyfoot
+   (On dit « foosball » en anglais.)
+
+8. [1.2] Quel jeu de bar électrique fait rebondir une bille avec deux batteurs ?
+   → Le flipper / Flipper
+   (Secouer trop fort la machine donne un « tilt ».)
+
+9. [1.3] Quel ours en peluche porte le nom d’un président américain ?
+   → Le teddy bear / Teddy bear / Teddy
+   (En référence à Theodore « Teddy » Roosevelt, qui aurait épargné un ourson.)
+
+10. [1.3] Quel jeu se joue les yeux bandés, en cherchant à attraper les autres ?
+   → Le colin-maillard / Colin-maillard
+   (Du nom d’un guerrier légendaire, Colin Maillard.)
+
+11. [1.3] Quel jeu de chat permet d’être à l’abri quand on est en hauteur ?
+   → Le chat perché / Chat perché
+   (Une variante du jeu du chat.)
+
+12. [1.4] Quel jeu consiste à sauter par-dessus un camarade penché en avant ?
+   → Le saute-mouton / Saute-mouton
+   (Déjà peint par Bruegel au XVIe siècle.)
+
+13. [1.4] Quel jouet en bois consiste à rattraper une boule sur une tige ?
+   → Le bilboquet / Bilboquet
+   (Très à la mode à la cour d’Henri III.)
+
+14. [1.4] Quel petit Pokémon rose endort tout le monde en chantant ?
+   → Rondoudou / Jigglypuff
+   (Et se vexe quand tout le monde s’endort.)
+
+15. [1.4] Quel Pokémon tortue de type Eau est un des trois starters de la première génération ?
+   → Carapuce / Squirtle
+   (Avec Bulbizarre et Salamèche.)
+
+16. [1.5] Quel Pokémon porte le numéro 001 dans le Pokédex ?
+   → Bulbizarre / Bulbasaur
+   (Un bulbe pousse sur son dos.)
+
+17. [1.5] Quel Pokémon renard brun peut évoluer de huit façons différentes ?
+   → Évoli / Evoli / Eevee
+   (Aquali, Pyroli, Voltali, Mentali, Noctali, Givrali, Phyllali, Nymphali.)
+
+18. [1.5] Quel Pokémon poisson inutile, qui ne sait que sauter, devient un terrible Léviator ?
+   → Magicarpe / Magikarp
+   (Il faut le faire monter au niveau 20.)
+
+19. [1.5] Quel trio de méchants, avec un Miaouss qui parle, poursuit Sacha ?
+   → La Team Rocket / Team Rocket
+   (Jessie, James et Miaouss : « Nous sommes de retour ! ».)
+
+20. [1.6] Quel professeur donne son premier Pokémon à Sacha, dans le Bourg Palette ?
+   → Le professeur Chen / Professeur Chen / Chen / Professeur Oak
+   (Il s’appelle Oak en anglais.)
+
+21. [1.6] Comment s’appelle l’encyclopédie électronique qui recense les Pokémon ?
+   → Le Pokédex / Pokédex / Pokedex
+   (Le but : « Attrapez-les tous ! ».)
+
+22. [1.6] Quel petit champignon serviteur de la princesse Peach aide Mario ?
+   → Toad
+   (Il porte un champignon à pois sur la tête… ou c’est sa tête.)
+
+23. [1.6] Quel rival de Mario, en jaune et violet, porte un W sur sa casquette ?
+   → Wario
+   (W comme Mario à l’envers, et « warui » (méchant) en japonais.)
+
+24. [1.7] Quel petit singe à casquette rouge accompagne Donkey Kong ?
+   → Diddy Kong / Diddy
+   (Son neveu, apparu en 1994.)
+
+25. [1.7] Dans quoi Mario passe-t-il pour aller d’un niveau à l’autre ou trouver des secrets ?
+   → Des tuyaux / Tuyau / Tuyaux verts / Tuyaux
+   (Normal pour un plombier.)
+
+26. [1.7] Quel renard à deux queues est le meilleur ami de Sonic ?
+   → Tails / Miles Prower
+   (Il vole en faisant tourner ses queues comme une hélice.)
+
+27. [1.7] Quel échidné rouge est l’ami (et parfois rival) de Sonic ?
+   → Knuckles
+   (Il garde l’Émeraude mère.)
+
+28. [1.8] Quel savant moustachu est l’ennemi juré de Sonic ?
+   → Dr Eggman / Robotnik / Docteur Robotnik / Eggman
+   (Il transforme les animaux en robots.)
+
+29. [1.8] Quelle console portable de Nintendo (2004) avait deux écrans, dont un tactile ?
+   → La Nintendo DS / Nintendo DS / DS
+   (« DS » pour « Dual Screen ».)
+
+30. [1.8] Comment s’appelle la manette en forme de télécommande de la Wii ?
+   → La Wiimote / Wiimote / Wii Remote
+   (Certains joueurs l’ont lancée dans leur télé, faute de dragonne.)
+
+31. [1.8] Comment s’appellent les deux petites manettes détachables de la Switch ?
+   → Les Joy-Con / Joy-Con / Joycon
+   (Une rouge néon, une bleu néon à l’origine.)
+
+32. [1.9] Quel style de jeu met le joueur à la place d’un tireur, vue à la première personne ?
+   → Le FPS / FPS / First-person shooter / Jeu de tir à la première personne
+   (Comme « Call of Duty » ou « Doom ».)
+
+33. [1.9] Quel sigle désigne les jeux de rôle, où l’on fait évoluer un personnage ?
+   → RPG / Role-playing game
+   (Comme « Final Fantasy » ou « Pokémon ».)
+
+34. [1.9] Comment appelle-t-on un jeu gratuit qui gagne de l’argent avec des achats intégrés ?
+   → Un free-to-play / Free-to-play / F2P
+   (Comme « Fortnite » ou « League of Legends ».)
+
+35. [1.9] Comment appelle-t-on l’apparence achetable d’un personnage, sans effet sur le jeu ?
+   → Un skin / Skin / Skins / Tenue
+   (Certains se revendent des centaines d’euros.)
+
+36. [2.0] Comment appelle-t-on un débutant maladroit dans un jeu en ligne ?
+   → Un noob / Noob / Newbie / Nouveau
+   (De l’anglais « newbie ».)
+
+37. [2.0] Comment appelle-t-on le retard de la connexion qui fait « sauter » le jeu ?
+   → Le lag / Lag / Latence
+   (« J’ai laggé ! » : excuse universelle.)
+
+38. [2.0] Comment dit-on qu’un personnage réapparaît après sa mort dans un jeu ?
+   → Il respawn / Respawn / Réapparition
+   (Souvent à un point de départ fixe.)
+
+39. [2.0] Comment appelle-t-on un bug visuel ou un comportement étrange dans un jeu ?
+   → Un glitch / Glitch / Bug
+   (Les speedrunners en exploitent pour aller plus vite.)
+
+40. [2.1] Comment appelle-t-on un contenu téléchargeable ajouté après la sortie d’un jeu ?
+   → Un DLC / DLC / Contenu téléchargeable
+   (Downloadable content.)
+
+41. [2.1] Comment appelle-t-on une mise à jour qui corrige des bugs ?
+   → Un patch / Patch / Correctif
+   (« Pièce » en anglais, comme une rustine.)
+
+42. [2.1] Comment appelle-t-on une boîte payante au contenu aléatoire, dans un jeu vidéo ?
+   → Une loot box / Loot box / Lootbox / Coffre
+   (Interdites dans certains pays, comme la Belgique.)
+
+43. [2.1] Quel sigle désigne un jeu de rôle en ligne avec des milliers de joueurs, comme « World of Warcraft » ?
+   → MMORPG / MMO
+   (Massively Multiplayer Online Role-Playing Game.)
+
+44. [2.2] Quel jeu mobile de 2013, avec un oiseau entre des tuyaux, a été retiré par son créateur ?
+   → Flappy Bird
+   (Dong Nguyen l’a supprimé en 2014, malgré son succès.)
+
+45. [2.2] Quel jeu mobile fait courir un graffeur sur les rails, poursuivi par un garde ?
+   → Subway Surfers
+   (Premier jeu à dépasser le milliard de téléchargements sur Google Play.)
+
+46. [2.2] Quel jeu mobile fait sauter une petite créature de plateforme en plateforme vers le haut ?
+   → Doodle Jump
+   (Dessiné comme sur une feuille de cahier.)
+
+47. [2.2] Quel jeu de 2014 fait glisser des tuiles qui s’additionnent jusqu’à un certain nombre ?
+   → 2048
+   (Créé en un week-end par l’Italien Gabriele Cirulli.)
+
+48. [2.3] Quel jeu de Windows consiste à découvrir des cases sans tomber sur une bombe ?
+   → Le Démineur / Démineur / Demineur / Minesweeper
+   (Fourni avec Windows au début des années 1990.)
+
+49. [2.3] Quelle console de Sega (1988) a fait connaître Sonic ?
+   → La Mega Drive / Mega Drive / Genesis
+   (Appelée Genesis aux États-Unis.)
+
+50. [2.3] Quelle console de salon de Nintendo, en 1996, avait une manette à trois poignées ?
+   → La Nintendo 64 / Nintendo 64 / N64
+   (Avec « Super Mario 64 » et « Zelda : Ocarina of Time ».)
+
+51. [2.3] Comment s’appelle la manette de la PlayStation 5 ?
+   → La DualSense / DualSense
+   (Elle fait ressentir des vibrations très précises.)
+
+52. [2.4] Quel Pokémon légendaire a été créé par clonage à partir de Mew ?
+   → Mewtwo
+   (Héros du premier film Pokémon, en 1998.)
+
+53. [2.4] Quel Pokémon rose et rare porte le numéro 151 dans la première génération ?
+   → Mew
+   (Ajouté en secret par un programmeur à la dernière minute.)
+
+54. [2.4] Quel épisode de Zelda de 1998 sur Nintendo 64 est souvent cité comme le meilleur jeu de tous les temps ?
+   → Ocarina of Time / Zelda Ocarina of Time / The Legend of Zelda: Ocarina of Time
+   (Link y voyage dans le temps grâce à un instrument.)
+
+55. [2.4] Quelle petite fée accompagne Link en criant « Hey, listen ! » ?
+   → Navi
+   (Dans « Ocarina of Time ».)
+
+56. [2.5] Quelle épée sacrée, la « Master Sword », Link retire-t-il d’un socle ?
+   → L’épée de légende / Épée de légende / Master Sword
+   (Seul le héros choisi peut la retirer.)
+
+57. [2.5] Quel combattant de « Street Fighter » lance une boule d’énergie « Hadoken » ?
+   → Ryu
+   (Avec son ami Ken, qui sait la lancer aussi.)
+
+58. [2.5] Quel coup final sanglant achève l’adversaire dans « Mortal Kombat » ?
+   → La Fatality / Fatality
+   (« Finish him ! » annonce la voix du jeu.)
+
+59. [2.5] Quels grands oiseaux jaunes, que l’on chevauche, sont la mascotte de « Final Fantasy » ?
+   → Les Chocobos / Chocobo / Chocobos
+   (Présents depuis « Final Fantasy II » (1988).)
+
+60. [2.6] Quelle série de jeux mêle Disney et Final Fantasy, avec le héros Sora ?
+   → Kingdom Hearts
+   (Sora voyage avec Donald et Dingo.)
+
+61. [2.6] Quel jeu de Nintendo montre un astronaute miniature, Olimar, guidant de petites créatures-plantes ?
+   → Pikmin
+   (Inspiré du jardin de Shigeru Miyamoto.)
+
+62. [2.6] Quel jeu de 1989 fait courir et sauter un héros dans un palais, pour sauver une princesse en 60 minutes ?
+   → Prince of Persia
+   (Jordan Mechner a filmé son frère pour animer le héros.)
+
+63. [2.6] Quel créateur suédois de Minecraft a vendu son jeu à Microsoft en 2014 ?
+   → Notch / Markus Persson / Persson
+   (Pour 2,5 milliards de dollars.)
+
+64. [2.7] Quel ingénieur soviétique a créé Tetris en 1984 ?
+   → Alexeï Pajitnov / Pajitnov / Alexey Pajitnov
+   (Il n’a touché des droits qu’à partir de 1996.)
+
+65. [2.7] Quelle intelligence artificielle de « Portal » promet un gâteau qui n’existe pas ?
+   → GLaDOS
+   (« The cake is a lie ».)
+
+66. [2.7] Quel jeu indépendant de 2015 permet de finir sans tuer un seul monstre ?
+   → Undertale
+   (Créé presque seul par Toby Fox.)
+
+67. [2.7] Quelle série de FromSoftware, réputée très difficile, a lancé le genre « soulslike » ?
+   → Dark Souls
+   (« Prepare to die » disait sa publicité.)
+
+68. [2.8] Quelle saga de Hideo Kojima met en scène l’espion Snake, qui se cache dans un carton ?
+   → Metal Gear Solid / Metal Gear
+   (Pionnière du jeu d’infiltration.)
+
+69. [2.8] Quelle série de jeux de rôle japonaise a un slime bleu souriant pour mascotte ?
+   → Dragon Quest
+   (Dessinée par Akira Toriyama, le créateur de « Dragon Ball ».)
+
+70. [2.8] Quelle série de Nintendo est un jeu de stratégie au tour par tour où les héros peuvent mourir pour de bon ?
+   → Fire Emblem
+   (Depuis 1990.)
+
+71. [2.8] Quelle simulation automobile de Sony est surnommée « le vrai simulateur de conduite » ?
+   → Gran Turismo
+   (Certains joueurs sont devenus de vrais pilotes grâce à elle.)
+
+72. [2.9] Quelle série de jeux de course d’Electronic Arts est connue pour ses poursuites avec la police ?
+   → Need for Speed
+   (Depuis 1994.)
+
+73. [2.9] Quelle série de jeux de tir d’Electronic Arts rivalise avec « Call of Duty » ?
+   → Battlefield
+   (Réputée pour ses grandes batailles avec véhicules.)
+
+74. [2.9] Quelle série de jeux d’Ubisoft se passe dans des mondes ouverts dangereux, avec un méchant charismatique ?
+   → Far Cry
+   (Le premier épisode date de 2004.)
+
+75. [2.9] Quelle série de basket sur console sort une nouvelle version chaque année ?
+   → NBA 2K
+   (Depuis 1999.)
+
+76. [3.0] Quel jeu en ligne de Valve, rival de « League of Legends », a le tournoi le mieux doté de l’histoire ?
+   → Dota 2 / Dota
+   (The International : plus de 40 millions de dollars en 2021.)
+
+77. [3.0] Quelle console portable de Nintendo (2011) affichait la 3D sans lunettes ?
+   → La Nintendo 3DS / 3DS / Nintendo 3DS
+   (Avec un petit curseur pour régler l’effet.)
+
+78. [3.0] Quelle console de Nintendo de 2012 avait une manette avec un écran, le GamePad ?
+   → La Wii U / Wii U
+   (Un échec commercial, avant le succès de la Switch.)
+
+79. [3.0] Quelle console portable de Nintendo de 2001 avait un écran plus large et des boutons L et R ?
+   → La Game Boy Advance / Game Boy Advance / GBA
+   (Rétrocompatible avec les jeux Game Boy.)
+
+80. [3.1] Quelle première console de salon de Sega, en 1985, rivalisait avec la NES ?
+   → La Master System / Master System
+   (Elle a très bien marché en Europe et au Brésil.)
+
+81. [3.1] Au poker, comment appelle-t-on trois cartes de même valeur ?
+   → Un brelan / Brelan
+   (Il bat une double paire.)
+
+82. [3.1] Combien font les faces opposées d’un dé à six faces, additionnées ?
+   → 7 / Sept
+   (1 et 6, 2 et 5, 3 et 4.)
+
+83. [3.2] Au tarot, comment appelle-t-on le fait de gagner le dernier pli avec le 1 d’atout ?
+   → Le petit au bout / Petit au bout
+   (Une prime qui fait souvent la différence.)
+
+84. [3.2] Quel jeu de cartes consiste à poser des suites et des combinaisons, avec deux jokers ?
+   → Le rami / Rami / Rummy
+   (Une variante se joue avec des tuiles : le Rummikub.)
+
+85. [3.2] Au Mille Bornes, comment appelle-t-on les quatre cartes qui protègent pour toute la partie ?
+   → Les bottes / Bottes / Botte
+   (As du volant, Citerne, Increvable et Véhicule prioritaire.)
+
+86. [3.2] Au Mille Bornes, quelle carte d’attaque se répare avec une « roue de secours » ?
+   → La crevaison / Crevaison
+   (La botte « Increvable » en protège.)
+
+87. [3.3] Au Monopoly, combien touche-t-on (en euros, version actuelle) en passant par la case départ ?
+   → 200 / 200 € / 200 euros
+   (20 000 francs dans les anciennes versions françaises.)
+
+88. [3.3] Quel est le nom anglais du jeu des petits chevaux ?
+   → Ludo
+   (Inspiré du jeu indien Pachisi.)
+
+89. [3.4] Quelle peluche-robot qui parlait sa propre langue a été le jouet star de Noël 1998 ?
+   → Le Furby / Furby
+   (La NSA l’avait interdit dans ses locaux, de peur qu’il enregistre.)
+
+90. [3.4] Quel petit boîtier de poche qui s’ouvre sur une maison avec des mini-poupées est né en 1989 ?
+   → Polly Pocket
+   (Inventé par un père pour sa fille, avec une boîte à poudre.)
+
+91. [3.4] Quel jeu de cartes à collectionner, tiré d’un manga, fait combattre des monstres comme le Dragon blanc aux yeux bleus ?
+   → Yu-Gi-Oh! / Yu-Gi-Oh / Yugioh
+   (« C’est l’heure du duel ! ».)
+
+92. [3.5] Quel jeu se joue en équipe avec des pistolets à billes de peinture ?
+   → Le paintball / Paintball
+   (Né aux États-Unis en 1981.)
+
+93. [3.5] Quel jeu fait s’affronter des équipes avec des pistolets infrarouges dans un labyrinthe sombre ?
+   → Le laser game / Laser game / Laser tag
+   (Appelé laser tag dans les pays anglophones.)
+
+94. [3.5] Quel surnom donne-t-on à la machine à sous, à cause de sa poignée ?
+   → Le bandit manchot / Bandit manchot
+   (Un seul bras… et elle vous dépouille.)
+
+95. [3.6] Quelle loterie européenne, lancée en 2004, se joue avec 5 numéros et 2 étoiles ?
+   → L’EuroMillions / EuroMillions / Euromillions
+   (Jouée dans 9 pays.)
+
+96. [3.6] Comment appelle-t-on la grille où les définitions sont écrites dans les cases mêmes ?
+   → Les mots fléchés / Mots fléchés
+   (Dans les mots croisés, elles sont à côté de la grille.)
+
+97. [3.6] Quel jeu de mots fait deviner un mot syllabe par syllabe : « Mon premier est… » ?
+   → La charade / Charade / Charades
+   (« Mon tout » donne la réponse.)

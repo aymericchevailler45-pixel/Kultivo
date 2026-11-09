@@ -1,0 +1,473 @@
+GASTRONOMIE — 118 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+
+1. [1.0] Comment appelle-t-on le pain au chocolat dans le Sud-Ouest ?
+   → Une chocolatine / Chocolatine
+   (Un débat qui divise la France depuis longtemps.)
+
+2. [1.0] Quel croque-monsieur porte en plus un œuf au plat ?
+   → Le croque-madame / Croque-madame / Croque madame
+   (L’œuf rappellerait un chapeau de dame.)
+
+3. [1.1] Quels petits choux sans garniture sont couverts de grains de sucre ?
+   → Les chouquettes / Chouquette / Chouquettes
+   (On les achète au poids à la boulangerie.)
+
+4. [1.1] Quel dessert est fait de chocolat fondu et de blancs d’œufs battus ?
+   → La mousse au chocolat / Mousse au chocolat
+   (Sans cuisson : les blancs apportent la légèreté.)
+
+5. [1.1] Quel gâteau en forme de grille se mange avec du sucre ou de la chantilly ?
+   → La gaufre / Gaufre / Gaufres
+   (Celles de Liège ont des perles de sucre, celles de Bruxelles sont rectangulaires.)
+
+6. [1.2] Quels gâteaux ronds et frits, troués au milieu, mange Homer Simpson ?
+   → Les donuts / Donut / Donuts / Beignet
+   (Aux États-Unis, ils se dégustent souvent avec un café.)
+
+7. [1.2] Quel gâteau américain au chocolat, dense et fondant, se coupe en carrés ?
+   → Le brownie / Brownie
+   (Souvent avec des noix de pécan.)
+
+8. [1.2] Quel biscuit rond américain contient des pépites de chocolat ?
+   → Le cookie / Cookie / Cookies
+   (Inventé dans les années 1930 dans le Massachusetts.)
+
+9. [1.3] Quel petit gâteau individuel américain cuit dans un moule en papier ?
+   → Le muffin / Muffin / Muffins
+   (Souvent aux myrtilles.)
+
+10. [1.3] Quelles petites crêpes épaisses les Américains mangent-ils au petit-déjeuner avec du sirop d’érable ?
+   → Les pancakes / Pancake / Pancakes
+   (Empilées en hautes piles.)
+
+11. [1.3] Quel sandwich rond, spécialité de Nice, est garni de salade niçoise ?
+   → Le pan bagnat / Pan bagnat
+   (« Pain mouillé » en niçois : il est imbibé d’huile d’olive.)
+
+12. [1.4] Quel plat de pâtes est servi avec une sauce à la viande hachée et à la tomate ?
+   → Les spaghettis bolognaise / Spaghetti bolognaise / Bolognaise / Spaghettis bolognaise
+   (À Bologne, on sert plutôt le ragù avec des tagliatelles.)
+
+13. [1.4] Quel sandwich américain met un steak haché dans un pain rond ?
+   → Le hamburger / Hamburger / Burger
+   (Nommé d’après la ville de Hambourg.)
+
+14. [1.4] Quel plat anglais associe poisson pané et frites ?
+   → Le fish and chips / Fish and chips / Fish & chips
+   (Traditionnellement servi dans du papier journal.)
+
+15. [1.5] Quelle salade libanaise est faite de persil, de boulgour et de tomate ?
+   → Le taboulé / Taboulé / Taboule
+   (En France, on met souvent plus de semoule que de persil.)
+
+16. [1.5] Quelle crêpe de blé roulée mexicaine contient haricots, viande et riz ?
+   → Le burrito / Burrito
+   (Son nom veut dire « petit âne ».)
+
+17. [1.5] Quelles chips de maïs mexicaines sont servies avec du fromage fondu et du guacamole ?
+   → Les nachos / Nachos
+   (Inventées en 1943 par un certain Ignacio « Nacho » Anaya.)
+
+18. [1.5] Quelle boisson italienne mêle expresso et mousse de lait, saupoudrée de cacao ?
+   → Le cappuccino / Cappuccino
+   (Sa couleur rappelle la robe des moines capucins.)
+
+19. [1.6] Quelle boisson chaude sans thé est faite de plantes infusées, comme la verveine ?
+   → Une tisane / Tisane / Infusion
+   (Elle ne contient pas de caféine.)
+
+20. [1.6] Quelle fleur jaune et blanche donne une tisane apaisante pour dormir ?
+   → La camomille / Camomille
+   (Elle ressemble à une petite marguerite.)
+
+21. [1.6] Quelle purée de fruits cuits, souvent de pommes, se mange en dessert ?
+   → La compote / Compote
+   (Contrairement à la confiture, elle est peu sucrée.)
+
+22. [1.6] Quel dessert est fait de deux choux superposés, l’un sur l’autre, glacés au chocolat ou au café ?
+   → La religieuse / Religieuse
+   (Sa forme rappellerait une religieuse en habit.)
+
+23. [1.7] Quel gâteau aux fraises et à la crème mousseline est un classique du printemps ?
+   → Le fraisier / Fraisier
+   (On voit les fraises coupées en deux sur le côté.)
+
+24. [1.7] Quel dessert de blancs d’œufs pochés flotte sur une crème anglaise ?
+   → Les œufs à la neige / Œufs à la neige / Oeufs à la neige
+   (Proche de l’île flottante, où le blanc est cuit au four.)
+
+25. [1.7] Quel petit gâteau aux amandes a la forme d’un lingot d’or ?
+   → Le financier / Financier
+   (Rendu célèbre près de la Bourse de Paris.)
+
+26. [1.7] Quel nom italien donne-t-on à la crème glacée artisanale ?
+   → Le gelato / Gelato
+   (Plus dense et moins grasse que la glace américaine.)
+
+27. [1.8] Quel dessert est fait de blancs d’œufs battus avec du sucre, puis cuits au four ?
+   → La meringue / Meringue
+   (Il en existe trois sortes : française, italienne et suisse.)
+
+28. [1.8] Quelle partie de l’œuf monte en neige ?
+   → Le blanc / Blanc d’œuf / Blanc
+   (Une trace de jaune et ça ne monte plus.)
+
+29. [1.8] Quel plat de pommes de terre au four, crème et lait, vient du Dauphiné ?
+   → Le gratin dauphinois / Gratin dauphinois
+   (La recette traditionnelle ne contient pas de fromage.)
+
+30. [1.8] Quel plat mêle purée de pommes de terre et viande hachée, gratiné au four ?
+   → Le hachis parmentier / Hachis parmentier / Parmentier
+   (En hommage à Antoine Parmentier, qui a promu la pomme de terre.)
+
+31. [1.9] Quel plat de Savoie fait fondre du fromage dans un caquelon où l’on trempe du pain ?
+   → La fondue savoyarde / Fondue savoyarde / Fondue
+   (Perdre son pain dans le caquelon donne droit à un gage.)
+
+32. [1.9] Quelle fondue fait cuire des morceaux de bœuf dans l’huile bouillante ?
+   → La fondue bourguignonne / Fondue bourguignonne
+   (Malgré son nom, elle viendrait plutôt de Suisse.)
+
+33. [1.9] Quel plat de coq mijote dans le vin rouge avec lardons et champignons ?
+   → Le coq au vin / Coq au vin
+   (Chaque région utilise son vin : Chambertin, riesling, vin jaune…)
+
+34. [1.9] Quelle salade de Nice contient thon, œufs durs, olives et anchois ?
+   → La salade niçoise / Salade niçoise / Niçoise
+   (Les vrais Niçois n’y mettent ni riz ni pommes de terre.)
+
+35. [2.0] Quel morceau de canard, la poitrine, se cuit rosé côté peau ?
+   → Le magret / Magret / Magret de canard
+   (Vient d’un canard engraissé pour le foie gras.)
+
+36. [2.0] Quelle préparation conserve des cuisses de canard cuites dans leur graisse ?
+   → Le confit / Confit de canard / Confit
+   (Une méthode de conservation d’avant le réfrigérateur.)
+
+37. [2.0] Quelle charcuterie noire est faite à base de sang de porc ?
+   → Le boudin noir / Boudin noir / Boudin
+   (Le boudin blanc, lui, est fait de viande blanche et de lait.)
+
+38. [2.0] Quelle préparation de porc effilochée, cuite dans sa graisse, est une spécialité du Mans ?
+   → Les rillettes / Rillettes
+   (Celles de Tours sont aussi réputées.)
+
+39. [2.0] Quel nœud de pain salé, en forme de cœur, est le symbole des boulangers alsaciens ?
+   → Le bretzel / Bretzel / Bretzels
+   (Trempé dans une solution de bicarbonate avant cuisson.)
+
+40. [2.1] Quel jambon sec AOP du Pays basque est frotté au piment d’Espelette ?
+   → Le jambon de Bayonne / Jambon de Bayonne
+   (Séché au moins 7 mois.)
+
+41. [2.1] Quels coquillages se mangent crus, traditionnellement « les mois en r » ?
+   → Les huîtres / Huîtres / Huitres
+   (Une règle qui datait d’avant les réfrigérateurs.)
+
+42. [2.1] Quels coquillages en éventail ont une noix blanche et un corail orangé ?
+   → Les coquilles Saint-Jacques / Saint-Jacques / Coquilles Saint-Jacques
+   (Emblème des pèlerins de Compostelle.)
+
+43. [2.1] Quel crustacé rouge sans grosses pinces est un cousin du homard ?
+   → La langouste / Langouste
+   (Elle a de longues antennes au lieu de pinces.)
+
+44. [2.2] Quel poisson plat est cuit au beurre noisette dans un plat classique « meunière » ?
+   → La sole / Sole / Sole meunière
+   (Le plat qui a donné à Julia Child l’amour de la cuisine française.)
+
+45. [2.2] Quelle purée de morue à l’huile d’olive est une spécialité de Nîmes ?
+   → La brandade / Brandade / Brandade de morue
+   (La morue est du cabillaud salé et séché.)
+
+46. [2.2] Quelle spécialité lyonnaise est une sorte de boudin de semoule, souvent au brochet ?
+   → La quenelle / Quenelle / Quenelles
+   (Servie avec une sauce Nantua aux écrevisses.)
+
+47. [2.2] Comment appelle-t-on les petits restaurants traditionnels de Lyon ?
+   → Les bouchons / Bouchon / Bouchons lyonnais
+   (Tablier, nappes à carreaux et cuisine copieuse.)
+
+48. [2.2] Quel chef et pâtissier aveyronnais anime « Tous en cuisine » et « Le Meilleur Pâtissier » ?
+   → Cyril Lignac / Lignac
+   (Révélé en 2005 par « Oui Chef ! ».)
+
+49. [2.3] Quelle charcuterie d’Alsace ou de Troyes, faite de tripes, a une association à 5 A ?
+   → L’andouillette / Andouillette
+   (AAAAA : Association amicale des amateurs d’andouillette authentique.)
+
+50. [2.3] Quelle ville de l’Aude se dit « capitale mondiale du cassoulet » ?
+   → Castelnaudary
+   (Toulouse et Carcassonne revendiquent aussi le titre.)
+
+51. [2.3] Quel plat alsacien cuit viandes et pommes de terre au vin blanc dans une terrine fermée ?
+   → Le baeckeoffe / Baeckeoffe / Baeckaoffa
+   (Autrefois cuit dans le four du boulanger, d’où son nom.)
+
+52. [2.3] Quel plat d’Auvergne mêle pommes de terre et tomme fraîche fondue ?
+   → La truffade / Truffade
+   (Proche de l’aligot, mais avec des pommes de terre en morceaux.)
+
+53. [2.4] Quel fromage fondu, coulant et très léger, est une spécialité de Franche-Comté ?
+   → La cancoillotte / Cancoillotte
+   (Moins de 10 % de matières grasses.)
+
+54. [2.4] Quel petit fromage de chèvre du Berry est produit près de Sancerre ?
+   → Le crottin de Chavignol / Crottin de Chavignol / Crottin
+   (AOP depuis 1976.)
+
+55. [2.4] Quel fromage auvergnat à croûte grise est affiné sur de la paille de seigle ?
+   → Le saint-nectaire / Saint-Nectaire / Saint Nectaire
+   (Fabriqué dans les monts Dore.)
+
+56. [2.4] Quel fromage normand carré porte le nom d’une ville du Calvados ?
+   → Le pont-l’évêque / Pont-l’évêque / Pont l’Évêque
+   (Un des plus anciens fromages normands.)
+
+57. [2.4] Quelles petites boulettes italiennes de pommes de terre et de farine se servent avec du beurre et de la sauge ?
+   → Les gnocchis / Gnocchi / Gnocchis
+   (On les égoutte dès qu’ils remontent à la surface.)
+
+58. [2.5] Quel fromage normand, cerclé de bandes de roseau, est surnommé « le colonel » ?
+   → Le livarot / Livarot
+   (Ses cinq bandes rappellent les galons d’un colonel.)
+
+59. [2.5] Quel fromage bleu d’Auvergne est cousin du roquefort, mais au lait de vache ?
+   → Le bleu d’Auvergne / Bleu d’Auvergne
+   (AOP depuis 1975.)
+
+60. [2.5] Quel label français, au logo rouge, garantit une qualité supérieure depuis 1960 ?
+   → Le Label Rouge / Label Rouge / Label rouge
+   (Les poulets fermiers sont les plus connus.)
+
+61. [2.5] Quel moine bénédictin a donné son nom à une célèbre cuvée de champagne ?
+   → Dom Pérignon / Dom Perignon
+   (Il a amélioré l’assemblage des vins, mais n’a pas « inventé » les bulles.)
+
+62. [2.5] Quelle tarte au citron est recouverte d’un nuage blanc doré au chalumeau ?
+   → La tarte au citron meringuée / Tarte au citron meringuée
+   (Une meringue italienne, faite avec un sirop chaud.)
+
+63. [2.6] Quelle eau-de-vie de Gascogne est la plus ancienne de France ?
+   → L’armagnac / Armagnac
+   (Citée dès 1310.)
+
+64. [2.6] Quelle liqueur d’orange a été créée à Angers en 1849 ?
+   → Le Cointreau / Cointreau
+   (Sa bouteille carrée est reconnaissable.)
+
+65. [2.6] Quelle boisson à l’anis, la « fée verte », a été interdite en France de 1915 à 2011 ?
+   → L’absinthe / Absinthe
+   (Elle était très appréciée des poètes et des peintres.)
+
+66. [2.6] Quelle liqueur de plantes est produite à Fécamp depuis le XIXe siècle, dans un palais ?
+   → La Bénédictine / Bénédictine / Benedictine
+   (Le palais Bénédictine se visite.)
+
+67. [2.6] Quel gâteau roulé viennois en pâte très fine est garni de pommes et de cannelle ?
+   → Le strudel / Strudel / Apfelstrudel
+   (La pâte doit être si fine qu’on peut lire un journal au travers.)
+
+68. [2.7] Quelle liqueur à base de cognac et d’orange amère a été créée en 1880 ?
+   → Le Grand Marnier / Grand Marnier
+   (Elle sert à flamber les crêpes Suzette.)
+
+69. [2.7] Quelle eau-de-vie italienne est faite à partir du marc de raisin ?
+   → La grappa / Grappa
+   (Le marc, ce sont les peaux et pépins restant après le pressage.)
+
+70. [2.7] Quelle liqueur au citron se boit glacée en Italie du Sud ?
+   → Le limoncello / Limoncello
+   (Faite avec les citrons de la côte amalfitaine.)
+
+71. [2.7] Quel apéritif anisé blanchit dans l’eau, en Grèce ?
+   → L’ouzo / Ouzo
+   (Comme le pastis en France ou le raki en Turquie.)
+
+72. [2.8] Quelle boisson espagnole mélange vin rouge, fruits coupés et un peu de sucre ?
+   → La sangria / Sangria
+   (De « sangre », le sang, pour sa couleur.)
+
+73. [2.8] Quel cocktail portoricain mélange rhum, noix de coco et ananas ?
+   → La piña colada / Piña colada / Pina colada
+   (« Ananas filtré » en espagnol.)
+
+74. [2.8] Quel apéritif orange italien se mélange au prosecco dans le « spritz » ?
+   → L’Apérol / Apérol / Aperol
+   (Créé à Padoue en 1919.)
+
+75. [2.8] Quel alcool mexicain d’agave se boit parfois avec un ver au fond de la bouteille ?
+   → Le mezcal / Mezcal / Mescal
+   (La tequila est un mezcal particulier, de l’agave bleu.)
+
+76. [2.9] Comment appelle-t-on la récolte du raisin ?
+   → Les vendanges / Vendanges / Vendange
+   (En France, surtout en septembre.)
+
+77. [2.9] Comment appelle-t-on un pied de vigne ?
+   → Un cep / Cep / Cep de vigne
+   (Une vigne peut vivre plus de 100 ans.)
+
+78. [2.9] Comment appelle-t-on l’année de récolte inscrite sur une bouteille de vin ?
+   → Le millésime / Millésime / Millesime
+   (Certaines années sont mythiques, comme 1945 à Bordeaux.)
+
+79. [2.9] Quelles substances du raisin et du thé donnent une sensation d’assèchement en bouche ?
+   → Les tanins / Tanins / Tannins
+   (Les vins rouges en contiennent beaucoup plus que les blancs.)
+
+80. [3.0] Comment appelle-t-on le fait de verser un vin dans une carafe pour enlever le dépôt ?
+   → Décanter / Le décantage / Décantation / Carafer
+   (Carafer, lui, sert surtout à aérer le vin.)
+
+81. [3.0] Combien d’étoiles au maximum un restaurant peut-il obtenir au Guide Michelin ?
+   → 3 / Trois
+   (Trois étoiles : « une cuisine qui vaut le voyage ».)
+
+82. [3.0] Quel guide gastronomique note les restaurants sur 20 et leur donne des toques ?
+   → Le Gault et Millau / Gault et Millau / Gault & Millau
+   (Fondé en 1972 par deux journalistes.)
+
+83. [3.0] Quel chef français a été le premier à avoir trois restaurants trois étoiles en même temps ?
+   → Alain Ducasse / Ducasse
+   (À Monaco, Paris et New York, à la fin des années 1990.)
+
+84. [3.1] Quel cuisinier du XIXe siècle, « roi des chefs et chef des rois », a servi Talleyrand ?
+   → Antonin Carême / Carême / Careme
+   (Il a codifié les grandes sauces françaises.)
+
+85. [3.1] Quel maître d’hôtel se serait suicidé en 1671 parce que la marée n’arrivait pas ?
+   → François Vatel / Vatel
+   (Au château de Chantilly, pendant une fête pour Louis XIV.)
+
+86. [3.1] Quel gâteau en couronne imbibé de sirop porte le nom de l’auteur de « Physiologie du goût » ?
+   → Le savarin / Savarin
+   (Hommage à Brillat-Savarin.)
+
+87. [3.1] Quelle tarte aux poires et à la frangipane porte le nom d’une rue de Paris ?
+   → La tarte Bourdaloue / Tarte Bourdaloue / Bourdaloue
+   (Créée par un pâtissier de la rue Bourdaloue vers 1850.)
+
+88. [3.2] Quel dessert de meringue garnie de fruits porte le nom d’une danseuse russe ?
+   → La pavlova / Pavlova
+   (Australiens et Néo-Zélandais se disputent son invention.)
+
+89. [3.2] Quel chocolat de Turin est mélangé à de la pâte de noisette ?
+   → Le gianduja / Gianduja / Gianduia
+   (Né au XIXe siècle quand le cacao manquait.)
+
+90. [3.2] Quelle confiserie est une amande enrobée de sucre caramélisé, rose à Lyon ?
+   → La praline / Praline / Pralines
+   (On la retrouve dans la tarte aux pralines lyonnaise.)
+
+91. [3.2] Quelle pâte à base de noisettes ou d’amandes caramélisées et broyées garnit le Paris-Brest ?
+   → Le praliné / Praliné
+   (À ne pas confondre avec la praline entière.)
+
+92. [3.3] Quel bonbon dur à rayures, en forme de tétraèdre, est une spécialité de Carpentras ?
+   → Le berlingot / Berlingot / Berlingots
+   (Fabriqué à l’origine avec le sirop des fruits confits.)
+
+93. [3.3] Quel pain plat provençal est souvent découpé en forme d’épi ou de feuille ?
+   → La fougasse / Fougasse
+   (Aux olives, aux lardons ou à l’anchois.)
+
+94. [3.3] Quelle sauce provençale mélange anchois, ail et huile d’olive ?
+   → L’anchoïade / Anchoïade / Anchoiade
+   (Servie avec des crudités.)
+
+95. [3.3] Quel plat paysan fait cuire longuement chou, lard et légumes dans une marmite ?
+   → La potée / Potée
+   (Chaque région a la sienne : auvergnate, lorraine, savoyarde…)
+
+96. [3.4] Quel mélange de carottes, oignons et céleri en dés sert de base aux sauces ?
+   → La mirepoix / Mirepoix
+   (Du nom d’un duc du XVIIIe siècle.)
+
+97. [3.4] Comment appelle-t-on une découpe de feuilles roulées en fines lanières, comme le basilic ?
+   → Une chiffonnade / Chiffonnade
+   (Le jambon cru se sert aussi « en chiffonnade ».)
+
+98. [3.4] Comment appelle-t-on la cuisson rapide d’un légume dans l’eau bouillante, avant de le refroidir ?
+   → Blanchir / Le blanchiment / Blanchiment
+   (Pour garder sa couleur et le cuire à moitié.)
+
+99. [3.4] Comment appelle-t-on la cuisson longue d’une viande dans un peu de liquide, à couvert ?
+   → Braiser / Le braisage / Braisage
+   (Pour les morceaux durs, qui deviennent fondants.)
+
+100. [3.5] Quel mode de cuisson doux place un récipient dans un autre rempli d’eau chaude ?
+   → Le bain-marie / Bain-marie / Bain marie
+   (Il porterait le nom de Marie, une alchimiste de l’Antiquité.)
+
+101. [3.5] Quelle sauce au beurre et aux jaunes d’œufs nappe les œufs Bénédicte ?
+   → La sauce hollandaise / Hollandaise / Sauce hollandaise
+   (La béarnaise est la même, avec de l’estragon.)
+
+102. [3.5] Quelle sauce au beurre et à l’échalote est une spécialité nantaise pour le poisson ?
+   → Le beurre blanc / Beurre blanc / Beurre nantais
+   (Née sur les bords de Loire à la fin du XIXe siècle.)
+
+103. [3.5] Quel petit fagot de thym, laurier et persil parfume les bouillons ?
+   → Le bouquet garni / Bouquet garni
+   (On le retire avant de servir.)
+
+104. [3.6] Quelle herbe à fines tiges creuses a un goût d’oignon doux ?
+   → La ciboulette / Ciboulette
+   (On la coupe aux ciseaux.)
+
+105. [3.6] Quelle herbe aromatique est indispensable sur une pizza, avec la tomate ?
+   → L’origan / Origan
+   (Proche de la marjolaine.)
+
+106. [3.6] Quelle herbe aux feuilles en aiguilles parfume l’agneau et les pommes de terre au four ?
+   → Le romarin / Romarin
+   (Son nom latin veut dire « rosée de la mer ».)
+
+107. [3.6] Quelle épice râpée parfume la béchamel et la purée ?
+   → La noix de muscade / Muscade / Noix de muscade
+   (Elle vient des îles Banda, en Indonésie.)
+
+108. [3.7] Quelle herbe fraîche, aussi appelée persil arabe, divise : certains lui trouvent un goût de savon ?
+   → La coriandre / Coriandre
+   (Ce dégoût serait en partie génétique.)
+
+109. [3.7] Quelle soupe traditionnelle du Maghreb est servie pour rompre le jeûne du ramadan ?
+   → La chorba / Chorba
+   (Au Maroc, on sert plutôt la harira.)
+
+110. [3.7] Quels raviolis japonais grillés d’un côté viennent du jiaozi chinois ?
+   → Les gyozas / Gyoza / Gyozas
+   (Servis avec une sauce soja vinaigrée.)
+
+111. [3.7] Comment appelle-t-on les petites bouchées cantonaises cuites à la vapeur dans des paniers en bambou ?
+   → Les dim sum / Dim sum / Dim sums
+   (Traditionnellement servies avec le thé.)
+
+112. [3.8] Quelles épaisses nouilles japonaises de blé se mangent en bouillon ?
+   → Les udon / Udon / Udons
+   (Plus épaisses que les ramen et les soba.)
+
+113. [3.8] Comment appelle-t-on le poisson cru tranché, servi sans riz, au Japon ?
+   → Le sashimi / Sashimi / Sashimis
+   (Le sushi, lui, contient toujours du riz vinaigré.)
+
+114. [3.8] Quels petits rouleaux japonais entourés d’algue nori contiennent riz et poisson ?
+   → Les makis / Maki / Makis
+   (Le californien (california roll) a le riz à l’extérieur.)
+
+115. [3.9] Qui a inventé la margarine en 1869, pour un concours de Napoléon III ?
+   → Hippolyte Mège-Mouriès / Mège-Mouriès / Mege-Mouries
+   (Il fallait un beurre bon marché pour la marine et les pauvres.)
+
+116. [3.9] Quel lait fermenté du Caucase contient des grains de levures et de bactéries ?
+   → Le kéfir / Kéfir / Kefir
+   (Légèrement pétillant.)
+
+117. [3.9] Quel sucre roux de canne, en cristaux, sucre souvent les crêpes ?
+   → La cassonade / Cassonade
+   (Différente de la vergeoise, faite de betterave.)
+
+118. [4.0] Comment appelle-t-on les fins cristaux de sel récoltés à la surface des marais salants ?
+   → La fleur de sel / Fleur de sel
+   (Celle de Guérande est la plus célèbre.)

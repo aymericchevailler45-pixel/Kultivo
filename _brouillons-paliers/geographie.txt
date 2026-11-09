@@ -4,417 +4,417 @@ GEOGRAPHIE — 150 questions nouvelles (de la plus facile à la plus dure, note 
    → Île-de-France / Ile de France
    (La région la plus peuplée de France, environ 12 millions d’habitants.)
 
-2. [1.1] Quelle forêt de conifères couvre le nord de la Russie et du Canada ?
-   → La taïga / Taïga / Taiga
-   (La plus grande forêt du monde.)
-
-3. [1.1] Comment appelle-t-on la plaine glacée sans arbres du Grand Nord ?
-   → La toundra / Toundra
-   (Le sol y reste gelé en profondeur : le pergélisol.)
-
-4. [1.2] Comment appelle-t-on une source qui projette de l’eau chaude en jet ?
-   → Un geyser / Geyser
-   (Le mot vient du Geysir, en Islande.)
-
-5. [1.2] Comment appelle-t-on la grande courbe que fait une rivière ?
-   → Un méandre / Méandre / Meandre
-   (Du nom du fleuve Méandre, en Turquie.)
-
-6. [1.2] Quelle forêt de palétuviers pousse les pieds dans l’eau salée ?
-   → La mangrove / Mangrove
-   (On en trouve sur les côtes tropicales, comme en Guyane.)
-
-7. [1.3] Quelle grande plaine herbeuse s’étend en Argentine ?
-   → La pampa / Pampa
-   (Le pays des gauchos.)
-
-8. [1.3] Quelle carte représente le monde entier à plat ?
-   → Un planisphère / Planisphère / Planisphere
-   (Une sphère mise à plat déforme toujours un peu.)
-
-9. [1.3] Quelle région, au nord de la Scandinavie, est le pays du père Noël et des rennes ?
+2. [1.3] Quelle région, au nord de la Scandinavie, est le pays du père Noël et des rennes ?
    → La Laponie / Laponie
    (Partagée entre Norvège, Suède, Finlande et Russie.)
 
-10. [1.4] Quelle station des Alpes est au pied du mont Blanc ?
+3. [1.4] Quelle station des Alpes est au pied du mont Blanc ?
    → Chamonix / Chamonix-Mont-Blanc
    (Elle a accueilli les premiers Jeux d’hiver, en 1924.)
 
-11. [1.4] Quelle ville portuaire de Charente-Maritime est célèbre pour ses tours et son Vieux-Port ?
+4. [1.4] Quelle ville portuaire de Charente-Maritime est célèbre pour ses tours et son Vieux-Port ?
    → La Rochelle / Rochelle
    (Ses tours Saint-Nicolas et de la Chaîne gardent le port.)
 
-12. [1.4] Quelle île de Charente-Maritime est reliée au continent par un pont depuis 1988 ?
+5. [1.4] Quelle île de Charente-Maritime est reliée au continent par un pont depuis 1988 ?
    → L’île de Ré / Île de Ré / Ré
    (Surnommée « Ré la Blanche ».)
 
-13. [1.5] Quelle grande ville bretonne abrite une base navale à la pointe du Finistère ?
+6. [1.5] Quelle grande ville bretonne abrite une base navale à la pointe du Finistère ?
    → Brest
    (Port militaire depuis Richelieu.)
 
-14. [1.5] Quelle ville alsacienne aux maisons colorées a un quartier nommé « la Petite Venise » ?
-   → Colmar
-   (Patrie de Bartholdi, le sculpteur de la statue de la Liberté.)
-
-15. [1.5] Quelle ville basque est célèbre pour son jambon et ses fêtes ?
+7. [1.5] Quelle ville basque est célèbre pour son jambon et ses fêtes ?
    → Bayonne
    (Les fêtes de Bayonne attirent plus d’un million de personnes.)
 
-16. [1.5] Quelle île varoise, sans voitures, est au large d’Hyères ?
-   → Porquerolles
-   (Elle fait partie du parc national de Port-Cros.)
-
-17. [1.5] Comment appelle-t-on une colonne d’air qui tourne violemment, en forme d’entonnoir ?
+8. [1.5] Comment appelle-t-on une colonne d’air qui tourne violemment, en forme d’entonnoir ?
    → Une tornade / Tornade
    (Les États-Unis en connaissent plus de 1 000 par an.)
 
-18. [1.6] Quelle est la capitale de l’Afghanistan ?
+9. [1.6] Comment appelle-t-on une source qui projette de l’eau chaude en jet ?
+   → Un geyser / Geyser
+   (Le mot vient du Geysir, en Islande.)
+
+10. [1.6] Quelle est la capitale de l’Afghanistan ?
    → Kaboul / Kabul
    (Située à environ 1 800 m d’altitude.)
 
-19. [1.6] Quelle est la capitale du Népal ?
+11. [1.6] Quelle est la capitale du Népal ?
    → Katmandou / Kathmandu / Katmandu
    (Point de départ des expéditions vers l’Everest.)
 
-20. [1.6] Quelle est la capitale de la Corée du Nord ?
+12. [1.6] Quelle est la capitale de la Corée du Nord ?
    → Pyongyang / Pyong-yang
    (Environ 3 millions d’habitants.)
 
-21. [1.6] Quelle est la capitale du Liban ?
+13. [1.6] Quelle est la capitale du Liban ?
    → Beyrouth / Beirut
    (Autrefois surnommée « la Paris du Moyen-Orient ».)
 
-22. [1.7] Quelle est la capitale de l’Arabie saoudite ?
+14. [1.7] Quelle est la capitale de l’Arabie saoudite ?
    → Riyad / Riyadh / Ryad
    (La Mecque n’est que la ville sainte.)
 
-23. [1.7] Quelle est la capitale de la Jordanie ?
+15. [1.7] Quelle est la capitale de la Jordanie ?
    → Amman
    (Près des ruines de Pétra, à 3 heures de route.)
 
-24. [1.7] Quelle ville du nord-est de la Corse, face à l’Italie, est la 2e de l’île ?
+16. [1.7] Quelle ville du nord-est de la Corse, face à l’Italie, est la 2e de l’île ?
    → Bastia
    (Préfecture de la Haute-Corse ; Ajaccio est la plus grande ville.)
 
-25. [1.7] Quelle collectivité d’outre-mer du Pacifique a pour capitale Papeete ?
+17. [1.7] Quelle collectivité d’outre-mer du Pacifique a pour capitale Papeete ?
    → La Polynésie française / Polynésie française / Polynésie
    (118 îles, dont Tahiti et Bora-Bora.)
 
-26. [1.7] Quelles criques aux falaises blanches s’étendent entre Marseille et Cassis ?
+18. [1.7] Quelles criques aux falaises blanches s’étendent entre Marseille et Cassis ?
    → Les calanques / Calanques
    (Parc national depuis 2012.)
 
-27. [1.8] Quelle mer longe la côte ouest de l’Italie, entre la Corse et Naples ?
-   → La mer Tyrrhénienne / Mer Tyrrhénienne / Tyrrhénienne
-   (Elle doit son nom aux Étrusques, appelés Tyrrhéniens.)
+19. [1.8] Quelle carte représente le monde entier à plat ?
+   → Un planisphère / Planisphère / Planisphere
+   (Une sphère mise à plat déforme toujours un peu.)
 
-28. [1.8] Quel golfe de l’Atlantique borde la côte ouest de la France, jusqu’à l’Espagne ?
+20. [1.8] Quel golfe de l’Atlantique borde la côte ouest de la France, jusqu’à l’Espagne ?
    → Le golfe de Gascogne / Golfe de Gascogne / Gascogne
    (Réputé pour ses tempêtes.)
 
-29. [1.8] Quel canal du XVIIe siècle relie Toulouse à la Méditerranée ?
-   → Le canal du Midi / Canal du Midi
-   (Œuvre de Pierre-Paul Riquet, classé par l’Unesco.)
-
-30. [1.8] Quelle ligne imaginaire de longitude 0° passe par Londres ?
+21. [1.8] Quelle ligne imaginaire de longitude 0° passe par Londres ?
    → Le méridien de Greenwich / Méridien de Greenwich / Greenwich
    (Choisi comme référence en 1884.)
 
-31. [1.8] Comment appelle-t-on un ouragan dans le Pacifique Nord-Ouest, en Asie ?
-   → Un typhon / Typhon
-   (Même phénomène : ouragan aux Antilles, cyclone dans l’océan Indien.)
+22. [1.9] Quelle ville alsacienne aux maisons colorées a un quartier nommé « la Petite Venise » ?
+   → Colmar
+   (Patrie de Bartholdi, le sculpteur de la statue de la Liberté.)
 
-32. [1.9] Quelle ligne imaginaire, dans le Pacifique, fait changer de jour quand on la traverse ?
-   → La ligne de changement de date / Ligne de changement de date / Antiméridien
-   (Elle suit à peu près le méridien 180°.)
-
-33. [1.9] Comment appelle-t-on une zone où tous ont la même heure légale ?
+23. [1.9] Comment appelle-t-on une zone où tous ont la même heure légale ?
    → Un fuseau horaire / Fuseau horaire
    (La France (métropole) en a un, mais ses outre-mer en couvrent 12.)
 
-34. [1.9] Quel cartographe flamand a donné son nom à la projection la plus connue du monde ?
-   → Mercator / Gerardus Mercator
-   (1569 : elle grossit fortement les terres proches des pôles.)
-
-35. [1.9] Quelle région du nord de la France a pour capitale Lille ?
+24. [1.9] Quelle région du nord de la France a pour capitale Lille ?
    → Hauts-de-France / Hauts de France
    (Créée en 2016 en réunissant Nord-Pas-de-Calais et Picardie.)
 
-36. [1.9] Comment appelle-t-on la saison des grandes pluies en Inde et en Asie du Sud ?
+25. [1.9] Comment appelle-t-on la saison des grandes pluies en Inde et en Asie du Sud ?
    → La mousson / Mousson
    (Elle apporte l’essentiel de l’eau de l’année, de juin à septembre.)
 
-37. [1.9] Quel peuple autochtone de Nouvelle-Zélande danse le haka ?
+26. [1.9] Quel peuple autochtone de Nouvelle-Zélande danse le haka ?
    → Les Maoris / Maoris / Maori
    (Les All Blacks le dansent avant leurs matchs.)
 
-38. [1.9] Quelle île de Bretagne est la plus grande des îles bretonnes ?
+27. [1.9] Quelle île de Bretagne est la plus grande des îles bretonnes ?
    → Belle-Île / Belle-Île-en-Mer / Belle Ile
    (Au large de Quiberon.)
 
-39. [2.0] Quelle région a pour capitale Strasbourg ?
+28. [2.0] Quelle région a pour capitale Strasbourg ?
    → Grand Est / Le Grand Est
    (Alsace, Lorraine et Champagne-Ardenne réunies en 2016.)
 
-40. [2.0] Quelle région a pour capitale Marseille ?
+29. [2.0] Quelle région a pour capitale Marseille ?
    → Provence-Alpes-Côte d’Azur / PACA / Région Sud
    (Elle se fait aussi appeler « Région Sud ».)
 
-41. [2.0] Quelle région a pour capitale Lyon ?
+30. [2.0] Quelle région a pour capitale Lyon ?
    → Auvergne-Rhône-Alpes / Auvergne Rhone Alpes
    (La 2e région de France par la population.)
 
-42. [2.0] Quelle région a pour capitale Orléans ?
+31. [2.0] Quelle région a pour capitale Orléans ?
    → Centre-Val de Loire / Centre Val de Loire / Centre
    (La région des châteaux de la Loire.)
 
-43. [2.0] Comment appelle-t-on un ouragan dans l’océan Indien, à La Réunion par exemple ?
+32. [2.0] Comment appelle-t-on un ouragan dans l’océan Indien, à La Réunion par exemple ?
    → Un cyclone / Cyclone
    (Même phénomène que l’ouragan des Antilles et le typhon d’Asie.)
 
-44. [2.0] Dans quel département sont les gorges du Tarn et de grands causses calcaires ?
+33. [2.0] Comment appelle-t-on un ouragan dans le Pacifique Nord-Ouest, en Asie ?
+   → Un typhon / Typhon
+   (Même phénomène : ouragan aux Antilles, cyclone dans l’océan Indien.)
+
+34. [2.0] Dans quel département sont les gorges du Tarn et de grands causses calcaires ?
    → La Lozère / Lozère / Lozere
    (Le département le moins peuplé de France.)
 
-45. [2.0] Quel lac de Haute-Savoie, réputé pour son eau très pure, a une ville du même nom ?
+35. [2.0] Quel lac de Haute-Savoie, réputé pour son eau très pure, a une ville du même nom ?
    → Le lac d’Annecy / Lac d’Annecy / Annecy
    (Souvent cité comme le lac le plus propre d’Europe.)
 
-46. [2.0] Quelle région de Dordogne est célèbre pour ses truffes, son foie gras et ses grottes ?
+36. [2.0] Quelle région de Dordogne est célèbre pour ses truffes, son foie gras et ses grottes ?
    → Le Périgord / Périgord / Perigord
    (Divisé en Périgord vert, blanc, pourpre et noir.)
 
-47. [2.0] Quelle est la capitale du Chili ?
+37. [2.0] Quelle est la capitale du Chili ?
    → Santiago / Santiago du Chili
    (Au pied de la cordillère des Andes.)
 
-48. [2.1] Quelle région a pour capitale Nantes ?
+38. [2.1] Comment appelle-t-on la grande courbe que fait une rivière ?
+   → Un méandre / Méandre / Meandre
+   (Du nom du fleuve Méandre, en Turquie.)
+
+39. [2.1] Quelle région a pour capitale Nantes ?
    → Pays de la Loire / Pays-de-la-Loire
    (Nantes est pourtant historiquement bretonne.)
 
-49. [2.1] Quelle région a pour capitale Dijon ?
+40. [2.1] Quelle région a pour capitale Dijon ?
    → Bourgogne-Franche-Comté / Bourgogne Franche Comte
    (Créée en 2016.)
 
-50. [2.1] Quelle est la capitale de Madagascar ?
+41. [2.1] Quelle est la capitale de Madagascar ?
    → Antananarivo / Tananarive / Tana
    (Surnommée « Tana ».)
 
-51. [2.1] Quelle est la capitale du Gabon ?
+42. [2.1] Quelle est la capitale du Gabon ?
    → Libreville
    (Fondée en 1849 par des esclaves libérés.)
 
-52. [2.1] Quel vent du nord-ouest souffle sur le Roussillon et l’Aude ?
+43. [2.1] Quel vent du nord-ouest souffle sur le Roussillon et l’Aude ?
    → La tramontane / Tramontane
    (Son nom veut dire « qui vient d’au-delà des montagnes ».)
 
-53. [2.1] Quelle baie de Picardie abrite la plus grande colonie de phoques de France ?
+44. [2.1] Quelle baie de Picardie abrite la plus grande colonie de phoques de France ?
    → La baie de Somme / Baie de Somme
    (Phoques veaux-marins et phoques gris.)
 
-54. [2.2] Quelle est la capitale du Cameroun ?
+45. [2.2] Quel canal du XVIIe siècle relie Toulouse à la Méditerranée ?
+   → Le canal du Midi / Canal du Midi
+   (Œuvre de Pierre-Paul Riquet, classé par l’Unesco.)
+
+46. [2.2] Quelle est la capitale du Cameroun ?
    → Yaoundé / Yaounde
    (Douala est la plus grande ville et le port.)
 
-55. [2.2] Quelle est la capitale du Mali ?
+47. [2.2] Quelle est la capitale du Mali ?
    → Bamako
    (Sur les rives du Niger.)
 
-56. [2.2] Quelle est la capitale du Burkina Faso ?
+48. [2.2] Quelle est la capitale du Burkina Faso ?
    → Ouagadougou / Ouaga
    (Elle accueille le Fespaco, grand festival du cinéma africain.)
 
-57. [2.2] Quelle est la capitale du Ghana ?
+49. [2.2] Quelle est la capitale du Ghana ?
    → Accra
    (Sur le golfe de Guinée.)
 
-58. [2.2] Quel grand lac des Alpes, en Savoie, est le plus grand lac naturel de France ?
+50. [2.2] Quel grand lac des Alpes, en Savoie, est le plus grand lac naturel de France ?
    → Le lac du Bourget / Lac du Bourget / Bourget
    (Le Léman est plus grand, mais partagé avec la Suisse.)
 
-59. [2.2] Quel peuple du Grand Nord de l’Europe était autrefois appelé « Lapons » ?
+51. [2.2] Quel peuple du Grand Nord de l’Europe était autrefois appelé « Lapons » ?
    → Les Samis / Samis / Sâmes / Sámis / Saami
    (Environ 80 000 personnes, éleveurs de rennes pour certains.)
 
-60. [2.2] Quelle préfecture du Finistère est célèbre pour ses faïences peintes ?
+52. [2.2] Quelle préfecture du Finistère est célèbre pour ses faïences peintes ?
    → Quimper
    (Les faïences de Quimper sont fabriquées depuis 1690.)
 
-61. [2.2] Quel désert de dunes de sable s’appelle ainsi dans le Sahara ?
+53. [2.2] Quel désert de dunes de sable s’appelle ainsi dans le Sahara ?
    → Un erg / Erg
    (Le désert de pierres s’appelle le reg.)
 
-62. [2.2] Quelle île bretonne est l’île habitée la plus à l’ouest de la France métropolitaine ?
+54. [2.2] Quelle île bretonne est l’île habitée la plus à l’ouest de la France métropolitaine ?
    → Ouessant
    (« Qui voit Ouessant voit son sang », dit le proverbe des marins.)
 
-63. [2.3] Quelle est la capitale du Togo ?
+55. [2.3] Comment appelle-t-on la plaine glacée sans arbres du Grand Nord ?
+   → La toundra / Toundra
+   (Le sol y reste gelé en profondeur : le pergélisol.)
+
+56. [2.3] Quelle forêt de palétuviers pousse les pieds dans l’eau salée ?
+   → La mangrove / Mangrove
+   (On en trouve sur les côtes tropicales, comme en Guyane.)
+
+57. [2.3] Quelle île varoise, sans voitures, est au large d’Hyères ?
+   → Porquerolles
+   (Elle fait partie du parc national de Port-Cros.)
+
+58. [2.3] Quelle est la capitale du Togo ?
    → Lomé / Lome
    (Elle est collée à la frontière du Ghana.)
 
-64. [2.3] Quelle est la capitale du Rwanda ?
+59. [2.3] Quelle est la capitale du Rwanda ?
    → Kigali
    (Réputée pour sa propreté : les sacs plastiques y sont interdits.)
 
-65. [2.3] Quel cirque glaciaire des Hautes-Pyrénées a une cascade de plus de 400 m ?
+60. [2.3] Quel cirque glaciaire des Hautes-Pyrénées a une cascade de plus de 400 m ?
    → Le cirque de Gavarnie / Gavarnie / Cirque de Gavarnie
    (Victor Hugo l’appelait « le Colisée de la nature ».)
 
-66. [2.3] Quelle grande plaine céréalière autour de Chartres est surnommée « le grenier de la France » ?
+61. [2.3] Quelle grande plaine céréalière autour de Chartres est surnommée « le grenier de la France » ?
    → La Beauce / Beauce
    (La cathédrale de Chartres se voit de très loin dans la plaine.)
 
-67. [2.3] Quels habitants de la Belgique parlent néerlandais ?
+62. [2.3] Quels habitants de la Belgique parlent néerlandais ?
    → Les Flamands / Flamands
    (Les Wallons, au sud, parlent français.)
 
-68. [2.3] Quelle bande semi-aride borde le sud du Sahara, du Sénégal au Soudan ?
+63. [2.3] Quelle bande semi-aride borde le sud du Sahara, du Sénégal au Soudan ?
    → Le Sahel / Sahel
    (« Sahel » veut dire « rivage » en arabe.)
 
-69. [2.4] Quelle est la capitale de l’Ouganda ?
+64. [2.4] Quelle forêt de conifères couvre le nord de la Russie et du Canada ?
+   → La taïga / Taïga / Taiga
+   (La plus grande forêt du monde.)
+
+65. [2.4] Quelle ligne imaginaire, dans le Pacifique, fait changer de jour quand on la traverse ?
+   → La ligne de changement de date / Ligne de changement de date / Antiméridien
+   (Elle suit à peu près le méridien 180°.)
+
+66. [2.4] Quelle est la capitale de l’Ouganda ?
    → Kampala
    (Près du lac Victoria.)
 
-70. [2.4] Quel peuple nomade du désert vit traditionnellement sous la tente, en Arabie et au Sahara ?
+67. [2.4] Quel peuple nomade du désert vit traditionnellement sous la tente, en Arabie et au Sahara ?
    → Les Bédouins / Bédouins / Bedouins
    (Leur nom vient de l’arabe « badw », le désert.)
 
-71. [2.4] Quel volcan italien des îles Éoliennes est surnommé « le phare de la Méditerranée » ?
+68. [2.4] Quel volcan italien des îles Éoliennes est surnommé « le phare de la Méditerranée » ?
    → Le Stromboli / Stromboli
    (Il crache de petites explosions toutes les 15 minutes environ.)
 
-72. [2.5] Quelle théorie d’Alfred Wegener dit que les continents bougent ?
+69. [2.5] Quelle grande plaine herbeuse s’étend en Argentine ?
+   → La pampa / Pampa
+   (Le pays des gauchos.)
+
+70. [2.5] Quelle théorie d’Alfred Wegener dit que les continents bougent ?
    → La dérive des continents / Dérive des continents
    (Proposée en 1912, longtemps moquée, confirmée dans les années 1960.)
 
-73. [2.6] Quels vents réguliers soufflent des tropiques vers l’équateur et poussaient les voiliers ?
+71. [2.6] Quels vents réguliers soufflent des tropiques vers l’équateur et poussaient les voiliers ?
    → Les alizés / Alizés / Alizes
    (Christophe Colomb les a utilisés pour traverser l’Atlantique.)
 
-74. [2.6] Quelle est la capitale de la Libye ?
+72. [2.6] Quelle est la capitale de la Libye ?
    → Tripoli
    (Une autre Tripoli existe au Liban.)
 
-75. [2.6] Quelle est la capitale du Soudan ?
+73. [2.6] Quelle est la capitale du Soudan ?
    → Khartoum
    (Là où le Nil Blanc et le Nil Bleu se rejoignent.)
 
-76. [2.6] Quelle « Venise verte » de canaux s’étend entre Niort et la mer ?
+74. [2.6] Quelle « Venise verte » de canaux s’étend entre Niort et la mer ?
    → Le Marais poitevin / Marais poitevin
    (On s’y promène en barque plate.)
 
-77. [2.6] Quel massif montagneux du sud du Massif central abrite un parc national et les « camisards » d’autrefois ?
+75. [2.6] Quel massif montagneux du sud du Massif central abrite un parc national et les « camisards » d’autrefois ?
    → Les Cévennes / Cévennes / Cevennes
    (Stevenson les a traversées avec un âne en 1878.)
 
-78. [2.6] Quel fleuve chinois doit son nom à la couleur de ses limons ?
+76. [2.6] Quel fleuve chinois doit son nom à la couleur de ses limons ?
    → Le fleuve Jaune / Fleuve Jaune / Huang He / Houang-ho
    (Berceau de la civilisation chinoise.)
 
-79. [2.6] Où la Loire prend-elle sa source, en Ardèche ?
+77. [2.6] Où la Loire prend-elle sa source, en Ardèche ?
    → Au mont Gerbier-de-Jonc / Mont Gerbier-de-Jonc / Gerbier de Jonc / Gerbier
    (À 1 408 m d’altitude.)
 
-80. [2.6] Comment appelle-t-on le désert de cailloux du Sahara ?
+78. [2.6] Comment appelle-t-on le désert de cailloux du Sahara ?
    → Un reg / Reg
    (Les plateaux rocheux s’appellent des hamadas.)
 
-81. [2.6] Quel lac africain, très long et très profond, borde la Tanzanie et la RD Congo ?
+79. [2.6] Quel lac africain, très long et très profond, borde la Tanzanie et la RD Congo ?
    → Le lac Tanganyika / Lac Tanganyika / Tanganyika
    (Environ 670 km de long, 2e plus profond du monde.)
 
-82. [2.6] Quelle île de Vendée est reliée au continent par le passage du Gois, inondé à marée haute ?
+80. [2.6] Quelle île de Vendée est reliée au continent par le passage du Gois, inondé à marée haute ?
    → Noirmoutier / Île de Noirmoutier
    (Elle est aussi reliée par un pont depuis 1971.)
 
-83. [2.7] Quelle célèbre faille traverse la Californie, près de San Francisco ?
+81. [2.7] Quelle célèbre faille traverse la Californie, près de San Francisco ?
    → La faille de San Andreas / San Andreas / Faille de San Andreas
    (Elle sépare les plaques Pacifique et nord-américaine.)
 
-84. [2.7] Quelle est la capitale de la Slovaquie ?
+82. [2.7] Quelle est la capitale de la Slovaquie ?
    → Bratislava
    (Seule capitale qui touche deux autres pays : Autriche et Hongrie.)
 
-85. [2.7] Quelle est la capitale de la Croatie ?
+83. [2.7] Quelle est la capitale de la Croatie ?
    → Zagreb
    (Dubrovnik et Split sont sur la côte, pas Zagreb.)
 
-86. [2.7] Quelle est la capitale de l’Albanie ?
+84. [2.7] Quelle est la capitale de l’Albanie ?
    → Tirana
    (Ses immeubles ont été repeints de couleurs vives dans les années 2000.)
 
-87. [2.7] Quelle est la capitale de la Bulgarie ?
+85. [2.7] Quelle est la capitale de la Bulgarie ?
    → Sofia
    (Au pied du mont Vitocha.)
 
-88. [2.7] Quelle rivière passe par Metz et se jette dans le Rhin à Coblence ?
+86. [2.7] Quelle rivière passe par Metz et se jette dans le Rhin à Coblence ?
    → La Moselle / Moselle
    (Réputée pour ses vignobles en Allemagne.)
 
-89. [2.7] Quel volcan d’Indonésie a provoqué une explosion entendue à 4 800 km en 1883 ?
+87. [2.7] Quel volcan d’Indonésie a provoqué une explosion entendue à 4 800 km en 1883 ?
    → Le Krakatoa / Krakatoa / Krakatau
    (Le bruit le plus fort jamais rapporté.)
 
-90. [2.7] Quelle vieille chaîne de montagnes longe l’est des États-Unis ?
+88. [2.7] Quelle vieille chaîne de montagnes longe l’est des États-Unis ?
    → Les Appalaches / Appalaches
    (Un sentier de randonnée de 3 500 km la parcourt.)
 
-91. [2.8] Comment appelle-t-on l’anneau de volcans et de séismes qui entoure l’océan Pacifique ?
+89. [2.8] Comment appelle-t-on l’anneau de volcans et de séismes qui entoure l’océan Pacifique ?
    → La ceinture de feu / Ceinture de feu / Ceinture de feu du Pacifique
    (Environ 75 % des volcans actifs du monde.)
 
-92. [2.8] Quelle est la capitale de la Lettonie ?
+90. [2.8] Quelle est la capitale de la Lettonie ?
    → Riga
    (La plus grande ville des pays baltes.)
 
-93. [2.8] Quelle est la capitale de la Biélorussie ?
+91. [2.8] Quelle est la capitale de la Biélorussie ?
    → Minsk
    (Presque entièrement reconstruite après 1945.)
 
-94. [2.8] Quel massif calcaire près de Grenoble a été un haut lieu de la Résistance en 1944 ?
+92. [2.8] Quel massif calcaire près de Grenoble a été un haut lieu de la Résistance en 1944 ?
    → Le Vercors / Vercors
    (Il domine Grenoble à l’ouest.)
 
-95. [2.8] Quel fleuve a donné son nom à l’Inde et coule surtout au Pakistan ?
+93. [2.8] Quel fleuve a donné son nom à l’Inde et coule surtout au Pakistan ?
    → L’Indus / Indus
    (Une des premières civilisations y est née, vers -2500.)
 
-96. [2.8] Quel sommet des Pyrénées porte un célèbre observatoire, accessible en téléphérique ?
+94. [2.8] Quel sommet des Pyrénées porte un célèbre observatoire, accessible en téléphérique ?
    → Le pic du Midi / Pic du Midi / Pic du Midi de Bigorre
    (2 877 m ; « réserve de ciel étoilé ».)
 
-97. [2.9] Quelle est la capitale du Liechtenstein ?
+95. [2.9] Quelle est la capitale du Liechtenstein ?
    → Vaduz
    (Moins de 6 000 habitants.)
 
-98. [2.9] Quelle est la capitale d’Andorre ?
+96. [2.9] Quelle est la capitale d’Andorre ?
    → Andorre-la-Vieille / Andorra la Vella
    (La plus haute capitale d’Europe, à 1 023 m.)
 
-99. [2.9] Quelle est la capitale de Chypre ?
+97. [2.9] Quelle est la capitale de Chypre ?
    → Nicosie / Nicosia
    (Dernière capitale d’Europe coupée en deux.)
 
-100. [2.9] Quel peuple sans État vit entre la Turquie, l’Irak, l’Iran et la Syrie ?
+98. [2.9] Quel peuple sans État vit entre la Turquie, l’Irak, l’Iran et la Syrie ?
    → Les Kurdes / Kurdes
    (Entre 30 et 40 millions de personnes.)
 
-101. [2.9] Quel fleuve forme la frontière entre l’Allemagne et la Pologne avec la Neisse ?
+99. [2.9] Quel fleuve forme la frontière entre l’Allemagne et la Pologne avec la Neisse ?
    → L’Oder / Oder / Odra
    (La ligne Oder-Neisse, fixée en 1945.)
 
-102. [2.9] Quel est le plus haut sommet de l’Antarctique ?
+100. [2.9] Quel est le plus haut sommet de l’Antarctique ?
    → Le mont Vinson / Mont Vinson / Vinson
    (4 892 m, gravi pour la première fois en 1966.)
 
-103. [2.9] Quel lac africain, partagé par quatre pays, a perdu 90 % de sa surface depuis 1960 ?
+101. [2.9] Quel lac africain, partagé par quatre pays, a perdu 90 % de sa surface depuis 1960 ?
    → Le lac Tchad / Lac Tchad
    (Partagé entre Tchad, Niger, Nigeria et Cameroun.)
 
-104. [2.9] Quelle île anglo-normande est la plus grande, avec Saint-Hélier pour capitale ?
+102. [2.9] Quelle île anglo-normande est la plus grande, avec Saint-Hélier pour capitale ?
    → Jersey
    (Dépendance de la Couronne britannique, mais pas du Royaume-Uni.)
+
+103. [3.0] Quelle mer longe la côte ouest de l’Italie, entre la Corse et Naples ?
+   → La mer Tyrrhénienne / Mer Tyrrhénienne / Tyrrhénienne
+   (Elle doit son nom aux Étrusques, appelés Tyrrhéniens.)
+
+104. [3.0] Quel cartographe flamand a donné son nom à la projection la plus connue du monde ?
+   → Mercator / Gerardus Mercator
+   (1569 : elle grossit fortement les terres proches des pôles.)
 
 105. [3.0] Quelle est la capitale du pays de Galles ?
    → Cardiff
