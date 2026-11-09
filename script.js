@@ -147,10 +147,12 @@ function orderSizes(level) {
     return [6, 6, 6];
 }
 
-// Coffres du parcours : un coffre après chaque niveau multiple de 5 (2 cartes ; 3 après un défi, dont une rare ou mieux).
+// Coffres du parcours : un coffre après chaque niveau multiple de 5 (2 cartes ; après un défi, l’une est rare ou mieux).
 // 2026-11-03 : 3 / 4 → 2 / 3 avec le parcours de 230 niveaux (46 coffres = 115 cartes, autant qu'avec 170 niveaux à 3 / 4).
+// 2026-11-09 (choix A de l'utilisateur, parcours de 300 niveaux) : 2 cartes partout ; après un défi, l'une est rare ou mieux.
+// 60 coffres = 120 cartes, autant qu'au départ (170 niveaux : 119).
 const CHEST_EVERY = 5;
-const chestSize = n => n % CHALLENGE_EVERY === 0 ? 3 : 2;
+const chestSize = n => 2;
 const SHOP_CHEST = { price: 150, size: 3 };   // coffre de la boutique : 3 cartes, dont une rare ou mieux
 const GOAL_CARDS = 1;                          // carte offerte avec la récompense de l'objectif du jour
 
