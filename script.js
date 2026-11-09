@@ -3837,7 +3837,7 @@ function openChests(levels) {
 }
 
 /** Tire les cartes de chaque coffre ({ size, rare : au moins une rare ou mieux }), les ajoute à la collection
-    (doublon = pièces), enregistre, puis ouvre la fenêtre du coffre. */
+    (carte en trop, au-delà de 3 exemplaires = pièces), enregistre, puis ouvre la fenêtre du coffre. */
 function openCardBoxes(boxes, title, avItem = null) {
     const data = state.data;
     if (avItem) {   // objet d'avatar trouvé dans le coffre : à moi tout de suite, montré à la fermeture du coffre
@@ -3857,7 +3857,9 @@ function openCardBoxes(boxes, title, avItem = null) {
             const isNew = !data.cards[card.id];
             if (isNew) { const ms = monthStat(); ms.cards++; if (['epic', 'legendary', 'master', 'event'].includes(card.rarity)) ms.bigCards++; }
             data.cards[card.id] = (data.cards[card.id] || 0) + 1;
-            const coins = isNew ? 0 : CARD_RARITIES[card.rarity].dupCoins;
+            // 09/11 (idée de l'utilisateur) : les 2e et 3e exemplaires comptent pour la brillante, sans pièce ;
+            // seules les cartes « en trop » (4e exemplaire et plus) rapportent des pièces
+            const coins = !isNew && data.cards[card.id] > SHINY_AT ? CARD_RARITIES[card.rarity].dupCoins : 0;
             data.coins += coins;
             results.push({ card, isNew, coins, shiny: data.cards[card.id] === SHINY_AT });
         }
@@ -3967,9 +3969,9 @@ function revealCard(chest) {
         if (shiny) shinyFx();
         const copies = state.data.cards[card.id] || 0;
         $('chestNote').textContent = isNew ? (card.rarity === 'master' ? '🏆 Carte Maître !' : '✨ Nouvelle carte !')
-            : shiny ? `✨ 3/3 ! Va dans Profil → Cartes pour la rendre brillante. +${coins} 🪙`
-            : copies < SHINY_AT ? `Déjà dans ta collection (${copies}/${SHINY_AT}) : +${coins} 🪙`
-            : `Déjà dans ta collection : +${coins} 🪙`;
+            : shiny ? '✨ 3/3 ! Va dans Profil → Cartes pour la rendre brillante.'
+            : copies < SHINY_AT ? `✨ +1 vers la brillante (${copies}/${SHINY_AT})`
+            : coins ? `Carte en trop (déjà 3/3) : +${coins} 🪙` : `✨ +1 vers la brillante (${Math.min(copies, SHINY_AT)}/${SHINY_AT})`;
     };
     chest.timer = setTimeout(() => chest.finish && chest.finish(), CARD_CHARGE_MS[card.rarity]);
     flip.addEventListener('click', () => chest.finish && chest.finish());
@@ -4004,7 +4006,7 @@ function showChestSummary(chest) {
         chest.finish = null;
         if (shinies) shinyFx();
         else if (CARD_CONFETTI[best]) launchConfetti(CARD_CONFETTI[best]);
-        $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${shinies ? ` · ${shinies} à 3/3 (va dans tes cartes)` : ''}${coins ? ` · doublons : +${coins} 🪙` : ''}`;
+        $('chestNote').textContent = `✨ ${plural(fresh, 'nouvelle', 'nouvelles')}${shinies ? ` · ${shinies} à 3/3 (va dans tes cartes)` : ''}${coins ? ` · cartes en trop : +${coins} 🪙` : ''}`;
     };
     const step = () => {
         flips[i].classList.add('is-flipped');
@@ -4234,7 +4236,7 @@ function renderCollection() {
             if (count) {
                 const btn = el('button', 'kcard-btn');
                 btn.type = 'button';
-                btn.append(cardFace(card, false, isShiny(card)));   // 3 exemplaires : brillante ; doublons = pièces
+                btn.append(cardFace(card, false, isShiny(card)));   // 3 exemplaires : brillante ; au-delà, cartes en trop = pièces
                 btn.setAttribute('aria-label', `${card.name}, ${CARD_RARITIES[card.rarity].name}`);
                 if (shinyPending(card)) {
                     btn.classList.add('is-pending');
@@ -8238,7 +8240,7 @@ function showProfileTip() {
         text: '🎖️ Tes badges : quand l’un d’eux a une pastille, touche-le pour récupérer ta récompense.'
     }, {
         target: () => firstVisible('.profile-tab[data-tab="cards"]', '.card-collection'),
-        text: '🃏 Tes cartes, gagnées dans les coffres. Chaque doublon te rapproche d’une carte brillante (1/3, 2/3…) : à 3, touche-la pour la transformer ✨. 🔒 La carte Maître se gagne en réussissant le palier 5 de l’entraînement.'
+        text: '🃏 Tes cartes, gagnées dans les coffres. Chaque exemplaire en plus te rapproche d’une carte brillante (1/3, 2/3…) : à 3, touche-la pour la transformer ✨. Au-delà, une carte en trop rapporte des pièces. 🔒 La carte Maître se gagne en réussissant le palier 5 de l’entraînement.'
     }];
     if (!cloudUser) steps.push({
         target: () => $('cloudBtn'),
