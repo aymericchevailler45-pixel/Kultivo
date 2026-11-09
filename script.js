@@ -901,7 +901,10 @@ function tomorrowKey() {
     d.setDate(d.getDate() + 1);
     return dayKey(d);
 }
-const missedCards = () => QUESTIONS.filter(q => missCount(q.id) > 0 && !isLater(q.id));
+// 09/11 : une question ratée puis réussie aujourd'hui (révision, niveau…) ne revient dans « à revoir » que demain
+// (sinon on enchaînait les mêmes 3 questions, réponse fraîchement vue, pour l'XP et la mission « révisions »)
+const okToday = id => state.data.stats[id]?.okDay === todayKey();
+const missedCards = () => QUESTIONS.filter(q => missCount(q.id) > 0 && !isLater(q.id) && !okToday(q.id));
 
 // Répétition espacée : après n réussites d'affilée, la question « dort » ce nombre de jours
 const REVIEW_DAYS = [0, 1, 3, 7, 14, 30];
@@ -915,7 +918,7 @@ function recordResult(id, ok) {
     entry.miss = ok ? Math.max(0, entry.miss - 1) : entry.miss + 1;
     entry.streak = ok ? (keepStreak ? entry.streak : (entry.streak || 0) + 1) : 0;   // réussites d'affilée
     entry.tries = (entry.tries || 0) + 1;
-    if (ok) entry.right = (entry.right || 0) + 1;
+    if (ok) { entry.right = (entry.right || 0) + 1; entry.okDay = todayKey(); }
     entry.last = Date.now();
     state.data.stats[id] = entry;
 
@@ -6405,7 +6408,7 @@ function endSession(win) {
         endKulti();
     } else if (mode === 'review') {
         state.data.totals.reviews++;
-        addXp(XP_REVIEW_WIN);
+        addXp(Math.min(XP_REVIEW_WIN, state.total));   // 09/11 : +1 XP par question revue (10 au plus), au lieu de +10 fixe
         missionEvent('reviews');
         const dropLine = earnPracticeDrop();
         setEnd({

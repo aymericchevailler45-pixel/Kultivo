@@ -225,6 +225,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   CARTES EN TROP (idée de l'utilisateur, FAIT le 09/11) : les 2e et 3e exemplaires ne rapportent plus de pièces (« ✨ +1 vers la
   brillante (2/3) ») ; seulement à partir du 4e (« Carte en trop (déjà 3/3) : +X 🪙 », mêmes montants 5 à 50) ; le mot
   « doublon » n'apparaît plus dans le jeu (`openCardBoxes`, `revealCard`, note des coffres, bulle du Profil).
+  RÉVISIONS (FAIT le 09/11, A + B) : une question réussie aujourd'hui ne revient dans « à revoir » que demain (`okDay` dans
+  stats, `okToday` dans missedCards) → plus de boucle sur les mêmes questions ; bonus de fin = +1 XP par question revue
+  (10 au plus) au lieu de +10 fixe. On garde 4-6 XP par bonne réponse ; pas de plafond par jour.
 - PUIS RAMENÉ À 300 NIVEAUX le 09/11 (l'utilisateur voulait 300, pas 310) : bloc après l'ancien 10 (ids 4400-4449) retiré,
   gardé dans le scratchpad reserve_bloc10.js. levels.js : `LEVEL_LAYOUT_INSERTS` (une liste par disposition, 1 à 5) remplace
   LEVEL_WAVES ; `levelFromLayout(n, layout, near)` renvoie null pour un niveau d'un bloc retiré (near = niveau d'origine juste
