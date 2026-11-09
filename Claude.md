@@ -264,6 +264,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   2,78 / 2,84 / 2,96 / 3,09 / 3,21 / 3,27 / 3,40… Les 16 questions FACILES retirées (d 2,2-2,5, jamais vues ailleurs) sont gardées
   dans le scratchpad reserve_faciles.js pour la future vague des niveaux 1-80. Point 3 du 09/11 ci-dessus : FAIT.
 - FAIT le 09/11 : bulle de Kulti (« Kulti s'est trompé ») lisible en mode sombre (fond rose foncé #4a2330).
+- FAIT le 09/11 : réponse en chiffres (a[0] = nombre : années, « combien… ») → pavé numérique (`inputMode` decimal dans showCard). EN ATTENTE : animation « collection complète » façon série (aperçu apercu-collection.html : A cartes qui se retournent, B compteur / anneau + tampon, C album) ; prix de la recharge de gouttes (150) discuté.
 - FAIT le 08/11 : DÉCOR « BIENVENUE BÉBÉ » (un testeur attend un bébé, sexe connu dans la semaine) : du 9 au 15/11/2026, pour
   TOUT LE MONDE, seulement le décor (parcours + leçons) façon « Un gars, une fille » : icônes bleues à gauche, roses à droite
   (`BABY_DECOR`, `babyDecorOn`, classes `baby-blue` / `baby-pink`, `body.deco-baby` = fond bleu → rose), tap = anecdote sur
