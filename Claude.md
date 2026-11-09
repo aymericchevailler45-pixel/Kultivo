@@ -278,6 +278,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Cinéma bien ; Musique trop dure (corrigé) ; Géo trop de capitales et notes trop basses (corrigé). RESTE À FAIRE avant de les
   mettre dans le jeu : vérifier en ligne les faits précis, coder TRAIN_TIERS = 10 + conversion des sauvegardes (trainTier,
   trainTierWon, trainChests) + carte Maître au 10, puis ajouter les questions dans entrainement/*.js.
+- 10 PALIERS, DÉCISIONS DU 09/11 (à coder ; rien en ligne) : conversion palier N/5 → 2N/10 ; RATTRAPAGE seulement pour les joueurs
+  convertis : jusqu'à 3 questions jamais vues des paliers validés d'office par session (à la place de questions du palier en cours),
+  s'arrête quand tout est vu ; aucune carte pour les paliers sautés. CARTES : 1 par palier, 2 aux paliers 5 et 10, carte Maître au 10.
+  NOMS : Découverte, Curieux, Initié, Amateur, Confirmé, Averti, Expert, Érudit, Virtuose, Maître. MÉDAILLES : 1/3, 2/3, 100 % des
+  questions du thème ; RECALCULÉES UNE FOIS à la conversion (un or 150/150 devient bronze 150/300), badges gardés, annoncé dans
+  « Quoi de neuf ? » ; ensuite une médaille gagnée reste. Brouillons : faits vérifiés le 09/11 (1 880 questions, ~40 corrections).
+  Fenêtre des médailles : nombre de maîtrisées en gros (`.medal-count`, pas encore en ligne).
 - FAIT le 09/11 : EXPRESSIONS plus tolérantes (demande de l’utilisateur : accepter les tournures équivalentes partout) : `judgeV2`
   ignore « avoir / être » au début pour TOUTE question qui contient « expression » (avant : seulement les rébus) ; synonymes ajoutés
   aux questions qui demandent un sens sans imposer de mot (questions.js : 2229, 4077, 4230, 4570, 4572, 4573, 4621-4623, 4670-4672 ;
