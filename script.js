@@ -154,14 +154,17 @@ const chestSize = n => n % CHALLENGE_EVERY === 0 ? 3 : 2;
 const SHOP_CHEST = { price: 150, size: 3 };   // coffre de la boutique : 3 cartes, dont une rare ou mieux
 const GOAL_CARDS = 1;                          // carte offerte avec la récompense de l'objectif du jour
 
-// Test de placement : une étape par tranche de 10 niveaux (niveaux 1-9, 11-19, …)
-// Limité à 8 étapes (départ au niveau 81 au mieux, sur 230) pour garder du jeu à faire.
-const PLACEMENT_MAX_STEPS = 8;   // départ au niveau 81 au mieux (sur 230)
+// Test de placement (2026-11-09, parcours de 300 niveaux) : une étape par tranche de 20 niveaux (niveaux 1-19, 21-39, …),
+// 7 étapes au plus : départ au niveau 141 au mieux (difficulté ~2,8, comme le 81 sur l'ancien parcours de 170 niveaux).
+// 2 bonnes réponses sur 3 pour passer une étape, 3 sur 3 pour la dernière (choix de l'utilisateur). Avant : 8 étapes de 10.
+const PLACEMENT_STEP_LEVELS = 20;
+const PLACEMENT_MAX_STEPS = 7;   // départ au niveau 141 au mieux (sur 300)
 const PLACEMENT_CHESTS_NOW = 3;   // coffres sautés donnés tout de suite ; les autres = cartes bonus dans les coffres suivants
 const CHEST_BONUS_MAX = 3;        // cartes bonus ajoutées au plus par coffre du parcours
 const PLACEMENT_XP_PER_LEVEL = 40; // XP données par niveau sauté (≈ un niveau joué), au total seulement (pas dans la semaine)
 const COIN_BONUS_PER_LEVEL = 10;   // pièces dues après un placement, versées au plus par niveau réussi
-const PLACEMENT_STEPS = Math.min(PLACEMENT_MAX_STEPS, Math.floor((MAX_LEVEL - 1) / CHALLENGE_EVERY));
+const PLACEMENT_STEPS = Math.min(PLACEMENT_MAX_STEPS, Math.floor((MAX_LEVEL - 1) / PLACEMENT_STEP_LEVELS));
+const placementNeed = step => (step === PLACEMENT_STEPS - 1 ? PLACEMENT_PER_STEP : PLACEMENT_PASS);   // 3 sur 3 à la dernière
 const PLACEMENT_PER_STEP = 3;   // questions au plus par étape
 const PLACEMENT_PASS = 2;       // bonnes réponses pour valider une étape
 
@@ -5157,10 +5160,10 @@ function canTakePlacement() {
     return !d.placement && !Object.values(d.done).some(Boolean);
 }
 
-/** 3 questions tirées dans les niveaux de l'étape (ex. étape 0 : niveaux 1 à 9). */
+/** 3 questions tirées dans les niveaux de l'étape (ex. étape 0 : niveaux 1 à 19). */
 function placementCards(step) {
-    const from = step * CHALLENGE_EVERY + 1;
-    const to = from + CHALLENGE_EVERY - 2;
+    const from = step * PLACEMENT_STEP_LEVELS + 1;
+    const to = from + PLACEMENT_STEP_LEVELS - 2;
     const pool = QUESTIONS.filter(q => q.niveau >= from && q.niveau <= to);
     return shuffle(pool).slice(0, PLACEMENT_PER_STEP).map(q => ({ q, review: false }));
 }
@@ -5170,9 +5173,9 @@ function openPlacementModal(welcome = false) {
     state.pendingLevel = null;
 
     $('modalTitle').textContent = welcome ? '👋 Bienvenue ! Un test de placement ?' : '🧭 Test de placement';
-    const maxStart = PLACEMENT_STEPS * CHALLENGE_EVERY + 1;
+    const maxStart = PLACEMENT_STEPS * PLACEMENT_STEP_LEVELS + 1;
     $('modalDesc').textContent = `Réponds à quelques questions de plus en plus difficiles : tu commenceras directement à ton niveau (jusqu’au niveau ${maxStart}), sans passer par les questions trop faciles pour toi.`;
-    $('modalStatsText').textContent = `${PLACEMENT_STEPS} étapes · 2 bonnes réponses sur 3 pour en passer une · sans XP ni cœurs`;
+    $('modalStatsText').textContent = `${PLACEMENT_STEPS} étapes · 2 bonnes réponses sur 3 pour en passer une (3 sur 3 pour la dernière) · sans XP ni cœurs`;
     $('startLevelBtn').textContent = 'Faire le test de placement';
     $('modalSecondaryBtn').textContent = 'Non merci, je commence au niveau 1';
     $('modalSecondaryBtn').hidden = false;
@@ -5185,14 +5188,15 @@ function placementAnswer(ok) {
     else state.placeWrong++;
     state.done++;
 
-    if (state.placeRight >= PLACEMENT_PASS) {
+    const need = placementNeed(state.placeStep);
+    if (state.placeRight >= need) {
         state.placeStep++;
         state.placeRight = 0;
         state.placeWrong = 0;
         if (state.placeStep >= PLACEMENT_STEPS) { endSession(true); return; }
         state.queue = placementCards(state.placeStep);
         if (!state.queue.length) { endSession(true); return; }
-    } else if (state.placeWrong > PLACEMENT_PER_STEP - PLACEMENT_PASS || !state.queue.length) {
+    } else if (state.placeWrong > PLACEMENT_PER_STEP - need || !state.queue.length) {
         endSession(true);
         return;
     }
@@ -6419,7 +6423,7 @@ function endSession(win) {
         });
         $('endPrimary').className = 'btn btn-violet';
     } else if (mode === 'placement') {
-        const start = state.placeStep * CHALLENGE_EVERY + 1;
+        const start = state.placeStep * PLACEMENT_STEP_LEVELS + 1;
         applyPlacement(start);
         celebrate = start > 1;
         setEnd({
@@ -10950,6 +10954,8 @@ function initBac() {
         const more = await askConfirm({ title: '🧪 Bac à sable', text: 'Une copie de ta partie : tout ce que tu fais ici reste ici. Rien n’est envoyé en ligne, ton vrai jeu ne change pas.',
             yes: '+1 000 🪙 pour tester', no: 'Plus d’options' });
         if (more) { state.data.coins += 1000; saveData(); renderHeader(); if (!$('shopScreen').hidden) renderShop(); return; }
+        const place = await askConfirm({ title: '🧪 Bac à sable', text: 'Refaire le test de placement (7 étapes, jusqu’au niveau 141) ? Ta copie ne recule pas : tu verras seulement le niveau obtenu.', yes: 'Faire le test', no: 'Plus d’options' });
+        if (place) { showScreen('map'); openPlacementModal(); return; }
         const tips = await askConfirm({ title: '🧪 Bac à sable', text: 'Revoir les bulles d’explication (Halloween, Défis, Profil, Classement) ?', yes: 'Revoir les bulles', no: 'Plus d’options' });
         if (tips) {
             const d = state.data;

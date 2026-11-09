@@ -210,7 +210,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   anciens seuils sont gardées pour toujours (`oldLevel` + `av.grant`, une fois, drapeau `huesKept` dans avCheck).
   BADGE « Escale au Maghreb 2026 » ajouté APRÈS l'événement (oublié : on avait dit « ni badge » le 30/10) : `ev-maghreb-2026`
   dans BADGES + famille Événements, `badge: true` dans EVENTS ; donné à ceux qui ont fini (events[id].won) à l'ouverture.
-  PLACEMENT : en discussion (départ max 81 = difficulté ~2,2 sur 300 ; avant 81 = 2,78 sur 170).
+  PLACEMENT (FAIT le 09/11, choix A de l'utilisateur) : 7 étapes de 20 niveaux (`PLACEMENT_STEP_LEVELS`, `PLACEMENT_MAX_STEPS`),
+  départ max 141 (difficulté ~2,8 comme l'ancien 81 sur 170) ; 2 bonnes sur 3 par étape, 3 sur 3 à la dernière (`placementNeed`) ;
+  15 questions au plus si tout est juste. Bac à sable : option « Refaire le test de placement » (2e question du menu 🧪 ; la
+  copie ne recule pas, on voit seulement le niveau obtenu).
 - PUIS RAMENÉ À 300 NIVEAUX le 09/11 (l'utilisateur voulait 300, pas 310) : bloc après l'ancien 10 (ids 4400-4449) retiré,
   gardé dans le scratchpad reserve_bloc10.js. levels.js : `LEVEL_LAYOUT_INSERTS` (une liste par disposition, 1 à 5) remplace
   LEVEL_WAVES ; `levelFromLayout(n, layout, near)` renvoie null pour un niveau d'un bloc retiré (near = niveau d'origine juste
