@@ -8149,7 +8149,11 @@ function endTraining() {
     }
     if (up) {
         // Nouveau palier : on le dit en grand (titre, texte, bouton)
-        text = `${icon} ${theme} : tu passes au palier ${tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[tier - 1]}.\nLes questions vont être un peu plus difficiles.`;
+        // 2026-11-09 : on dit tout de suite que le palier suivant ne s'ouvre pas avant demain (un palier par jour)
+        text = `${icon} ${theme} : tu passes au palier ${tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[tier - 1]}.\n`
+            + (tier < TRAIN_TIERS
+                ? `🌙 Tu peux déjà jouer ses questions : elles comptent pour le palier ${tier + 1}, qui s’ouvrira demain au plus tôt.`
+                : '🌙 Tu peux déjà jouer ses questions : elles comptent pour la carte Maître, à gagner demain au plus tôt.');
         launchConfetti();
         playSound('win');
     }
