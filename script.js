@@ -706,7 +706,9 @@ function judgeV2(input, rawAnswers, question = '') {
             const w = ans.split(' ');
             if (w.length >= 2) { const turned = [w[w.length - 1], ...w.slice(0, -1)].join(' '); answers.push([turned, turned]); }
             names.push(ans);
-            if (PERSON_Q.test(question)) for (const s of surnames(raw)) { const k = keep(s); if (k && k.length >= 4) answers.push([k, k]); }
+            // personne connue par son prénom (le prénom seul est dans les réponses : Dante, Zlatan, Léonard…) : pas de nom seul
+            const firstOnly = rawAnswers.some(r => keep(r) === keep(String(raw).split(/[\s’']+/)[0]));
+            if (PERSON_Q.test(question) && !firstOnly) for (const s of surnames(raw)) { const k = keep(s); if (k && k.length >= 4) answers.push([k, k]); }
         }
     }
     for (const [ans, ansFull] of answers) {

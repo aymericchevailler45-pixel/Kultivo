@@ -291,10 +291,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   2) ordre libre dans les listes « A et B », « A, B et C », même sans virgules (`listMatch`), sauf titres / rébus (`ORDER_MATTERS`).
   3) nombres : « 4x100 » n’est plus « 100 » (tous les nombres tapés doivent être le nombre attendu).
   4) personne (`PERSON_Q` : « Qui », « Quel peintre / acteur… ») : nom de famille seul accepté (`surnames` : « Van Gogh », « King »),
-     jamais le prénom seul ; pas pour « le Grand », « le Bref ».
+     jamais le prénom seul ; pas pour « le Grand », « le Bref », ni pour une personne CONNUE PAR SON PRÉNOM (prénom seul
+     présent dans `a` : Dante, Zlatan, Johnny… → seuls les noms écrits à la main dans `a` comptent).
   Test de non-régression (selftest.js) : 0 bonne réponse refusée sur 3 825 questions.
   BROUILLONS ajustés (demande) : Langue française 150, Gastronomie 150, Littérature 150, Histoire 150 (→ 300 chacun), Arts 100 (→ 250),
-  Monuments 80 (→ 230), Mythologie 50 (→ 200) ; Jeux 153, les autres 150. Quand on les mettra dans le jeu : relancer l’audit des paires.
+  Monuments 80 (→ 230), Mythologie 50 (→ 200) ; Jeux 150 (3 retirées), les autres 150. RÈGLE : aucun thème au-delà de 300. Quand on les mettra dans le jeu : relancer l’audit des paires.
 - FAIT le 08/11 : DÉCOR « BIENVENUE BÉBÉ » (un testeur attend un bébé, sexe connu dans la semaine) : du 9 au 15/11/2026, pour
   TOUT LE MONDE, seulement le décor (parcours + leçons) façon « Un gars, une fille » : icônes bleues à gauche, roses à droite
   (`BABY_DECOR`, `babyDecorOn`, classes `baby-blue` / `baby-pink`, `body.deco-baby` = fond bleu → rose), tap = anecdote sur
