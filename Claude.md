@@ -269,7 +269,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
   (sur toutes les questions du thème), carte Maître au palier 10. BROUILLONS (pas dans le jeu) : dossier `_brouillons-paliers/`
-  (.js au format du jeu + .txt lisibles), 1 637 questions nouvelles, ids x151+ : Cinéma 150, Musique 150 (rendue plus accessible :
+  (.js au format du jeu + .txt lisibles), environ 1 900 questions nouvelles (09/11 soir : Gastronomie 154, Littérature 149, Langue
+  française 158 avec proverbes « Complète le proverbe » et expressions à variantes, Histoire 144, Arts 117, Monuments 88, Mythologie 58), ids x151+ : Cinéma 150, Musique 150 (rendue plus accessible :
   moins de compositeurs, plus de tubes), Géographie 150 (28 capitales retirées, notes du vocabulaire remontées), Histoire 85,
   Sport 150, Sciences 150, Littérature 114, Arts 75, Gastronomie 118, Technologie 150, Jeux 153 (Sport/Sciences/Techno/Jeux
   complétés le 09/11 à la demande de l’utilisateur : 300 questions, sujets accessibles), Langue française 94, Mythologie 49,
@@ -277,6 +278,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Cinéma bien ; Musique trop dure (corrigé) ; Géo trop de capitales et notes trop basses (corrigé). RESTE À FAIRE avant de les
   mettre dans le jeu : vérifier en ligne les faits précis, coder TRAIN_TIERS = 10 + conversion des sauvegardes (trainTier,
   trainTierWon, trainChests) + carte Maître au 10, puis ajouter les questions dans entrainement/*.js.
+- FAIT le 09/11 : EXPRESSIONS plus tolérantes (demande de l’utilisateur : accepter les tournures équivalentes partout) : `judgeV2`
+  ignore « avoir / être » au début pour TOUTE question qui contient « expression » (avant : seulement les rébus) ; synonymes ajoutés
+  aux questions qui demandent un sens sans imposer de mot (questions.js : 2229, 4077, 4230, 4570, 4572, 4573, 4621-4623, 4670-4672 ;
+  brouillons 21152-21172 etc.). Quand la question impose un élément (« avec un fruit », rébus), on garde la contrainte.
 - FAIT le 08/11 : DÉCOR « BIENVENUE BÉBÉ » (un testeur attend un bébé, sexe connu dans la semaine) : du 9 au 15/11/2026, pour
   TOUT LE MONDE, seulement le décor (parcours + leçons) façon « Un gars, une fille » : icônes bleues à gauche, roses à droite
   (`BABY_DECOR`, `babyDecorOn`, classes `baby-blue` / `baby-pink`, `body.deco-baby` = fond bleu → rose), tap = anecdote sur

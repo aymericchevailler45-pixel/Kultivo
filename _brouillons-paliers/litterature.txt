@@ -1,457 +1,597 @@
-LITTERATURE — 114 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+LITTERATURE — 149 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
 1. [1.0] Quel petit ours en salopette rouge vit des aventures du quotidien avec sa maman et son papa ?
    → Petit Ours Brun / Petit Ours brun
    (Créé en 1975 dans le magazine « Pomme d’Api ».)
 
-2. [1.1] Quel éléphant, roi en costume vert, a été créé par Jean de Brunhoff ?
+2. [1.0] Quel ourson qui adore le miel vit dans la forêt des Rêves bleus avec Christopher Robin ?
+   → Winnie l’ourson / Winnie / Winnie the Pooh
+   (Créé par A. A. Milne en 1926.)
+
+3. [1.1] Quel éléphant, roi en costume vert, a été créé par Jean de Brunhoff ?
    → Babar
    (Premier album en 1931.)
 
-3. [1.1] Quel petit garçon blond et son chien Bill font des bêtises dans une BD de Roba ?
+4. [1.1] Quel petit garçon blond et son chien Bill font des bêtises dans une BD de Roba ?
    → Boule / Boule et Bill
    (Bill est un cocker roux.)
 
-4. [1.2] Quel savant distrait et un peu sourd accompagne Tintin ?
+5. [1.1] Quel âne gris et triste est l’ami de Winnie l’ourson ?
+   → Bourriquet / Eeyore
+   (Il perd souvent sa queue.)
+
+6. [1.1] Quel tigre bondissant sur sa queue est l’ami de Winnie ?
+   → Tigrou / Tigger
+   (« Le plus merveilleux des tigres ».)
+
+7. [1.2] Quel savant distrait et un peu sourd accompagne Tintin ?
    → Le professeur Tournesol / Tournesol / Tryphon Tournesol
    (Il apparaît dans « Le Trésor de Rackham le Rouge ».)
 
-5. [1.2] Quels deux policiers moustachus et maladroits, presque jumeaux, poursuivent Tintin ?
+8. [1.2] Quels deux policiers moustachus et maladroits, presque jumeaux, poursuivent Tintin ?
    → Dupond et Dupont / Les Dupondt / Dupont et Dupond
    (Astuce : Dupond avec un D a la moustache Droite.)
 
-6. [1.3] Quelle formule magique ouvre la caverne des quarante voleurs ?
+9. [1.2] Quelle petite fille suédoise rousse et très forte soulève son cheval à bout de bras ?
+   → Fifi Brindacier / Fifi / Pippi
+   (Créée par Astrid Lindgren en 1945.)
+
+10. [1.2] Quelle petite fille vit dans les Alpes suisses chez son grand-père ?
+   → Heidi
+   (Roman de Johanna Spyri, 1880.)
+
+11. [1.3] Quelle formule magique ouvre la caverne des quarante voleurs ?
    → Sésame, ouvre-toi / Sésame ouvre-toi / Sesame ouvre toi
    (Dans « Ali Baba et les Quarante Voleurs ».)
 
-7. [1.3] Quel marin des « Mille et Une Nuits » fait sept voyages fabuleux ?
+12. [1.3] Quel marin des « Mille et Une Nuits » fait sept voyages fabuleux ?
    → Sinbad / Sindbad / Sinbad le marin
    (Il rencontre un oiseau géant, le Rokh.)
 
-8. [1.4] Quelle reine raconte une histoire chaque nuit pour ne pas être exécutée ?
+13. [1.3] Quelle chèvre d’Alphonse Daudet se bat toute la nuit contre le loup ?
+   → La chèvre de M. Seguin / Blanquette / La chèvre de monsieur Seguin
+   (Elle s’appelle Blanquette.)
+
+14. [1.3] Quel recueil de contes provençaux d’Alphonse Daudet raconte la vie autour d’un moulin ?
+   → Les Lettres de mon moulin / Lettres de mon moulin
+   (Le moulin de Fontvieille se visite.)
+
+15. [1.4] Quelle reine raconte une histoire chaque nuit pour ne pas être exécutée ?
    → Shéhérazade / Schéhérazade / Sheherazade
    (Elle tient ainsi mille et une nuits.)
 
-9. [1.4] Quel chat au sourire géant disparaît peu à peu dans « Alice au pays des merveilles » ?
+16. [1.4] Quel chat au sourire géant disparaît peu à peu dans « Alice au pays des merveilles » ?
    → Le Chat du Cheshire / Chat du Cheshire / Cheshire
    (Il ne reste parfois que son sourire.)
 
-10. [1.4] Quel personnage d’« Alice » organise un goûter qui ne finit jamais ?
+17. [1.4] Quel personnage d’« Alice » organise un goûter qui ne finit jamais ?
    → Le Chapelier fou / Chapelier fou / Le Chapelier
    (Pour lui, il est toujours 6 heures, l’heure du thé.)
 
-11. [1.5] Quel sport se joue sur des balais dans Harry Potter ?
+18. [1.4] Quel roman de Louis Pergaud raconte la rivalité des enfants de deux villages ?
+   → La Guerre des boutons / Guerre des boutons
+   (« Si j’aurais su, j’aurais pas venu ! » vient du film de 1962.)
+
+19. [1.4] Quel garçon roux et mal aimé de sa mère est le héros de Jules Renard ?
+   → Poil de carotte / Poil de Carotte
+   (Publié en 1894.)
+
+20. [1.5] Quel sport se joue sur des balais dans Harry Potter ?
    → Le Quidditch / Quidditch
    (Il se joue maintenant pour de vrai, sous le nom de quadball.)
 
-12. [1.5] Quelle petite balle dorée et ailée l’attrapeur doit-il saisir au Quidditch ?
+21. [1.5] Quelle petite balle dorée et ailée l’attrapeur doit-il saisir au Quidditch ?
    → Le Vif d’or / Vif d’or / Vif dor
    (L’attraper rapporte 150 points et termine le match.)
 
-13. [1.5] Quel meilleur ami roux de Harry Potter a beaucoup de frères ?
+22. [1.5] Quel meilleur ami roux de Harry Potter a beaucoup de frères ?
    → Ron Weasley / Ron / Weasley
    (Il est le 6e de 7 enfants.)
 
-14. [1.6] Quel géant gentil souffle des rêves dans les chambres des enfants chez Roald Dahl ?
+23. [1.5] Quel fanfaron provençal d’Alphonse Daudet part chasser le lion en Algérie ?
+   → Tartarin de Tarascon / Tartarin
+   (Une caricature des vantards du Midi.)
+
+24. [1.5] Quel renard rusé de Roald Dahl vole les trois fermiers Boggis, Bunce et Bean ?
+   → Fantastique Maître Renard / Maître Renard
+   (Adapté en film par Wes Anderson en 2009.)
+
+25. [1.6] Quel géant gentil souffle des rêves dans les chambres des enfants chez Roald Dahl ?
    → Le Bon Gros Géant / BGG / Bon Gros Géant
    (Il parle un drôle de langage, le « charabia ».)
 
-15. [1.6] Quel auteur britannique a écrit « Charlie et la Chocolaterie » et « Matilda » ?
+26. [1.6] Quel auteur britannique a écrit « Charlie et la Chocolaterie » et « Matilda » ?
    → Roald Dahl / Dahl
    (Il fut aussi pilote de chasse pendant la guerre.)
 
-16. [1.6] Quel album de Maurice Sendak envoie Max chez des monstres sauvages ?
+27. [1.6] Quel album de Maurice Sendak envoie Max chez des monstres sauvages ?
    → Max et les Maximonstres / Où sont les Maximonstres / Max et les maximonstres
    (Publié en 1963.)
 
-17. [1.7] Quelle petite fille de la comtesse de Ségur fait bêtise sur bêtise ?
+28. [1.6] Quel livre de Roald Dahl voit un orphelin voyager dans un fruit géant ?
+   → James et la Grosse Pêche / James et la grosse pêche
+   (Avec des insectes géants comme compagnons.)
+
+29. [1.7] Quelle petite fille de la comtesse de Ségur fait bêtise sur bêtise ?
    → Sophie / Les Malheurs de Sophie
    (« Les Malheurs de Sophie », 1858.)
 
-18. [1.7] Quelle autrice d’origine russe a écrit « Les Malheurs de Sophie » ?
+30. [1.7] Quelle autrice d’origine russe a écrit « Les Malheurs de Sophie » ?
    → La comtesse de Ségur / Comtesse de Ségur / Ségur
    (Née Sophie Rostopchine.)
 
-19. [1.7] Quel frère et quelle sœur turbulents sont les héros de la BD de J’aime lire ?
+31. [1.7] Quel frère et quelle sœur turbulents sont les héros de la BD de J’aime lire ?
    → Tom-Tom et Nana / Tom Tom et Nana
    (Leurs parents tiennent un restaurant.)
 
-20. [1.8] Quel dessinateur belge a créé « Le Chat », gros félin en costume ?
+32. [1.7] Quelle trentenaire londonienne tient un journal plein de résolutions qu’elle ne tient jamais ?
+   → Bridget Jones / Le Journal de Bridget Jones
+   (Roman d’Helen Fielding, 1996.)
+
+33. [1.8] Quel dessinateur belge a créé « Le Chat », gros félin en costume ?
    → Philippe Geluck / Geluck
    (Né en 1983 dans le journal « Le Soir ».)
 
-21. [1.8] Comment s’appelle le pays où les enfants ne grandissent pas, chez Peter Pan ?
+34. [1.8] Comment s’appelle le pays où les enfants ne grandissent pas, chez Peter Pan ?
    → Le Pays imaginaire / Pays imaginaire / Neverland / Le Pays de Nulle Part
    (« Neverland » en anglais.)
 
-22. [1.8] Quel romancier écossais a créé Peter Pan ?
+35. [1.8] Quel romancier écossais a créé Peter Pan ?
    → J. M. Barrie / James Matthew Barrie / Barrie
    (D’abord une pièce de théâtre, en 1904.)
 
-23. [1.9] Quelle vieille dame détective, créée par Agatha Christie, tricote en résolvant des crimes ?
+36. [1.8] Quel roman d’Anna Gavalda réunit quatre éclopés de la vie à Paris ?
+   → Ensemble, c’est tout / Ensemble c’est tout
+   (Adapté au cinéma avec Audrey Tautou en 2007.)
+
+37. [1.9] Quelle vieille dame détective, créée par Agatha Christie, tricote en résolvant des crimes ?
    → Miss Marple / Marple
    (Elle vit au village de St Mary Mead.)
 
-24. [2.0] Dans quel train Hercule Poirot enquête-t-il sur un meurtre bloqué par la neige ?
+38. [1.9] Quel roman de Muriel Barbery a pour héroïne une concierge cultivée qui cache son jeu ?
+   → L’Élégance du hérisson / Élégance du hérisson
+   (Énorme succès en 2006.)
+
+39. [1.9] Quel roman de Katherine Pancol met en scène Joséphine, spécialiste du Moyen Âge ?
+   → Les Yeux jaunes des crocodiles / Yeux jaunes des crocodiles
+   (Premier tome d’une trilogie animalière.)
+
+40. [2.0] Dans quel train Hercule Poirot enquête-t-il sur un meurtre bloqué par la neige ?
    → L’Orient-Express / Orient-Express / Orient Express
    (« Le Crime de l’Orient-Express », 1934.)
 
-25. [2.0] À quelle adresse londonienne vit Sherlock Holmes ?
+41. [2.0] À quelle adresse londonienne vit Sherlock Holmes ?
    → 221B Baker Street / 221 B Baker Street / Baker Street
    (Un musée s’y trouve aujourd’hui.)
 
-26. [2.0] Quel jeune journaliste détective de Gaston Leroux résout « Le Mystère de la chambre jaune » ?
+42. [2.0] Quel jeune journaliste détective de Gaston Leroux résout « Le Mystère de la chambre jaune » ?
    → Rouletabille / Joseph Rouletabille
    (Un des premiers « meurtres en chambre close ».)
 
-27. [2.0] Comment appelle-t-on un livre où l’auteur raconte sa propre vie ?
+43. [2.0] Comment appelle-t-on un livre où l’auteur raconte sa propre vie ?
    → Une autobiographie / Autobiographie
    (Si un autre la raconte, c’est une biographie.)
 
-28. [2.1] Quel roman de Stephen King montre un écrivain séquestré par une admiratrice ?
+44. [2.0] Quel roman de Romain Gary raconte l’amour démesuré de sa mère pour lui ?
+   → La Promesse de l’aube / Promesse de l’aube
+   (Publié en 1960.)
+
+45. [2.1] Quel roman de Stephen King montre un écrivain séquestré par une admiratrice ?
    → Misery
    (Film avec Kathy Bates, oscarisée en 1991.)
 
-29. [2.1] Quel roman de Jules Verne fait descendre ses héros dans un volcan d’Islande ?
+46. [2.1] Quel roman de Jules Verne fait descendre ses héros dans un volcan d’Islande ?
    → Voyage au centre de la Terre
    (Par le cratère du Sneffels, en 1864.)
 
-30. [2.1] Dans quel roman de Jules Verne un énorme canon envoie des hommes vers la Lune ?
+47. [2.1] Dans quel roman de Jules Verne un énorme canon envoie des hommes vers la Lune ?
    → De la Terre à la Lune
    (1865, plus d’un siècle avant Apollo.)
 
-31. [2.2] Quel est le premier roman de Jules Verne, un voyage en ballon au-dessus de l’Afrique ?
+48. [2.1] Sous quel pseudonyme Romain Gary a-t-il obtenu un second prix Goncourt ?
+   → Émile Ajar / Ajar / Emile Ajar
+   (Pour « La Vie devant soi », en 1975 ; le secret n’a été révélé qu’après sa mort.)
+
+49. [2.1] Quel petit garçon de Belleville est élevé par Madame Rosa dans « La Vie devant soi » ?
+   → Momo / Mohammed
+   (Le narrateur du roman.)
+
+50. [2.2] Quel est le premier roman de Jules Verne, un voyage en ballon au-dessus de l’Afrique ?
    → Cinq semaines en ballon
    (Publié en 1863.)
 
-32. [2.2] Quel roman de Jules Verne montre des naufragés recréant une civilisation sur une île du Pacifique ?
+51. [2.2] Quel roman de Jules Verne montre des naufragés recréant une civilisation sur une île du Pacifique ?
    → L’Île mystérieuse / Île mystérieuse
    (On y retrouve le capitaine Nemo.)
 
-33. [2.2] Quelle espionne de Richelieu, marquée d’une fleur de lys, affronte les mousquetaires ?
+52. [2.2] Quelle espionne de Richelieu, marquée d’une fleur de lys, affronte les mousquetaires ?
    → Milady / Milady de Winter
    (Une des grandes méchantes de la littérature.)
 
-34. [2.3] Quel prisonnier du château d’If révèle à Edmond Dantès l’emplacement d’un trésor ?
+53. [2.2] Quel journaliste et romancier, membre de l’Académie française, a écrit « Le Lion » ?
+   → Joseph Kessel / Kessel
+   (Il a aussi coécrit les paroles du « Chant des partisans ».)
+
+54. [2.2] Quel romancier français a écrit « La Planète des singes » ?
+   → Pierre Boulle / Boulle
+   (Aussi auteur du « Pont de la rivière Kwaï ».)
+
+55. [2.3] Quel prisonnier du château d’If révèle à Edmond Dantès l’emplacement d’un trésor ?
    → L’abbé Faria / Abbé Faria / Faria
    (Il meurt dans sa cellule, ce qui permet à Dantès de s’évader.)
 
-35. [2.3] Quel archidiacre de Notre-Dame est obsédé par Esmeralda ?
+56. [2.3] Quel archidiacre de Notre-Dame est obsédé par Esmeralda ?
    → Claude Frollo / Frollo
    (Il a recueilli Quasimodo bébé.)
 
-36. [2.3] Quel poème de Victor Hugo commence par « Demain, dès l’aube… » et s’adresse à sa fille morte ?
+57. [2.3] Quel poème de Victor Hugo commence par « Demain, dès l’aube… » et s’adresse à sa fille morte ?
    → Demain, dès l’aube / Demain dès l’aube
    (Léopoldine s’est noyée en 1843.)
 
-37. [2.3] Quel est le titre du tout premier album d’Astérix, en 1961 ?
+58. [2.3] Quel est le titre du tout premier album d’Astérix, en 1961 ?
    → Astérix le Gaulois / Asterix le Gaulois
    (Paru d’abord dans le journal « Pilote » en 1959.)
 
-38. [2.4] Quelle pièce de Victor Hugo a provoqué une « bataille » entre classiques et romantiques en 1830 ?
+59. [2.3] Quel livre de Douglas Adams donne 42 comme réponse à la grande question sur la vie ?
+   → Le Guide du voyageur galactique / H2G2 / Guide du voyageur galactique
+   (« Don’t panic ».)
+
+60. [2.3] Quelle hackeuse tatouée est l’héroïne de la saga « Millénium » ?
+   → Lisbeth Salander / Salander / Lisbeth
+   (Créée par le Suédois Stieg Larsson.)
+
+61. [2.4] Quelle pièce de Victor Hugo a provoqué une « bataille » entre classiques et romantiques en 1830 ?
    → Hernani
    (La « bataille d’Hernani », à la Comédie-Française.)
 
-39. [2.4] Quel valet de Molière dit « Que diable allait-il faire dans cette galère ? » ?
+62. [2.4] Quel valet de Molière dit « Que diable allait-il faire dans cette galère ? » ?
    → Scapin / Les Fourberies de Scapin
    (« Les Fourberies de Scapin », 1671.)
 
-40. [2.4] Quelle pièce de Molière met en scène Alceste, qui déteste l’hypocrisie ?
+63. [2.4] Quelle pièce de Molière met en scène Alceste, qui déteste l’hypocrisie ?
    → Le Misanthrope / Misanthrope
    (Créée en 1666.)
 
-41. [2.5] Quelle fable de La Fontaine dit « La raison du plus fort est toujours la meilleure » ?
+64. [2.4] Quel roman de William Golding montre des enfants naufragés qui deviennent sauvages ?
+   → Sa Majesté des mouches / Le Seigneur des mouches / Lord of the Flies
+   (Publié en 1954 ; Nobel en 1983.)
+
+65. [2.4] Quel cochon prend le pouvoir dans « La Ferme des animaux » d’Orwell ?
+   → Napoléon
+   (Une caricature de Staline.)
+
+66. [2.5] Quelle fable de La Fontaine dit « La raison du plus fort est toujours la meilleure » ?
    → Le Loup et l’Agneau
    (La morale arrive dès le premier vers.)
 
-42. [2.5] Quel conte d’Andersen montre un roi qui défile tout nu, persuadé d’être habillé ?
+67. [2.5] Quel conte d’Andersen montre un roi qui défile tout nu, persuadé d’être habillé ?
    → Les Habits neufs de l’empereur / Les Habits neufs de l’Empereur
    (Seul un enfant ose dire qu’il est nu.)
 
-43. [2.6] Quel précepteur de Candide répète que « tout est au mieux dans le meilleur des mondes » ?
+68. [2.5] Quel romancier anglais a écrit les « Annales du Disque-monde », un monde porté par quatre éléphants ?
+   → Terry Pratchett / Pratchett
+   (41 romans de 1983 à 2015.)
+
+69. [2.6] Quel précepteur de Candide répète que « tout est au mieux dans le meilleur des mondes » ?
    → Pangloss / Maître Pangloss
    (Voltaire se moque ainsi de l’optimisme naïf.)
 
-44. [2.6] Quel conte philosophique de Voltaire (1747) a un héros babylonien qui tire des déductions ?
+70. [2.6] Quel conte philosophique de Voltaire (1747) a un héros babylonien qui tire des déductions ?
    → Zadig / Zadig ou la Destinée
    (Un ancêtre du roman policier.)
 
-45. [2.6] Quel roman de Montesquieu fait critiquer la France par deux voyageurs persans ?
+71. [2.6] Quel roman de Montesquieu fait critiquer la France par deux voyageurs persans ?
    → Les Lettres persanes / Lettres persanes
    (Usbek et Rica, en 1721.)
 
-46. [2.6] Quel roman de Jack London suit Buck, un chien volé qui devient chef de meute ?
+72. [2.6] Quel roman de Jack London suit Buck, un chien volé qui devient chef de meute ?
    → L’Appel de la forêt / Appel de la forêt / The Call of the Wild
    (1903, pendant la ruée vers l’or du Klondike.)
 
-47. [2.7] Quel philosophe a dirigé l’« Encyclopédie » avec d’Alembert ?
+73. [2.6] Quel roman de Pierre Lemaitre, prix Goncourt 2013, suit deux anciens poilus escrocs ?
+   → Au revoir là-haut
+   (Adapté au cinéma par Albert Dupontel en 2017.)
+
+74. [2.7] Quel philosophe a dirigé l’« Encyclopédie » avec d’Alembert ?
    → Denis Diderot / Diderot
    (17 volumes de texte, de 1751 à 1772.)
 
-48. [2.7] Quel livre de Rousseau raconte sa propre vie avec une grande franchise ?
+75. [2.7] Quel livre de Rousseau raconte sa propre vie avec une grande franchise ?
    → Les Confessions / Confessions
    (Une des premières autobiographies modernes.)
 
-49. [2.7] Quel auteur de comédies du XVIIIe siècle a donné son nom à un badinage amoureux, le « marivaudage » ?
+76. [2.7] Quel auteur de comédies du XVIIIe siècle a donné son nom à un badinage amoureux, le « marivaudage » ?
    → Marivaux / Pierre de Marivaux
    (« Le Jeu de l’amour et du hasard », 1730.)
 
-50. [2.7] Comment appelle-t-on un groupe de trois vers dans un poème ?
+77. [2.7] Comment appelle-t-on un groupe de trois vers dans un poème ?
    → Un tercet / Tercet
    (Un sonnet a deux quatrains et deux tercets.)
 
-51. [2.8] Quel roman de Balzac montre une jeune fille sous la coupe d’un père très avare ?
+78. [2.7] Quel roman de Leïla Slimani, prix Goncourt 2016, raconte un drame avec une nourrice ?
+   → Chanson douce
+   (Inspiré d’un fait divers new-yorkais.)
+
+79. [2.8] Quel roman de Balzac montre une jeune fille sous la coupe d’un père très avare ?
    → Eugénie Grandet
    (Le père Grandet, tonnelier de Saumur.)
 
-52. [2.8] Quel roman de Zola se passe dans un grand magasin parisien ?
+80. [2.8] Quel roman de Zola se passe dans un grand magasin parisien ?
    → Au Bonheur des Dames
    (Inspiré du Bon Marché, 1883.)
 
-53. [2.8] Quel roman de Zola porte le prénom d’une courtisane, fille de Gervaise ?
+81. [2.8] Quel roman de Zola porte le prénom d’une courtisane, fille de Gervaise ?
    → Nana
    (1880, 9e volume des Rougon-Macquart.)
 
-54. [2.8] Quelle nouvelle de Maupassant suit une diligence en pleine guerre de 1870 ?
+82. [2.8] Quelle nouvelle de Maupassant suit une diligence en pleine guerre de 1870 ?
    → Boule de suif
    (Surnom d’une prostituée méprisée par les autres voyageurs.)
 
-55. [2.8] Comment appelle-t-on des vers qui n’ont ni rime ni nombre de syllabes fixe ?
+83. [2.8] Comment appelle-t-on des vers qui n’ont ni rime ni nombre de syllabes fixe ?
    → Le vers libre / Vers libre / Vers libres
    (Apollinaire et Prévert l’ont beaucoup utilisé.)
 
-56. [2.9] Quel sonnet de Rimbaud montre un soldat qui semble dormir, avec « deux trous rouges au côté droit » ?
+84. [2.8] Quel roman de Madame de La Fayette (1678) est souvent présenté comme le premier roman psychologique français ?
+   → La Princesse de Clèves / Princesse de Clèves
+   (Un amour impossible à la cour d’Henri II.)
+
+85. [2.9] Quel sonnet de Rimbaud montre un soldat qui semble dormir, avec « deux trous rouges au côté droit » ?
    → Le Dormeur du val / Dormeur du val
    (Écrit en 1870, à 16 ans.)
 
-57. [2.9] Quel recueil d’Apollinaire dessine des formes avec les mots des poèmes ?
+86. [2.9] Quel recueil d’Apollinaire dessine des formes avec les mots des poèmes ?
    → Calligrammes
    (1918 : un poème en forme de tour Eiffel, de pluie…)
 
-58. [2.9] Comment appelle-t-on un roman écrit sous forme de lettres, comme « Les Liaisons dangereuses » ?
+87. [2.9] Comment appelle-t-on un roman écrit sous forme de lettres, comme « Les Liaisons dangereuses » ?
    → Un roman épistolaire / Roman épistolaire / Épistolaire
    (Du latin « epistola », la lettre.)
 
-59. [3.0] Quel roman historique de Flaubert se passe à Carthage ?
+88. [2.9] Quelle marquise du XVIIe siècle est célèbre pour les lettres écrites à sa fille ?
+   → Madame de Sévigné / Sévigné / Marquise de Sévigné
+   (Plus de 1 000 lettres, une chronique de la cour de Louis XIV.)
+
+89. [3.0] Quel roman historique de Flaubert se passe à Carthage ?
    → Salammbô / Salammbo
    (1862, pendant la guerre des Mercenaires.)
 
-60. [3.0] Quel roman de Stendhal s’ouvre sur la bataille de Waterloo vue par Fabrice del Dongo ?
+90. [3.0] Quel roman de Stendhal s’ouvre sur la bataille de Waterloo vue par Fabrice del Dongo ?
    → La Chartreuse de Parme / Chartreuse de Parme
    (Écrit en 53 jours, en 1838.)
 
-61. [3.0] Quel roman champêtre de George Sand se passe dans le Berry ?
+91. [3.0] Quel roman champêtre de George Sand se passe dans le Berry ?
    → La Mare au diable / Mare au diable
    (1846, l’histoire de Germain et de la petite Marie.)
 
-62. [3.0] Quelle immense autobiographie Chateaubriand voulait-il publier après sa mort ?
+92. [3.0] Quelle immense autobiographie Chateaubriand voulait-il publier après sa mort ?
    → Les Mémoires d’outre-tombe / Mémoires d’outre-tombe
    (Il repose face à la mer, sur l’îlot du Grand Bé, à Saint-Malo.)
 
-63. [3.0] Comment appelle-t-on aujourd’hui la personne qui écrit un livre à la place d’un autre, sans être nommée ?
+93. [3.0] Comment appelle-t-on aujourd’hui la personne qui écrit un livre à la place d’un autre, sans être nommée ?
    → Un prête-plume / Prête-plume / Nègre littéraire / Écrivain fantôme
    (On disait autrefois « nègre », mot aujourd’hui évité.)
 
-64. [3.1] Quelle réplique célèbre de « Huis clos » de Sartre résume l’enfer ?
+94. [3.0] Quel roman de Bernardin de Saint-Pierre raconte l’amour de deux enfants sur l’île Maurice ?
+   → Paul et Virginie
+   (Publié en 1788 ; elle meurt dans un naufrage.)
+
+95. [3.1] Quelle réplique célèbre de « Huis clos » de Sartre résume l’enfer ?
    → L’enfer, c’est les autres / L’enfer c’est les autres
    (Trois morts enfermés ensemble, sans miroir.)
 
-65. [3.1] Quel premier roman de Sartre (1938) suit Roquentin, pris d’un malaise face à l’existence ?
+96. [3.1] Quel premier roman de Sartre (1938) suit Roquentin, pris d’un malaise face à l’existence ?
    → La Nausée / Nausée
    (Il se passe à « Bouville », inspirée du Havre.)
 
-66. [3.1] Quel roman de Raymond Queneau suit une fillette insolente venue voir le métro… en grève ?
+97. [3.1] Quel roman de Raymond Queneau suit une fillette insolente venue voir le métro… en grève ?
    → Zazie dans le métro / Zazie
    (1959, adapté par Louis Malle.)
 
-67. [3.1] Quel livre de Queneau raconte la même petite histoire de 99 manières différentes ?
+98. [3.1] Quel livre de Queneau raconte la même petite histoire de 99 manières différentes ?
    → Exercices de style
    (Un bus, un jeune homme au long cou, un bouton de pardessus.)
 
-68. [3.1] Quel roman de Dickens suit la vie d’un orphelin, de l’enfance à l’âge adulte, inspiré de sa propre vie ?
+99. [3.1] Quel roman de Dickens suit la vie d’un orphelin, de l’enfance à l’âge adulte, inspiré de sa propre vie ?
    → David Copperfield
    (Dickens le considérait comme son préféré.)
 
-69. [3.2] Quelle pièce d’Alfred Jarry s’ouvre sur le mot « Merdre ! » ?
+100. [3.2] Quelle pièce d’Alfred Jarry s’ouvre sur le mot « Merdre ! » ?
    → Ubu roi / Ubu
    (1896 : scandale le soir de la première.)
 
-70. [3.2] Quel roman de Raymond Radiguet, écrit vers 17 ans, raconte un amour pendant la guerre de 14 ?
+101. [3.2] Quel roman de Raymond Radiguet, écrit vers 17 ans, raconte un amour pendant la guerre de 14 ?
    → Le Diable au corps / Diable au corps
    (Radiguet est mort à 20 ans, en 1923.)
 
-71. [3.2] Quel poète, cinéaste et dessinateur a écrit « Les Enfants terribles » ?
+102. [3.2] Quel poète, cinéaste et dessinateur a écrit « Les Enfants terribles » ?
    → Jean Cocteau / Cocteau
    (Roman de 1929.)
 
-72. [3.2] Quelle cousine de Cyrano reçoit les lettres d’amour qu’il écrit pour Christian ?
+103. [3.2] Quelle cousine de Cyrano reçoit les lettres d’amour qu’il écrit pour Christian ?
    → Roxane
    (Elle ne comprend la vérité qu’à la mort de Cyrano.)
 
-73. [3.3] Quel roman de Giono suit Angelo, colonel italien, dans une Provence ravagée par le choléra ?
+104. [3.2] Quel moraliste a écrit les « Maximes », comme « Nous avons tous assez de force pour supporter les maux d’autrui » ?
+   → La Rochefoucauld / François de La Rochefoucauld
+   (Publiées en 1665.)
+
+105. [3.3] Quel roman de Giono suit Angelo, colonel italien, dans une Provence ravagée par le choléra ?
    → Le Hussard sur le toit / Hussard sur le toit
    (1951 ; film avec Juliette Binoche en 1995.)
 
-74. [3.3] Quel roman de Giono raconte la renaissance d’un village abandonné de Haute-Provence ?
+106. [3.3] Quel roman de Giono raconte la renaissance d’un village abandonné de Haute-Provence ?
    → Regain
    (1930, adapté au cinéma par Marcel Pagnol.)
 
-75. [3.3] Quel auteur de vaudevilles a écrit « Le Dindon » et « La Dame de chez Maxim » ?
+107. [3.3] Quel auteur de vaudevilles a écrit « Le Dindon » et « La Dame de chez Maxim » ?
    → Georges Feydeau / Feydeau
    (Maître des portes qui claquent et des quiproquos.)
 
-76. [3.3] Sous quel pseudonyme américain Boris Vian a-t-il publié « J’irai cracher sur vos tombes » ?
+108. [3.3] Sous quel pseudonyme américain Boris Vian a-t-il publié « J’irai cracher sur vos tombes » ?
    → Vernon Sullivan / Sullivan
    (Il prétendait n’être que le traducteur.)
 
-77. [3.3] Quelle nouvelle d’Edgar Poe montre un homme hanté par un chat borgne qu’il a maltraité ?
+109. [3.3] Quelle nouvelle d’Edgar Poe montre un homme hanté par un chat borgne qu’il a maltraité ?
    → Le Chat noir / Chat noir
    (Traduite en français par Baudelaire.)
 
-78. [3.4] Quel drame romantique d’Alfred de Musset se passe à Florence au temps des Médicis ?
+110. [3.3] Quel auteur du XVIIe siècle a peint les travers de ses contemporains dans « Les Caractères » ?
+   → Jean de La Bruyère / La Bruyère
+   (Publiés en 1688.)
+
+111. [3.4] Quel drame romantique d’Alfred de Musset se passe à Florence au temps des Médicis ?
    → Lorenzaccio
    (Lorenzo prépare le meurtre de son cousin, le duc Alexandre.)
 
-79. [3.4] Quel poète romantique a écrit « La Mort du loup » ?
+112. [3.4] Quel poète romantique a écrit « La Mort du loup » ?
    → Alfred de Vigny / Vigny
    (« Gémir, pleurer, prier est également lâche ».)
 
-80. [3.4] Quel recueil de Victor Hugo, écrit en exil, attaque Napoléon III ?
+113. [3.4] Quel recueil de Victor Hugo, écrit en exil, attaque Napoléon III ?
    → Les Châtiments / Châtiments
    (1853 ; il y appelle l’empereur « Napoléon le Petit ».)
 
-81. [3.4] Quel grand recueil de poèmes de Victor Hugo (1856) évoque la mort de sa fille ?
+114. [3.4] Quel grand recueil de poèmes de Victor Hugo (1856) évoque la mort de sa fille ?
    → Les Contemplations / Contemplations
    (On y trouve « Demain, dès l’aube ».)
 
-82. [3.4] Quel roman de Steinbeck suit une famille chassée de l’Oklahoma vers la Californie ?
+115. [3.4] Quel roman de Steinbeck suit une famille chassée de l’Oklahoma vers la Californie ?
    → Les Raisins de la colère / Raisins de la colère
    (Prix Pulitzer 1940.)
 
-83. [3.5] Quel drame de Victor Hugo a un valet amoureux de la reine, « ver de terre amoureux d’une étoile » ?
+116. [3.5] Quel drame de Victor Hugo a un valet amoureux de la reine, « ver de terre amoureux d’une étoile » ?
    → Ruy Blas
    (1838, dans l’Espagne du XVIIe siècle.)
 
-84. [3.5] Quelle tragédie de Racine met en scène la veuve d’Hector, captive de Pyrrhus ?
+117. [3.5] Quelle tragédie de Racine met en scène la veuve d’Hector, captive de Pyrrhus ?
    → Andromaque
    (1667 : son premier grand succès.)
 
-85. [3.5] Quelle tragédie de Racine montre le jeune Néron devenir un monstre ?
+118. [3.5] Quelle tragédie de Racine montre le jeune Néron devenir un monstre ?
    → Britannicus
    (Du nom de son demi-frère, qu’il fait empoisonner.)
 
-86. [3.5] Quelle comédie de Molière montre Arnolphe élevant une jeune fille ignorante pour l’épouser ?
+119. [3.5] Quelle comédie de Molière montre Arnolphe élevant une jeune fille ignorante pour l’épouser ?
    → L’École des femmes / École des femmes
    (1662 ; elle s’appelle Agnès.)
 
-87. [3.5] Quel roman d’Hemingway se passe pendant la guerre d’Espagne ?
+120. [3.5] Quel roman d’Hemingway se passe pendant la guerre d’Espagne ?
    → Pour qui sonne le glas / For Whom the Bell Tolls
    (1940 ; Hemingway y était correspondant.)
 
-88. [3.6] Quel roman de Flaubert suit Frédéric Moreau, amoureux de Mme Arnoux, autour de 1848 ?
+121. [3.5] Quel roman de l’abbé Prévost raconte la passion du chevalier Des Grieux pour une jeune femme ?
+   → Manon Lescaut
+   (1731 ; adapté en opéra par Massenet et Puccini.)
+
+122. [3.6] Quel roman de Flaubert suit Frédéric Moreau, amoureux de Mme Arnoux, autour de 1848 ?
    → L’Éducation sentimentale / Éducation sentimentale
    (1869.)
 
-89. [3.6] Quel est le nom du village d’enfance du narrateur dans « À la recherche du temps perdu » ?
+123. [3.6] Quel est le nom du village d’enfance du narrateur dans « À la recherche du temps perdu » ?
    → Combray
    (Inspiré d’Illiers, rebaptisé Illiers-Combray en 1971.)
 
-90. [3.6] Quel écrivain français, auteur des « Faux-Monnayeurs », a reçu le prix Nobel en 1947 ?
+124. [3.6] Quel écrivain français, auteur des « Faux-Monnayeurs », a reçu le prix Nobel en 1947 ?
    → André Gide / Gide
    (Aussi « Les Nourritures terrestres ».)
 
-91. [3.6] Quel poète a écrit « Un coup de dés jamais n’abolira le hasard » ?
+125. [3.6] Quel poète a écrit « Un coup de dés jamais n’abolira le hasard » ?
    → Stéphane Mallarmé / Mallarmé / Mallarme
    (1897 : les mots sont dispersés sur la page.)
 
-92. [3.6] Quel livre de Tolkien raconte les légendes des Elfes, bien avant « Le Seigneur des anneaux » ?
+126. [3.6] Quel livre de Tolkien raconte les légendes des Elfes, bien avant « Le Seigneur des anneaux » ?
    → Le Silmarillion / Silmarillion
    (Publié en 1977 par son fils Christopher.)
 
-93. [3.7] Quel poète du XVe siècle, voleur et bagarreur, a écrit la « Ballade des pendus » ?
+127. [3.6] Quel roman-fleuve d’Albert Cohen raconte la passion de Solal et Ariane ?
+   → Belle du Seigneur
+   (Plus de 1 000 pages, Grand prix de l’Académie française 1968.)
+
+128. [3.7] Quel poète du XVe siècle, voleur et bagarreur, a écrit la « Ballade des pendus » ?
    → François Villon / Villon
    (Condamné à mort, il fut gracié puis disparut.)
 
-94. [3.7] Quel poème de Du Bellay commence par « Heureux qui, comme Ulysse, a fait un beau voyage » ?
+129. [3.7] Quel poème de Du Bellay commence par « Heureux qui, comme Ulysse, a fait un beau voyage » ?
    → Heureux qui comme Ulysse / Heureux qui, comme Ulysse / Les Regrets
    (Dans « Les Regrets », 1558 : il a le mal du pays à Rome.)
 
-95. [3.7] Quel auteur médiéval a écrit les premiers romans de la Table ronde, dont « Perceval » ?
+130. [3.7] Quel auteur médiéval a écrit les premiers romans de la Table ronde, dont « Perceval » ?
    → Chrétien de Troyes
    (« Perceval ou le Conte du Graal », vers 1180.)
 
-96. [3.7] Comment s’appelle le loup, ennemi juré de Renart, dans le « Roman de Renart » ?
+131. [3.7] Comment s’appelle le loup, ennemi juré de Renart, dans le « Roman de Renart » ?
    → Ysengrin / Isengrin
    (Renart lui joue les pires tours.)
 
-97. [3.8] Quel recueil de Boccace réunit 100 nouvelles racontées par des jeunes gens fuyant la peste ?
+132. [3.8] Quel recueil de Boccace réunit 100 nouvelles racontées par des jeunes gens fuyant la peste ?
    → Le Décaméron / Décaméron / Decameron
    (La peste noire de Florence, en 1348.)
 
-98. [3.8] Quel poète italien a chanté son amour pour Laure dans le « Canzoniere » ?
+133. [3.8] Quel poète italien a chanté son amour pour Laure dans le « Canzoniere » ?
    → Pétrarque / Petrarque / Petrarca
    (Il a popularisé le sonnet.)
 
-99. [3.8] Quelle femme aimée guide Dante au Paradis dans « La Divine Comédie » ?
+134. [3.8] Quelle femme aimée guide Dante au Paradis dans « La Divine Comédie » ?
    → Béatrice / Beatrice / Beatrice Portinari
    (Virgile le guide en Enfer et au Purgatoire.)
 
-100. [3.8] Comment Don Quichotte appelle-t-il la paysanne dont il fait sa dame idéale ?
+135. [3.8] Comment Don Quichotte appelle-t-il la paysanne dont il fait sa dame idéale ?
    → Dulcinée / Dulcinée du Toboso / Dulcinee
    (Elle s’appelle en fait Aldonza Lorenzo.)
 
-101. [3.9] Quel livre de Primo Levi raconte sa survie à Auschwitz ?
+136. [3.9] Quel livre de Primo Levi raconte sa survie à Auschwitz ?
    → Si c’est un homme / Se questo è un uomo
    (Publié en 1947.)
 
-102. [3.9] Quel livre de Soljenitsyne décrit le système des camps soviétiques ?
+137. [3.9] Quel livre de Soljenitsyne décrit le système des camps soviétiques ?
    → L’Archipel du Goulag / Archipel du Goulag
    (Publié à Paris en 1973 ; il est expulsé d’URSS en 1974.)
 
-103. [3.9] Quel roman de Dostoïevski a pour héros le prince Mychkine, trop bon pour son monde ?
+138. [3.9] Quel roman de Dostoïevski a pour héros le prince Mychkine, trop bon pour son monde ?
    → L’Idiot / Idiot
    (1869.)
 
-104. [3.9] Quel dernier roman de Dostoïevski raconte le meurtre d’un père par l’un de ses fils ?
+139. [3.9] Quel dernier roman de Dostoïevski raconte le meurtre d’un père par l’un de ses fils ?
    → Les Frères Karamazov / Frères Karamazov
    (1880 ; Freud le jugeait le plus grand roman jamais écrit.)
 
-105. [4.0] Quel roman de Hermann Hesse suit un jeune Indien en quête de sagesse au temps de Bouddha ?
+140. [4.0] Quel roman de Hermann Hesse suit un jeune Indien en quête de sagesse au temps de Bouddha ?
    → Siddhartha
    (1922 ; Hesse a reçu le Nobel en 1946.)
 
-106. [4.0] Quel roman de Hesse suit Harry Haller, homme déchiré entre l’humain et le loup ?
+141. [4.0] Quel roman de Hesse suit Harry Haller, homme déchiré entre l’humain et le loup ?
    → Le Loup des steppes / Loup des steppes
    (1927, très lu par la génération hippie.)
 
-107. [4.0] Quel écrivain russe, auteur de « Lolita », était aussi spécialiste des papillons ?
+142. [4.0] Quel écrivain russe, auteur de « Lolita », était aussi spécialiste des papillons ?
    → Vladimir Nabokov / Nabokov
    (Il écrivait en russe puis en anglais.)
 
-108. [4.0] Quel poète chilien, auteur du « Chant général », a reçu le prix Nobel en 1971 ?
+143. [4.0] Quel poète chilien, auteur du « Chant général », a reçu le prix Nobel en 1971 ?
    → Pablo Neruda / Neruda
    (Aussi diplomate, ambassadeur à Paris.)
 
-109. [4.1] Quel roman d’Italo Calvino suit un jeune noble qui décide de vivre dans les arbres ?
+144. [4.1] Quel roman d’Italo Calvino suit un jeune noble qui décide de vivre dans les arbres ?
    → Le Baron perché / Baron perché
    (1957 ; il ne redescend jamais.)
 
-110. [4.1] Quel poète latin a raconté les transformations des dieux et des hommes dans « Les Métamorphoses » ?
+145. [4.1] Quel poète latin a raconté les transformations des dieux et des hommes dans « Les Métamorphoses » ?
    → Ovide / Ovidius
    (Exilé sur les bords de la mer Noire par Auguste.)
 
-111. [4.1] Quel tragédien grec, le plus ancien des trois grands, a écrit « L’Orestie » ?
+146. [4.1] Quel tragédien grec, le plus ancien des trois grands, a écrit « L’Orestie » ?
    → Eschyle / Aeschyle
    (Il aurait combattu à Marathon.)
 
-112. [4.2] Quelle tragédie de Sophocle montre un roi découvrir qu’il a tué son père et épousé sa mère ?
+147. [4.2] Quelle tragédie de Sophocle montre un roi découvrir qu’il a tué son père et épousé sa mère ?
    → Œdipe roi / Oedipe roi / Œdipe
    (Il se crève les yeux à la fin.)
 
-113. [4.2] Dans quel théâtre de Londres furent jouées beaucoup des pièces de Shakespeare ?
+148. [4.2] Dans quel théâtre de Londres furent jouées beaucoup des pièces de Shakespeare ?
    → Le Globe / Globe / Globe Theatre / Théâtre du Globe
    (Reconstruit à l’identique en 1997, au bord de la Tamise.)
 
-114. [4.2] Quel gros chevalier vantard et buveur apparaît dans plusieurs pièces de Shakespeare ?
+149. [4.2] Quel gros chevalier vantard et buveur apparaît dans plusieurs pièces de Shakespeare ?
    → Falstaff / John Falstaff
    (Verdi lui a consacré son dernier opéra.)

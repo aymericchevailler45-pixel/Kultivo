@@ -1,341 +1,577 @@
-HISTOIRE — 85 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+HISTOIRE — 144 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
-1. [1.1] Quel homme préhistorique, cousin du nôtre, doit son nom à une vallée allemande ?
+1. [1.0] Quel jour de 1945 célèbre-t-on la victoire de la Seconde Guerre mondiale en Europe ?
+   → Le 8 mai 1945 / 8 mai / 8 mai 1945
+   (Jour férié en France.)
+
+2. [1.1] Quel homme préhistorique, cousin du nôtre, doit son nom à une vallée allemande ?
    → Néandertal / L’homme de Néandertal / Neandertal / Neanderthal
    (Il a disparu il y a environ 40 000 ans.)
 
-2. [1.2] Quel bateau long et fin, à tête de dragon, utilisaient les Vikings ?
+3. [1.1] Quels tickets fallait-il pour acheter du pain ou du sucre pendant la guerre ?
+   → Les tickets de rationnement / Tickets de rationnement / Cartes de rationnement
+   (En France, jusqu’en 1949.)
+
+4. [1.1] Comment appelait-on le commerce illégal de nourriture pendant l’Occupation ?
+   → Le marché noir / Marché noir
+   (Les prix y étaient très élevés.)
+
+5. [1.2] Quel bateau long et fin, à tête de dragon, utilisaient les Vikings ?
    → Le drakkar / Drakkar
    (Les Vikings l’appelaient plutôt « langskip ».)
 
-3. [1.2] Quels prêtres gaulois cueillaient le gui avec une serpe d’or ?
+6. [1.2] Quels prêtres gaulois cueillaient le gui avec une serpe d’or ?
    → Les druides / Druide / Druides
    (Comme Panoramix dans Astérix.)
 
-4. [1.3] Quel peuple de cavaliers des steppes, uni par Gengis Khan, a fondé le plus vaste empire d’un seul tenant ?
+7. [1.3] Quel peuple de cavaliers des steppes, uni par Gengis Khan, a fondé le plus vaste empire d’un seul tenant ?
    → Les Mongols / Mongols
    (Empire fondé par Gengis Khan au XIIIe siècle.)
 
-5. [1.3] Quelles expéditions militaires chrétiennes vers Jérusalem ont eu lieu de 1096 à 1291 ?
+8. [1.3] Quelles expéditions militaires chrétiennes vers Jérusalem ont eu lieu de 1096 à 1291 ?
    → Les croisades / Croisades / Croisade
    (Huit croisades principales.)
 
-6. [1.4] Quelle décoration créée par Napoléon en 1802 est la plus haute de France ?
+9. [1.3] Quels monuments, dans presque chaque commune de France, portent les noms des soldats tués ?
+   → Les monuments aux morts / Monument aux morts / Monuments aux morts
+   (La plupart ont été érigés dans les années 1920.)
+
+10. [1.3] Comment appelait-on les soldats défigurés par les blessures de 1914-1918 ?
+   → Les gueules cassées / Gueules cassées
+   (Une association du même nom existe toujours.)
+
+11. [1.3] Quels véhicules parisiens ont transporté des soldats vers le front en 1914 ?
+   → Les taxis de la Marne / Taxis de la Marne / Taxis / Les taxis
+   (Environ 600 taxis réquisitionnés pour la bataille de la Marne.)
+
+12. [1.4] Quelle décoration créée par Napoléon en 1802 est la plus haute de France ?
    → La Légion d’honneur / Légion d’honneur / Legion d’honneur
    (Son insigne est une étoile à cinq branches doubles.)
 
-7. [1.4] Quelle célèbre phrase de César signifie « le sort en est jeté » ?
+13. [1.4] Quelle célèbre phrase de César signifie « le sort en est jeté » ?
    → Alea jacta est
    (Prononcée en franchissant le Rubicon en 49 av. J.-C.)
 
-8. [1.5] Quel fils adoptif de César aurait participé à son assassinat, d’après la phrase « Toi aussi, mon fils » ?
+14. [1.4] Comment appelle-t-on la période insouciante d’avant 1914 en France ?
+   → La Belle Époque / Belle Époque / Belle Epoque
+   (Nommée ainsi après la guerre, par nostalgie.)
+
+15. [1.4] Quelle fuite massive des civils français a eu lieu en juin 1940 face à l’armée allemande ?
+   → L’exode / Exode
+   (Huit à dix millions de personnes sur les routes.)
+
+16. [1.4] Quelle radio de la BBC permettait aux Français d’entendre la France libre pendant la guerre ?
+   → Radio Londres / BBC / Radio-Londres
+   (« Ici Londres, les Français parlent aux Français ».)
+
+17. [1.5] Quel fils adoptif de César aurait participé à son assassinat, d’après la phrase « Toi aussi, mon fils » ?
    → Brutus / Marcus Junius Brutus
    (César fut poignardé de 23 coups.)
 
-9. [1.5] Quel nom donne-t-on au génocide des Juifs par les nazis ?
+18. [1.5] Quel nom donne-t-on au génocide des Juifs par les nazis ?
    → La Shoah / Shoah / Holocauste
    (Environ 6 millions de victimes.)
 
-10. [1.5] Quel discours radio de De Gaulle depuis Londres lance la Résistance en 1940 ?
+19. [1.5] Quel discours radio de De Gaulle depuis Londres lance la Résistance en 1940 ?
    → L’appel du 18 juin / Appel du 18 juin / 18 juin
    (Diffusé par la BBC ; peu de gens l’ont entendu en direct.)
 
-11. [1.6] Quelle frontière symbolique coupait l’Europe en deux pendant la guerre froide, selon Churchill ?
+20. [1.5] Comment appelait-on les groupes de résistants cachés dans les forêts et les montagnes ?
+   → Le maquis / Maquis / Maquisards
+   (Du mot corse pour la végétation épaisse.)
+
+21. [1.5] Quelle ligne coupait la France entre zone occupée et zone libre ?
+   → La ligne de démarcation / Ligne de démarcation
+   (Il fallait un laissez-passer pour la franchir.)
+
+22. [1.6] Quelle frontière symbolique coupait l’Europe en deux pendant la guerre froide, selon Churchill ?
    → Le rideau de fer / Rideau de fer
    (Expression popularisée en 1946.)
 
-12. [1.6] Quel espace européen permet de voyager sans contrôle aux frontières ?
+23. [1.6] Quel espace européen permet de voyager sans contrôle aux frontières ?
    → L’espace Schengen / Schengen / Espace Schengen
    (Du nom d’un village luxembourgeois où l’accord fut signé en 1985.)
 
-13. [1.7] Quelle loi de 1975 a dépénalisé l’avortement en France ?
+24. [1.6] Quel général a libéré Paris le 25 août 1944 avec la 2e DB ?
+   → Leclerc / Le général Leclerc / Philippe Leclerc de Hauteclocque
+   (Avec l’aide des résistants parisiens insurgés.)
+
+25. [1.6] Quelle grande rafle de juillet 1942 a enfermé plus de 13 000 Juifs dans un vélodrome parisien ?
+   → La rafle du Vél’ d’Hiv / Vel d’Hiv / Rafle du Vel d’Hiv / Vélodrome d’Hiver
+   (Menée par la police française.)
+
+26. [1.6] Quel pont aérien a ravitaillé Berlin-Ouest pendant le blocus soviétique de 1948-1949 ?
+   → Le pont aérien de Berlin / Pont aérien / Blocus de Berlin
+   (Un avion atterrissait toutes les quelques minutes.)
+
+27. [1.7] Quelle loi de 1975 a dépénalisé l’avortement en France ?
    → La loi Veil / Loi Veil
    (Défendue par Simone Veil, ministre de la Santé.)
 
-14. [1.7] Quel savant a déchiffré les hiéroglyphes égyptiens en 1822 ?
+28. [1.7] Quel savant a déchiffré les hiéroglyphes égyptiens en 1822 ?
    → Jean-François Champollion / Champollion
    (Grâce à la pierre de Rosette.)
 
-15. [1.7] Quel épisode de 1789 voit les députés jurer de ne pas se séparer avant d’avoir donné une Constitution ?
+29. [1.7] Quel épisode de 1789 voit les députés jurer de ne pas se séparer avant d’avoir donné une Constitution ?
    → Le serment du Jeu de paume / Serment du Jeu de paume / Jeu de paume
    (Le 20 juin 1789, à Versailles.)
 
-16. [1.8] Quel recueil de lois de Napoléon (1804) régit encore le droit français ?
+30. [1.7] Quel poste-frontière célèbre séparait les zones américaine et soviétique à Berlin ?
+   → Checkpoint Charlie / Check-point Charlie
+   (Des chars américains et soviétiques s’y sont fait face en 1961.)
+
+31. [1.7] Quelle ligne directe reliait la Maison-Blanche et le Kremlin après la crise de Cuba ?
+   → Le téléphone rouge / Téléphone rouge
+   (En réalité, c’était d’abord un télex.)
+
+32. [1.8] Quel recueil de lois de Napoléon (1804) régit encore le droit français ?
    → Le Code civil / Code civil / Code Napoléon
    (Aussi appelé Code Napoléon.)
 
-17. [1.8] Quel prisonnier mystérieux de Louis XIV portait un masque ?
+33. [1.8] Quel prisonnier mystérieux de Louis XIV portait un masque ?
    → L’homme au masque de fer / Masque de fer / Le Masque de fer
    (Son identité reste inconnue ; Voltaire et Dumas en ont fait une légende.)
 
-18. [1.8] Quel roi voulait que chaque paysan ait « la poule au pot » le dimanche ?
+34. [1.8] Quel roi voulait que chaque paysan ait « la poule au pot » le dimanche ?
    → Henri IV
    (Une phrase rapportée bien après sa mort.)
 
-19. [1.9] Quelle révolution de 1917 met fin au règne des tsars ?
+35. [1.8] Comment appelait-on la compétition entre États-Unis et URSS pour conquérir l’espace ?
+   → La course à l’espace / Course à l’espace / Conquête spatiale
+   (De Spoutnik (1957) à Apollo 11 (1969).)
+
+36. [1.8] Quel âge de la majorité a été fixé en France en 1974 ?
+   → 18 ans / 18
+   (Avant, c’était 21 ans.)
+
+37. [1.8] Quel président de la République a fait passer la majorité à 18 ans ?
+   → Valéry Giscard d’Estaing / Giscard d’Estaing / Giscard / VGE
+   (Élu en 1974.)
+
+38. [1.9] Quelle révolution de 1917 met fin au règne des tsars ?
    → La révolution russe / Révolution russe / Révolution d’Octobre
    (En février puis en octobre 1917.)
 
-20. [1.9] Quel conflit oppose la France aux indépendantistes algériens de 1954 à 1962 ?
+39. [1.9] Quel conflit oppose la France aux indépendantistes algériens de 1954 à 1962 ?
    → La guerre d’Algérie / Guerre d’Algérie
    (Fin avec les accords d’Évian.)
 
-21. [1.9] Quelle guerre (1950-1953) a coupé une péninsule d’Asie en deux le long du 38e parallèle ?
+40. [1.9] Quelle guerre (1950-1953) a coupé une péninsule d’Asie en deux le long du 38e parallèle ?
    → La guerre de Corée / Guerre de Corée
    (Aucun traité de paix n’a jamais été signé.)
 
-22. [1.9] Quelle déclaration de 1789 commence par « Les hommes naissent et demeurent libres et égaux en droits » ?
+41. [1.9] Quelle déclaration de 1789 commence par « Les hommes naissent et demeurent libres et égaux en droits » ?
    → La Déclaration des droits de l’homme et du citoyen / Déclaration des droits de l’homme / DDHC
    (Adoptée le 26 août 1789.)
 
-23. [2.0] Quel chef apache a résisté aux armées américaine et mexicaine jusqu’en 1886 ?
+42. [1.9] Quel jour de 1981 François Mitterrand a-t-il été élu président ?
+   → Le 10 mai 1981 / 10 mai / 10 mai 1981
+   (Premier président de gauche de la Ve République.)
+
+43. [1.9] Quel symbole avait le Parti socialiste dans les années 1970-1980 ?
+   → La rose au poing / Rose au poing / Une rose
+   (Une rose tenue dans un poing fermé.)
+
+44. [1.9] Comment appelle-t-on un président et un Premier ministre de bords politiques opposés ?
+   → La cohabitation / Cohabitation
+   (Trois cohabitations : 1986, 1993 et 1997.)
+
+45. [2.0] Quel chef apache a résisté aux armées américaine et mexicaine jusqu’en 1886 ?
    → Geronimo / Géronimo
    (Le cri des parachutistes américains vient de son nom.)
 
-24. [2.0] Quel révolutionnaire mexicain moustachu menait la División del Norte ?
+46. [2.0] Quel révolutionnaire mexicain moustachu menait la División del Norte ?
    → Pancho Villa / Villa
    (Il attaqua même une ville des États-Unis en 1916.)
 
-25. [2.0] Quel révolutionnaire mexicain défendait les paysans au cri de « Terre et liberté » ?
+47. [2.0] Quel révolutionnaire mexicain défendait les paysans au cri de « Terre et liberté » ?
    → Emiliano Zapata / Zapata
    (Assassiné en 1919.)
 
-26. [2.0] Quel ballon dirigeable allemand a pris feu en 1937 à son arrivée près de New York ?
+48. [2.0] Quel ballon dirigeable allemand a pris feu en 1937 à son arrivée près de New York ?
    → Le Hindenburg / Hindenburg / LZ 129 Hindenburg
    (36 morts ; c’en est fini des dirigeables de ligne.)
 
-27. [2.1] Quel nom portaient les dirigeables allemands, du nom de leur inventeur comte ?
+49. [2.0] Quel président de la République a été élu en 2007 ?
+   → Nicolas Sarkozy / Sarkozy
+   (Il a battu Ségolène Royal.)
+
+50. [2.0] Quelle loi de 1905 sépare les Églises et l’État en France ?
+   → La loi de séparation des Églises et de l’État / Loi de 1905 / Séparation des Églises et de l’État / Laïcité
+   (Elle fonde la laïcité à la française.)
+
+51. [2.0] Comment surnommait-on les instituteurs de la IIIe République, en costume noir ?
+   → Les hussards noirs / Hussards noirs / Hussards noirs de la République
+   (Une expression de Charles Péguy.)
+
+52. [2.1] Quel nom portaient les dirigeables allemands, du nom de leur inventeur comte ?
    → Les zeppelins / Zeppelin / Zeppelins
    (Ferdinand von Zeppelin, premier vol en 1900.)
 
-28. [2.1] Quel fondateur de la Turquie moderne a imposé l’alphabet latin ?
+53. [2.1] Quel fondateur de la Turquie moderne a imposé l’alphabet latin ?
    → Atatürk / Mustafa Kemal / Ataturk / Mustafa Kemal Atatürk
    (Son nom veut dire « père des Turcs ».)
 
-29. [2.1] Quel sultan ottoman a pris Constantinople en 1453 ?
+54. [2.1] Quel sultan ottoman a pris Constantinople en 1453 ?
    → Mehmed II / Mehmet II / Mahomet II
    (Surnommé « le Conquérant », il avait 21 ans.)
 
-30. [2.2] Quel sultan ottoman du XVIe siècle a assiégé Vienne en 1529 ?
+55. [2.1] Quel ingénieur breton est le « père » du métro parisien, ouvert en 1900 ?
+   → Fulgence Bienvenüe / Bienvenüe / Bienvenue
+   (Une station porte son nom avec Montparnasse.)
+
+56. [2.1] Quel krach boursier de New York a déclenché la grande crise en 1929 ?
+   → Le krach de 1929 / Krach de 1929 / Jeudi noir / Krach de Wall Street
+   (Le « Jeudi noir », 24 octobre 1929.)
+
+57. [2.1] Quels bombardements allemands ont frappé Londres en 1940-1941 ?
+   → Le Blitz / Blitz
+   (De l’allemand « Blitzkrieg », guerre éclair.)
+
+58. [2.2] Quel sultan ottoman du XVIe siècle a assiégé Vienne en 1529 ?
    → Soliman le Magnifique / Soliman / Suleyman
    (Son règne marque l’apogée de l’Empire ottoman.)
 
-31. [2.2] Quel empereur régnait sur un empire « où le soleil ne se couche jamais » au XVIe siècle ?
+59. [2.2] Quel empereur régnait sur un empire « où le soleil ne se couche jamais » au XVIe siècle ?
    → Charles Quint / Charles V
    (Espagne, Saint-Empire, Pays-Bas, Amériques…)
 
-32. [2.2] Quelle impératrice d’Autriche était la mère de Marie-Antoinette ?
+60. [2.2] Quelle impératrice d’Autriche était la mère de Marie-Antoinette ?
    → Marie-Thérèse / Marie-Thérèse d’Autriche
    (Elle eut 16 enfants.)
 
-33. [2.2] Quel empereur allemand a régné pendant la Première Guerre mondiale ?
+61. [2.2] Quel empereur allemand a régné pendant la Première Guerre mondiale ?
    → Guillaume II / Wilhelm II
    (Il abdique en novembre 1918 et s’exile aux Pays-Bas.)
 
-34. [2.3] Quel président américain a décidé des bombardements atomiques sur le Japon ?
+62. [2.2] Comment appelle-t-on la période calme de 1939-1940, sans combats en France ?
+   → La drôle de guerre / Drôle de guerre
+   (De septembre 1939 à mai 1940.)
+
+63. [2.2] Quelle alliance militaire réunissait l’URSS et les pays de l’Est face à l’OTAN ?
+   → Le pacte de Varsovie / Pacte de Varsovie
+   (Créé en 1955, dissous en 1991.)
+
+64. [2.3] Quel président américain a décidé des bombardements atomiques sur le Japon ?
    → Harry Truman / Truman
    (Il succède à Roosevelt en avril 1945.)
 
-35. [2.3] Quelle reine de France a été accusée d’avoir encouragé le massacre de la Saint-Barthélemy ?
+65. [2.3] Quelle reine de France a été accusée d’avoir encouragé le massacre de la Saint-Barthélemy ?
    → Catherine de Médicis / Catherine de Medicis
    (Mère de trois rois : François II, Charles IX et Henri III.)
 
-36. [2.3] Quelle deuxième épouse d’Henri VIII a été décapitée en 1536 ?
+66. [2.3] Quelle deuxième épouse d’Henri VIII a été décapitée en 1536 ?
    → Anne Boleyn
    (Mère de la future Élisabeth Ire.)
 
-37. [2.3] Quelle dynastie de rois francs commence avec Clovis ?
+67. [2.3] Quelle dynastie de rois francs commence avec Clovis ?
    → Les Mérovingiens / Mérovingiens
    (Du nom de Mérovée, grand-père de Clovis.)
 
-38. [2.4] Quelle dynastie porte le nom latin de son plus célèbre roi, Charles ?
+68. [2.3] Quelle tentative ratée d’invasion de Cuba par des exilés a eu lieu en 1961 ?
+   → La baie des Cochons / Baie des Cochons
+   (Un échec pour le président Kennedy.)
+
+69. [2.3] Comment appelait-on les Français d’Algérie revenus en métropole en 1962 ?
+   → Les pieds-noirs / Pieds-noirs / Pied-noir
+   (Environ 800 000 personnes.)
+
+70. [2.3] Comment appelait-on les Algériens qui ont combattu dans l’armée française ?
+   → Les harkis / Harkis / Harki
+   (Beaucoup ont été abandonnés en 1962.)
+
+71. [2.4] Quelle dynastie porte le nom latin de son plus célèbre roi, Charles ?
    → Les Carolingiens / Carolingiens
    (Carolus = Charles, comme Charlemagne.)
 
-39. [2.4] Quelle ville était la capitale préférée de Charlemagne ?
+72. [2.4] Quelle ville était la capitale préférée de Charlemagne ?
    → Aix-la-Chapelle / Aachen
    (Il y est enterré, dans la chapelle palatine.)
 
-40. [2.4] Dans quel col des Pyrénées Roland est-il mort en 778 ?
+73. [2.4] Dans quel col des Pyrénées Roland est-il mort en 778 ?
    → Roncevaux / Col de Roncevaux
    (« La Chanson de Roland » en fait une légende.)
 
-41. [2.4] Quel vase brisé Clovis a-t-il voulu venger en tuant un soldat ?
+74. [2.4] Quel vase brisé Clovis a-t-il voulu venger en tuant un soldat ?
    → Le vase de Soissons / Vase de Soissons / Soissons
    (« Souviens-toi du vase de Soissons ! »)
 
-42. [2.5] Quelle bataille gauloise a été une victoire de Vercingétorix contre César, en 52 av. J.-C. ?
+75. [2.4] En quelle année la Constitution de la Ve République a-t-elle été adoptée ?
+   → 1958
+   (Par référendum, le 28 septembre 1958.)
+
+76. [2.4] Quel brusque renchérissement du pétrole a frappé l’économie en 1973 ?
+   → Le choc pétrolier / Choc pétrolier / Premier choc pétrolier
+   (Fin des « Trente Glorieuses ».)
+
+77. [2.4] Quel génocide a fait environ 800 000 morts au Rwanda en 1994 ?
+   → Le génocide des Tutsi / Génocide des Tutsi / Génocide rwandais
+   (En une centaine de jours.)
+
+78. [2.5] Quelle bataille gauloise a été une victoire de Vercingétorix contre César, en 52 av. J.-C. ?
    → Gergovie
    (Près de Clermont-Ferrand ; Alésia suivra quelques mois plus tard.)
 
-43. [2.5] Quelle date du calendrier romain a vu l’assassinat de Jules César ?
+79. [2.5] Quelle date du calendrier romain a vu l’assassinat de Jules César ?
    → Les ides de mars / Ides de mars / 15 mars / 15 mars 44 av. J.-C.
    (Le 15 mars 44 av. J.-C.)
 
-44. [2.5] Quelles guerres ont opposé Rome et Carthage au IIIe et IIe siècle av. J.-C. ?
+80. [2.5] Quelles guerres ont opposé Rome et Carthage au IIIe et IIe siècle av. J.-C. ?
    → Les guerres puniques / Guerres puniques
    (Trois guerres ; Carthage est rasée en 146 av. J.-C.)
 
-45. [2.5] Quel général romain a battu Hannibal à Zama en 202 av. J.-C. ?
+81. [2.5] Quel général romain a battu Hannibal à Zama en 202 av. J.-C. ?
    → Scipion l’Africain / Scipion
    (D’où son surnom « l’Africain ».)
 
-46. [2.6] Quelle bataille navale de 31 av. J.-C. voit Octave battre Antoine et Cléopâtre ?
+82. [2.5] Quelle ville de Bosnie a été le lieu du pire massacre en Europe depuis 1945, en 1995 ?
+   → Srebrenica
+   (Plus de 8 000 hommes et garçons tués.)
+
+83. [2.5] Quel ayatollah a pris le pouvoir en Iran lors de la révolution de 1979 ?
+   → Khomeini / Rouhollah Khomeini / Ayatollah Khomeini
+   (Il vivait en exil près de Paris, à Neauphle-le-Château.)
+
+84. [2.5] Quel dictateur irakien a envahi le Koweït en 1990 ?
+   → Saddam Hussein / Saddam
+   (Ce qui a déclenché la guerre du Golfe.)
+
+85. [2.6] Quelle bataille navale de 31 av. J.-C. voit Octave battre Antoine et Cléopâtre ?
    → Actium / Bataille d’Actium
    (Au large de la Grèce.)
 
-47. [2.6] Quel titre prend Octave en devenant le premier empereur romain ?
+86. [2.6] Quel titre prend Octave en devenant le premier empereur romain ?
    → Auguste / Augustus
    (Le mois d’août porte son nom.)
 
-48. [2.6] Quel empereur romain aurait voulu nommer son cheval consul ?
+87. [2.6] Quel empereur romain aurait voulu nommer son cheval consul ?
    → Caligula
    (Son surnom veut dire « petite sandale ».)
 
-49. [2.6] Quel empereur romain philosophe a écrit les « Pensées pour moi-même » ?
+88. [2.6] Quel empereur romain philosophe a écrit les « Pensées pour moi-même » ?
    → Marc Aurèle / Marc-Aurèle / Marcus Aurelius
    (Écrites en grec, pendant ses campagnes.)
 
-50. [2.7] Quel magistrat romain élu par deux pour un an dirigeait la République ?
+89. [2.6] Quelle guerre de 1991 a chassé l’armée irakienne du Koweït ?
+   → La guerre du Golfe / Guerre du Golfe
+   (Menée par une coalition de plus de 30 pays.)
+
+90. [2.6] Quel mouvement religieux armé a pris le pouvoir en Afghanistan en 1996, puis en 2021 ?
+   → Les talibans / Talibans / Taliban
+   (« Étudiants » en pachto.)
+
+91. [2.6] Quelle place du Caire a été le cœur de la révolution égyptienne de 2011 ?
+   → La place Tahrir / Place Tahrir / Tahrir
+   (« Libération » en arabe.)
+
+92. [2.7] Quel magistrat romain élu par deux pour un an dirigeait la République ?
    → Le consul / Consul / Consuls
    (Napoléon reprendra ce titre en 1799.)
 
-51. [2.7] Comment appelait-on les Romains des familles nobles, face aux plébéiens ?
+93. [2.7] Comment appelait-on les Romains des familles nobles, face aux plébéiens ?
    → Les patriciens / Patriciens / Patricien
    (Les plébéiens obtiennent peu à peu les mêmes droits.)
 
-52. [2.7] Quel magistrat romain défendait les plébéiens et pouvait dire « veto » ?
+94. [2.7] Quel magistrat romain défendait les plébéiens et pouvait dire « veto » ?
    → Le tribun de la plèbe / Tribun / Tribun de la plèbe
    (« Veto » veut dire « j’interdis ».)
 
-53. [2.7] Quel vote athénien permettait d’exiler un citoyen en écrivant son nom sur un tesson ?
+95. [2.7] Quel vote athénien permettait d’exiler un citoyen en écrivant son nom sur un tesson ?
    → L’ostracisme / Ostracisme
    (Le tesson de poterie s’appelait « ostrakon ».)
 
-54. [2.8] Quel roi de Macédoine était le père d’Alexandre le Grand ?
+96. [2.7] Quel président égyptien a été renversé en 2011 après 30 ans de pouvoir ?
+   → Hosni Moubarak / Moubarak
+   (Pendant le Printemps arabe.)
+
+97. [2.7] Quelle fête du 14 juillet 1790 célébrait l’unité nationale au Champ-de-Mars ?
+   → La fête de la Fédération / Fête de la Fédération
+   (C’est elle, et non la prise de la Bastille, que commémore officiellement le 14 Juillet.)
+
+98. [2.7] Comment appelait-on les révolutionnaires parisiens en pantalon, et non en culotte ?
+   → Les sans-culottes / Sans-culottes / Sans-culotte
+   (La culotte courte était un habit d’aristocrate.)
+
+99. [2.8] Quel roi de Macédoine était le père d’Alexandre le Grand ?
    → Philippe II / Philippe II de Macédoine
    (Assassiné en 336 av. J.-C.)
 
-55. [2.8] Quel roi perse a été battu à Marathon en 490 av. J.-C. ?
+100. [2.8] Quel roi perse a été battu à Marathon en 490 av. J.-C. ?
    → Darius Ier / Darius
    (Son fils Xerxès échouera à son tour dix ans plus tard.)
 
-56. [2.8] Quel roi de Babylone a fait détruire le Temple de Jérusalem en 587 av. J.-C. ?
+101. [2.8] Quel roi de Babylone a fait détruire le Temple de Jérusalem en 587 av. J.-C. ?
    → Nabuchodonosor / Nabuchodonosor II
    (Une très grande bouteille de champagne porte son nom.)
 
-57. [2.8] Quelle merveille du monde antique aurait été plantée à Babylone ?
+102. [2.8] Quelle merveille du monde antique aurait été plantée à Babylone ?
    → Les jardins suspendus / Jardins suspendus / Jardins suspendus de Babylone
    (Aucune trace archéologique sûre n’en a été trouvée.)
 
-58. [2.9] Quel recueil de lois babylonien, gravé sur une stèle, dit « œil pour œil » ?
+103. [2.8] Quel coup d’État de 1799 a porté Bonaparte au pouvoir ?
+   → Le 18 Brumaire / 18 Brumaire / Coup d’État du 18 Brumaire
+   (Le 9 novembre 1799 dans notre calendrier.)
+
+104. [2.8] Quel titre prend Bonaparte entre 1799 et 1804, avant d’être empereur ?
+   → Premier consul / Le Premier consul
+   (Le régime s’appelle le Consulat.)
+
+105. [2.8] Comment appelait-on les vieux soldats de la Garde de Napoléon, qui râlaient beaucoup ?
+   → Les grognards / Grognards / Grognard
+   (Ils grognaient mais suivaient l’Empereur partout.)
+
+106. [2.9] Quel recueil de lois babylonien, gravé sur une stèle, dit « œil pour œil » ?
    → Le code d’Hammurabi / Code d’Hammurabi / Code de Hammurabi
    (Vers 1750 av. J.-C., exposé au Louvre.)
 
-59. [2.9] Quel peuple de Mésopotamie avait Ninive pour capitale ?
+107. [2.9] Quel peuple de Mésopotamie avait Ninive pour capitale ?
    → Les Assyriens / Assyriens
    (Ninive se trouve près de Mossoul, en Irak.)
 
-60. [2.9] Quelle capitale assyrienne abritait la bibliothèque d’Assurbanipal ?
+108. [2.9] Quelle capitale assyrienne abritait la bibliothèque d’Assurbanipal ?
    → Ninive / Nineveh
    (Des milliers de tablettes, dont l’Épopée de Gilgamesh.)
 
-61. [2.9] Quelle dynastie grecque a régné sur l’Égypte jusqu’à Cléopâtre ?
+109. [2.9] Quelle dynastie grecque a régné sur l’Égypte jusqu’à Cléopâtre ?
    → Les Ptolémées / Ptolémées / Lagides / Ptolémée
    (Fondée par Ptolémée, général d’Alexandre.)
 
-62. [3.0] Quel croisé fut le premier souverain du royaume de Jérusalem, en 1099 ?
+110. [2.9] Quelle rivière la Grande Armée a-t-elle traversée dans un désastre en 1812 ?
+   → La Bérézina / Bérézina / Berezina
+   (D’où l’expression « c’est la Bérézina ».)
+
+111. [2.9] Quelle première épouse de Napoléon, venue de Martinique, est devenue impératrice ?
+   → Joséphine de Beauharnais / Joséphine / Josephine
+   (Il divorce d’elle en 1809, faute d’héritier.)
+
+112. [2.9] Quel titre portait le fils de Napoléon dès sa naissance ?
+   → Roi de Rome / Le roi de Rome / L’Aiglon
+   (On l’a aussi surnommé « l’Aiglon ».)
+
+113. [3.0] Quel croisé fut le premier souverain du royaume de Jérusalem, en 1099 ?
    → Godefroy de Bouillon / Godefroi de Bouillon
    (Il refuse le titre de roi : « Avoué du Saint-Sépulcre ».)
 
-63. [3.0] Quels chrétiens dissidents du Languedoc ont été combattus par une croisade au XIIIe siècle ?
+114. [3.0] Quels chrétiens dissidents du Languedoc ont été combattus par une croisade au XIIIe siècle ?
    → Les cathares / Cathares / Albigeois
    (Aussi appelés Albigeois.)
 
-64. [3.0] Quel château cathare de l’Ariège tombe en 1244, suivi d’un bûcher de 200 personnes ?
+115. [3.0] Quel château cathare de l’Ariège tombe en 1244, suivi d’un bûcher de 200 personnes ?
    → Montségur
    (Perché à 1 207 m d’altitude.)
 
-65. [3.0] Quelle bataille de 1346 est une grande défaite française face aux archers anglais ?
+116. [3.0] Quelle bataille de 1346 est une grande défaite française face aux archers anglais ?
    → Crécy / Bataille de Crécy
    (Début de la guerre de Cent Ans.)
 
-66. [3.1] Quel roi de France surnommé « l’universelle aragne » s’opposait au duc de Bourgogne ?
+117. [3.0] Quel maréchal de Napoléon, « le brave des braves », a été fusillé en 1815 ?
+   → Michel Ney / Ney / Maréchal Ney
+   (Pour avoir rejoint Napoléon pendant les Cent-Jours.)
+
+118. [3.0] Quel maréchal de Napoléon, beau-frère de l’Empereur, est devenu roi de Naples ?
+   → Joachim Murat / Murat
+   (Grand cavalier, célèbre pour ses uniformes extravagants.)
+
+119. [3.1] Quel roi de France surnommé « l’universelle aragne » s’opposait au duc de Bourgogne ?
    → Louis XI
    (L’aragne, c’est l’araignée : il tissait sa toile.)
 
-67. [3.1] Quel duc de Bourgogne est mort devant Nancy en 1477 ?
+120. [3.1] Quel duc de Bourgogne est mort devant Nancy en 1477 ?
    → Charles le Téméraire / Le Téméraire
    (La Bourgogne passe alors à la France.)
 
-68. [3.1] Quelle rencontre fastueuse réunit François Ier et Henri VIII en 1520 ?
+121. [3.1] Quelle rencontre fastueuse réunit François Ier et Henri VIII en 1520 ?
    → Le camp du Drap d’or / Camp du Drap d’or / Drap d’or
    (Près de Calais : des tentes couvertes de tissu d’or.)
 
-69. [3.1] Quel nom donne-t-on au retour de Napoléon au pouvoir en 1815, avant Waterloo ?
+122. [3.1] Quel nom donne-t-on au retour de Napoléon au pouvoir en 1815, avant Waterloo ?
    → Les Cent-Jours / Cent-Jours / Cent Jours
    (Du 20 mars au 22 juin 1815 environ.)
 
-70. [3.2] Comment appelle-t-on le retour des rois Bourbons après Napoléon (1814-1830) ?
+123. [3.1] Comment appelle-t-on le retour des restes de Napoléon de Sainte-Hélène aux Invalides, en 1840 ?
+   → Le retour des cendres / Retour des cendres
+   (Voulu par le roi Louis-Philippe.)
+
+124. [3.1] Quels insectes Napoléon a-t-il choisis comme emblème, à la place de la fleur de lys ?
+   → Les abeilles / Abeilles / Abeille
+   (Inspirées de bijoux trouvés dans la tombe du roi franc Childéric.)
+
+125. [3.2] Comment appelle-t-on le retour des rois Bourbons après Napoléon (1814-1830) ?
    → La Restauration / Restauration
    (Avec Louis XVIII puis Charles X.)
 
-71. [3.2] Quel dernier roi Bourbon est renversé par la révolution de 1830 ?
+126. [3.2] Quel dernier roi Bourbon est renversé par la révolution de 1830 ?
    → Charles X
    (Frère de Louis XVI et de Louis XVIII.)
 
-72. [3.2] Quel nom donne-t-on aux trois journées révolutionnaires de juillet 1830 ?
+127. [3.2] Quel nom donne-t-on aux trois journées révolutionnaires de juillet 1830 ?
    → Les Trois Glorieuses / Trois Glorieuses
    (La colonne de la Bastille les commémore.)
 
-73. [3.2] Quel régime de Napoléon III a duré de 1852 à 1870 ?
+128. [3.2] Quel régime de Napoléon III a duré de 1852 à 1870 ?
    → Le Second Empire / Second Empire
    (Fin après la défaite de Sedan.)
 
-74. [3.3] Quel régime proclamé le 4 septembre 1870 a duré jusqu’en 1940 ?
+129. [3.2] En quelle année le suffrage universel masculin a-t-il été instauré en France ?
+   → 1848
+   (Les femmes ne votent qu’à partir de 1944.)
+
+130. [3.2] Quel calendrier aux mois comme Thermidor ou Germinal a été utilisé de 1793 à 1805 ?
+   → Le calendrier républicain / Calendrier républicain / Calendrier révolutionnaire
+   (Les jours portaient des noms de plantes et d’outils.)
+
+131. [3.3] Quel régime proclamé le 4 septembre 1870 a duré jusqu’en 1940 ?
    → La Troisième République / Troisième République / IIIe République / 3e République
    (Le plus long régime de la France depuis 1789.)
 
-75. [3.3] Quel article de Zola, publié en 1898 dans L’Aurore, défend Dreyfus ?
+132. [3.3] Quel article de Zola, publié en 1898 dans L’Aurore, défend Dreyfus ?
    → J’accuse / J’accuse…!
    (Lettre ouverte au président Félix Faure.)
 
-76. [3.3] Quel plateau de l’Aisne a vu une offensive meurtrière en avril 1917 ?
+133. [3.3] Quel plateau de l’Aisne a vu une offensive meurtrière en avril 1917 ?
    → Le Chemin des Dames / Chemin des Dames
    (Son échec provoque des mutineries.)
 
-77. [3.3] Quel maréchal français commandait les armées alliées en 1918 ?
+134. [3.3] Quel maréchal français commandait les armées alliées en 1918 ?
    → Ferdinand Foch / Foch
    (Il signe l’armistice à Rethondes.)
 
-78. [3.4] Quel militant afro-américain, rival de Martin Luther King, a été assassiné en 1965 ?
+135. [3.3] Quelle journée du 10 août 1792 a vu les Parisiens envahir le palais du roi ?
+   → La prise des Tuileries / Prise des Tuileries / Tuileries
+   (Elle entraîne la chute de la monarchie.)
+
+136. [3.4] Quel militant afro-américain, rival de Martin Luther King, a été assassiné en 1965 ?
    → Malcolm X
    (Né Malcolm Little ; le X remplaçait son « nom d’esclave ».)
 
-79. [3.4] Quelle marche de 1930 menée par Gandhi protestait contre une taxe britannique ?
+137. [3.4] Quelle marche de 1930 menée par Gandhi protestait contre une taxe britannique ?
    → La marche du sel / Marche du sel
    (Près de 400 km jusqu’à la mer d’Oman.)
 
-80. [3.4] Quel long repli de l’armée de Mao en 1934-1935 a couvert environ 12 000 km ?
+138. [3.4] Quel long repli de l’armée de Mao en 1934-1935 a couvert environ 12 000 km ?
    → La Longue Marche / Longue Marche
    (Moins d’un marcheur sur dix arrive au bout.)
 
-81. [3.4] Quel mouvement lancé par Mao en 1966 a vu les Gardes rouges persécuter les « ennemis » ?
+139. [3.4] Quel mouvement lancé par Mao en 1966 a vu les Gardes rouges persécuter les « ennemis » ?
    → La Révolution culturelle / Révolution culturelle
    (Elle dure jusqu’à sa mort en 1976.)
 
-82. [3.5] Quel titre portaient les chefs militaires qui dirigeaient le Japon avant 1868 ?
+140. [3.5] Quel titre portaient les chefs militaires qui dirigeaient le Japon avant 1868 ?
    → Shogun / Shōgun / Les shoguns
    (L’empereur, lui, restait surtout symbolique.)
 
-83. [3.5] Quel était l’empire « sur lequel le soleil ne se couche jamais » au XIXe siècle ?
+141. [3.5] Quel était l’empire « sur lequel le soleil ne se couche jamais » au XIXe siècle ?
    → L’Empire britannique / Empire britannique
    (Un quart des terres émergées vers 1920.)
 
-84. [3.5] En quelle année l’Inde devient-elle indépendante ?
+142. [3.5] En quelle année l’Inde devient-elle indépendante ?
    → 1947
    (Le 15 août 1947, en même temps que la partition avec le Pakistan.)
 
-85. [3.6] Quel nom donne-t-on à l’Ouest américain des pionniers et des cow-boys au XIXe siècle ?
+143. [3.5] Quel avion a emmené Charles Lindbergh de New York à Paris en 1927 ?
+   → Le Spirit of St. Louis / Spirit of St. Louis / Spirit of Saint Louis
+   (Premier vol en solitaire sans escale au-dessus de l’Atlantique.)
+
+144. [3.6] Quel nom donne-t-on à l’Ouest américain des pionniers et des cow-boys au XIXe siècle ?
    → Le Far West / Far West / Far-West
    (La « frontière » est déclarée fermée en 1890.)

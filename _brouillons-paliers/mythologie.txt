@@ -1,4 +1,4 @@
-MYTHOLOGIE — 49 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+MYTHOLOGIE — 58 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
 1. [1.2] Quelle nourriture des dieux grecs donnait l’immortalité ?
    → L’ambroisie / Ambroisie
@@ -24,174 +24,210 @@ MYTHOLOGIE — 49 questions nouvelles (de la plus facile à la plus dure, note d
    → Ménélas / Menelas
    (Frère d’Agamemnon.)
 
-7. [1.7] Quelle expression vient de deux monstres marins entre lesquels Ulysse doit passer ?
+7. [1.6] Quelle expression désigne un travail gigantesque, du nom des géants fils d’Ouranos ?
+   → Un travail de Titan / Travail de Titan / Un travail de titan
+   (On dit aussi « un travail de titan ».)
+
+8. [1.7] Quelle expression vient de deux monstres marins entre lesquels Ulysse doit passer ?
    → Tomber de Charybde en Scylla / Charybde et Scylla / De Charybde en Scylla
    (Éviter un danger pour tomber dans un autre.)
 
-8. [1.8] Quel bâton entouré de deux serpents porte Hermès ?
+9. [1.8] Quel bâton entouré de deux serpents porte Hermès ?
    → Le caducée / Caducée / Caducee
    (Le symbole médical, lui, a un seul serpent : le bâton d’Asclépios.)
 
-9. [1.8] Quel bouclier de Zeus, prêté à Athéna, a donné l’expression « sous l’… de » ?
+10. [1.8] Quel bouclier de Zeus, prêté à Athéna, a donné l’expression « sous l’… de » ?
    → L’égide / Égide / Egide
    (Être « sous l’égide de », c’est être sous la protection de.)
 
-10. [1.9] Quelles écuries Héraclès a-t-il nettoyées en y détournant deux fleuves ?
+11. [1.8] Quel mot veut dire « stupéfait, paralysé de surprise », d’après la Gorgone au regard pétrifiant ?
+   → Médusé / Être médusé / Medusé
+   (Méduse changeait en pierre ceux qui la regardaient.)
+
+12. [1.9] Quelles écuries Héraclès a-t-il nettoyées en y détournant deux fleuves ?
    → Les écuries d’Augias / Écuries d’Augias / Augias
    (Elles n’avaient pas été nettoyées depuis 30 ans.)
 
-11. [1.9] Quel symbole égyptien en forme de croix à boucle représente la vie ?
+13. [1.9] Quel symbole égyptien en forme de croix à boucle représente la vie ?
    → L’ânkh / Ankh / Croix ansée / Clé de vie
    (Les dieux le tiennent souvent à la main.)
 
-12. [2.0] Quel œil égyptien protecteur était porté en amulette ?
+14. [2.0] Quel œil égyptien protecteur était porté en amulette ?
    → L’œil d’Horus / Œil d’Horus / Oudjat / Oeil d’Horus
    (Horus l’avait perdu en combattant Seth.)
 
-13. [2.0] Quels démons japonais à cornes, rouges ou bleus, portent un gourdin ?
+15. [2.0] Quels démons japonais à cornes, rouges ou bleus, portent un gourdin ?
    → Les oni / Oni
    (On les chasse en lançant des haricots lors de la fête de Setsubun.)
 
-14. [2.1] Comment appelle-t-on les créatures surnaturelles du folklore japonais ?
+16. [2.0] Quelle expression veut dire « se contenter de ses succès passés », avec la plante d’Apollon ?
+   → S’endormir sur ses lauriers / Se reposer sur ses lauriers / Dormir sur ses lauriers / Se reposer sur ses acquis
+   (Le laurier couronnait les vainqueurs.)
+
+17. [2.1] Comment appelle-t-on les créatures surnaturelles du folklore japonais ?
    → Les yokai / Yokai / Yōkai
    (Popularisés par « Yo-kai Watch ».)
 
-15. [2.1] Quels petits lutins bretons dansent la nuit autour des menhirs ?
+18. [2.1] Quels petits lutins bretons dansent la nuit autour des menhirs ?
    → Les korrigans / Korrigan / Korrigans
    (Malheur à qui les dérange.)
 
-16. [2.2] Quelle ville légendaire de Bretagne a été engloutie par la mer ?
+19. [2.2] Quelle ville légendaire de Bretagne a été engloutie par la mer ?
    → Ys / La ville d’Ys
    (Paris viendrait de « Par-Is » : « pareille à Ys ».)
 
-17. [2.2] Quelle déesse grecque de l’aurore ouvre chaque matin les portes du ciel ?
+20. [2.2] Quelle déesse grecque de l’aurore ouvre chaque matin les portes du ciel ?
    → Éos / Eos / Aurore
    (« Aux doigts de rose », dit Homère.)
 
-18. [2.2] Quelle déesse grecque personnifie la Lune ?
+21. [2.2] Quelle déesse grecque personnifie la Lune ?
    → Séléné / Selene
    (Sœur d’Hélios (le Soleil) et d’Éos (l’Aurore).)
 
-19. [2.3] Quelle déesse grecque personnifie la Nuit ?
+22. [2.2] Comment appelle-t-on une voix très puissante, d’après un guerrier grec de l’Iliade ?
+   → Une voix de stentor / Voix de stentor / Stentor
+   (Sa voix valait celle de cinquante hommes.)
+
+23. [2.2] Comment appelle-t-on un guide expérimenté, du nom de l’ami d’Ulysse qui conseilla Télémaque ?
+   → Un mentor / Mentor
+   (Athéna prenait parfois son apparence.)
+
+24. [2.3] Quelle déesse grecque personnifie la Nuit ?
    → Nyx
    (Même Zeus la craignait.)
 
-20. [2.3] Quelle mère de Zeus a fait avaler une pierre à Cronos à la place de son bébé ?
+25. [2.3] Quelle mère de Zeus a fait avaler une pierre à Cronos à la place de son bébé ?
    → Rhéa / Rhea
    (Zeus fut caché en Crète.)
 
-21. [2.3] Quelle déesse grecque de la jeunesse servait le nectar aux dieux ?
+26. [2.3] Quelle déesse grecque de la jeunesse servait le nectar aux dieux ?
    → Hébé / Hebe
    (Elle épousa Héraclès devenu immortel.)
 
-22. [2.4] Quelles trois déesses incarnaient la beauté et la joie, souvent peintes ensemble ?
+27. [2.4] Quelles trois déesses incarnaient la beauté et la joie, souvent peintes ensemble ?
    → Les trois Grâces / Grâces / Les Grâces / Charites
    (Aglaé, Euphrosyne et Thalie.)
 
-23. [2.4] Quelles créatures mi-hommes mi-boucs accompagnaient Dionysos ?
+28. [2.4] Quelles créatures mi-hommes mi-boucs accompagnaient Dionysos ?
    → Les satyres / Satyre / Satyres
    (Avec des oreilles pointues et une queue de cheval ou de bouc.)
 
-24. [2.4] Comment appelle-t-on les nymphes des sources et des rivières ?
+29. [2.4] Comment appelle-t-on les nymphes des sources et des rivières ?
    → Les naïades / Naïade / Naïades / Naiades
    (Les dryades sont celles des arbres.)
 
-25. [2.5] Comment appelle-t-on les 50 nymphes de la mer, filles de Nérée ?
+30. [2.5] Comment appelle-t-on les 50 nymphes de la mer, filles de Nérée ?
    → Les Néréides / Néréides / Nereides
    (Thétis, mère d’Achille, en était une.)
 
-26. [2.5] Quelle muse préside à l’histoire ?
+31. [2.5] Quelle muse préside à l’histoire ?
    → Clio
    (On la représente avec un rouleau.)
 
-27. [2.5] Quelle muse préside à la danse ?
+32. [2.5] Quelle muse préside à la danse ?
    → Terpsichore
    (Son nom veut dire « qui aime la danse ».)
 
-28. [2.6] Quelle muse préside à la poésie épique, la plus importante des neuf ?
+33. [2.6] Quelle muse préside à la poésie épique, la plus importante des neuf ?
    → Calliope
    (Mère d’Orphée.)
 
-29. [2.6] Quel frère de Prométhée a épousé Pandore malgré les avertissements ?
+34. [2.6] Quel frère de Prométhée a épousé Pandore malgré les avertissements ?
    → Épiméthée / Epimethee
    (Son nom veut dire « qui réfléchit après ».)
 
-30. [2.6] Quel fils de Prométhée a survécu au Déluge avec sa femme Pyrrha ?
+35. [2.6] Quel fils de Prométhée a survécu au Déluge avec sa femme Pyrrha ?
    → Deucalion
    (Ils repeuplent la Terre en lançant des pierres derrière eux.)
 
-31. [2.7] Quelle partie la plus profonde des Enfers grecs servait de prison aux Titans ?
+36. [2.6] Comment appelle-t-on une femme méchante et acariâtre, d’après l’une des Furies ?
+   → Une mégère / Mégère / Megere
+   (Mégère, Alecto et Tisiphone poursuivaient les criminels.)
+
+37. [2.7] Quelle partie la plus profonde des Enfers grecs servait de prison aux Titans ?
    → Le Tartare / Tartare
    (La sauce tartare n’a aucun rapport : elle vient des Tatars.)
 
-32. [2.7] Quelles prêtresses romaines gardaient le feu sacré de Vesta ?
+38. [2.7] Quelles prêtresses romaines gardaient le feu sacré de Vesta ?
    → Les vestales / Vestales / Vestale
    (Elles faisaient vœu de chasteté pendant 30 ans.)
 
-33. [2.7] Comment appelait-on les petits dieux protecteurs de la maison romaine ?
+39. [2.7] Comment appelait-on les petits dieux protecteurs de la maison romaine ?
    → Les lares / Lares
    (Avec les pénates, qui gardaient les provisions.)
 
-34. [2.8] Quelle chèvre a nourri Zeus bébé en Crète ?
+40. [2.8] Quelle chèvre a nourri Zeus bébé en Crète ?
    → Amalthée / Amalthee
    (Une de ses cornes devint la corne d’abondance.)
 
-35. [2.8] Quel dieu égyptien de Thèbes, « le caché », est devenu le roi des dieux ?
+41. [2.8] Quel dieu égyptien de Thèbes, « le caché », est devenu le roi des dieux ?
    → Amon / Amon-Rê
    (Fusionné avec Rê sous le nom d’Amon-Rê.)
 
-36. [2.8] Quel disque solaire Akhenaton a-t-il imposé comme dieu unique ?
+42. [2.8] Quel disque solaire Akhenaton a-t-il imposé comme dieu unique ?
    → Aton / Aten
    (Une révolution religieuse abandonnée après sa mort.)
 
-37. [2.9] Quel taureau sacré était adoré à Memphis, en Égypte ?
+43. [2.8] Comment appelle-t-on la femme qui inspire un artiste, d’après une nymphe conseillère d’un roi de Rome ?
+   → Une égérie / Égérie / Egerie
+   (Égérie conseillait le roi Numa Pompilius.)
+
+44. [2.9] Quel taureau sacré était adoré à Memphis, en Égypte ?
    → Apis
    (Il portait un triangle blanc sur le front.)
 
-38. [2.9] Quel dieu égyptien de Memphis, créateur, protégeait les artisans ?
+45. [2.9] Quel dieu égyptien de Memphis, créateur, protégeait les artisans ?
    → Ptah
    (Il aurait créé le monde par la parole.)
 
-39. [2.9] Quelle déesse hindoue de la richesse est l’épouse de Vishnou ?
+46. [2.9] Quelle déesse hindoue de la richesse est l’épouse de Vishnou ?
    → Lakshmi / Lakshmî
    (Fêtée lors de Diwali, la fête des lumières.)
 
-40. [3.0] Quelle déesse de la Terre mère est honorée dans les Andes ?
+47. [3.0] Quelle déesse de la Terre mère est honorée dans les Andes ?
    → La Pachamama / Pachamama
    (On lui offre encore des offrandes en Bolivie et au Pérou.)
 
-41. [3.0] Quel dieu japonais des tempêtes, frère d’Amaterasu, a tué un serpent à huit têtes ?
+48. [3.0] Quel dieu japonais des tempêtes, frère d’Amaterasu, a tué un serpent à huit têtes ?
    → Susanoo / Susanoō
    (Il y trouva une épée sacrée.)
 
-42. [3.0] Comment appelle-t-on les esprits et divinités du shintoïsme japonais ?
+49. [3.0] Comment appelle-t-on les esprits et divinités du shintoïsme japonais ?
    → Les kami / Kami
    (Ils habitent les montagnes, les arbres, les rivières…)
 
-43. [3.1] Quels êtres japonais au long nez rouge vivent dans les montagnes ?
+50. [3.0] Quel nœud impossible à défaire Alexandre le Grand a-t-il tranché d’un coup d’épée ?
+   → Le nœud gordien / Nœud gordien / Noeud gordien
+   (« Trancher le nœud gordien » : résoudre un problème par la force.)
+
+51. [3.1] Quels êtres japonais au long nez rouge vivent dans les montagnes ?
    → Les tengu / Tengu
    (Maîtres des arts martiaux dans les légendes.)
 
-44. [3.2] Quelle fille du roi Gradlon aurait provoqué la submersion de la ville d’Ys ?
+52. [3.2] Quelle fille du roi Gradlon aurait provoqué la submersion de la ville d’Ys ?
    → Dahut / Dahud / Ahès
    (Elle aurait volé la clé des écluses.)
 
-45. [3.3] Quel dieu de Babylone a vaincu le dragon Tiamat et créé le monde avec son corps ?
+53. [3.2] Quel mot désigne une personne qui ressemble parfaitement à une autre, d’après un valet dont Mercure prit l’apparence ?
+   → Un sosie / Sosie
+   (Dans « Amphitryon » de Plaute, repris par Molière.)
+
+54. [3.3] Quel dieu de Babylone a vaincu le dragon Tiamat et créé le monde avec son corps ?
    → Marduk / Mardouk
    (Récit de l’« Enuma Elish ».)
 
-46. [3.4] Quel héros allemand des Nibelungen a tué le dragon Fafner ?
+55. [3.4] Quel héros allemand des Nibelungen a tué le dragon Fafner ?
    → Siegfried / Sigurd
    (Sigurd chez les Scandinaves ; Wagner en a fait un opéra.)
 
-47. [3.6] Quel héros irlandais, « le chien de Culann », se battait en fureur guerrière ?
+56. [3.6] Quel héros irlandais, « le chien de Culann », se battait en fureur guerrière ?
    → Cúchulainn / Cuchulainn / Cuchulain
    (Il défend seul l’Ulster contre une armée.)
 
-48. [3.8] Quelle grande épopée finlandaise a été compilée par Elias Lönnrot en 1835 ?
+57. [3.8] Quelle grande épopée finlandaise a été compilée par Elias Lönnrot en 1835 ?
    → Le Kalevala / Kalevala
    (Tolkien s’en est inspiré pour ses langues elfiques.)
 
-49. [4.0] Comment s’appelle le monstre marin primordial des Babyloniens, mère des dieux ?
+58. [4.0] Comment s’appelle le monstre marin primordial des Babyloniens, mère des dieux ?
    → Tiamat
    (Vaincue par Marduk.)

@@ -604,7 +604,8 @@ const dropLeadingVerb = str => { const w = str.split(' '); return w.length > 1 &
 
 function judgeV2(input, rawAnswers, question = '') {
     // Réponse faite d'un seul « article » (la note « La », la lettre « D ») : on ne l'efface pas
-    const expression = /expression.*rébus/i.test(question);
+    // Expressions (rébus ou « Quelle expression… ») : « avoir » / « être » au début ignorés (« la main verte » = « avoir la main verte »)
+    const expression = /expression/i.test(question);
     const full = str => (expression ? dropLeadingVerb(normalize(str)) : normalize(str));
     const keep = str => { const n = full(str); return stripArticles(n) || n; };
     const typed = keep(input);
