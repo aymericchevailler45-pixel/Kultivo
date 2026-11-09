@@ -917,6 +917,7 @@ function recordResult(id, ok) {
     const keepStreak = ok && id >= TRAINING_ID_MIN && sameDay && (entry.streak || 0) >= 1;
     entry.miss = ok ? Math.max(0, entry.miss - 1) : entry.miss + 1;
     entry.streak = ok ? (keepStreak ? entry.streak : (entry.streak || 0) + 1) : 0;   // réussites d'affilée
+    if (entry.streak >= 2) entry.mastered = true;   // maîtrisée pour de bon (compteurs et médailles ne reculent plus)
     entry.tries = (entry.tries || 0) + 1;
     if (ok) { entry.right = (entry.right || 0) + 1; entry.okDay = todayKey(); }
     entry.last = Date.now();
@@ -7885,7 +7886,9 @@ function trainingTiers(theme) {
     return Array.from({ length: TRAIN_TIERS }, (_, i) => bank.slice(i * size, (i + 1) * size));
 }
 const trainTierOf = theme => Math.min(TRAIN_TIERS, Math.max(1, state.data.trainTier[theme] || 1));
-const isMastered = id => (state.data.stats[id]?.streak || 0) >= 2;
+// 09/11 (choix A de l'utilisateur) : une question maîtrisée le reste (drapeau `mastered`), même après une erreur ;
+// elle revient quand même plus souvent à l'entraînement (le tirage suit la série de bonnes réponses, qui, elle, retombe)
+const isMastered = id => !!state.data.stats[id]?.mastered || (state.data.stats[id]?.streak || 0) >= 2;
 const wasRight = id => (state.data.stats[id]?.right || 0) >= 1;
 
 /** Où en est le palier en cours : réussies / maîtrisées, et ce qu'il faut pour monter. */
@@ -7945,7 +7948,8 @@ const TRAIN_MEDALS = [
 ];
 function trainMedalOf(theme) {
     const pr = trainingProgress(theme);
-    return pr.total ? TRAIN_MEDALS.filter(m => pr.totalMastered >= Math.ceil(pr.total * m.part)).length : 0;
+    const now = pr.total ? TRAIN_MEDALS.filter(m => pr.totalMastered >= Math.ceil(pr.total * m.part)).length : 0;
+    return Math.max(now, state.data.trainMedals[theme] || 0);   // 09/11 : une médaille gagnée reste (enregistrée dans endTraining)
 }
 
 /* Médailles visibles (2026-10-28, aperçu : apercu-propositions.html) : sur chaque case de thème, les 3 médailles en gris

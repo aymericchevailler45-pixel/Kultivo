@@ -228,6 +228,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   RÉVISIONS (FAIT le 09/11, A + B) : une question réussie aujourd'hui ne revient dans « à revoir » que demain (`okDay` dans
   stats, `okToday` dans missedCards) → plus de boucle sur les mêmes questions ; bonus de fin = +1 XP par question revue
   (10 au plus) au lieu de +10 fixe. On garde 4-6 XP par bonne réponse ; pas de plafond par jour.
+  MÉDAILLES D'ENTRAÎNEMENT (FAIT le 09/11, choix A) : une médaille gagnée reste (`trainMedalOf` = max du calcul et de
+  `trainMedals`, partout : cases, badges, profil des amis) ; une question maîtrisée le reste (drapeau `stats[id].mastered`,
+  posé quand la série atteint 2 ; `isMastered` le lit) — elle revient quand même plus souvent à l'entraînement (série à 0).
 - PUIS RAMENÉ À 300 NIVEAUX le 09/11 (l'utilisateur voulait 300, pas 310) : bloc après l'ancien 10 (ids 4400-4449) retiré,
   gardé dans le scratchpad reserve_bloc10.js. levels.js : `LEVEL_LAYOUT_INSERTS` (une liste par disposition, 1 à 5) remplace
   LEVEL_WAVES ; `levelFromLayout(n, layout, near)` renvoie null pour un niveau d'un bloc retiré (near = niveau d'origine juste
