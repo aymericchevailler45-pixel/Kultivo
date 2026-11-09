@@ -231,6 +231,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   MÉDAILLES D'ENTRAÎNEMENT (FAIT le 09/11, choix A) : une médaille gagnée reste (`trainMedalOf` = max du calcul et de
   `trainMedals`, partout : cases, badges, profil des amis) ; une question maîtrisée le reste (drapeau `stats[id].mastered`,
   posé quand la série atteint 2 ; `isMastered` le lit) — elle revient quand même plus souvent à l'entraînement (série à 0).
+  PALIER DU JOUR (FAIT le 09/11) : quand le palier suivant est atteint mais bloqué jusqu'à demain → écran de fin « 🌙 Palier du
+  jour terminé » (« Le palier N s'ouvre demain, à la fin de ta première session. Tu peux continuer sur ce palier : ça compte
+  pour tes médailles. »), gros bouton « Choisir un autre thème », petit « Continuer quand même » ; pastille violette
+  « 🌙 Palier atteint · suite demain » sur le bandeau à la réponse qui l'atteint (`trainReadyNow`, `.fb-sticker.is-tierdone`) ;
+  fenêtre de départ d'un thème déjà fait aujourd'hui : bouton « Continuer quand même ». Rappel : après avoir gagné un palier,
+  les bonnes réponses du jour comptent pour atteindre le suivant ; une fois atteint, elles ne comptent plus que pour les médailles.
 - PUIS RAMENÉ À 300 NIVEAUX le 09/11 (l'utilisateur voulait 300, pas 310) : bloc après l'ancien 10 (ids 4400-4449) retiré,
   gardé dans le scratchpad reserve_bloc10.js. levels.js : `LEVEL_LAYOUT_INSERTS` (une liste par disposition, 1 à 5) remplace
   LEVEL_WAVES ; `levelFromLayout(n, layout, near)` renvoie null pour un niveau d'un bloc retiré (near = niveau d'origine juste

@@ -6005,7 +6005,7 @@ function verify(skipped = false) {
     state.combo = clean ? (state.combo || 0) + 1 : ok ? state.combo || 0 : 0;
     const comboShow = clean && (COMBO_STEPS.includes(state.combo) || (state.combo > 10 && state.combo % 5 === 0));
     const flash = clean && !['sprint', 'daily', 'duel'].includes(state.mode) && Date.now() - (state.cardShownAt || 0) < FLASH_MS;
-    renderStickers(comboShow ? state.combo : 0, flash);
+    renderStickers(comboShow ? state.combo : 0, flash, trainReadyNow(clean));
     showFeedback(verdict, skipped);
     updateKeyboardMode();   // correction : retour à la taille normale
     const semis = clean ? Math.min(state.combo - 1, 8) * 2 : 0;
@@ -6017,11 +6017,26 @@ function verify(skipped = false) {
 /* Pastilles posées SUR le bord haut du bandeau de correction (position absolue : le bandeau garde sa taille). 2026-10-27 */
 const COMBO_STEPS = [3, 5, 7, 10];
 const FLASH_MS = 3000;
-function renderStickers(combo, flash) {
+function renderStickers(combo, flash, tierDone = false) {
     const box = $('fbStickers');
     box.replaceChildren();
     if (combo) { const c = el('span', 'fb-sticker is-combo'); c.textContent = `🔥 ${combo} d’affilée !`; box.append(c); }
     if (flash) { const f = el('span', 'fb-sticker is-flash'); f.textContent = '⚡ Éclair !'; box.append(f); }
+    if (tierDone) { const t = el('span', 'fb-sticker is-tierdone'); t.textContent = '🌙 Palier atteint · suite demain'; box.append(t); }
+}
+/** Entraînement (2026-11-09) : cette bonne réponse fait-elle atteindre le palier suivant… alors qu'il ne s'ouvre que demain ?
+    (sinon on enchaînait les sessions sans voir que ça n'avançait plus vers le palier suivant) */
+function trainReadyNow(clean) {
+    if (state.mode !== 'training' || !clean || state.trainReadyShown) return false;
+    const theme = state.trainTheme, pr = trainingProgress(theme);
+    const master = masterCard(theme);
+    const stillToWin = pr.tier < TRAIN_TIERS || (master && !state.data.cards[master.id]);
+    if (!pr.blockedToday || pr.ready || !stillToWin) return false;
+    const id = state.current.q.id;
+    const inTier = (trainingTiers(theme)[pr.tier - 1] || []).some(q => q.id === id);
+    if (!inTier || wasRight(id) || pr.right + 1 < pr.needRight) return false;
+    state.trainReadyShown = true;
+    return true;
 }
 
 function showFeedback(verdict, skipped) {
@@ -8090,7 +8105,7 @@ async function confirmTraining(theme, icon) {
     if (pr.blockedToday) lines.push('✅ Palier du jour déjà gagné : tu peux continuer pour t’entraîner.');
     const bonus = dropBonusText();
     if (bonus) lines.push(bonus);
-    const ok = await askConfirm({ title: `${icon} ${theme}`, text: lines.join('\n'), yes: 'Commencer', no: 'Plus tard' });
+    const ok = await askConfirm({ title: `${icon} ${theme}`, text: lines.join('\n'), yes: pr.blockedToday ? 'Continuer quand même' : 'Commencer', no: 'Plus tard' });
     if (ok) startTraining(theme);
 }
 
@@ -8098,6 +8113,7 @@ function startTraining(theme) {
     if (!trainingBank(theme).length) { showToast('Questions bientôt disponibles pour ce thème.'); return; }
     state.trainTheme = theme;
     state.trainTierBefore = trainTierOf(theme);
+    state.trainReadyShown = false;
     startSession('training');
 }
 
@@ -8151,17 +8167,28 @@ function endTraining() {
         if (next && next.left > 0) text += `\n${next.m.icon} Plus que ${plural(next.left, 'question maîtrisée', 'questions maîtrisées')} pour la médaille d’${next.m.name}.`;
     }
     const dropLine = earnPracticeDrop();
+    // 2026-11-09 : palier suivant atteint mais bloqué jusqu'à demain → on le dit en grand et on propose un autre thème
+    const toThemes = () => { returnToMap(); setChallengesTab('training'); };
+    const waitTomorrow = !up && !masterNow && pr.ready && pr.blockedToday
+        && (tier < TRAIN_TIERS || (master && !state.data.cards[master.id]));
+    if (waitTomorrow) {
+        text = (tier < TRAIN_TIERS
+            ? `${icon} Le palier ${tier + 1} s’ouvre demain, à la fin de ta première session.`
+            : `${icon} La carte Maître se gagne demain, à la fin de ta première session.`)
+            + '\nTu peux continuer sur ce palier : ça compte pour tes médailles.'
+            + text.split('\n').slice(1).map(l => `\n${l}`).join('');
+    }
     setEnd({
-        emoji: up ? '🏅' : '🎯',
-        title: up ? `Palier ${tier} débloqué !` : masterNow ? 'Palier 5 réussi !' : `Entraînement · ${theme}`,
+        emoji: up ? '🏅' : waitTomorrow ? '🌙' : '🎯',
+        title: up ? `Palier ${tier} débloqué !` : masterNow ? 'Palier 5 réussi !' : waitTomorrow ? 'Palier du jour terminé' : `Entraînement · ${theme}`,
         text,
         stats: [statXp(), statAccuracy(), statTime()],
         extra: [rewardSummary(), dropLine].filter(Boolean).join('\n'),
-        primary: up ? `Commencer le palier ${tier}` : 'Encore 10 questions',
+        primary: up ? `Commencer le palier ${tier}` : waitTomorrow ? 'Choisir un autre thème' : 'Encore 10 questions',
         primaryClass: 'btn-green',
-        onPrimary: () => startTraining(theme),
-        secondary: 'Retour aux thèmes',
-        onSecondary: () => { returnToMap(); setChallengesTab('training'); }
+        onPrimary: waitTomorrow ? toThemes : () => startTraining(theme),
+        secondary: waitTomorrow ? 'Continuer quand même' : 'Retour aux thèmes',
+        onSecondary: waitTomorrow ? () => startTraining(theme) : toThemes
     });
     // Coffre du palier gagné (2 cartes du thème ; au palier 5, la carte Maître en plus)
     const boxes = trainChestBoxes(theme);

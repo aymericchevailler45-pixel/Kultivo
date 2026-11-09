@@ -3701,3 +3701,6 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 }
 :root[data-theme="dark"] body.deco-baby .decor-badge.baby-blue { background: #1e3a5f; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), 0 4px 0 #3b82f6; }
 :root[data-theme="dark"] body.deco-baby .decor-badge.baby-pink { background: #5b1f3d; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), 0 4px 0 #ec4899; }
+
+/* Entraînement (2026-11-09) : palier suivant atteint, mais il ne s'ouvre que demain */
+.fb-sticker.is-tierdone { background: #4c3d99; box-shadow: 0 3px 0 #352a70; }
