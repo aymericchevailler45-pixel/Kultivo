@@ -1,4 +1,4 @@
-LITTERATURE — 149 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+LITTERATURE — 150 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
 1. [1.0] Quel petit ours en salopette rouge vit des aventures du quotidien avec sa maman et son papa ?
    → Petit Ours Brun / Petit Ours brun
@@ -376,222 +376,226 @@ LITTERATURE — 149 questions nouvelles (de la plus facile à la plus dure, note
    → Paul et Virginie
    (Publié en 1788 ; elle meurt dans un naufrage.)
 
-95. [3.1] Quelle réplique célèbre de « Huis clos » de Sartre résume l’enfer ?
+95. [3.0] Quel romancier normand a écrit « Nymphéas noirs » et « Un avion sans elle » ?
+   → Michel Bussi / Bussi
+   (Un des auteurs de polars les plus lus en France.)
+
+96. [3.1] Quelle réplique célèbre de « Huis clos » de Sartre résume l’enfer ?
    → L’enfer, c’est les autres / L’enfer c’est les autres
    (Trois morts enfermés ensemble, sans miroir.)
 
-96. [3.1] Quel premier roman de Sartre (1938) suit Roquentin, pris d’un malaise face à l’existence ?
+97. [3.1] Quel premier roman de Sartre (1938) suit Roquentin, pris d’un malaise face à l’existence ?
    → La Nausée / Nausée
    (Il se passe à « Bouville », inspirée du Havre.)
 
-97. [3.1] Quel roman de Raymond Queneau suit une fillette insolente venue voir le métro… en grève ?
+98. [3.1] Quel roman de Raymond Queneau suit une fillette insolente venue voir le métro… en grève ?
    → Zazie dans le métro / Zazie
    (1959, adapté par Louis Malle.)
 
-98. [3.1] Quel livre de Queneau raconte la même petite histoire de 99 manières différentes ?
+99. [3.1] Quel livre de Queneau raconte la même petite histoire de 99 manières différentes ?
    → Exercices de style
    (Un bus, un jeune homme au long cou, un bouton de pardessus.)
 
-99. [3.1] Quel roman de Dickens suit la vie d’un orphelin, de l’enfance à l’âge adulte, inspiré de sa propre vie ?
+100. [3.1] Quel roman de Dickens suit la vie d’un orphelin, de l’enfance à l’âge adulte, inspiré de sa propre vie ?
    → David Copperfield
    (Dickens le considérait comme son préféré.)
 
-100. [3.2] Quelle pièce d’Alfred Jarry s’ouvre sur le mot « Merdre ! » ?
+101. [3.2] Quelle pièce d’Alfred Jarry s’ouvre sur le mot « Merdre ! » ?
    → Ubu roi / Ubu
    (1896 : scandale le soir de la première.)
 
-101. [3.2] Quel roman de Raymond Radiguet, écrit vers 17 ans, raconte un amour pendant la guerre de 14 ?
+102. [3.2] Quel roman de Raymond Radiguet, écrit vers 17 ans, raconte un amour pendant la guerre de 14 ?
    → Le Diable au corps / Diable au corps
    (Radiguet est mort à 20 ans, en 1923.)
 
-102. [3.2] Quel poète, cinéaste et dessinateur a écrit « Les Enfants terribles » ?
+103. [3.2] Quel poète, cinéaste et dessinateur a écrit « Les Enfants terribles » ?
    → Jean Cocteau / Cocteau
    (Roman de 1929.)
 
-103. [3.2] Quelle cousine de Cyrano reçoit les lettres d’amour qu’il écrit pour Christian ?
+104. [3.2] Quelle cousine de Cyrano reçoit les lettres d’amour qu’il écrit pour Christian ?
    → Roxane
    (Elle ne comprend la vérité qu’à la mort de Cyrano.)
 
-104. [3.2] Quel moraliste a écrit les « Maximes », comme « Nous avons tous assez de force pour supporter les maux d’autrui » ?
+105. [3.2] Quel moraliste a écrit les « Maximes », comme « Nous avons tous assez de force pour supporter les maux d’autrui » ?
    → La Rochefoucauld / François de La Rochefoucauld
    (Publiées en 1665.)
 
-105. [3.3] Quel roman de Giono suit Angelo, colonel italien, dans une Provence ravagée par le choléra ?
+106. [3.3] Quel roman de Giono suit Angelo, colonel italien, dans une Provence ravagée par le choléra ?
    → Le Hussard sur le toit / Hussard sur le toit
    (1951 ; film avec Juliette Binoche en 1995.)
 
-106. [3.3] Quel roman de Giono raconte la renaissance d’un village abandonné de Haute-Provence ?
+107. [3.3] Quel roman de Giono raconte la renaissance d’un village abandonné de Haute-Provence ?
    → Regain
    (1930, adapté au cinéma par Marcel Pagnol.)
 
-107. [3.3] Quel auteur de vaudevilles a écrit « Le Dindon » et « La Dame de chez Maxim » ?
+108. [3.3] Quel auteur de vaudevilles a écrit « Le Dindon » et « La Dame de chez Maxim » ?
    → Georges Feydeau / Feydeau
    (Maître des portes qui claquent et des quiproquos.)
 
-108. [3.3] Sous quel pseudonyme américain Boris Vian a-t-il publié « J’irai cracher sur vos tombes » ?
+109. [3.3] Sous quel pseudonyme américain Boris Vian a-t-il publié « J’irai cracher sur vos tombes » ?
    → Vernon Sullivan / Sullivan
    (Il prétendait n’être que le traducteur.)
 
-109. [3.3] Quelle nouvelle d’Edgar Poe montre un homme hanté par un chat borgne qu’il a maltraité ?
+110. [3.3] Quelle nouvelle d’Edgar Poe montre un homme hanté par un chat borgne qu’il a maltraité ?
    → Le Chat noir / Chat noir
    (Traduite en français par Baudelaire.)
 
-110. [3.3] Quel auteur du XVIIe siècle a peint les travers de ses contemporains dans « Les Caractères » ?
+111. [3.3] Quel auteur du XVIIe siècle a peint les travers de ses contemporains dans « Les Caractères » ?
    → Jean de La Bruyère / La Bruyère
    (Publiés en 1688.)
 
-111. [3.4] Quel drame romantique d’Alfred de Musset se passe à Florence au temps des Médicis ?
+112. [3.4] Quel drame romantique d’Alfred de Musset se passe à Florence au temps des Médicis ?
    → Lorenzaccio
    (Lorenzo prépare le meurtre de son cousin, le duc Alexandre.)
 
-112. [3.4] Quel poète romantique a écrit « La Mort du loup » ?
+113. [3.4] Quel poète romantique a écrit « La Mort du loup » ?
    → Alfred de Vigny / Vigny
    (« Gémir, pleurer, prier est également lâche ».)
 
-113. [3.4] Quel recueil de Victor Hugo, écrit en exil, attaque Napoléon III ?
+114. [3.4] Quel recueil de Victor Hugo, écrit en exil, attaque Napoléon III ?
    → Les Châtiments / Châtiments
    (1853 ; il y appelle l’empereur « Napoléon le Petit ».)
 
-114. [3.4] Quel grand recueil de poèmes de Victor Hugo (1856) évoque la mort de sa fille ?
+115. [3.4] Quel grand recueil de poèmes de Victor Hugo (1856) évoque la mort de sa fille ?
    → Les Contemplations / Contemplations
    (On y trouve « Demain, dès l’aube ».)
 
-115. [3.4] Quel roman de Steinbeck suit une famille chassée de l’Oklahoma vers la Californie ?
+116. [3.4] Quel roman de Steinbeck suit une famille chassée de l’Oklahoma vers la Californie ?
    → Les Raisins de la colère / Raisins de la colère
    (Prix Pulitzer 1940.)
 
-116. [3.5] Quel drame de Victor Hugo a un valet amoureux de la reine, « ver de terre amoureux d’une étoile » ?
+117. [3.5] Quel drame de Victor Hugo a un valet amoureux de la reine, « ver de terre amoureux d’une étoile » ?
    → Ruy Blas
    (1838, dans l’Espagne du XVIIe siècle.)
 
-117. [3.5] Quelle tragédie de Racine met en scène la veuve d’Hector, captive de Pyrrhus ?
+118. [3.5] Quelle tragédie de Racine met en scène la veuve d’Hector, captive de Pyrrhus ?
    → Andromaque
    (1667 : son premier grand succès.)
 
-118. [3.5] Quelle tragédie de Racine montre le jeune Néron devenir un monstre ?
+119. [3.5] Quelle tragédie de Racine montre le jeune Néron devenir un monstre ?
    → Britannicus
    (Du nom de son demi-frère, qu’il fait empoisonner.)
 
-119. [3.5] Quelle comédie de Molière montre Arnolphe élevant une jeune fille ignorante pour l’épouser ?
+120. [3.5] Quelle comédie de Molière montre Arnolphe élevant une jeune fille ignorante pour l’épouser ?
    → L’École des femmes / École des femmes
    (1662 ; elle s’appelle Agnès.)
 
-120. [3.5] Quel roman d’Hemingway se passe pendant la guerre d’Espagne ?
+121. [3.5] Quel roman d’Hemingway se passe pendant la guerre d’Espagne ?
    → Pour qui sonne le glas / For Whom the Bell Tolls
    (1940 ; Hemingway y était correspondant.)
 
-121. [3.5] Quel roman de l’abbé Prévost raconte la passion du chevalier Des Grieux pour une jeune femme ?
+122. [3.5] Quel roman de l’abbé Prévost raconte la passion du chevalier Des Grieux pour une jeune femme ?
    → Manon Lescaut
    (1731 ; adapté en opéra par Massenet et Puccini.)
 
-122. [3.6] Quel roman de Flaubert suit Frédéric Moreau, amoureux de Mme Arnoux, autour de 1848 ?
+123. [3.6] Quel roman de Flaubert suit Frédéric Moreau, amoureux de Mme Arnoux, autour de 1848 ?
    → L’Éducation sentimentale / Éducation sentimentale
    (1869.)
 
-123. [3.6] Quel est le nom du village d’enfance du narrateur dans « À la recherche du temps perdu » ?
+124. [3.6] Quel est le nom du village d’enfance du narrateur dans « À la recherche du temps perdu » ?
    → Combray
    (Inspiré d’Illiers, rebaptisé Illiers-Combray en 1971.)
 
-124. [3.6] Quel écrivain français, auteur des « Faux-Monnayeurs », a reçu le prix Nobel en 1947 ?
+125. [3.6] Quel écrivain français, auteur des « Faux-Monnayeurs », a reçu le prix Nobel en 1947 ?
    → André Gide / Gide
    (Aussi « Les Nourritures terrestres ».)
 
-125. [3.6] Quel poète a écrit « Un coup de dés jamais n’abolira le hasard » ?
+126. [3.6] Quel poète a écrit « Un coup de dés jamais n’abolira le hasard » ?
    → Stéphane Mallarmé / Mallarmé / Mallarme
    (1897 : les mots sont dispersés sur la page.)
 
-126. [3.6] Quel livre de Tolkien raconte les légendes des Elfes, bien avant « Le Seigneur des anneaux » ?
+127. [3.6] Quel livre de Tolkien raconte les légendes des Elfes, bien avant « Le Seigneur des anneaux » ?
    → Le Silmarillion / Silmarillion
    (Publié en 1977 par son fils Christopher.)
 
-127. [3.6] Quel roman-fleuve d’Albert Cohen raconte la passion de Solal et Ariane ?
+128. [3.6] Quel roman-fleuve d’Albert Cohen raconte la passion de Solal et Ariane ?
    → Belle du Seigneur
    (Plus de 1 000 pages, Grand prix de l’Académie française 1968.)
 
-128. [3.7] Quel poète du XVe siècle, voleur et bagarreur, a écrit la « Ballade des pendus » ?
+129. [3.7] Quel poète du XVe siècle, voleur et bagarreur, a écrit la « Ballade des pendus » ?
    → François Villon / Villon
    (Condamné à mort, il fut gracié puis disparut.)
 
-129. [3.7] Quel poème de Du Bellay commence par « Heureux qui, comme Ulysse, a fait un beau voyage » ?
+130. [3.7] Quel poème de Du Bellay commence par « Heureux qui, comme Ulysse, a fait un beau voyage » ?
    → Heureux qui comme Ulysse / Heureux qui, comme Ulysse / Les Regrets
    (Dans « Les Regrets », 1558 : il a le mal du pays à Rome.)
 
-130. [3.7] Quel auteur médiéval a écrit les premiers romans de la Table ronde, dont « Perceval » ?
+131. [3.7] Quel auteur médiéval a écrit les premiers romans de la Table ronde, dont « Perceval » ?
    → Chrétien de Troyes
    (« Perceval ou le Conte du Graal », vers 1180.)
 
-131. [3.7] Comment s’appelle le loup, ennemi juré de Renart, dans le « Roman de Renart » ?
+132. [3.7] Comment s’appelle le loup, ennemi juré de Renart, dans le « Roman de Renart » ?
    → Ysengrin / Isengrin
    (Renart lui joue les pires tours.)
 
-132. [3.8] Quel recueil de Boccace réunit 100 nouvelles racontées par des jeunes gens fuyant la peste ?
+133. [3.8] Quel recueil de Boccace réunit 100 nouvelles racontées par des jeunes gens fuyant la peste ?
    → Le Décaméron / Décaméron / Decameron
    (La peste noire de Florence, en 1348.)
 
-133. [3.8] Quel poète italien a chanté son amour pour Laure dans le « Canzoniere » ?
+134. [3.8] Quel poète italien a chanté son amour pour Laure dans le « Canzoniere » ?
    → Pétrarque / Petrarque / Petrarca
    (Il a popularisé le sonnet.)
 
-134. [3.8] Quelle femme aimée guide Dante au Paradis dans « La Divine Comédie » ?
+135. [3.8] Quelle femme aimée guide Dante au Paradis dans « La Divine Comédie » ?
    → Béatrice / Beatrice / Beatrice Portinari
    (Virgile le guide en Enfer et au Purgatoire.)
 
-135. [3.8] Comment Don Quichotte appelle-t-il la paysanne dont il fait sa dame idéale ?
+136. [3.8] Comment Don Quichotte appelle-t-il la paysanne dont il fait sa dame idéale ?
    → Dulcinée / Dulcinée du Toboso / Dulcinee
    (Elle s’appelle en fait Aldonza Lorenzo.)
 
-136. [3.9] Quel livre de Primo Levi raconte sa survie à Auschwitz ?
+137. [3.9] Quel livre de Primo Levi raconte sa survie à Auschwitz ?
    → Si c’est un homme / Se questo è un uomo
    (Publié en 1947.)
 
-137. [3.9] Quel livre de Soljenitsyne décrit le système des camps soviétiques ?
+138. [3.9] Quel livre de Soljenitsyne décrit le système des camps soviétiques ?
    → L’Archipel du Goulag / Archipel du Goulag
    (Publié à Paris en 1973 ; il est expulsé d’URSS en 1974.)
 
-138. [3.9] Quel roman de Dostoïevski a pour héros le prince Mychkine, trop bon pour son monde ?
+139. [3.9] Quel roman de Dostoïevski a pour héros le prince Mychkine, trop bon pour son monde ?
    → L’Idiot / Idiot
    (1869.)
 
-139. [3.9] Quel dernier roman de Dostoïevski raconte le meurtre d’un père par l’un de ses fils ?
+140. [3.9] Quel dernier roman de Dostoïevski raconte le meurtre d’un père par l’un de ses fils ?
    → Les Frères Karamazov / Frères Karamazov
    (1880 ; Freud le jugeait le plus grand roman jamais écrit.)
 
-140. [4.0] Quel roman de Hermann Hesse suit un jeune Indien en quête de sagesse au temps de Bouddha ?
+141. [4.0] Quel roman de Hermann Hesse suit un jeune Indien en quête de sagesse au temps de Bouddha ?
    → Siddhartha
    (1922 ; Hesse a reçu le Nobel en 1946.)
 
-141. [4.0] Quel roman de Hesse suit Harry Haller, homme déchiré entre l’humain et le loup ?
+142. [4.0] Quel roman de Hesse suit Harry Haller, homme déchiré entre l’humain et le loup ?
    → Le Loup des steppes / Loup des steppes
    (1927, très lu par la génération hippie.)
 
-142. [4.0] Quel écrivain russe, auteur de « Lolita », était aussi spécialiste des papillons ?
+143. [4.0] Quel écrivain russe, auteur de « Lolita », était aussi spécialiste des papillons ?
    → Vladimir Nabokov / Nabokov
    (Il écrivait en russe puis en anglais.)
 
-143. [4.0] Quel poète chilien, auteur du « Chant général », a reçu le prix Nobel en 1971 ?
+144. [4.0] Quel poète chilien, auteur du « Chant général », a reçu le prix Nobel en 1971 ?
    → Pablo Neruda / Neruda
    (Aussi diplomate, ambassadeur à Paris.)
 
-144. [4.1] Quel roman d’Italo Calvino suit un jeune noble qui décide de vivre dans les arbres ?
+145. [4.1] Quel roman d’Italo Calvino suit un jeune noble qui décide de vivre dans les arbres ?
    → Le Baron perché / Baron perché
    (1957 ; il ne redescend jamais.)
 
-145. [4.1] Quel poète latin a raconté les transformations des dieux et des hommes dans « Les Métamorphoses » ?
+146. [4.1] Quel poète latin a raconté les transformations des dieux et des hommes dans « Les Métamorphoses » ?
    → Ovide / Ovidius
    (Exilé sur les bords de la mer Noire par Auguste.)
 
-146. [4.1] Quel tragédien grec, le plus ancien des trois grands, a écrit « L’Orestie » ?
+147. [4.1] Quel tragédien grec, le plus ancien des trois grands, a écrit « L’Orestie » ?
    → Eschyle / Aeschyle
    (Il aurait combattu à Marathon.)
 
-147. [4.2] Quelle tragédie de Sophocle montre un roi découvrir qu’il a tué son père et épousé sa mère ?
+148. [4.2] Quelle tragédie de Sophocle montre un roi découvrir qu’il a tué son père et épousé sa mère ?
    → Œdipe roi / Oedipe roi / Œdipe
    (Il se crève les yeux à la fin.)
 
-148. [4.2] Dans quel théâtre de Londres furent jouées beaucoup des pièces de Shakespeare ?
+149. [4.2] Dans quel théâtre de Londres furent jouées beaucoup des pièces de Shakespeare ?
    → Le Globe / Globe / Globe Theatre / Théâtre du Globe
    (Reconstruit à l’identique en 1997, au bord de la Tamise.)
 
-149. [4.2] Quel gros chevalier vantard et buveur apparaît dans plusieurs pièces de Shakespeare ?
+150. [4.2] Quel gros chevalier vantard et buveur apparaît dans plusieurs pièces de Shakespeare ?
    → Falstaff / John Falstaff
    (Verdi lui a consacré son dernier opéra.)

@@ -424,7 +424,7 @@ function judgeV1(input, rawAnswers, question = '') {
     for (const ans of answers) {
         // Réponse numérique (une date) : exacte uniquement, jamais approximative
         if (/^\d+(\.\d+)?$/.test(ans)) {   // nombre (date, distance…) : exact uniquement
-            if (numbersTyped.includes(ans)) return 'exact';
+            if (numbersTyped.length && numbersTyped.every(n => n === ans)) return 'exact';   // « 4x100 » n'est pas « 100 »
             continue;
         }
 
@@ -602,6 +602,84 @@ function initialsMatch(typed, ans) {
 }
 const dropLeadingVerb = str => { const w = str.split(' '); return w.length > 1 && (w[0] === 'avoir' || w[0] === 'etre') ? w.slice(1).join(' ') : str; };
 
+/* 2026-11-09 (demande de l'utilisateur, après « Tibre » accepté pour « Tigre », « Venise » pour « Vénus ») : une « faute de
+   frappe » qui est EXACTEMENT la bonne réponse d'une autre question du jeu est refusée (sauf simple différence de genre ou de
+   nombre : « noir » / « noire »). L'ordre de « A et B » est libre (« bleu et rouge »), sauf pour les titres et les rébus. */
+let knownAnswersCache = { size: -1, set: null };
+function knownAnswers() {
+    const banks = [typeof QUESTIONS !== 'undefined' ? QUESTIONS : [], typeof TRAINING_QUESTIONS !== 'undefined' ? TRAINING_QUESTIONS : [],
+        ...Object.values((typeof window !== 'undefined' && window.EVENT_BANKS) || {})];
+    const size = banks.reduce((n, b) => n + (b.length || 0), 0);
+    if (knownAnswersCache.size === size) return knownAnswersCache.set;
+    const set = new Map();   // réponse normalisée -> true si c'est un nom commun dans toutes ses formes (sinon nom propre)
+    for (const bank of banks) for (const q of bank || []) for (const raw of q.a || []) {
+        const n = normalize(String(raw));
+        const k = stripArticles(n) || n;
+        if (k.length < 3) continue;
+        const kind = isCommonRaw(String(raw)) ? 'common' : isProperRaw(String(raw)) ? 'proper' : 'unknown';
+        const before = set.get(k);
+        set.set(k, before === 'proper' || kind === 'proper' ? 'proper' : before === 'common' || kind === 'common' ? 'common' : 'unknown');
+    }
+    knownAnswersCache = { size, set };
+    return set;
+}
+/** Réponse clairement écrite comme un nom commun : article puis minuscule (« les globules rouges », « la chauve-souris »).
+    Sans article, on ne peut pas savoir (« Dante », « Jaune ») : traité comme un nom propre. */
+const ARTICLE_START = '^(?:(?:le|la|les|un|une|des|du|de)\\s+|l[’\'])';
+const isCommonRaw = raw => new RegExp(ARTICLE_START + '\\p{Ll}', 'u').test(raw.trim().replace(/^\p{Lu}/u, c => c.toLowerCase()));
+/** Réponse clairement écrite comme un nom propre : article puis majuscule (« Les Météores »), ou plusieurs mots en majuscule. */
+const isProperRaw = raw => {
+    const r = raw.trim().replace(/^\p{Lu}/u, c => c.toLowerCase());
+    return new RegExp(ARTICLE_START + '\\p{Lu}', 'u').test(r) || (raw.match(/(^|\s)\p{Lu}/gu) || []).length >= 2;
+};
+/** Même mot au genre ou au nombre près (un e, s, x ou « es » en plus) : « noir » / « noire », « jaunes » / « jaune ». */
+const sameWord = (x, y) => x === y || [x, y].some((u, i) => { const v = i ? x : y; return ['e', 's', 'x', 'es'].some(end => u === v + end); });
+// Faux amis : un « e » ou un « s » en plus, mais un tout autre mot
+const FALSE_FRIENDS = new Set(['rein|reine', 'reins|reine', 'rose|rosee', 'cour|course', 'mer|mere', 'pain|paine', 'port|porte', 'vers|verse', 'bal|bale', 'fil|file', 'mur|mure', 'sol|sole', 'tour|tours']);
+const falseFriends = (a, b) => FALSE_FRIENDS.has(`${a}|${b}`) || FALSE_FRIENDS.has(`${b}|${a}`);
+const sameStem = (a, b) => { const p = a.split(' '), q = b.split(' '); return p.length === q.length && p.every((w, i) => sameWord(w, q[i]) && !falseFriends(w, q[i])); };
+const ORDER_MATTERS = /rébus|titre|film|roman|livre|œuvre|oeuvre|chanson|album|pièce|tableau|fable|conte|série|opéra|jeu vidéo|bande dessinée|BD/i;
+/* Question sur une PERSONNE (2026-11-09) : le nom de famille seul est accepté (« Van Gogh », « Hepburn »), jamais le prénom seul. */
+const PERSON_Q = /(?<!\p{L})(qui(?!\p{L})|quel(?:le)?s?(?!\p{L})[^?]{0,40}(?<!\p{L})(?:archéologue|détective|acteur|actrice|chanteu|peintre|écrivain|auteur|autrice|romanci|poète|poétesse|compositeur|compositrice|réalisat|scientifique|savant|physicien|chimiste|mathématicien|roi|reine|empereur|impératrice|président|joueu|pilote|athlète|footballeur|tennis|navigat|explorat|invent|philosophe|architecte|sculpt|musicien|général|ministre|pape|dictateur|astronaute|cosmonaute|cuisinier|chef|couturi|styliste|rappeu|humoriste|dessinat|médecin|biologiste|astronome|aviat|cycliste|skieu|nageu|boxeu|champion|danseu|marchand|pasteur|dirigeant|souverain|conquérant|duchesse|tsar|pharaon|guitariste|pianiste|violoniste|photographe|cinéaste|journaliste|résistant|militant|révolutionnaire|artiste|espionne?|égyptologue|alpiniste|sprinteu|coureu|grimpeu|skipper|patineu|gymnaste|judoka|escrimeu|basketteu|rugbyman|golfeu|designer|créat|fondat|prix nobel|chancelier|premier ministre|homme|femme))/iu;
+/** Nom de famille d'une réponse « Prénom Nom » : tout sauf le 1er mot (« van Gogh ») et le dernier mot seul (« King »). */
+function surnames(raw) {
+    const w = String(raw).replace(/[’']/g, ' ').split(/\s+/).filter(Boolean);
+    if (w.length < 2 || w.length > 4 || /\s(le|la)\s/i.test(` ${w.slice(1).join(' ')} `)) return [];
+    const out = [w.slice(1).join(' '), w[w.length - 1]];
+    return out.filter(s => s.replace(/\s/g, '').length >= 4 && !/\d/.test(s) && !/^[IVXLC]+$/.test(s));
+}
+/** Liste « A, B et C » : morceaux normalisés (sans articles), ou null si ce n'est pas une liste. */
+function listParts(raw) {
+    const parts = String(raw).split(/\s*[,;/+&]\s*|\s+et\s+/i).map(p => { const n = normalize(p); return stripArticles(n) || n; }).filter(Boolean);
+    return parts.length >= 2 && parts.length <= 6 ? parts : null;
+}
+/** Même liste dans un autre ordre (« bleu, blanc, rouge » = « rouge, blanc et bleu ») : 'exact', 'typo' ou null. */
+function listMatch(input, rawAnswers, question) {
+    if (ORDER_MATTERS.test(question)) return null;
+    const tList = listParts(input);
+    // sans virgules (« rouge blanc bleu ») : chaque mot est un élément, si la liste attendue n'a que des mots seuls
+    const tWords = (stripArticles(normalize(input)) || '').split(' ').filter(w => w && w !== 'et');
+    let best = null;
+    for (const raw of rawAnswers) {
+        const a = listParts(raw);
+        if (!a) continue;
+        const t = tList || (a.every(x => !x.includes(' ')) ? tWords : null);
+        if (!t || a.length !== t.length) continue;
+        const used = new Array(a.length).fill(false);
+        let typo = false;
+        const ok = t.every(p => {
+            let j = a.findIndex((x, k) => !used[k] && x === p);
+            if (j < 0) { j = a.findIndex((x, k) => !used[k] && !/\d/.test(x) && answerClose(p, x)); if (j >= 0) typo = true; }
+            if (j < 0) return false;
+            used[j] = true;
+            return true;
+        });
+        if (ok && !typo) return 'exact';
+        if (ok) best = 'typo';
+    }
+    return best;
+}
+
 function judgeV2(input, rawAnswers, question = '') {
     // Réponse faite d'un seul « article » (la note « La », la lettre « D ») : on ne l'efface pas
     // Expressions (rébus ou « Quelle expression… ») : « avoir » / « être » au début ignorés (« la main verte » = « avoir la main verte »)
@@ -609,7 +687,9 @@ function judgeV2(input, rawAnswers, question = '') {
     const full = str => (expression ? dropLeadingVerb(normalize(str)) : normalize(str));
     const keep = str => { const n = full(str); return stripArticles(n) || n; };
     const typed = keep(input);
-    if (!typed) return 'wrong';
+    if (!typed) return rawAnswers.some(r => String(r).trim() === String(input).trim()) ? 'exact' : 'wrong';   // « € »
+    const listed = listMatch(input, rawAnswers, question);
+    if (listed === 'exact') return 'exact';
     const typedFull = full(input);
     const numbersTyped = normalize(input).match(/\d+(?:\.\d+)?/g) || [];
     const questionWords = new Set(stripArticles(normalize(question)).split(' '));
@@ -626,11 +706,12 @@ function judgeV2(input, rawAnswers, question = '') {
             const w = ans.split(' ');
             if (w.length >= 2) { const turned = [w[w.length - 1], ...w.slice(0, -1)].join(' '); answers.push([turned, turned]); }
             names.push(ans);
+            if (PERSON_Q.test(question)) for (const s of surnames(raw)) { const k = keep(s); if (k && k.length >= 4) answers.push([k, k]); }
         }
     }
     for (const [ans, ansFull] of answers) {
         if (/^\d+(\.\d+)?$/.test(ans)) {   // nombre (date, distance…) : exact uniquement
-            if (numbersTyped.includes(ans)) return 'exact';
+            if (numbersTyped.length && numbersTyped.every(n => n === ans)) return 'exact';   // « 4x100 » n'est pas « 100 »
             continue;
         }
         if (addsLink(typedFull, ansFull)) continue;
@@ -643,6 +724,15 @@ function judgeV2(input, rawAnswers, question = '') {
         const r = initialsMatch(typed, ans);
         if (r === 'exact') return 'exact';
         if (r === 'typo') typo = true;
+    }
+    // « Faute de frappe » qui est en fait la réponse d'une autre question (Tibre / Tigre) : refusée
+    if (listed === 'typo') typo = true;
+    // (simple pluriel / féminin d'un nom commun toléré : « globule rouge » pour « globules rouges »)
+    const known = knownAnswers();
+    if (typo && known.has(typed)) {
+        const kind = known.get(typed);
+        const common = kind === 'common' || (kind === 'unknown' && rawAnswers.some(r => isCommonRaw(String(r))));
+        if (!(common && answers.some(([ans]) => sameStem(typed, ans)))) return 'wrong';
     }
     return typo ? 'typo' : 'wrong';
 }

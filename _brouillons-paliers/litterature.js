@@ -148,5 +148,6 @@ TRAINING_QUESTIONS.push(
     { id: 15303, theme: "Littérature", d: 3.2, q: "Quel moraliste a écrit les « Maximes », comme « Nous avons tous assez de force pour supporter les maux d’autrui » ?", a: ["La Rochefoucauld", "François de La Rochefoucauld"], exp: "Publiées en 1665." },
     { id: 15304, theme: "Littérature", d: 3.3, q: "Quel auteur du XVIIe siècle a peint les travers de ses contemporains dans « Les Caractères » ?", a: ["Jean de La Bruyère", "La Bruyère"], exp: "Publiés en 1688." },
     { id: 15305, theme: "Littérature", d: 3.5, q: "Quel roman de l’abbé Prévost raconte la passion du chevalier Des Grieux pour une jeune femme ?", a: ["Manon Lescaut"], exp: "1731 ; adapté en opéra par Massenet et Puccini." },
-    { id: 15306, theme: "Littérature", d: 3.6, q: "Quel roman-fleuve d’Albert Cohen raconte la passion de Solal et Ariane ?", a: ["Belle du Seigneur"], exp: "Plus de 1 000 pages, Grand prix de l’Académie française 1968." }
+    { id: 15306, theme: "Littérature", d: 3.6, q: "Quel roman-fleuve d’Albert Cohen raconte la passion de Solal et Ariane ?", a: ["Belle du Seigneur"], exp: "Plus de 1 000 pages, Grand prix de l’Académie française 1968." },
+    { id: 15307, theme: "Littérature", d: 3.0, q: "Quel romancier normand a écrit « Nymphéas noirs » et « Un avion sans elle » ?", a: ["Michel Bussi", "Bussi"], exp: "Un des auteurs de polars les plus lus en France." }
 );

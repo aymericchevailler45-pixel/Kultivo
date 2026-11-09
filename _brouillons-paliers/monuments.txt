@@ -1,4 +1,4 @@
-MONUMENTS — 88 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+MONUMENTS — 80 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
 1. [1.0] Combien d’étages ouverts au public compte la tour Eiffel ?
    → 3 / Trois
@@ -276,78 +276,46 @@ MONUMENTS — 88 questions nouvelles (de la plus facile à la plus dure, note de
    → Le fronton / Fronton
    (Souvent décoré de sculptures.)
 
-70. [3.0] Quel immense cirque naturel des causses forme un méandre abandonné, près de Montpellier ?
-   → Le cirque de Navacelles / Cirque de Navacelles / Navacelles
-   (Classé Grand Site de France.)
-
-71. [3.1] Quel site néerlandais aligne 19 moulins à vent du XVIIIe siècle ?
+70. [3.1] Quel site néerlandais aligne 19 moulins à vent du XVIIIe siècle ?
    → Kinderdijk
    (Ils servaient à pomper l’eau des polders.)
 
-72. [3.1] Comment appelle-t-on une colonne sculptée en forme de femme, comme à l’Érechthéion d’Athènes ?
+71. [3.1] Comment appelle-t-on une colonne sculptée en forme de femme, comme à l’Érechthéion d’Athènes ?
    → Une cariatide / Cariatide / Caryatide / Cariatides
    (Une colonne en forme d’homme s’appelle un atlante.)
 
-73. [3.1] Quelle horloge de cathédrale française, très complexe, fait défiler les apôtres à midi trente ?
-   → L’horloge astronomique de Strasbourg / Horloge de Strasbourg / Strasbourg
-   (Sa version actuelle date de 1842.)
-
-74. [3.2] Quelle usine royale de sel, en demi-cercle, a été dessinée par Claude-Nicolas Ledoux dans le Doubs ?
+72. [3.2] Quelle usine royale de sel, en demi-cercle, a été dessinée par Claude-Nicolas Ledoux dans le Doubs ?
    → La saline royale d’Arc-et-Senans / Saline royale / Arc-et-Senans
    (Une « cité idéale » du XVIIIe siècle.)
 
-75. [3.2] Quel ordre de colonne grecque a un chapiteau orné de feuilles d’acanthe ?
+73. [3.2] Quel ordre de colonne grecque a un chapiteau orné de feuilles d’acanthe ?
    → Corinthien / L’ordre corinthien / Colonne corinthienne
    (Les deux autres : dorique (simple) et ionique (à volutes).)
 
-76. [3.2] Comment s’appelle le gros bourdon de Notre-Dame de Paris ?
-   → Emmanuel
-   (Plus de 13 tonnes, il a survécu à l’incendie.)
-
-77. [3.3] Quelle merveille du monde antique, en or et ivoire, a été sculptée par Phidias à Olympie ?
+74. [3.3] Quelle merveille du monde antique, en or et ivoire, a été sculptée par Phidias à Olympie ?
    → La statue de Zeus / Statue de Zeus / Zeus olympien
    (Haute d’environ 12 m.)
 
-78. [3.3] Quel architecte a dessiné la flèche de Notre-Dame, reconstruite à l’identique après 2019 ?
-   → Eugène Viollet-le-Duc / Viollet-le-Duc
-   (Il s’est représenté en statue de cuivre à sa base.)
-
-79. [3.4] Quel immense palais-monastère Philippe II a-t-il fait construire près de Madrid ?
+75. [3.4] Quel immense palais-monastère Philippe II a-t-il fait construire près de Madrid ?
    → L’Escurial / Escurial / El Escorial
    (Il sert de nécropole aux rois d’Espagne.)
 
-80. [3.4] Quel ordre grec a un chapiteau à volutes enroulées, comme des cornes de bélier ?
+76. [3.4] Quel ordre grec a un chapiteau à volutes enroulées, comme des cornes de bélier ?
    → Ionique / L’ordre ionique / Colonne ionique
    (Né en Ionie, sur la côte de l’actuelle Turquie.)
 
-81. [3.4] Quels réseaux souterrains de Paris se visitent dans un musée près du pont de l’Alma ?
-   → Les égouts / Égouts / Les égouts de Paris / Musée des égouts
-   (Plus de 2 400 km de galeries.)
-
-82. [3.5] Quelle merveille du monde antique d’Éphèse un homme a-t-il brûlée pour devenir célèbre ?
+77. [3.5] Quelle merveille du monde antique d’Éphèse un homme a-t-il brûlée pour devenir célèbre ?
    → Le temple d’Artémis / Temple d’Artémis / Artémision
    (Érostrate, en 356 av. J.-C. : on a interdit de prononcer son nom.)
 
-83. [3.5] Comment appelle-t-on la partie en forme de croix qui coupe la nef d’une église ?
+78. [3.5] Comment appelle-t-on la partie en forme de croix qui coupe la nef d’une église ?
    → Le transept / Transept
    (Il donne à l’église son plan en croix latine.)
 
-84. [3.5] Quelle réplique de grotte préhistorique a ouvert en 2016 à Montignac ?
-   → Lascaux IV / Lascaux 4
-   (La vraie grotte est fermée au public depuis 1963.)
-
-85. [3.6] Comment appelle-t-on la partie arrondie derrière le chœur d’une église ?
+79. [3.6] Comment appelle-t-on la partie arrondie derrière le chœur d’une église ?
    → L’abside / Abside
    (Souvent entourée de petites chapelles.)
 
-86. [3.6] Quelle tour à étages en briques était le temple des Mésopotamiens ?
+80. [3.6] Quelle tour à étages en briques était le temple des Mésopotamiens ?
    → La ziggourat / Ziggourat / Ziggurat
    (La tour de Babel en serait le souvenir.)
-
-87. [3.7] Comment appelle-t-on les ouvertures en haut des tours d’où l’on jetait des pierres sur les assaillants ?
-   → Les mâchicoulis / Mâchicoulis / Machicoulis
-   (Et non de l’huile bouillante, trop chère.)
-
-88. [3.8] Comment appelle-t-on la partie sculptée au sommet d’une colonne ?
-   → Le chapiteau / Chapiteau
-   (Comme la tente du cirque, au sens propre « petite tête ».)

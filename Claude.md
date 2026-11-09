@@ -282,6 +282,19 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   ignore « avoir / être » au début pour TOUTE question qui contient « expression » (avant : seulement les rébus) ; synonymes ajoutés
   aux questions qui demandent un sens sans imposer de mot (questions.js : 2229, 4077, 4230, 4570, 4572, 4573, 4621-4623, 4670-4672 ;
   brouillons 21152-21172 etc.). Quand la question impose un élément (« avec un fruit », rébus), on garde la contrainte.
+- FAIT le 09/11 soir (PAS ENCORE EN LIGNE : l’utilisateur a dit « publie pas encore » ; commit local, v=20261109s, cache kultivo-v81) :
+  CORRECTION DES RÉPONSES revue sur tout le jeu (demande : « rouge et bleu » refusé, « Tibre » accepté pour « Tigre ») :
+  1) une « faute de frappe » qui est EXACTEMENT la réponse d’une autre question est refusée (`knownAnswers`, cache sur la taille des
+     banques ; ANNULE le refus du 25/10). Tolérance seulement pour le genre / nombre d’un NOM COMMUN (`sameStem`, `isCommonRaw` = article
+     + minuscule ; `isProperRaw` = article + majuscule ou 2 majuscules ; faux amis `FALSE_FRIENDS` : rein/reine, rose/rosée…).
+     Audit (scratchpad audit_pairs.py + audit_run.js) : 806 réponses d’autres questions acceptées à tort → 15, toutes légitimes.
+  2) ordre libre dans les listes « A et B », « A, B et C », même sans virgules (`listMatch`), sauf titres / rébus (`ORDER_MATTERS`).
+  3) nombres : « 4x100 » n’est plus « 100 » (tous les nombres tapés doivent être le nombre attendu).
+  4) personne (`PERSON_Q` : « Qui », « Quel peintre / acteur… ») : nom de famille seul accepté (`surnames` : « Van Gogh », « King »),
+     jamais le prénom seul ; pas pour « le Grand », « le Bref ».
+  Test de non-régression (selftest.js) : 0 bonne réponse refusée sur 3 825 questions.
+  BROUILLONS ajustés (demande) : Langue française 150, Gastronomie 150, Littérature 150, Histoire 150 (→ 300 chacun), Arts 100 (→ 250),
+  Monuments 80 (→ 230), Mythologie 50 (→ 200) ; Jeux 153, les autres 150. Quand on les mettra dans le jeu : relancer l’audit des paires.
 - FAIT le 08/11 : DÉCOR « BIENVENUE BÉBÉ » (un testeur attend un bébé, sexe connu dans la semaine) : du 9 au 15/11/2026, pour
   TOUT LE MONDE, seulement le décor (parcours + leçons) façon « Un gars, une fille » : icônes bleues à gauche, roses à droite
   (`BABY_DECOR`, `babyDecorOn`, classes `baby-blue` / `baby-pink`, `body.deco-baby` = fond bleu → rose), tap = anecdote sur

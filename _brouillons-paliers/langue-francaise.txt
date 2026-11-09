@@ -1,4 +1,4 @@
-LANGUE-FRANCAISE — 158 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+LANGUE-FRANCAISE — 150 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
 1. [1.0] Complète le proverbe : « Petit à petit, l’oiseau… »
    → fait son nid / L’oiseau fait son nid / Petit à petit l’oiseau fait son nid
@@ -488,146 +488,114 @@ LANGUE-FRANCAISE — 158 questions nouvelles (de la plus facile à la plus dure,
    → Quand le COD est placé avant / COD avant / Avec le COD placé avant / Si le COD est avant
    (« Les pommes que j’ai mangées ».)
 
-123. [3.0] Comment appelle-t-on un mot qui n’apparaît qu’une seule fois dans un texte ou chez un auteur ?
-   → Un hapax / Hapax
-   (Du grec « une seule fois ».)
-
-124. [3.0] Comment appelle-t-on un groupe de mots figé qui fonctionne comme un seul mot, comme « pomme de terre » ?
+123. [3.0] Comment appelle-t-on un groupe de mots figé qui fonctionne comme un seul mot, comme « pomme de terre » ?
    → Une locution / Locution
    (On ne peut pas changer ses mots.)
 
-125. [3.0] Comment appelle-t-on une tournure propre au français, intraduisible mot à mot ?
+124. [3.0] Comment appelle-t-on une tournure propre au français, intraduisible mot à mot ?
    → Un gallicisme / Gallicisme / Idiotisme
    (Comme « il y a » ou « c’est… qui ».)
 
-126. [3.0] Comment appelle-t-on le défaut de prononciation qui fait dire « z » pour « j » ?
+125. [3.0] Comment appelle-t-on le défaut de prononciation qui fait dire « z » pour « j » ?
    → Le zézaiement / Zézaiement / Zozotement / Cheveu sur la langue
    (On dit aussi « avoir un cheveu sur la langue ».)
 
-127. [3.0] Quelle expression veut dire « avoir un mot en tête sans le retrouver » ?
+126. [3.0] Quelle expression veut dire « avoir un mot en tête sans le retrouver » ?
    → Avoir le mot sur le bout de la langue / Sur le bout de la langue / Avoir sur le bout de la langue
    (Phénomène étudié par les psychologues depuis 1966.)
 
-128. [3.0] Quelle expression veut dire « réfléchir avant de parler » ?
+127. [3.0] Quelle expression veut dire « réfléchir avant de parler » ?
    → Tourner sept fois sa langue dans sa bouche / Tourner sept fois sa langue / Tourner 7 fois sa langue dans sa bouche / Tourner sa langue sept fois dans sa bouche / Tourner sept fois la langue dans la bouche / Réfléchir avant de parler
    (Un conseil de prudence.)
 
-129. [3.1] Comment appelle-t-on, en imprimerie, une erreur dans un texte imprimé ?
+128. [3.1] Comment appelle-t-on, en imprimerie, une erreur dans un texte imprimé ?
    → Une coquille / Coquille / Faute de frappe
    (Une coquille célèbre a transformé « coquille » en un mot grossier…)
 
-130. [3.1] Quel style de lettres penchées a été créé à Venise vers 1500 ?
+129. [3.1] Quel style de lettres penchées a été créé à Venise vers 1500 ?
    → L’italique / Italique
    (Inventé par l’imprimeur Alde Manuce.)
 
-131. [3.1] Comment appelle-t-on l’écriture où les lettres sont liées entre elles ?
+130. [3.1] Comment appelle-t-on l’écriture où les lettres sont liées entre elles ?
    → L’écriture cursive / Cursive / Écriture cursive / Attaché
    (L’« écriture attachée » de l’école.)
 
-132. [3.1] Comment appelle-t-on l’art et la technique de composer et d’imprimer des textes ?
+131. [3.1] Comment appelle-t-on l’art et la technique de composer et d’imprimer des textes ?
    → La typographie / Typographie
    (Elle s’occupe des polices, des espaces, de la mise en page.)
 
-133. [3.1] Quelle expression veut dire « réussir deux choses en une seule action » ?
+132. [3.1] Quelle expression veut dire « réussir deux choses en une seule action » ?
    → Faire d’une pierre deux coups / D’une pierre deux coups
    (Les Anglais tuent « deux oiseaux avec une pierre ».)
 
-134. [3.1] Quelle expression veut dire « avoir plusieurs compétences ou solutions », avec un arc ?
+133. [3.1] Quelle expression veut dire « avoir plusieurs compétences ou solutions », avec un arc ?
    → Avoir plusieurs cordes à son arc / Plusieurs cordes à son arc / Avoir deux cordes à son arc
    (Un archer prévoyant avait des cordes de rechange.)
 
-135. [3.2] Quelle langue est parlée avec les mains par les personnes sourdes ?
+134. [3.2] Quelle langue est parlée avec les mains par les personnes sourdes ?
    → La langue des signes / Langue des signes / LSF
    (La langue des signes française (LSF) a été reconnue en 2005.)
 
-136. [3.2] Comment appelle-t-on un signe qui représente une idée, comme dans l’écriture chinoise ?
+135. [3.2] Comment appelle-t-on un signe qui représente une idée, comme dans l’écriture chinoise ?
    → Un idéogramme / Idéogramme / Ideogramme
    (Un dessin d’objet simple s’appelle un pictogramme.)
 
-137. [3.2] Comment appelle-t-on un dessin simple qui représente un objet ou une consigne, comme sur les panneaux ?
+136. [3.2] Comment appelle-t-on un dessin simple qui représente un objet ou une consigne, comme sur les panneaux ?
    → Un pictogramme / Pictogramme / Picto
    (Les pictogrammes des JO ont été créés en 1964 à Tokyo.)
 
-138. [3.2] Comment appelle-t-on une langue qui n’est plus parlée couramment, comme le latin ?
+137. [3.2] Comment appelle-t-on une langue qui n’est plus parlée couramment, comme le latin ?
    → Une langue morte / Langue morte
    (Le contraire : une langue vivante.)
 
-139. [3.2] Quelle expression désigne la personne différente, rejetée d’un groupe ?
+138. [3.2] Quelle expression désigne la personne différente, rejetée d’un groupe ?
    → Le mouton noir / Mouton noir / Brebis galeuse / La brebis galeuse / Le vilain petit canard / Vilain petit canard
    (On dit aussi « la brebis galeuse ».)
 
-140. [3.3] Quelle langue internationale, inventée en 1887, devait faciliter la communication entre les peuples ?
+139. [3.3] Quelle langue internationale, inventée en 1887, devait faciliter la communication entre les peuples ?
    → L’espéranto / Espéranto / Esperanto
    (Son nom veut dire « celui qui espère ».)
 
-141. [3.3] Quel médecin polonais a inventé l’espéranto ?
-   → Ludwik Zamenhof / Zamenhof / Louis-Lazare Zamenhof
-   (Il publie la langue sous le pseudonyme « Doktoro Esperanto ».)
-
-142. [3.3] Quel trouble durable rend difficile l’apprentissage de la lecture ?
+140. [3.3] Quel trouble durable rend difficile l’apprentissage de la lecture ?
    → La dyslexie / Dyslexie
    (Elle touche environ 5 à 8 % des enfants.)
 
-143. [3.3] Quel professionnel de santé soigne les troubles du langage et de la parole ?
+141. [3.3] Quel professionnel de santé soigne les troubles du langage et de la parole ?
    → L’orthophoniste / Orthophoniste
    (Dyslexie, bégaiement, retard de langage…)
 
-144. [3.3] Quelle expression veut dire « affirmer qu’on est sûr de quelque chose » ?
+142. [3.3] Quelle expression veut dire « affirmer qu’on est sûr de quelque chose » ?
    → En mettre sa main au feu / Mettre sa main au feu / J’en mettrais ma main au feu / Mettre sa main à couper / Mettre sa main à couper
    (Au Moyen Âge, l’épreuve du feu devait prouver qu’on disait vrai.)
 
-145. [3.4] Quel ensemble de langues était parlé dans le nord de la France, au Moyen Âge, d’après leur façon de dire « oui » ?
+143. [3.4] Quel ensemble de langues était parlé dans le nord de la France, au Moyen Âge, d’après leur façon de dire « oui » ?
    → La langue d’oïl / Langue d’oïl / Langues d’oïl / Oïl
    (Au sud, la langue d’oc.)
 
-146. [3.4] Quelle langue régionale du sud de la France est la langue d’oc ?
+144. [3.4] Quelle langue régionale du sud de la France est la langue d’oc ?
    → L’occitan / Occitan
    (Avec le provençal, le gascon, le languedocien…)
 
-147. [3.4] Quelles langues sont nées du mélange du français et de langues africaines aux Antilles et à La Réunion ?
+145. [3.4] Quelles langues sont nées du mélange du français et de langues africaines aux Antilles et à La Réunion ?
    → Les créoles / Créole / Créoles
    (Chaque île a son créole.)
 
-148. [3.4] Quel grammairien belge a écrit « Le Bon Usage », grammaire de référence ?
-   → Maurice Grevisse / Grevisse
-   (Publié en 1936, mis à jour depuis par d’autres.)
-
-149. [3.4] Quelle expression veut dire « payer comptant, très exactement » ?
+146. [3.4] Quelle expression veut dire « payer comptant, très exactement » ?
    → Payer rubis sur l’ongle / Rubis sur l’ongle
    (On buvait jusqu’à ce que la dernière goutte, rouge comme un rubis, tienne sur l’ongle.)
 
-150. [3.5] Quel costume brodé de vert portent les membres de l’Académie française ?
+147. [3.5] Quel costume brodé de vert portent les membres de l’Académie française ?
    → L’habit vert / Habit vert
    (Avec une épée, offerte par leurs proches.)
 
-151. [3.5] Sur quel quai parisien se trouve l’Institut de France, siège de l’Académie française ?
-   → Le quai de Conti / Quai Conti / Quai de Conti
-   (Face au pont des Arts et au Louvre.)
-
-152. [3.5] Quel morceau de veau s’écrit avec « -eau », à la différence du gibier en « -ot » ?
-   → Le cuisseau / Cuisseau
-   (Cuissot de chevreuil, cuisseau de veau.)
-
-153. [3.6] Quel mot désigne un jeu de mots fondé sur des sons identiques, comme « Le mammouth est un animal dé-fenses » ?
+148. [3.6] Quel mot désigne un jeu de mots fondé sur des sons identiques, comme « Le mammouth est un animal dé-fenses » ?
    → Un calembour / Calembour
    (Victor Hugo disait : « Le calembour est la fiente de l’esprit qui vole ».)
 
-154. [3.6] Comment s’appelle le temps dans « Quand il eut fini, il partit » (« eut fini ») ?
-   → Le passé antérieur / Passé antérieur / Passe anterieur
-   (Il exprime une action antérieure au passé simple.)
-
-155. [3.6] Quel petit visage dessiné avec des signes, comme :-), a été proposé en 1982 ?
+149. [3.6] Quel petit visage dessiné avec des signes, comme :-), a été proposé en 1982 ?
    → Le smiley / Smiley / Émoticône / Emoticone
    (Par l’informaticien américain Scott Fahlman.)
 
-156. [3.7] Comment appelle-t-on la fonction de « la pomme » dans « Je mange la pomme » ?
+150. [3.7] Comment appelle-t-on la fonction de « la pomme » dans « Je mange la pomme » ?
    → Complément d’objet direct / COD
    (Il répond à la question « quoi ? » sans préposition.)
-
-157. [3.8] Comment appelle-t-on un texte chiffré qu’il faut décoder ?
-   → Un cryptogramme / Cryptogramme
-   (Comme dans « Le Scarabée d’or » d’Edgar Poe.)
-
-158. [3.8] Comment appelle-t-on le trouble qui fait répéter des syllabes en parlant ?
-   → Le bégaiement / Bégaiement / Begaiement
-   (Environ 1 % des adultes bégaient.)

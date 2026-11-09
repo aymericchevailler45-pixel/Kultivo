@@ -1,4 +1,4 @@
-GASTRONOMIE — 154 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+GASTRONOMIE — 150 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
 1. [1.0] Comment appelle-t-on le pain au chocolat dans le Sud-Ouest ?
    → Une chocolatine / Chocolatine
@@ -500,118 +500,102 @@ GASTRONOMIE — 154 questions nouvelles (de la plus facile à la plus dure, note
    → Le praliné / Praliné
    (À ne pas confondre avec la praline entière.)
 
-126. [3.2] Quel gâteau poitevin au fromage de chèvre a une croûte noire bombée ?
-   → Le tourteau fromagé / Tourteau fromagé / Tourteau
-   (Le noir vient d’une cuisson très chaude, voulue.)
-
-127. [3.3] Quel bonbon dur à rayures, en forme de tétraèdre, est une spécialité de Carpentras ?
+126. [3.3] Quel bonbon dur à rayures, en forme de tétraèdre, est une spécialité de Carpentras ?
    → Le berlingot / Berlingot / Berlingots
    (Fabriqué à l’origine avec le sirop des fruits confits.)
 
-128. [3.3] Quel pain plat provençal est souvent découpé en forme d’épi ou de feuille ?
+127. [3.3] Quel pain plat provençal est souvent découpé en forme d’épi ou de feuille ?
    → La fougasse / Fougasse
    (Aux olives, aux lardons ou à l’anchois.)
 
-129. [3.3] Quelle sauce provençale mélange anchois, ail et huile d’olive ?
+128. [3.3] Quelle sauce provençale mélange anchois, ail et huile d’olive ?
    → L’anchoïade / Anchoïade / Anchoiade
    (Servie avec des crudités.)
 
-130. [3.3] Quel plat paysan fait cuire longuement chou, lard et légumes dans une marmite ?
+129. [3.3] Quel plat paysan fait cuire longuement chou, lard et légumes dans une marmite ?
    → La potée / Potée
    (Chaque région a la sienne : auvergnate, lorraine, savoyarde…)
 
-131. [3.4] Quel mélange de carottes, oignons et céleri en dés sert de base aux sauces ?
+130. [3.4] Quel mélange de carottes, oignons et céleri en dés sert de base aux sauces ?
    → La mirepoix / Mirepoix
    (Du nom d’un duc du XVIIIe siècle.)
 
-132. [3.4] Comment appelle-t-on une découpe de feuilles roulées en fines lanières, comme le basilic ?
+131. [3.4] Comment appelle-t-on une découpe de feuilles roulées en fines lanières, comme le basilic ?
    → Une chiffonnade / Chiffonnade
    (Le jambon cru se sert aussi « en chiffonnade ».)
 
-133. [3.4] Comment appelle-t-on la cuisson rapide d’un légume dans l’eau bouillante, avant de le refroidir ?
+132. [3.4] Comment appelle-t-on la cuisson rapide d’un légume dans l’eau bouillante, avant de le refroidir ?
    → Blanchir / Le blanchiment / Blanchiment
    (Pour garder sa couleur et le cuire à moitié.)
 
-134. [3.4] Comment appelle-t-on la cuisson longue d’une viande dans un peu de liquide, à couvert ?
+133. [3.4] Comment appelle-t-on la cuisson longue d’une viande dans un peu de liquide, à couvert ?
    → Braiser / Le braisage / Braisage
    (Pour les morceaux durs, qui deviennent fondants.)
 
-135. [3.4] Quel plat de Gand mijote poulet ou poisson dans un bouillon crémeux aux légumes ?
-   → Le waterzooi / Waterzooi / Waterzoï
-   (Une spécialité flamande.)
-
-136. [3.5] Quel mode de cuisson doux place un récipient dans un autre rempli d’eau chaude ?
+134. [3.5] Quel mode de cuisson doux place un récipient dans un autre rempli d’eau chaude ?
    → Le bain-marie / Bain-marie / Bain marie
    (Il porterait le nom de Marie, une alchimiste de l’Antiquité.)
 
-137. [3.5] Quelle sauce au beurre et aux jaunes d’œufs nappe les œufs Bénédicte ?
+135. [3.5] Quelle sauce au beurre et aux jaunes d’œufs nappe les œufs Bénédicte ?
    → La sauce hollandaise / Hollandaise / Sauce hollandaise
    (La béarnaise est la même, avec de l’estragon.)
 
-138. [3.5] Quelle sauce au beurre et à l’échalote est une spécialité nantaise pour le poisson ?
+136. [3.5] Quelle sauce au beurre et à l’échalote est une spécialité nantaise pour le poisson ?
    → Le beurre blanc / Beurre blanc / Beurre nantais
    (Née sur les bords de Loire à la fin du XIXe siècle.)
 
-139. [3.5] Quel petit fagot de thym, laurier et persil parfume les bouillons ?
+137. [3.5] Quel petit fagot de thym, laurier et persil parfume les bouillons ?
    → Le bouquet garni / Bouquet garni
    (On le retire avant de servir.)
 
-140. [3.6] Quelle herbe à fines tiges creuses a un goût d’oignon doux ?
+138. [3.6] Quelle herbe à fines tiges creuses a un goût d’oignon doux ?
    → La ciboulette / Ciboulette
    (On la coupe aux ciseaux.)
 
-141. [3.6] Quelle herbe aromatique est indispensable sur une pizza, avec la tomate ?
+139. [3.6] Quelle herbe aromatique est indispensable sur une pizza, avec la tomate ?
    → L’origan / Origan
    (Proche de la marjolaine.)
 
-142. [3.6] Quelle herbe aux feuilles en aiguilles parfume l’agneau et les pommes de terre au four ?
+140. [3.6] Quelle herbe aux feuilles en aiguilles parfume l’agneau et les pommes de terre au four ?
    → Le romarin / Romarin
    (Son nom latin veut dire « rosée de la mer ».)
 
-143. [3.6] Quelle épice râpée parfume la béchamel et la purée ?
+141. [3.6] Quelle épice râpée parfume la béchamel et la purée ?
    → La noix de muscade / Muscade / Noix de muscade
    (Elle vient des îles Banda, en Indonésie.)
 
-144. [3.7] Quelle herbe fraîche, aussi appelée persil arabe, divise : certains lui trouvent un goût de savon ?
+142. [3.7] Quelle herbe fraîche, aussi appelée persil arabe, divise : certains lui trouvent un goût de savon ?
    → La coriandre / Coriandre
    (Ce dégoût serait en partie génétique.)
 
-145. [3.7] Quelle soupe traditionnelle du Maghreb est servie pour rompre le jeûne du ramadan ?
+143. [3.7] Quelle soupe traditionnelle du Maghreb est servie pour rompre le jeûne du ramadan ?
    → La chorba / Chorba
    (Au Maroc, on sert plutôt la harira.)
 
-146. [3.7] Quels raviolis japonais grillés d’un côté viennent du jiaozi chinois ?
+144. [3.7] Quels raviolis japonais grillés d’un côté viennent du jiaozi chinois ?
    → Les gyozas / Gyoza / Gyozas
    (Servis avec une sauce soja vinaigrée.)
 
-147. [3.7] Comment appelle-t-on les petites bouchées cantonaises cuites à la vapeur dans des paniers en bambou ?
+145. [3.7] Comment appelle-t-on les petites bouchées cantonaises cuites à la vapeur dans des paniers en bambou ?
    → Les dim sum / Dim sum / Dim sums
    (Traditionnellement servies avec le thé.)
 
-148. [3.8] Quelles épaisses nouilles japonaises de blé se mangent en bouillon ?
+146. [3.8] Quelles épaisses nouilles japonaises de blé se mangent en bouillon ?
    → Les udon / Udon / Udons
    (Plus épaisses que les ramen et les soba.)
 
-149. [3.8] Comment appelle-t-on le poisson cru tranché, servi sans riz, au Japon ?
+147. [3.8] Comment appelle-t-on le poisson cru tranché, servi sans riz, au Japon ?
    → Le sashimi / Sashimi / Sashimis
    (Le sushi, lui, contient toujours du riz vinaigré.)
 
-150. [3.8] Quels petits rouleaux japonais entourés d’algue nori contiennent riz et poisson ?
+148. [3.8] Quels petits rouleaux japonais entourés d’algue nori contiennent riz et poisson ?
    → Les makis / Maki / Makis
    (Le californien (california roll) a le riz à l’extérieur.)
 
-151. [3.9] Qui a inventé la margarine en 1869, pour un concours de Napoléon III ?
-   → Hippolyte Mège-Mouriès / Mège-Mouriès / Mege-Mouries
-   (Il fallait un beurre bon marché pour la marine et les pauvres.)
-
-152. [3.9] Quel lait fermenté du Caucase contient des grains de levures et de bactéries ?
-   → Le kéfir / Kéfir / Kefir
-   (Légèrement pétillant.)
-
-153. [3.9] Quel sucre roux de canne, en cristaux, sucre souvent les crêpes ?
+149. [3.9] Quel sucre roux de canne, en cristaux, sucre souvent les crêpes ?
    → La cassonade / Cassonade
    (Différente de la vergeoise, faite de betterave.)
 
-154. [4.0] Comment appelle-t-on les fins cristaux de sel récoltés à la surface des marais salants ?
+150. [4.0] Comment appelle-t-on les fins cristaux de sel récoltés à la surface des marais salants ?
    → La fleur de sel / Fleur de sel
    (Celle de Guérande est la plus célèbre.)

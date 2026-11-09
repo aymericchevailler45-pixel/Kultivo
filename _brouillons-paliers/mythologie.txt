@@ -1,4 +1,4 @@
-MYTHOLOGIE — 58 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+MYTHOLOGIE — 50 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
 1. [1.2] Quelle nourriture des dieux grecs donnait l’immortalité ?
    → L’ambroisie / Ambroisie
@@ -196,38 +196,6 @@ MYTHOLOGIE — 58 questions nouvelles (de la plus facile à la plus dure, note d
    → Les kami / Kami
    (Ils habitent les montagnes, les arbres, les rivières…)
 
-50. [3.0] Quel nœud impossible à défaire Alexandre le Grand a-t-il tranché d’un coup d’épée ?
-   → Le nœud gordien / Nœud gordien / Noeud gordien
-   (« Trancher le nœud gordien » : résoudre un problème par la force.)
-
-51. [3.1] Quels êtres japonais au long nez rouge vivent dans les montagnes ?
+50. [3.1] Quels êtres japonais au long nez rouge vivent dans les montagnes ?
    → Les tengu / Tengu
    (Maîtres des arts martiaux dans les légendes.)
-
-52. [3.2] Quelle fille du roi Gradlon aurait provoqué la submersion de la ville d’Ys ?
-   → Dahut / Dahud / Ahès
-   (Elle aurait volé la clé des écluses.)
-
-53. [3.2] Quel mot désigne une personne qui ressemble parfaitement à une autre, d’après un valet dont Mercure prit l’apparence ?
-   → Un sosie / Sosie
-   (Dans « Amphitryon » de Plaute, repris par Molière.)
-
-54. [3.3] Quel dieu de Babylone a vaincu le dragon Tiamat et créé le monde avec son corps ?
-   → Marduk / Mardouk
-   (Récit de l’« Enuma Elish ».)
-
-55. [3.4] Quel héros allemand des Nibelungen a tué le dragon Fafner ?
-   → Siegfried / Sigurd
-   (Sigurd chez les Scandinaves ; Wagner en a fait un opéra.)
-
-56. [3.6] Quel héros irlandais, « le chien de Culann », se battait en fureur guerrière ?
-   → Cúchulainn / Cuchulainn / Cuchulain
-   (Il défend seul l’Ulster contre une armée.)
-
-57. [3.8] Quelle grande épopée finlandaise a été compilée par Elias Lönnrot en 1835 ?
-   → Le Kalevala / Kalevala
-   (Tolkien s’en est inspiré pour ses langues elfiques.)
-
-58. [4.0] Comment s’appelle le monstre marin primordial des Babyloniens, mère des dieux ?
-   → Tiamat
-   (Vaincue par Marduk.)

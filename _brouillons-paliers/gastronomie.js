@@ -109,8 +109,6 @@ TRAINING_QUESTIONS.push(
     { id: 18257, theme: "Gastronomie", d: 3.8, q: "Quelles épaisses nouilles japonaises de blé se mangent en bouillon ?", a: ["Les udon", "Udon", "Udons"], exp: "Plus épaisses que les ramen et les soba." },
     { id: 18258, theme: "Gastronomie", d: 3.8, q: "Comment appelle-t-on le poisson cru tranché, servi sans riz, au Japon ?", a: ["Le sashimi", "Sashimi", "Sashimis"], exp: "Le sushi, lui, contient toujours du riz vinaigré." },
     { id: 18259, theme: "Gastronomie", d: 3.8, q: "Quels petits rouleaux japonais entourés d’algue nori contiennent riz et poisson ?", a: ["Les makis", "Maki", "Makis"], exp: "Le californien (california roll) a le riz à l’extérieur." },
-    { id: 18260, theme: "Gastronomie", d: 3.9, q: "Qui a inventé la margarine en 1869, pour un concours de Napoléon III ?", a: ["Hippolyte Mège-Mouriès", "Mège-Mouriès", "Mege-Mouries"], exp: "Il fallait un beurre bon marché pour la marine et les pauvres." },
-    { id: 18261, theme: "Gastronomie", d: 3.9, q: "Quel lait fermenté du Caucase contient des grains de levures et de bactéries ?", a: ["Le kéfir", "Kéfir", "Kefir"], exp: "Légèrement pétillant." },
     { id: 18262, theme: "Gastronomie", d: 3.9, q: "Quel sucre roux de canne, en cristaux, sucre souvent les crêpes ?", a: ["La cassonade", "Cassonade"], exp: "Différente de la vergeoise, faite de betterave." },
     { id: 18263, theme: "Gastronomie", d: 4.0, q: "Comment appelle-t-on les fins cristaux de sel récoltés à la surface des marais salants ?", a: ["La fleur de sel", "Fleur de sel"], exp: "Celle de Guérande est la plus célèbre." },
     { id: 18264, theme: "Gastronomie", d: 2.5, q: "Quelle tarte au citron est recouverte d’un nuage blanc doré au chalumeau ?", a: ["La tarte au citron meringuée", "Tarte au citron meringuée"], exp: "Une meringue italienne, faite avec un sirop chaud." },
@@ -151,7 +149,5 @@ TRAINING_QUESTIONS.push(
     { id: 18299, theme: "Gastronomie", d: 2.5, q: "Quel fromage bourguignon, lavé au marc, a une croûte orangée et une forte odeur ?", a: ["L’époisses", "Époisses", "Epoisses"], exp: "Napoléon l’aurait apprécié." },
     { id: 18300, theme: "Gastronomie", d: 2.7, q: "Quel fromage normand est souvent moulé en forme de cœur ?", a: ["Le neufchâtel", "Neufchâtel", "Neufchatel"], exp: "Un des plus vieux fromages de Normandie." },
     { id: 18301, theme: "Gastronomie", d: 2.8, q: "Quel fromage bleu d’Auvergne, en haut cylindre, est l’un des plus doux des bleus ?", a: ["La fourme d’Ambert", "Fourme d’Ambert", "Fourme"], exp: "AOP depuis 1972." },
-    { id: 18302, theme: "Gastronomie", d: 3.0, q: "Quelle boisson bretonne au miel fermenté est une sorte d’hydromel ?", a: ["Le chouchen", "Chouchen"], exp: "Il se boit en apéritif." },
-    { id: 18303, theme: "Gastronomie", d: 3.2, q: "Quel gâteau poitevin au fromage de chèvre a une croûte noire bombée ?", a: ["Le tourteau fromagé", "Tourteau fromagé", "Tourteau"], exp: "Le noir vient d’une cuisson très chaude, voulue." },
-    { id: 18304, theme: "Gastronomie", d: 3.4, q: "Quel plat de Gand mijote poulet ou poisson dans un bouillon crémeux aux légumes ?", a: ["Le waterzooi", "Waterzooi", "Waterzoï"], exp: "Une spécialité flamande." }
+    { id: 18302, theme: "Gastronomie", d: 3.0, q: "Quelle boisson bretonne au miel fermenté est une sorte d’hydromel ?", a: ["Le chouchen", "Chouchen"], exp: "Il se boit en apéritif." }
 );
