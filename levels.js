@@ -42,7 +42,7 @@ const AUTO_LEVEL_NAMES = true;   // false = garder les noms de niveaux de questi
    questions + 15 niveaux Paires + 15 niveaux Ordre + 15 défis, le dernier
    niveau étant un défi).
    null = automatique : environ 5 questions par niveau. */
-const TOTAL_LEVELS = 230;   // 170 → 190 → 230 le 2026-11-03 (60 niveaux insérés après les anciens 80, 90, 100, 110, 120, 130)
+const TOTAL_LEVELS = 310;   // 170 → 190 → 230 (03/11) → 310 (09/11) : 140 niveaux insérés en trois vagues (LEVEL_WAVES)
 
 /* Lots de questions : chaque lot remplit ses propres niveaux, pour qu'un ajout futur ne change JAMAIS les niveaux
    déjà joués. 2026-10-20 : sauvegardes remises à zéro → tout le parcours (170 niveaux) refait d'un seul lot, avec une
@@ -53,26 +53,45 @@ const LEVEL_LOTS = [
     // Lot 1 : réparti EXACTEMENT comme avant sur 170 niveaux (numérotation d'origine), puis renuméroté (LEVEL_INSERTS)
     { from: 0, to: 3999, first: 1, last: 170, hardFrom: 0.25, hardCurve: 2, renumber: true },
     // Lot 3 (2026-11-03) : blocs de 10 niveaux insérés pour adoucir la courbe (ids 4000+, sujets jamais utilisés)
-    { from: 4000, to: 4049, also: [4310, 4319], first: 81, last: 90, hardFrom: 1, hardCurve: 1,   // also : 10 questions plus dures (09/11)
+    { from: 4000, to: 4049, also: [4310, 4319], after: 80, hardFrom: 1, hardCurve: 1,   // also : 10 questions plus dures (09/11)
       names: ['Entre-deux', 'Pas à pas', 'Petits sommets', 'Chemins de traverse', 'Tour d’horizon', 'Escale', 'Bonne allure'] },
-    { from: 4050, to: 4099, also: [4300, 4309], first: 101, last: 110, hardFrom: 1, hardCurve: 1,   // also : 6 questions plus dures (09/11)
+    { from: 4050, to: 4099, also: [4300, 4309], after: 90, hardFrom: 1, hardCurve: 1,   // also : 6 questions plus dures (09/11)
       names: ['Seconde escale', 'Belle lancée', 'Nouveaux horizons', 'À mi-hauteur', 'Pleine forme', 'Vent arrière', 'Cap tenu'] },
     // Lot 4 (2026-11-03, 2e vague) : un bloc après chacun des anciens 100, 110, 120 et 130 (ids 4100+, sujets jamais utilisés)
-    { from: 4100, to: 4149, first: 121, last: 130, hardFrom: 1, hardCurve: 1,
+    { from: 4100, to: 4149, also: [4320, 4329], after: 100, hardFrom: 1, hardCurve: 1,
       names: ['Nouvel élan', 'Plein cap', 'Les éclaireurs', 'Sur la crête', 'Belle échappée', 'Grand angle', 'Pas de géant'] },
-    { from: 4150, to: 4199, first: 141, last: 150, hardFrom: 1, hardCurve: 1,
+    { from: 4150, to: 4199, after: 110, hardFrom: 1, hardCurve: 1,
       names: ['Vents porteurs', 'Terres lointaines', 'Esprit d’aventure', 'Le grand saut', 'Sur la route', 'Bel horizon', 'Pleins feux'] },
-    { from: 4200, to: 4249, first: 161, last: 170, hardFrom: 1, hardCurve: 1,
+    { from: 4200, to: 4249, after: 120, hardFrom: 1, hardCurve: 1,
       names: ['Haute mer', 'Les veilleurs', 'Sommets en vue', 'Le col', 'Fin limier', 'Ligne de crête', 'Œil de lynx'] },
-    { from: 4250, to: 4299, first: 181, last: 190, hardFrom: 1, hardCurve: 1,
-      names: ['Les vigies', 'Dernier relais', 'Toutes voiles', 'Au long cours', 'Hautes terres', 'Cap sur les cimes', 'Le belvédère'] }
+    { from: 4250, to: 4299, also: [4330, 4339], after: 130, hardFrom: 1, hardCurve: 1,
+      names: ['Les vigies', 'Dernier relais', 'Toutes voiles', 'Au long cours', 'Hautes terres', 'Cap sur les cimes', 'Le belvédère'] },
+    // Lot 5 (2026-11-09, 3e vague) : un bloc facile après chacun des anciens 10, 20, …, 70 et un bloc dur après l'ancien 150
+    { from: 4400, to: 4449, after: 10, hardFrom: 1, hardCurve: 1,
+      names: ['Petit à petit', 'Bon départ', 'Premières pistes', 'En route', 'Coup d’essai', 'Tour de chauffe', 'Pas de souris'] },
+    { from: 4450, to: 4499, after: 20, hardFrom: 1, hardCurve: 1,
+      names: ['Grains de savoir', 'Du bon pied', 'Tout en douceur', 'Petit trot', 'Fil rouge', 'Bonne pioche', 'Clins d’œil'] },
+    { from: 4500, to: 4549, after: 30, hardFrom: 1, hardCurve: 1,
+      names: ['Vent en poupe', 'Petits génies', 'Pas pressé', 'Belle humeur', 'Bouts de savoir', 'Main verte', 'Pièces du puzzle'] },
+    { from: 4550, to: 4599, after: 40, hardFrom: 1, hardCurve: 1,
+      names: ['Mine de rien', 'Coin des curieux', 'Sur la lancée', 'Petit train', 'Mise en forme', 'Pas chassés', 'Bel élan'] },
+    { from: 4600, to: 4649, after: 50, hardFrom: 1, hardCurve: 1,
+      names: ['Escapade', 'Rouages', 'Cœur à l’ouvrage', 'Sentiers battus', 'Pied à l’étrier', 'Remontée', 'Bonne route'] },
+    { from: 4650, to: 4699, after: 60, hardFrom: 1, hardCurve: 1,
+      names: ['Mi-chemin', 'Ça grimpe', 'Belle foulée', 'En cadence', 'Cap au nord', 'Deuxième souffle', 'Rythme de croisière'] },
+    { from: 4700, to: 4749, after: 70, hardFrom: 1, hardCurve: 1,
+      names: ['Dernier virage', 'Promenade', 'Tremplin', 'Nouveau cap', 'Bel envol', 'Juste avant', 'Pas de côté'] },
+    { from: 4750, to: 4799, after: 150, hardFrom: 1, hardCurve: 1,
+      names: ['Haute volée', 'Sentinelles', 'Les sages', 'Esprits affûtés', 'Fines lames', 'Œil d’aigle', 'Cimes lointaines'] }
 ];
 /* Blocs de 10 niveaux insérés APRÈS ces anciens numéros (numérotation d'origine du lot 1, 170 niveaux), vague par vague.
-   1re vague (2026-11-03) : après 80 et 90 (parcours de 190) ; 2e vague (même jour) : après 100, 110, 120 et 130 (230).
+   1re vague (2026-11-03) : après 80 et 90 (parcours de 190) ; 2e vague (même jour) : après 100, 110, 120 et 130 (230) ;
+   3e vague (2026-11-09) : après 10, 20, …, 70 (blocs faciles) et après 150 (bloc dur) : 310 niveaux.
+   Un lot inséré dit `after: <ancien numéro>` : ses niveaux sont levelRenumber(after) + 1 à + 10.
    L'ancien niveau 81 devient le 91, l'ancien 101 le 131… Le jeu convertit les sauvegardes une seule fois, quelle que soit
    la disposition d'où elles viennent (LEVEL_LAYOUT dans script.js = nombre de vagues + 1, levelFromLayout).
    Pour une nouvelle vague : ajouter une ligne ICI (anciens numéros) + un lot par bloc, et monter LEVEL_LAYOUT. */
-const LEVEL_WAVES = [[80, 90], [100, 110, 120, 130]];
+const LEVEL_WAVES = [[80, 90], [100, 110, 120, 130], [10, 20, 30, 40, 50, 60, 70, 150]];
 const LEVEL_ORIGINAL = 170;   // niveaux du lot 1 (numérotation d'origine)
 const LEVEL_INSERTS = LEVEL_WAVES.flat();
 const levelRenumber = n => n + 10 * LEVEL_INSERTS.filter(x => n > x).length;
@@ -252,7 +271,9 @@ function finish() {
 
     LEVEL_LOTS.forEach(lot => {
         const lotQuestions = QUESTIONS.filter(q => (q.id >= lot.from && q.id <= lot.to) || (lot.also && q.id >= lot.also[0] && q.id <= lot.also[1]));
-        if (lotQuestions.length) assignLot(lotQuestions, lot.first, lot.last, lot.hardFrom, lot.hardCurve, lot);
+        const first = lot.after != null ? levelRenumber(lot.after) + 1 : lot.first;
+        const last = lot.after != null ? first + 9 : lot.last;
+        if (lotQuestions.length) assignLot(lotQuestions, first, last, lot.hardFrom, lot.hardCurve, lot);
     });
     finish();
 })();

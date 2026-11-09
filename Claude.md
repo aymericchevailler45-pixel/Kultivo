@@ -206,6 +206,20 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   4) ENTRAÎNEMENT : médaille d'or gagnée, puis une erreur dans un entraînement suivant → 149/150 maîtrisées et la médaille
      a DISPARU. Une médaille gagnée doit RESTER (enregistrée, comme `trainMedals`) ; à décider avec lui si une question
      maîtrisée peut redevenir « pas maîtrisée » (aujourd'hui la maîtrise suit la série de bonnes réponses).
+- FAIT le 09/11 (demande de l'utilisateur, « genre 300 niveaux ») : PARCOURS DE 310 NIVEAUX, 3e vague = 8 blocs de 10 :
+  7 FACILES après les anciens 10, 20, …, 70 (ids 4400-4749, 50 par bloc ; moyennes 1,40 / 1,62 / 1,83 / 2,02 / 2,24 / 2,45 / 2,68)
+  + 1 DUR après l'ancien 150 (ids 4750-4799, 4,24). 383 questions nouvelles (scratchpad lot5_easy*.js, lot5_hard*.js, lot5_build.py,
+  check4.py) : faciles = petits des animaux, comptines, contes, expressions « comme un… », objets du quotidien, sports… ; la
+  plupart des « détails précis » durs étaient déjà pris (Tordesillas, Ming, Astana…), le bloc dur reprend la réserve du lot 4.
+  levels.js : `LEVEL_WAVES` + [10, 20, 30, 40, 50, 60, 70, 150] ; les lots insérés disent maintenant `after: <ancien n°>`
+  (premier niveau = levelRenumber(after) + 1) au lieu de first/last ; TOTAL_LEVELS 310. `LEVEL_LAYOUT = 4` (conversion depuis
+  170 / 190 / 230 testée : joueur au 215 → 295, au 141 → 211). Courbe : +0,1 environ par dizaine de 1 à 310 (1,33 → 4,49).
+  Petits creux corrigés : bloc 121-130 (devenu 171-180) 3,27 → 3,31 (ids 4320-4322), 181-190 (devenu 251-260) 3,99 → 3,93 (ids
+  4330-4333, `also`). Seuils « à difficulté égale » (numéros d'aujourd'hui) : couleurs 10, 30, 50, 70, 90, 110, 130, 150, 160,
+  170, 180, 190 (`levelFromLayout(…, 3)` dans AV_ALL) ; 🚂 30, 🔭 90, 🗿 150, 👻 230, cadre Explorateur 165 ; frises `orderSizes`
+  toutes en anciens numéros (`R(36)`…). ATTENTION cosmetiques.js : une virgule placée APRÈS un commentaire `//` disparaît →
+  la liste suivante est lue comme un indice et AV_ALL plante (arrivé et corrigé le 09/11). Réserve restante : lot5_left.js
+  (~55 faciles), reserve_faciles.js. Placement (départ max 81, soit difficulté ~2,2 maintenant) : à rediscuter (09/11).
 - FAIT le 09/11 : courbe lissée 71-120 : bloc A (81-90) 2,71 → 2,84 (10 questions faciles remplacées, nouvelles ids 4310-4319)
   et bloc B (101-110) 2,96 → 3,09 (6 remplacées, ids 4300-4305), via `also: [de, à]` dans LEVEL_LOTS (levels.js) ; courbe :
   2,78 / 2,84 / 2,96 / 3,09 / 3,21 / 3,27 / 3,40… Les 16 questions FACILES retirées (d 2,2-2,5, jamais vues ailleurs) sont gardées

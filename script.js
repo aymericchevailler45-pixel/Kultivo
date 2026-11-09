@@ -138,10 +138,10 @@ const orderSize = level => level < 40 ? 4 : level < 85 ? 5 : 6;
    ancien 86 : 5·6·6 ; ancien 96 et plus : 6·6·6 (anciens numéros : levelRenumber suit les niveaux insérés, 2026-11-03). */
 function orderSizes(level) {
     const R = typeof levelRenumber === 'function' ? levelRenumber : n => n;
-    if (level < 36) return [4, 4, 4];
-    if (level < 46) return [4, 4, 5];
-    if (level < 56) return [4, 5, 5];
-    if (level < 76) return [5, 5, 5];
+    if (level < R(36)) return [4, 4, 4];
+    if (level < R(46)) return [4, 4, 5];
+    if (level < R(56)) return [4, 5, 5];
+    if (level < R(76)) return [5, 5, 5];
     if (level < R(86)) return [5, 5, 6];
     if (level < R(96)) return [5, 6, 6];
     return [6, 6, 6];
@@ -775,7 +775,7 @@ function normalizeData(data) {
    (facultatifs, jouables quand il veut) et leurs coffres ne s'ouvrent qu'en les terminant. Un joueur pile au début d'un
    bloc inséré (ex. : il allait jouer l'ancien 81) commence ce bloc. Pas de « levelLayout » dans defaultData : sinon une
    vieille sauvegarde, complétée par defaultData au chargement, paraîtrait déjà convertie. */
-const LEVEL_LAYOUT = 3;   // 2 = 1re vague (190 niveaux), 3 = 2e vague (230 niveaux), le 2026-11-03
+const LEVEL_LAYOUT = 4;   // 2 = 1re vague (190 niveaux), 3 = 2e vague (230), 4 = 3e vague (310 niveaux, 09/11)
 function migrateLevelLayout(data) {
     const from = data.levelLayout || 1;
     const R = typeof levelFromLayout === 'function' ? n => levelFromLayout(n, from) : n => n;
@@ -8333,7 +8333,8 @@ const avOn = () => patched();
 const AV_ALL = (() => {
     const list = [];
     AVATAR_HUES.forEach((hue, i) => {
-        const level = i % 2 === 0 ? 0 : 10 * Math.ceil(i / 2);
+        // Seuils d'origine 10, 20… 120 (parcours de 230 niveaux) gardés à difficulté égale après les insertions du 09/11
+        const level = i % 2 === 0 ? 0 : (typeof levelFromLayout === 'function' ? levelFromLayout(10 * Math.ceil(i / 2), 3) : 10 * Math.ceil(i / 2));
         list.push({ id: `hue-${hue}`, type: 'bg', kind: level ? 'earn' : 'free', hue, name: 'Couleur unie',
                     how: `Termine le niveau ${level}`, test: st => st.maxDone >= level });
     });
