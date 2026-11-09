@@ -674,7 +674,8 @@ function defaultData() {
         podium: {},                      // classement : lundi de la semaine -> place obtenue (0 = rien)
         avatar: null,                    // avatar choisi : { hue: 0-359, emoji: '🦉' ou null = initiale }
         trainTier: {},                   // entraînement : thème -> palier débloqué (1 à 5)
-        trainTierDay: {},                // entraînement : thème -> jour du dernier palier gagné (1 par jour)
+        trainTierDay: {},                // entraînement : thème -> jour du dernier palier RÉUSSI (1 par jour)
+        trainTierWon: {},                // entraînement (09/11) : thème -> dernier palier réussi ; le suivant s'ouvre un autre jour
         tipTraining: false,              // explication des paliers déjà vue (ancienne version, 1 bulle)
         tipTraining2: false,             // explication de l'entraînement en 3 bulles (2026-10-18)
         tipChallenges: false,            // 1re visite de l'onglet Défis : bulle qui mène à l'Entraînement
@@ -732,7 +733,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone', 'duelStarted']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainTierWon', 'trainChests', 'trainMedals', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone', 'duelStarted']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -6022,16 +6023,16 @@ function renderStickers(combo, flash, tierDone = false) {
     box.replaceChildren();
     if (combo) { const c = el('span', 'fb-sticker is-combo'); c.textContent = `🔥 ${combo} d’affilée !`; box.append(c); }
     if (flash) { const f = el('span', 'fb-sticker is-flash'); f.textContent = '⚡ Éclair !'; box.append(f); }
-    if (tierDone) { const t = el('span', 'fb-sticker is-tierdone'); t.textContent = '🌙 Palier atteint · suite demain'; box.append(t); }
+    if (tierDone) { const t = el('span', 'fb-sticker is-tierdone'); t.textContent = '🎉 Palier réussi · suite demain'; box.append(t); }
 }
-/** Entraînement (2026-11-09) : cette bonne réponse fait-elle atteindre le palier suivant… alors qu'il ne s'ouvre que demain ?
-    (sinon on enchaînait les sessions sans voir que ça n'avançait plus vers le palier suivant) */
+/** Entraînement (2026-11-09) : cette bonne réponse fait-elle RÉUSSIR le palier en cours ? (le suivant ne s'ouvre que demain :
+    sinon on enchaînait les sessions sans voir que ça n'avançait plus) */
 function trainReadyNow(clean) {
     if (state.mode !== 'training' || !clean || state.trainReadyShown) return false;
     const theme = state.trainTheme, pr = trainingProgress(theme);
     const master = masterCard(theme);
     const stillToWin = pr.tier < TRAIN_TIERS || (master && !state.data.cards[master.id]);
-    if (!pr.blockedToday || pr.ready || !stillToWin) return false;
+    if (pr.blockedToday || pr.won || pr.ready || !stillToWin) return false;
     const id = state.current.q.id;
     const inTier = (trainingTiers(theme)[pr.tier - 1] || []).some(q => q.id === id);
     if (!inTier || wasRight(id) || pr.right + 1 < pr.needRight) return false;
@@ -7901,6 +7902,30 @@ function trainingTiers(theme) {
     return Array.from({ length: TRAIN_TIERS }, (_, i) => bank.slice(i * size, (i + 1) * size));
 }
 const trainTierOf = theme => Math.min(TRAIN_TIERS, Math.max(1, state.data.trainTier[theme] || 1));
+/* 2026-11-09 (demande de l'utilisateur) : « un palier réussi par jour, le suivant s'ouvre le lendemain ». On ne joue donc
+   jamais les questions d'un palier le jour où il a été gagné. trainTierWon = dernier palier RÉUSSI (2/3 de ses questions),
+   trainTierDay = jour de cette réussite ; le palier suivant s'ouvre dès qu'on revient un autre jour (trainAdvance). */
+function trainWonOf(theme) {
+    const d = state.data;
+    if (d.trainTierWon[theme] === undefined) {   // sauvegarde d'avant : on part de la situation actuelle
+        const tier = trainTierOf(theme);
+        const qs = trainingTiers(theme)[tier - 1] || [];
+        const ready = qs.length > 0 && qs.filter(q => wasRight(q.id)).length >= Math.ceil(qs.length * 2 / 3);
+        d.trainTierWon[theme] = ready && d.trainTierDay[theme] !== todayKey() ? tier : tier - 1;
+    }
+    return d.trainTierWon[theme];
+}
+/** Palier réussi un autre jour : le suivant s'ouvre. */
+function trainAdvance(theme) {
+    const tier = trainTierOf(theme);
+    if (tier < TRAIN_TIERS && trainWonOf(theme) >= tier && state.data.trainTierDay[theme] !== todayKey()) {
+        state.data.trainTier[theme] = tier + 1;
+        saveData();
+        return true;
+    }
+    return false;
+}
+const trainAdvanceAll = () => THEME_DECOR.forEach(({ theme }) => { if (trainingBank(theme).length) trainAdvance(theme); });
 // 09/11 (choix A de l'utilisateur) : une question maîtrisée le reste (drapeau `mastered`), même après une erreur ;
 // elle revient quand même plus souvent à l'entraînement (le tirage suit la série de bonnes réponses, qui, elle, retombe)
 const isMastered = id => !!state.data.stats[id]?.mastered || (state.data.stats[id]?.streak || 0) >= 2;
@@ -7919,7 +7944,8 @@ function trainingProgress(theme) {
     return {
         tier, right, mastered, needRight, needMastered, size: qs.length,
         ready: qs.length > 0 && right >= needRight,
-        blockedToday: state.data.trainTierDay[theme] === todayKey(),   // déjà un palier gagné aujourd'hui
+        blockedToday: state.data.trainTierDay[theme] === todayKey(),   // déjà un palier réussi aujourd'hui
+        won: trainWonOf(theme) >= tier,                                // palier en cours déjà réussi (le suivant attend demain)
         totalMastered: bank.filter(q => isMastered(q.id)).length,
         total: bank.length
     };
@@ -7930,7 +7956,8 @@ const masterCard = theme => CARDS.find(c => c.theme === theme && c.rarity === 'm
 /** Coffres de palier pas encore donnés pour ce thème : 2 cartes du thème par palier gagné,
     + la carte Maître au palier 5. Les marque comme donnés (l'ouverture enregistre la sauvegarde). */
 function trainChestBoxes(theme) {
-    const tier = trainTierOf(theme);
+    const cur = trainTierOf(theme);
+    const tier = cur < TRAIN_TIERS && trainWonOf(theme) >= cur ? cur + 1 : cur;   // palier réussi = coffre tout de suite
     const from = state.data.trainChests[theme] || 1;
     const boxes = [];
     for (let t = from + 1; t <= tier; t++) {
@@ -8040,15 +8067,16 @@ function openMedalsSheet(theme, icon) {
 }
 
 /** Monte d'un ou plusieurs paliers si les conditions sont remplies. Renvoie le nouveau palier. */
+/** Fin de session : le palier en cours vient-il d'être RÉUSSI ? (au plus un par jour ; le suivant s'ouvre demain) */
 function updateTrainingTier(theme) {
-    let tier = trainTierOf(theme);
+    const tier = trainTierOf(theme);
     const pr = trainingProgress(theme);
-    if (tier < TRAIN_TIERS && pr.ready && !pr.blockedToday) {
-        tier++;
-        state.data.trainTier[theme] = tier;
-        state.data.trainTierDay[theme] = todayKey();   // au plus un palier par jour (et par thème)
+    if (pr.ready && !pr.won && !pr.blockedToday) {
+        state.data.trainTierWon[theme] = tier;
+        state.data.trainTierDay[theme] = todayKey();
+        return true;
     }
-    return tier;
+    return false;
 }
 
 /** Les 10 questions d'une session. */
@@ -8087,22 +8115,24 @@ function trainingLeftText(pr) {
 
 /** Avant de commencer : rappel du palier et de ce qu'il reste pour le suivant. */
 async function confirmTraining(theme, icon) {
+    trainAdvance(theme);
     const pr = trainingProgress(theme);
     // Court : le palier, ce qu'il reste pour le suivant, et la goutte à gagner
     const lines = [`Palier ${pr.tier}/${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[pr.tier - 1]}`];
     const master = masterCard(theme);
     const hasMaster = master && state.data.cards[master.id];
     if (pr.tier < TRAIN_TIERS) {
-        lines.push(!pr.ready ? `Palier ${pr.tier + 1} : ${trainingLeftText(pr)}${pr.blockedToday ? ' (au plus tôt demain)' : ''}`
-            : pr.blockedToday ? `🌙 Palier ${pr.tier + 1} demain`
-            : `🎉 Palier ${pr.tier + 1} à la fin de cette session !`);
+        lines.push(pr.won ? `🌙 Palier réussi : le palier ${pr.tier + 1} s’ouvre demain`
+            : !pr.ready ? `Pour réussir ce palier : ${trainingLeftText(pr)}`
+            : pr.blockedToday ? '🌙 Palier réussi demain, à ta première session'
+            : '🎉 Palier réussi à la fin de cette session !');
     } else if (!hasMaster) {
-        lines.push(!pr.ready ? `🏆 Carte Maître : ${trainingLeftText(pr)}${pr.blockedToday ? ' (au plus tôt demain)' : ''}`
+        lines.push(!pr.ready ? `🏆 Carte Maître : ${trainingLeftText(pr)}`
             : pr.blockedToday ? '🌙 Carte Maître demain' : '🏆 Carte Maître à la fin de cette session !');
     } else {
         lines.push('🏆 Palier maximum');
     }
-    if (pr.blockedToday) lines.push('✅ Palier du jour déjà gagné : tu peux continuer pour t’entraîner.');
+    if (pr.blockedToday) lines.push('✅ Palier du jour déjà réussi : tu peux continuer pour t’entraîner (ça compte pour tes médailles).');
     const bonus = dropBonusText();
     if (bonus) lines.push(bonus);
     const ok = await askConfirm({ title: `${icon} ${theme}`, text: lines.join('\n'), yes: pr.blockedToday ? 'Continuer quand même' : 'Commencer', no: 'Plus tard' });
@@ -8111,6 +8141,7 @@ async function confirmTraining(theme, icon) {
 
 function startTraining(theme) {
     if (!trainingBank(theme).length) { showToast('Questions bientôt disponibles pour ce thème.'); return; }
+    trainAdvance(theme);
     state.trainTheme = theme;
     state.trainTierBefore = trainTierOf(theme);
     state.trainReadyShown = false;
@@ -8121,41 +8152,41 @@ function endTraining() {
     const theme = state.trainTheme;
     state.data.totals.trainings = (state.data.totals.trainings || 0) + 1;
     missionEvent('training');
-    const before = state.trainTierBefore;
-    const tier = updateTrainingTier(theme);
+    const tier = trainTierOf(theme);
+    const won = updateTrainingTier(theme);   // palier en cours réussi pendant cette session ?
     const pr = trainingProgress(theme);
     const icon = (THEME_DECOR.find(t => t.theme === theme) || {}).icon || '🎯';
-    let text;
-    if (tier > before) text = `🎉 Palier ${tier} débloqué en ${theme} !`;
-    else if (tier >= TRAIN_TIERS && pr.ready) text = `${icon} ${theme} : tu es au palier maximum, bravo !`;
-    else {
-        text = pr.ready && pr.blockedToday
-            ? `🌙 Bravo ! Tu as déjà gagné un palier aujourd’hui en ${theme} : reviens demain pour passer au palier ${tier + 1}.`
-            : `${icon} Pour passer au palier ${tier + 1} : ${trainingLeftText(pr)}.`;
-    }
-    const up = tier > before;
-    // Palier 5 RÉUSSI (les 2/3 de ses questions) : la carte Maître (2026-10-25 : avant, elle venait dès l'arrivée au palier 5)
     const master = masterCard(theme);
-    const masterNow = tier >= TRAIN_TIERS && !up && pr.ready && !pr.blockedToday && master && !state.data.cards[master.id];
-    if (masterNow) {
-        state.data.trainTierDay[theme] = todayKey();
+    const masterMissing = !!master && !state.data.cards[master.id];
+    const masterNow = won && tier >= TRAIN_TIERS && masterMissing;   // palier 5 RÉUSSI : la carte Maître
+    // Palier du jour déjà réussi (ou validé demain) : la suite attend demain → on propose un autre thème
+    const waitTomorrow = !won && pr.ready && pr.blockedToday && (tier < TRAIN_TIERS || masterMissing);
+    let emoji = '🎯', title = `Entraînement · ${theme}`, text;
+    if (won && tier < TRAIN_TIERS) {
+        emoji = '🏅';
+        title = `Palier ${tier} réussi !`;
+        text = `${icon} ${theme} : palier ${tier} · ${TRAIN_TIER_NAMES[tier - 1]} réussi.\n🌙 Le palier ${tier + 1} · ${TRAIN_TIER_NAMES[tier]} s’ouvre demain. D’ici là, tu peux rejouer celui-ci : ça compte pour tes médailles.`;
+        launchConfetti();
+        playSound('win');
+    } else if (masterNow) {
+        emoji = '🏆';
+        title = 'Palier 5 réussi !';
         text = `🏆 ${theme} : palier 5 réussi ! Tu gagnes la carte Maître.`;
         launchConfetti();
         playSound('win');
-    } else if (tier >= TRAIN_TIERS && !up && master && !state.data.cards[master.id]) {
-        text = pr.ready && pr.blockedToday
-            ? `🌙 Bravo ! Tu as déjà gagné un palier aujourd’hui : reviens demain pour réussir le palier 5 et gagner la carte Maître.`
+    } else if (waitTomorrow) {
+        emoji = '🌙';
+        title = 'Palier du jour terminé';
+        text = (pr.won && tier < TRAIN_TIERS ? `${icon} Le palier ${tier + 1} s’ouvre demain.`
+            : tier < TRAIN_TIERS ? `${icon} Ce palier sera validé demain, à ta première session.`
+            : `${icon} La carte Maître se gagne demain, à ta première session.`)
+            + '\nTu peux continuer sur ce palier : ça compte pour tes médailles.';
+    } else if (tier >= TRAIN_TIERS && (pr.ready || !masterMissing)) {
+        text = `${icon} ${theme} : tu es au palier maximum, bravo !`;
+    } else {
+        text = tier < TRAIN_TIERS
+            ? `${icon} Pour réussir le palier ${tier} : ${trainingLeftText(pr)}.`
             : `${icon} Pour réussir le palier 5 et gagner la carte Maître : ${trainingLeftText(pr)}.`;
-    }
-    if (up) {
-        // Nouveau palier : on le dit en grand (titre, texte, bouton)
-        // 2026-11-09 : on dit tout de suite que le palier suivant ne s'ouvre pas avant demain (un palier par jour)
-        text = `${icon} ${theme} : tu passes au palier ${tier} / ${TRAIN_TIERS} · ${TRAIN_TIER_NAMES[tier - 1]}.\n`
-            + (tier < TRAIN_TIERS
-                ? `🌙 Tu peux déjà jouer ses questions : elles comptent pour le palier ${tier + 1}, qui s’ouvrira demain au plus tôt.`
-                : '🌙 Tu peux déjà jouer ses questions : elles comptent pour la carte Maître, à gagner demain au plus tôt.');
-        launchConfetti();
-        playSound('win');
     }
     // Médaille du thème (bronze, argent, or) gagnée pendant cette session ?
     const medal = trainMedalOf(theme);
@@ -8171,34 +8202,25 @@ function endTraining() {
         if (next && next.left > 0) text += `\n${next.m.icon} Plus que ${plural(next.left, 'question maîtrisée', 'questions maîtrisées')} pour la médaille d’${next.m.name}.`;
     }
     const dropLine = earnPracticeDrop();
-    // 2026-11-09 : palier suivant atteint mais bloqué jusqu'à demain → on le dit en grand et on propose un autre thème
     const toThemes = () => { returnToMap(); setChallengesTab('training'); };
-    const waitTomorrow = !up && !masterNow && pr.ready && pr.blockedToday
-        && (tier < TRAIN_TIERS || (master && !state.data.cards[master.id]));
-    if (waitTomorrow) {
-        text = (tier < TRAIN_TIERS
-            ? `${icon} Le palier ${tier + 1} s’ouvre demain, à la fin de ta première session.`
-            : `${icon} La carte Maître se gagne demain, à la fin de ta première session.`)
-            + '\nTu peux continuer sur ce palier : ça compte pour tes médailles.'
-            + text.split('\n').slice(1).map(l => `\n${l}`).join('');
-    }
+    const later = (won && tier < TRAIN_TIERS) || waitTomorrow;   // la suite est pour demain
     setEnd({
-        emoji: up ? '🏅' : waitTomorrow ? '🌙' : '🎯',
-        title: up ? `Palier ${tier} débloqué !` : masterNow ? 'Palier 5 réussi !' : waitTomorrow ? 'Palier du jour terminé' : `Entraînement · ${theme}`,
+        emoji,
+        title,
         text,
         stats: [statXp(), statAccuracy(), statTime()],
         extra: [rewardSummary(), dropLine].filter(Boolean).join('\n'),
-        primary: up ? `Commencer le palier ${tier}` : waitTomorrow ? 'Choisir un autre thème' : 'Encore 10 questions',
+        primary: later ? 'Choisir un autre thème' : 'Encore 10 questions',
         primaryClass: 'btn-green',
-        onPrimary: waitTomorrow ? toThemes : () => startTraining(theme),
-        secondary: waitTomorrow ? 'Continuer quand même' : 'Retour aux thèmes',
-        onSecondary: waitTomorrow ? () => startTraining(theme) : toThemes
+        onPrimary: later ? toThemes : () => startTraining(theme),
+        secondary: later ? 'Continuer quand même' : 'Retour aux thèmes',
+        onSecondary: later ? () => startTraining(theme) : toThemes
     });
-    // Coffre du palier gagné (2 cartes du thème ; au palier 5, la carte Maître en plus)
+    // Coffre du palier réussi (2 cartes du thème ; au palier 5, la carte Maître)
     const boxes = trainChestBoxes(theme);
     if (masterNow) boxes.push({ size: 0, fixed: [master] });
     if (boxes.length) {
-        setTimeout(() => openCardBoxes(boxes, masterNow ? `🏆 Carte Maître · ${theme}` : `🎁 Coffre du palier ${tier} · cartes ${theme}`), 900);
+        setTimeout(() => openCardBoxes(boxes, masterNow ? `🏆 Carte Maître · ${theme}` : `🎁 Coffre du palier ${tier} réussi · cartes ${theme}`), 900);
     }
 }
 
@@ -8315,7 +8337,7 @@ function showTrainingTip() {
         text: '🎯 Ici, des questions à part, différentes du parcours, pour t’entraîner sur le thème de ton choix.'
     }, {
         target: () => document.querySelector('.train-tile'),
-        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier pour passer au suivant (un par jour au maximum) : 🎁 un coffre de cartes du thème à chaque palier, et 🏆 la carte Maître en réussissant le palier 5 !'
+        text: '🪜 Chaque thème a 5 paliers. Réussis les 2/3 des questions d’un palier : le suivant s’ouvre le lendemain (un palier par jour) : 🎁 un coffre de cartes du thème à chaque palier, et 🏆 la carte Maître en réussissant le palier 5 !'
     }, {
         target: () => document.querySelector('.train-tile'),
         text: '↻ Tes erreurs reviennent dans les sessions suivantes, jusqu’à ce que tu les saches.'
@@ -8329,6 +8351,7 @@ function showTrainingTip() {
 
 /** La page Entraînement : une case par thème (palier, progression, ce qu'il reste). */
 function renderTraining() {
+    trainAdvanceAll();   // paliers réussis un autre jour : le suivant s'ouvre (2026-11-09)
     const grid = $('trainingGrid');
     grid.replaceChildren();
     [...THEME_DECOR].sort((a, b) => byThemeName(a.theme, b.theme)).forEach(({ theme, icon }) => {
@@ -8366,7 +8389,7 @@ function renderTraining() {
             tile.append(label, bar, medalRow(theme, icon));
             if (pr.blockedToday) {
                 const today = el('span', 'train-today');
-                today.textContent = '✅ Palier du jour gagné · suite demain';
+                today.textContent = '✅ Palier du jour réussi · suite demain';
                 tile.append(today);
             }
             const errors = bank.filter(q => missCount(q.id) > 0).length;
