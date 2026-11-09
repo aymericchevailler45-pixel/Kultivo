@@ -8235,7 +8235,14 @@ function openMedalsSheet(theme, icon) {
         body.append(line);
     });
     const note = el('p', 'medal-note');
-    note.textContent = `✅ Une question est maîtrisée quand tu l’as réussie 2 fois de suite, sur 2 jours différents. Tu en as ${pr.totalMastered} sur ${pr.total}.`;
+    note.textContent = '✅ Une question est maîtrisée quand tu l’as réussie 2 fois de suite, sur 2 jours différents.';
+    const count = el('div', 'medal-count');   // le chiffre doit ressortir (demande de l'utilisateur)
+    const big = el('b');
+    big.textContent = `${pr.totalMastered} / ${pr.total}`;
+    const lab = el('span');
+    lab.textContent = 'questions maîtrisées';
+    count.append(big, lab);
+    note.append(count);
     body.append(note);
     const master = masterCard(theme);
     if (master) {   // la carte Maître : expliquée ici plutôt que sur la case (2026-10-28)
