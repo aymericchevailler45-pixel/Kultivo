@@ -1543,6 +1543,9 @@ function medalCounts() {
 const BADGES = [
     { id: 'ev-halloween-2026', icon: '🎃', name: 'Halloween 2026', desc: 'Trouver 45 questions de la semaine d’Halloween 2026', event: 'halloween-2026',
       test: s => s.eventsWon.includes('halloween-2026') },
+    // Ajouté le 09/11 après l'événement (demande de l'utilisateur) : ceux qui l'ont fini le reçoivent à l'ouverture du jeu
+    { id: 'ev-maghreb-2026', icon: '🐪', name: 'Escale au Maghreb 2026', desc: 'Trouver 50 questions de l’Escale au Maghreb 2026', event: 'maghreb-2026',
+      test: s => s.eventsWon.includes('maghreb-2026') },
     { id: 'first',     icon: '🌱', name: 'Premiers pas',        desc: 'Terminer un niveau',                    test: s => s.levelsDone >= 1 },
     { id: 'right25',   icon: '👍', name: 'Bien parti',          desc: '25 bonnes réponses du premier coup',    test: s => s.right >= 25 },
     { id: 'right100',  icon: '💯', name: 'Centenaire',          desc: '100 bonnes réponses du premier coup',   test: s => s.right >= 100 },
@@ -1652,7 +1655,8 @@ const BADGE_FAMS = [
         ['collect5', '5 thèmes', 5, s => s.themesComplete], ['collectAll', 'toutes', 15, s => s.themesComplete]]],
     ['🔁', 'Révisions et boutique', '', [['shop', '1 achat', 1, s => s.purchases], ['revisions', '1 révision', 1, s => s.reviews],
         ['revisions5', '5 révisions', 5, s => s.reviews], ['revisions25', '25 révisions', 25, s => s.reviews]]],
-    ['🎉', 'Événements', '', [['ev-halloween-2026', 'événement fini', 1, s => +s.eventsWon.includes('halloween-2026')]]]
+    ['🎉', 'Événements', '', [['ev-halloween-2026', 'événement fini', 1, s => +s.eventsWon.includes('halloween-2026')],
+        ['ev-maghreb-2026', 'événement fini', 1, s => +s.eventsWon.includes('maghreb-2026')]]]
 ];
 
 /** Semaines terminées à la 1re place de la Ligue des amis. */
@@ -1808,7 +1812,7 @@ const EVENTS = [{
     id: 'maghreb-2026', bank: 'maghreb', name: 'Maghreb', title: 'Escale au Maghreb', icon: '🐪',
     start: '2026-11-02', end: '2026-11-08', goal: 50, cls: 'event-maghreb', tip: 'tipEventMaghreb2026',
     intro: 'C’est l’Escale au Maghreb !', blurb: 'Des sessions de 10 questions sur le Maroc, l’Algérie et la Tunisie.',
-    rewards: [{ at: 10, emoji: '🫖' }, { at: 30, emoji: '🌴' }, { at: 50, emoji: '🐪' }],
+    rewards: [{ at: 10, emoji: '🫖' }, { at: 30, emoji: '🌴' }, { at: 50, emoji: '🐪' }], badge: true,   // badge ajouté le 09/11
     decor: ['🐪', '🌴', '🫖', '🕌', '🏜️', '🌙', '🍊', '🏺'],
     card: { id: 'ev-maghreb-2026', theme: 'Escale au Maghreb 2026', icon: '🐪', name: 'Dromadaire 2026', rarity: 'event',
             text: 'Gagnée pendant l’Escale au Maghreb 2026.' }
@@ -8331,12 +8335,15 @@ const AVATAR_EMOJIS = ['🦉', '🦈', '🦖', '🐋', '🐍', '🐎', '🍄', '
 /* ---------- Objets d'avatar et vitrine de la semaine (mise à jour du 26/10/2026 ; catalogue : cosmetiques.js) ---------- */
 const avOn = () => patched();
 // Couleurs unies (une sur deux au départ, les autres tous les 10 niveaux), dessins de base, dessins d'événement
+const HUE_LEVELS = [20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 250];   // couleurs à gagner (2026-11-09)
 const AV_ALL = (() => {
     const list = [];
     AVATAR_HUES.forEach((hue, i) => {
-        // Seuils d'origine 10, 20… 120 (parcours de 230 niveaux) gardés à difficulté égale après les insertions du 09/11
-        const level = i % 2 === 0 ? 0 : (typeof levelFromLayout === 'function' ? levelFromLayout(10 * Math.ceil(i / 2), 3) : 10 * Math.ceil(i / 2));
-        list.push({ id: `hue-${hue}`, type: 'bg', kind: level ? 'earn' : 'free', hue, name: 'Couleur unie',
+        // 2026-11-09 : couleurs étalées jusqu'au niveau 250 (parcours de 300). oldLevel = ancien seuil (10, 20… 120 du parcours
+        // de 230 niveaux) : une couleur déjà gagnée avec lui est gardée pour toujours (av.grant, une fois, voir avCheck).
+        const level = i % 2 === 0 ? 0 : HUE_LEVELS[Math.ceil(i / 2) - 1];
+        const oldLevel = i % 2 === 0 ? 0 : (typeof levelFromLayout === 'function' ? levelFromLayout(10 * Math.ceil(i / 2), 3) : 10 * Math.ceil(i / 2));
+        list.push({ id: `hue-${hue}`, type: 'bg', kind: level ? 'earn' : 'free', hue, name: 'Couleur unie', oldLevel,
                     how: `Termine le niveau ${level}`, test: st => st.maxDone >= level });
     });
     AV_FREE_PICS.forEach(e => list.push({ id: `pic-${e}`, type: 'pic', kind: 'free', emoji: e, name: 'Emoji' }));
@@ -8395,6 +8402,11 @@ function avCheck() {
     avMigrate();
     const d = state.data;
     const st = avStats();
+    if (!d.huesKept) {   // 2026-11-09 : couleurs étalées jusqu'au 250, celles déjà gagnées avec les anciens seuils sont gardées
+        AV_ALL.forEach(it => { if (it.oldLevel && st.maxDone >= it.oldLevel) d.av.grant[it.id] = 1; });
+        d.huesKept = true;
+        saveData();
+    }
     const fresh = [];
     let ready = 0;
     for (const it of AV_ALL) {

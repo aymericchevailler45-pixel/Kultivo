@@ -206,6 +206,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   4) ENTRAÎNEMENT : médaille d'or gagnée, puis une erreur dans un entraînement suivant → 149/150 maîtrisées et la médaille
      a DISPARU. Une médaille gagnée doit RESTER (enregistrée, comme `trainMedals`) ; à décider avec lui si une question
      maîtrisée peut redevenir « pas maîtrisée » (aujourd'hui la maîtrise suit la série de bonnes réponses).
+- FAIT le 09/11 : COULEURS d'avatar étalées jusqu'au 250 (`HUE_LEVELS` = 20, 40, … 220, 250) ; celles déjà gagnées avec les
+  anciens seuils sont gardées pour toujours (`oldLevel` + `av.grant`, une fois, drapeau `huesKept` dans avCheck).
+  BADGE « Escale au Maghreb 2026 » ajouté APRÈS l'événement (oublié : on avait dit « ni badge » le 30/10) : `ev-maghreb-2026`
+  dans BADGES + famille Événements, `badge: true` dans EVENTS ; donné à ceux qui ont fini (events[id].won) à l'ouverture.
+  PLACEMENT : en discussion (départ max 81 = difficulté ~2,2 sur 300 ; avant 81 = 2,78 sur 170).
 - PUIS RAMENÉ À 300 NIVEAUX le 09/11 (l'utilisateur voulait 300, pas 310) : bloc après l'ancien 10 (ids 4400-4449) retiré,
   gardé dans le scratchpad reserve_bloc10.js. levels.js : `LEVEL_LAYOUT_INSERTS` (une liste par disposition, 1 à 5) remplace
   LEVEL_WAVES ; `levelFromLayout(n, layout, near)` renvoie null pour un niveau d'un bloc retiré (near = niveau d'origine juste
