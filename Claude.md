@@ -220,6 +220,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   1118 Fahrenheit 451, 1157 Abbey Road, 1120 Carcassonne. Chacune à la difficulté moyenne de son étape.
   COFFRES DU PARCOURS (09/11, choix A) : 2 cartes partout (`chestSize`), celui d'après un défi garde sa carte rare ou mieux ;
   60 coffres = 120 cartes (au départ, 170 niveaux : 119). Refusés : un coffre tous les 10 niveaux (B), garder 150 (C).
+  PIÈCES (09/11, calcul) : ~670 🪙/semaine pour un « Régulier », ~1 900-2 500 pour un très gros joueur (XP 1/8, objectif du jour,
+  missions, quête, Kulti, duels, badges, podium, doublons). Coffre de la boutique 150 → 250 🪙 (`SHOP_CHEST`). Doublons : en
+  discussion (idée de l'utilisateur : pièces seulement au-delà de 3 exemplaires, carte déjà brillante).
 - PUIS RAMENÉ À 300 NIVEAUX le 09/11 (l'utilisateur voulait 300, pas 310) : bloc après l'ancien 10 (ids 4400-4449) retiré,
   gardé dans le scratchpad reserve_bloc10.js. levels.js : `LEVEL_LAYOUT_INSERTS` (une liste par disposition, 1 à 5) remplace
   LEVEL_WAVES ; `levelFromLayout(n, layout, near)` renvoie null pour un niveau d'un bloc retiré (near = niveau d'origine juste

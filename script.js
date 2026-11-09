@@ -153,7 +153,7 @@ function orderSizes(level) {
 // 60 coffres = 120 cartes, autant qu'au départ (170 niveaux : 119).
 const CHEST_EVERY = 5;
 const chestSize = n => 2;
-const SHOP_CHEST = { price: 150, size: 3 };   // coffre de la boutique : 3 cartes, dont une rare ou mieux
+const SHOP_CHEST = { price: 250, size: 3 };   // coffre de la boutique : 3 cartes, dont une rare ou mieux (150 → 250 le 09/11 : trop de pièces)
 const GOAL_CARDS = 1;                          // carte offerte avec la récompense de l'objectif du jour
 
 // Test de placement (2026-11-09, parcours de 300 niveaux) : une étape par tranche de 20 niveaux (niveaux 1-19, 21-39, …),
