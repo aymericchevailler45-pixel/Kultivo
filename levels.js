@@ -53,9 +53,9 @@ const LEVEL_LOTS = [
     // Lot 1 : réparti EXACTEMENT comme avant sur 170 niveaux (numérotation d'origine), puis renuméroté (LEVEL_INSERTS)
     { from: 0, to: 3999, first: 1, last: 170, hardFrom: 0.25, hardCurve: 2, renumber: true },
     // Lot 3 (2026-11-03) : blocs de 10 niveaux insérés pour adoucir la courbe (ids 4000+, sujets jamais utilisés)
-    { from: 4000, to: 4049, first: 81, last: 90, hardFrom: 1, hardCurve: 1,
+    { from: 4000, to: 4049, also: [4310, 4319], first: 81, last: 90, hardFrom: 1, hardCurve: 1,   // also : 10 questions plus dures (09/11)
       names: ['Entre-deux', 'Pas à pas', 'Petits sommets', 'Chemins de traverse', 'Tour d’horizon', 'Escale', 'Bonne allure'] },
-    { from: 4050, to: 4099, first: 101, last: 110, hardFrom: 1, hardCurve: 1,
+    { from: 4050, to: 4099, also: [4300, 4309], first: 101, last: 110, hardFrom: 1, hardCurve: 1,   // also : 6 questions plus dures (09/11)
       names: ['Seconde escale', 'Belle lancée', 'Nouveaux horizons', 'À mi-hauteur', 'Pleine forme', 'Vent arrière', 'Cap tenu'] },
     // Lot 4 (2026-11-03, 2e vague) : un bloc après chacun des anciens 100, 110, 120 et 130 (ids 4100+, sujets jamais utilisés)
     { from: 4100, to: 4149, first: 121, last: 130, hardFrom: 1, hardCurve: 1,
@@ -251,7 +251,7 @@ function finish() {
 }
 
     LEVEL_LOTS.forEach(lot => {
-        const lotQuestions = QUESTIONS.filter(q => q.id >= lot.from && q.id <= lot.to);
+        const lotQuestions = QUESTIONS.filter(q => (q.id >= lot.from && q.id <= lot.to) || (lot.also && q.id >= lot.also[0] && q.id <= lot.also[1]));
         if (lotQuestions.length) assignLot(lotQuestions, lot.first, lot.last, lot.hardFrom, lot.hardCurve, lot);
     });
     finish();

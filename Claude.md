@@ -206,6 +206,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   4) ENTRAÎNEMENT : médaille d'or gagnée, puis une erreur dans un entraînement suivant → 149/150 maîtrisées et la médaille
      a DISPARU. Une médaille gagnée doit RESTER (enregistrée, comme `trainMedals`) ; à décider avec lui si une question
      maîtrisée peut redevenir « pas maîtrisée » (aujourd'hui la maîtrise suit la série de bonnes réponses).
+- FAIT le 09/11 : courbe lissée 71-120 : bloc A (81-90) 2,71 → 2,84 (10 questions faciles remplacées, nouvelles ids 4310-4319)
+  et bloc B (101-110) 2,96 → 3,09 (6 remplacées, ids 4300-4305), via `also: [de, à]` dans LEVEL_LOTS (levels.js) ; courbe :
+  2,78 / 2,84 / 2,96 / 3,09 / 3,21 / 3,27 / 3,40… Les 16 questions FACILES retirées (d 2,2-2,5, jamais vues ailleurs) sont gardées
+  dans le scratchpad reserve_faciles.js pour la future vague des niveaux 1-80. Point 3 du 09/11 ci-dessus : FAIT.
 - FAIT le 09/11 : bulle de Kulti (« Kulti s'est trompé ») lisible en mode sombre (fond rose foncé #4a2330).
 - FAIT le 08/11 : DÉCOR « BIENVENUE BÉBÉ » (un testeur attend un bébé, sexe connu dans la semaine) : du 9 au 15/11/2026, pour
   TOUT LE MONDE, seulement le décor (parcours + leçons) façon « Un gars, une fille » : icônes bleues à gauche, roses à droite
