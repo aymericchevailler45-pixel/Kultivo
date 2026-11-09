@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Habiller Kulti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=kh1">
+<!-- Page d'APERÇU (2026-11-09) : la garde-robe de Kulti (accessoires achetés avec les pièces). Rien n'est encore dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    h1, h2 { margin: 0 0 6px; }
+    .lead { margin: 0; color: var(--muted); font-weight: 700; }
+    ul.lead { padding-left: 20px; display: grid; gap: 4px; }
+    .where { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .9rem; }
+
+    .kw { position: relative; display: inline-block; }
+    .kw .kulti { width: 100%; height: 100%; }
+    .acc { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+
+    /* Cabine d'essayage */
+    .stage { display: grid; place-items: center; padding: 34px 0 14px; border-radius: 18px; background: linear-gradient(180deg, #eaf7df, #fff); margin: 10px 0; }
+    .stage .kw { width: 130px; height: 130px; cursor: pointer; }
+    .stage-name { margin-top: 10px; font-weight: 900; text-align: center; min-height: 1.3em; }
+    .tabs { display: flex; gap: 6px; margin: 4px 0 10px; }
+    .tabs button { flex: 1; padding: 8px 6px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); font: inherit; font-weight: 900; cursor: pointer; color: var(--ink); }
+    .tabs button.is-on { border-color: var(--green); background: var(--green-tint); color: var(--green-ink); }
+    .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+    .item { position: relative; display: grid; justify-items: center; gap: 4px; padding: 14px 4px 8px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface);
+        font: inherit; cursor: pointer; color: var(--ink); }
+    .item.is-on { border-color: var(--green); box-shadow: 0 0 0 2px var(--green) inset; }
+    .item .kw { width: 52px; height: 52px; }
+    .item b { font-size: .78rem; line-height: 1.1; }
+    .item small { font-size: .75rem; font-weight: 900; color: var(--muted); }
+    .item.is-earn small { color: #8b5cf6; }
+    .item.is-none .kw { opacity: .5; }
+    .tag { position: absolute; top: 4px; right: 4px; font-size: .62rem; font-weight: 900; padding: 1px 6px; border-radius: 999px; background: #8b5cf6; color: #fff; }
+
+    /* Où on le voit */
+    .scenes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .scene { border-radius: 16px; padding: 12px; background: var(--bg); text-align: center; }
+    .scene h3 { margin: 0 0 8px; font-size: .9rem; }
+    .map { position: relative; height: 150px; }
+    .node { position: absolute; left: 50%; top: 52px; width: 64px; height: 58px; margin-left: -32px; border-radius: 50%; background: var(--green); box-shadow: 0 6px 0 #3a8a00;
+        color: #fff; font-weight: 900; font-size: 1.3rem; display: grid; place-items: center; }
+    .map .kw { position: absolute; left: calc(50% - 98px); top: 50px; width: 54px; height: 54px; }
+    .end { display: grid; justify-items: center; gap: 6px; }
+    .end .kw { width: 92px; height: 92px; margin-top: 18px; }
+    .end strong { font-size: 1.15rem; }
+    .tip { display: flex; align-items: flex-end; gap: 8px; text-align: left; padding-top: 20px; }
+    .tip .kw { width: 50px; height: 50px; flex: none; }
+    .tip .bub { background: var(--surface); border-radius: 14px; padding: 8px 10px; font-weight: 800; font-size: .85rem; box-shadow: 0 2px 0 var(--line); }
+    .friend { display: flex; align-items: center; gap: 10px; text-align: left; padding-top: 16px; }
+    .friend .kw { width: 56px; height: 56px; flex: none; }
+
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    td, th { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: left; }
+    td:last-child, th:last-child { text-align: right; white-space: nowrap; }
+</style>
+<script src="kulti.js?v=kh1"></script>
+</head>
+<body>
+<div class="wrap">
+    <article class="card">
+        <h1>🎩 Habiller Kulti</h1>
+        <p class="lead">Aperçu à juger : rien n'est encore dans le jeu. L'idée est de donner une vraie raison de dépenser ses pièces, avec quelque chose qu'on voit souvent : sa mascotte.</p>
+        <ul class="lead" style="margin-top:8px">
+            <li><b>3 emplacements</b> : la tête, les yeux et le cou. On peut tout combiner.</li>
+            <li>Achat <b>une fois, pour toujours</b>. Changement gratuit, à tout moment.</li>
+            <li>Un rayon <b>« 🎩 Garde-robe de Kulti »</b> dans la Boutique, toujours ouvert, sans rotation.</li>
+            <li>Quelques accessoires <b>ne s'achètent pas</b> : ils se gagnent (couronne, toque, médaille).</li>
+        </ul>
+    </article>
+
+    <article class="card">
+        <h2>La cabine d'essayage</h2>
+        <p class="lead">Touche un accessoire pour l'essayer. Touche Kulti pour changer son humeur.</p>
+        <div class="stage"><div class="kw" id="bigK"></div><div class="stage-name" id="outfitName"></div></div>
+        <div class="tabs" id="tabs"></div>
+        <div class="items" id="items"></div>
+        <p class="where">Dans le jeu, ce serait dans la Boutique (pour acheter) et dans le Profil, à côté de « Mon avatar » (pour habiller Kulti). Un accessoire déjà acheté affiche « ✓ À toi » à la place du prix.</p>
+    </article>
+
+    <article class="card">
+        <h2>Où on le voit</h2>
+        <p class="lead">Kulti garde sa tenue partout où il apparaît déjà.</p>
+        <div class="scenes" style="margin-top:10px">
+            <div class="scene"><h3>🗺️ Sur le parcours</h3><div class="map"><div class="kw" data-k="content"></div><div class="node">42</div></div></div>
+            <div class="scene"><h3>🏆 Écran de fin</h3><div class="end"><div class="kw" data-k="fier"></div><strong>Niveau réussi !</strong><span class="lead">+48 XP</span></div></div>
+            <div class="scene"><h3>💬 Bulles d'explication</h3><div class="tip"><div class="kw" data-k="parle"></div><div class="bub">Tes erreurs reviendront plus tard dans tes niveaux.</div></div></div>
+            <div class="scene"><h3>👥 Profil d'un ami</h3><div class="friend"><div class="kw" data-k="clin"></div><div><b>Le Kulti de Léa</b><div class="lead" style="font-size:.85rem">Tes amis voient ta tenue dans ton profil.</div></div></div></div>
+        </div>
+        <p class="where">Pendant un événement (Halloween, Noël…), le chapeau de la fête passe par-dessus ton chapeau. Les lunettes et le cou restent.</p>
+    </article>
+
+    <article class="card">
+        <h2>Les prix proposés</h2>
+        <table>
+            <tr><th>Accessoire</th><th>Prix</th></tr>
+            <tr><td>Accessoires simples (béret, casquette, bonnet, lunettes rondes, nœud papillon, écharpe)</td><td>150 – 200 🪙</td></tr>
+            <tr><td>Accessoires stylés (cowboy, lunettes de soleil, lunettes cœur, masque, collier de fleurs)</td><td>250 – 300 🪙</td></tr>
+            <tr><td>Accessoires chics (haut-de-forme, monocle)</td><td>400 🪙</td></tr>
+            <tr><td>👑 Couronne</td><td>5 semaines 1er de la Ligue</td></tr>
+            <tr><td>🎓 Toque de diplômé</td><td>Finir le parcours</td></tr>
+            <tr><td>🥇 Médaille</td><td>3 médailles d'or à l'entraînement</td></tr>
+            <tr><th>Tout acheter</th><th id="total"></th></tr>
+        </table>
+        <p class="where">Tout acheter représente environ 5 semaines de pièces pour un joueur régulier, et 2 semaines pour un très gros joueur. Un nouveau lot de 4-5 accessoires pourrait sortir tous les 2-3 mois, comme les collections de la boutique.</p>
+    </article>
+</div>
+<script>
+/* Accessoires dessinés dans le même repère 36 × 36 que Kulti (yeux en 13 / 22,2 ; haut du cerveau vers y = 4,5 ; bas vers y = 31) */
+const S = inner => `<svg class="acc" viewBox="0 0 36 36" aria-hidden="true">${inner}</svg>`;
+const heart = (x, y) => `<path transform="translate(${x} ${y})" d="M0 1.2 C0 -1.4 -4.2 -1.8 -4.2 1.1 C-4.2 3.4 -1.2 5 0 6.2 C1.2 5 4.2 3.4 4.2 1.1 C4.2 -1.8 0 -1.4 0 1.2Z" fill="rgba(255,64,129,.78)" stroke="#d81b60" stroke-width=".7"/>`;
+const ITEMS = {
+    head: [
+        { id: 'beret', name: 'Béret', price: 150, svg: S('<g transform="rotate(-10 17.5 5)"><ellipse cx="17.5" cy="4.6" rx="9.6" ry="3.4" fill="#1f2a44"/><ellipse cx="16.5" cy="3.6" rx="7" ry="1.6" fill="#2d3b5e"/><rect x="17" y="-.4" width="1.3" height="2.4" rx=".6" fill="#1f2a44"/></g>') },
+        { id: 'cap', name: 'Casquette', price: 200, svg: S('<path d="M9.5 6.6 Q10 -3 18 -3.2 Q26 -3 26.5 6.6 Z" fill="#1899d6"/><path d="M9.5 6.6 Q4 5.2 1.5 7.4 Q6 8.6 11 7.6 Z" fill="#0f6fa0"/><path d="M18 -3.2 L18 6.6" stroke="#0f6fa0" stroke-width=".5"/><circle cx="18" cy="-3.2" r="1.1" fill="#0f6fa0"/>') },
+        { id: 'bonnet', name: 'Bonnet', price: 200, svg: S('<path d="M8 7 Q9 -4 17.5 -4.4 Q26 -4 27 7 Z" fill="#8b5cf6"/><path d="M12 -1 L12 5 M15 -3 L15 5 M18 -3.6 L18 5 M21 -3 L21 5 M24 -1 L24 5" stroke="#7448e0" stroke-width=".6"/><rect x="7.4" y="4.4" width="20.2" height="3.6" rx="1.8" fill="#6d3fd6"/><circle cx="17.5" cy="-5.2" r="2.8" fill="#fff"/>') },
+        { id: 'cowboy', name: 'Cowboy', price: 300, svg: S('<path d="M10.8 6 Q10 -4.2 14 -4.2 Q17.5 -2.2 21 -4.2 Q25 -4.2 24.2 6 Z" fill="#b8733a"/><rect x="10.6" y="3" width="13.8" height="2" fill="#5b3415"/><path d="M2 3.6 Q6 8 17.5 7.8 Q29 8 33 3.6 Q32 9.2 17.5 9.6 Q3 9.2 2 3.6Z" fill="#a0612b"/>') },
+        { id: 'tophat', name: 'Haut-de-forme', price: 400, svg: S('<rect x="11.5" y="-8.5" width="12" height="14" rx="1" fill="#222"/><ellipse cx="17.5" cy="-8.5" rx="6" ry="1.4" fill="#3a3a3a"/><rect x="11.5" y="1.8" width="12" height="2.4" fill="#e5484d"/><ellipse cx="17.5" cy="5.8" rx="10.4" ry="2.2" fill="#111"/>') },
+        { id: 'crown', name: 'Couronne', earn: '5× 1er de la Ligue', svg: S('<path d="M9.6 6.4 L9 -3.2 L13.2 .8 L17.5 -5.4 L21.8 .8 L26 -3.2 L25.4 6.4 Z" fill="#ffc800" stroke="#c99a00" stroke-width=".7" stroke-linejoin="round"/><circle cx="17.5" cy="3" r="1.3" fill="#e5484d"/><circle cx="12.6" cy="3.6" r=".9" fill="#1899d6"/><circle cx="22.4" cy="3.6" r=".9" fill="#46a302"/><circle cx="9" cy="-3.2" r="1" fill="#ffc800"/><circle cx="17.5" cy="-5.4" r="1" fill="#ffc800"/><circle cx="26" cy="-3.2" r="1" fill="#ffc800"/>') },
+        { id: 'grad', name: 'Toque de diplômé', earn: 'Finir le parcours', svg: S('<path d="M11 6.4 L11.6 1 L23.4 1 L24 6.4 Z" fill="#222"/><path d="M17.5 -5.2 L31.5 -1 L17.5 3 L3.5 -1 Z" fill="#2b2b2b" stroke="#111" stroke-width=".4"/><circle cx="17.5" cy="-1" r=".9" fill="#ffc800"/><path d="M17.5 -1 Q24 -.4 27.6 .6 L27.6 6.4" stroke="#ffc800" stroke-width=".8" fill="none"/><rect x="26.7" y="6" width="1.8" height="3" rx=".5" fill="#ffc800"/>') }
+    ],
+    eyes: [
+        { id: 'round', name: 'Lunettes rondes', price: 150, svg: S('<circle cx="13" cy="14.8" r="4" fill="rgba(255,255,255,.18)" stroke="#2b1a22" stroke-width=".9"/><circle cx="22.2" cy="14.8" r="4" fill="rgba(255,255,255,.18)" stroke="#2b1a22" stroke-width=".9"/><path d="M17 14.4 Q17.6 13.4 18.2 14.4" stroke="#2b1a22" stroke-width=".9" fill="none"/><path d="M9 14.2 L6 13.4 M26.2 14.2 L29.2 13.4" stroke="#2b1a22" stroke-width=".9"/>') },
+        { id: 'sun', name: 'Lunettes de soleil', price: 250, svg: S('<rect x="8.4" y="12.2" width="8.8" height="5.6" rx="2.2" fill="#1b1b1b"/><rect x="18" y="12.2" width="8.8" height="5.6" rx="2.2" fill="#1b1b1b"/><path d="M17.2 13.6 L18 13.6" stroke="#1b1b1b" stroke-width="1.2"/><path d="M8.4 13.4 L5.8 12.6 M26.8 13.4 L29.4 12.6" stroke="#1b1b1b" stroke-width=".9"/><path d="M10 13.6 L12.4 13.6 M19.6 13.6 L22 13.6" stroke="rgba(255,255,255,.55)" stroke-width=".8" stroke-linecap="round"/>') },
+        { id: 'hearts', name: 'Lunettes cœur', price: 250, svg: S(heart(13, 12.4) + heart(22.2, 12.4) + '<path d="M16.9 14 Q17.6 13.2 18.3 14" stroke="#d81b60" stroke-width=".8" fill="none"/>') },
+        { id: 'mask', name: 'Masque de héros', price: 300, svg: S('<path fill-rule="evenodd" d="M5.5 13.2 Q17.6 9.6 29.6 13.2 L29.2 17.4 Q17.6 20 5.9 17.4 Z M9.6 14.8 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z M18.8 14.8 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z" fill="#e5484d"/><path d="M5.6 15 L2.4 13.4 M5.6 15.6 L2.6 17.6" stroke="#e5484d" stroke-width="1" stroke-linecap="round"/>') },
+        { id: 'monocle', name: 'Monocle', price: 400, svg: S('<circle cx="22.2" cy="14.8" r="4.1" fill="rgba(255,255,255,.22)" stroke="#c99a00" stroke-width=".9"/><path d="M25.6 17.2 Q28.6 22 26.6 28.4" stroke="#c99a00" stroke-width=".5" fill="none" stroke-dasharray=".9 .5"/>') }
+    ],
+    neck: [
+        { id: 'bow', name: 'Nœud papillon', price: 150, svg: S('<path d="M17.5 31.4 L12 28.4 L12 34.4 Z M17.5 31.4 L23 28.4 L23 34.4 Z" fill="#e5484d" stroke="#b3262b" stroke-width=".5" stroke-linejoin="round"/><circle cx="17.5" cy="31.4" r="1.6" fill="#b3262b"/>') },
+        { id: 'scarf', name: 'Écharpe', price: 200, svg: S('<path d="M7.6 28 Q17.5 33 27.4 28 L27.8 31.4 Q17.5 36.6 7.2 31.4 Z" fill="#e5484d"/><path d="M11 30.2 L11 33 M15 31.4 L15 34.4 M19 31.6 L19 34.6 M23 30.6 L23 33.6" stroke="#fff" stroke-width=".9"/><path d="M22 32.4 L25.6 31.4 L27.4 38.6 L23.8 39.6 Z" fill="#d33a3f"/><path d="M24 39.6 L24.2 40.8 M25.2 39.3 L25.4 40.5 M26.4 39 L26.6 40.2" stroke="#d33a3f" stroke-width=".6"/>') },
+        { id: 'lei', name: 'Collier de fleurs', price: 250, svg: S([[8,28.4,'#ff4081'],[10.6,30.2,'#ffc800'],[13.4,31.4,'#ff7043'],[16.2,32,'#ff4081'],[19,32,'#ffc800'],[21.8,31.4,'#ff7043'],[24.6,30.2,'#ff4081'],[27.2,28.4,'#ffc800']].map(([x,y,c]) => `<circle cx="${x}" cy="${y}" r="1.7" fill="${c}"/><circle cx="${x}" cy="${y}" r=".6" fill="#fff59d"/>`).join('')) },
+        { id: 'medal', name: 'Médaille', earn: '3 médailles d’or', svg: S('<path d="M12.6 28 L16.4 34.6 L18.4 33.6 L15 27.4 Z" fill="#1899d6"/><path d="M22.4 28 L18.6 34.6 L16.6 33.6 L20 27.4 Z" fill="#e5484d"/><circle cx="17.5" cy="36" r="3.2" fill="#ffc800" stroke="#c99a00" stroke-width=".6"/><path d="M17.5 34.2 L18.1 35.5 L19.5 35.6 L18.4 36.5 L18.8 37.9 L17.5 37.1 L16.2 37.9 L16.6 36.5 L15.5 35.6 L16.9 35.5 Z" fill="#fff6d6"/>') }
+    ]
+};
+const TABS = [['head', '🎩 Tête'], ['eyes', '👓 Yeux'], ['neck', '🎀 Cou']];
+const wear = { head: 'tophat', eyes: 'round', neck: 'bow' };
+let tab = 'head', moodI = 0;
+const MOODS = ['content', 'fier', 'clin', 'parle', 'surpris'];
+const find = (slot, id) => ITEMS[slot].find(i => i.id === id);
+
+function kw(node, face, outfit = wear) {
+    node.replaceChildren(kultiEl(face, 'kulti-blink'));
+    let extra = '';
+    ['neck', 'eyes', 'head'].forEach(s => { const it = outfit[s] && find(s, outfit[s]); if (it) extra += it.svg; });
+    node.insertAdjacentHTML('beforeend', extra);
+}
+function render() {
+    kw(document.getElementById('bigK'), MOODS[moodI]);
+    document.querySelectorAll('[data-k]').forEach(n => kw(n, n.dataset.k));
+    const names = ['head', 'eyes', 'neck'].map(s => wear[s] && find(s, wear[s]).name).filter(Boolean);
+    document.getElementById('outfitName').textContent = names.length ? names.join(' · ') : 'Kulti tout simple';
+    const tabs = document.getElementById('tabs');
+    tabs.replaceChildren(...TABS.map(([k, label]) => {
+        const b = document.createElement('button'); b.type = 'button'; b.textContent = label; if (k === tab) b.className = 'is-on';
+        b.onclick = () => { tab = k; render(); }; return b;
+    }));
+    const box = document.getElementById('items');
+    const none = document.createElement('button');
+    none.type = 'button'; none.className = 'item is-none' + (!wear[tab] ? ' is-on' : '');
+    const nk = document.createElement('div'); nk.className = 'kw'; kw(nk, 'content', {});
+    none.append(nk, Object.assign(document.createElement('b'), { textContent: 'Rien' }), Object.assign(document.createElement('small'), { textContent: 'gratuit' }));
+    none.onclick = () => { wear[tab] = null; render(); };
+    box.replaceChildren(none, ...ITEMS[tab].map(it => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'item' + (it.earn ? ' is-earn' : '') + (wear[tab] === it.id ? ' is-on' : '');
+        const k = document.createElement('div'); k.className = 'kw'; kw(k, 'content', { [tab]: it.id });
+        const n = document.createElement('b'); n.textContent = it.name;
+        const p = document.createElement('small'); p.textContent = it.earn ? `🔒 ${it.earn}` : `${it.price} 🪙`;
+        b.append(k, n, p);
+        b.onclick = () => { wear[tab] = it.id; render(); };
+        return b;
+    }));
+}
+document.getElementById('bigK').onclick = () => { moodI = (moodI + 1) % MOODS.length; render(); };
+document.getElementById('total').textContent = Object.values(ITEMS).flat().filter(i => i.price).reduce((s, i) => s + i.price, 0).toLocaleString('fr-FR') + ' 🪙';
+render();
+</script>
+</body>
+</html>
