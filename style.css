@@ -3628,6 +3628,58 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .medal-anim.is-skip .medal-step, .medal-anim.is-skip .medal-spark { animation-delay: 0s !important; animation-duration: 0.01s !important; }
 .medal-anim.is-skip .medal-rays { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .medal-step, .medal-big, .medal-rays { animation: none !important; opacity: 1 !important; } .medal-spark { display: none; } }
+/* Collection d'un thème complète (09/11, aperçu apercu-collection.html : A + ruban avec le K) */
+.coll-anim { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; padding: 20px 16px; overflow: hidden; text-align: center; color: #fff; opacity: 0;
+    background: radial-gradient(120% 80% at 50% 30%, #2b3550, #121726); }
+.coll-anim.is-on { animation: streakIn 0.25s forwards; }
+.coll-anim.is-closing { animation: streakOut 0.25s forwards; }
+.coll-anim > * { position: relative; }
+.coll-rays { position: absolute !important; top: 50%; left: 50%; width: 560px; height: 560px; margin: -330px 0 0 -280px; border-radius: 50%; opacity: 0;
+    background: repeating-conic-gradient(rgba(255, 215, 64, 0.22) 0 10deg, transparent 10deg 20deg);
+    -webkit-mask: radial-gradient(circle, #000 25%, transparent 68%); mask: radial-gradient(circle, #000 25%, transparent 68%);
+    animation: medalRaysIn 0.6s var(--d) forwards, medalSpin 14s linear infinite; }
+.coll-count { font-size: 2.4rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.coll-count.is-full { color: #ffd740; text-shadow: 0 0 14px rgba(255, 215, 64, 0.7); }
+.coll-grid { display: grid; grid-template-columns: repeat(4, 52px); gap: 8px; padding: 10px; border-radius: 16px; perspective: 600px;
+    animation: collGlow 1.6s ease-in-out var(--d) infinite; }
+@keyframes collGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 200, 0, 0); } 50% { box-shadow: 0 0 26px 6px rgba(255, 200, 0, 0.55); background: rgba(255, 200, 0, 0.08); } }
+.coll-card { --r: var(--r-common); position: relative; width: 52px; height: 68px; transform-style: preserve-3d;
+    animation: collFlip 0.45s cubic-bezier(0.3, 1.4, 0.5, 1) var(--d) forwards; }
+.coll-card.rarity-rare { --r: var(--r-rare); }
+.coll-card.rarity-epic { --r: var(--r-epic); }
+.coll-card.rarity-legendary { --r: var(--r-legendary); }
+.coll-card.rarity-master { --r: var(--r-master); }
+.coll-card.is-last { animation: collShake 0.6s linear var(--d), collFlip 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) calc(var(--d) + 0.6s) forwards; }
+.coll-back, .coll-front { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 9px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.coll-back { background: #46a302; box-shadow: 0 3px 0 #23600a; }
+.coll-back img { width: 60%; }
+.coll-front { transform: rotateY(180deg); background: color-mix(in srgb, var(--r) 30%, #fff); border: 3px solid var(--r); box-shadow: 0 0 10px 1px var(--r); }
+.coll-card.is-last .coll-front { box-shadow: 0 0 18px 4px var(--r); }
+.coll-front img { width: 70%; height: 70%; object-fit: contain; }
+@keyframes collFlip { 0% { transform: rotateY(0) scale(1); } 50% { transform: rotateY(90deg) scale(1.15); } 100% { transform: rotateY(180deg) scale(1); } }
+@keyframes collShake { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-6deg); } 40% { transform: rotate(6deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(5deg); } }
+.coll-step { opacity: 0; animation: medalUp 0.4s var(--d) forwards; }
+.coll-ribbon { display: flex; align-items: center; gap: 8px; padding: 6px 16px 6px 6px; border-radius: 999px; background: #e5484d; color: #fff;
+    font-size: 1.05rem; font-weight: 900; box-shadow: 0 3px 0 #9b1b18; transform: scale(0) rotate(-8deg);
+    animation: collRibbon 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) var(--d) forwards; }
+.coll-k { width: 30px; height: 30px; flex: none; }
+@keyframes collRibbon { from { opacity: 1; transform: scale(0) rotate(-8deg); } to { opacity: 1; transform: scale(1) rotate(-3deg); } }
+.coll-title { font-size: 1.5rem; font-weight: 900; line-height: 1.1; }
+.coll-sub { font-size: 0.95rem; font-weight: 800; opacity: 0.85; }
+.coll-anim .coll-sub { animation-name: collSub; }
+@keyframes collSub { from { opacity: 0; transform: translateY(10px); } to { opacity: 0.85; transform: none; } }
+.coll-kulti { display: flex; align-items: center; gap: 8px; }
+.coll-go { margin-top: 4px; width: 100%; max-width: 260px; background: #ffc800; color: #4a3500; box-shadow: 0 4px 0 #c99a00; }
+.coll-ok { border: 0; background: none; color: #fff; font: inherit; font-size: 0.9rem; font-weight: 800; padding: 6px 16px; cursor: pointer; }
+.coll-anim.is-skip .coll-step, .coll-anim.is-skip .coll-card, .coll-anim.is-skip .coll-ribbon { animation-delay: 0s !important; animation-duration: 0.01s !important; }
+.coll-anim.is-skip .coll-rays { opacity: 1; animation: medalSpin 14s linear infinite; }
+.coll-anim.is-skip .coll-grid { animation-delay: 0s; }
+@media (max-height: 640px) { .coll-anim { gap: 7px; } .coll-card { width: 46px; height: 60px; } .coll-grid { grid-template-columns: repeat(4, 46px); } .coll-count { font-size: 2rem; } }
+@media (prefers-reduced-motion: reduce) {
+    .coll-step, .coll-card, .coll-ribbon, .coll-rays, .coll-grid { animation: none !important; opacity: 1 !important; }
+    .coll-card { transform: rotateY(180deg); } .coll-ribbon { transform: rotate(-3deg); }
+}
 /* Profil d'un ami : cartes par thème */
 .friend-collection { text-align: left; }
 .friend-collection .card-row { margin-bottom: 8px; }

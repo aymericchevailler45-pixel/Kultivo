@@ -3088,7 +3088,7 @@ function placeMapKulti() {
    et le niveau s'allume. Une fois par niveau débloqué, avec son (réglage `sound`). Un tap la termine tout de suite. */
 let kultiHop = 0;          // niveau qui vient d'être débloqué (pas sauvegardé : appli fermée = pas d'animation)
 let kultiHopRun = 0;
-const KULTI_HOP_WAIT = '.modal-overlay:not([hidden]), #titleAnim:not([hidden]), #medalAnim:not([hidden]), #streakAnim:not([hidden]), #freezeAnim:not([hidden]), #tour:not([hidden]), .recap-story:not([hidden])';
+const KULTI_HOP_WAIT = '.modal-overlay:not([hidden]), #titleAnim:not([hidden]), #medalAnim:not([hidden]), #collectionAnim:not([hidden]), #streakAnim:not([hidden]), #freezeAnim:not([hidden]), #tour:not([hidden]), .recap-story:not([hidden])';
 function startKultiHop(tries = 0) {
     const to = kultiHop;
     if (!to || $('mapScreen').hidden) return;
@@ -3912,17 +3912,104 @@ async function checkThemeComplete(silent = false) {
     for (const t of fresh) state.data.themeComplete[t] = todayKey();
     saveData();
     if (silent) return;
-    launchConfetti(CARD_CONFETTI.legendary);
-    playSound('win');
-    const names = fresh.join(', ');
-    const go = await askConfirm({
-        title: fresh.length > 1 ? '🃏 Collections complètes !' : '🃏 Collection complète !',
-        text: fresh.length > 1 ? `Tu as réuni toutes les cartes de : ${names}. Bravo !` : `Tu as réuni les ${CARDS.filter(c => c.theme === fresh[0]).length} cartes ${names}, carte Maître comprise. Bravo !`,
-        yes: 'Voir ma collection',
-        no: 'Super !'
+    // une fête par thème, à la suite (09/11 : animation plein écran au lieu de la fenêtre + confettis)
+    let see = false;
+    fresh.forEach((t, i) => celebrate(() => showCollectionAnim(t, s => {
+        see = see || s;
+        if (i < fresh.length - 1) return;
+        checkBadges();
+        if (see) { showScreen('profile'); setProfileTab('cards'); }
+    })));
+}
+
+/* ---------- Collection d'un thème complète (09/11, choix A de apercu-collection.html + ruban de C avec le K) ----------
+   Fond sombre, les cartes du thème se retournent une à une (compteur qui monte), la dernière tremble puis se retourne,
+   tout s'illumine en doré, ruban « Thème complet ! » avec le K, puis texte, Kulti, boutons. Un tap = tout de suite à la fin. */
+const RARITY_ORDER = ['common', 'rare', 'epic', 'legendary', 'master'];
+function showCollectionAnim(theme, onDone) {
+    const ov = celebrationLayer('collectionAnim', 'coll-anim');
+    const cards = CARDS.filter(c => c.theme === theme).sort((a, b) => RARITY_ORDER.indexOf(a.rarity) - RARITY_ORDER.indexOf(b.rarity));
+    const n = cards.length;
+    const at = i => (i < n - 1 ? 0.5 + i * 0.12 : 0.5 + (n - 1) * 0.12 + 0.3);   // la dernière : tremble d'abord
+    const flipAt = i => (i < n - 1 ? at(i) : at(i) + 0.6);
+    const gold = flipAt(n - 1) + 0.5;
+    const step = (cls, d, text) => { const e = el('div', `coll-step ${cls}`); e.style.setProperty('--d', `${d}s`); if (text) e.textContent = text; return e; };
+    const rays = el('div', 'coll-rays');
+    rays.style.setProperty('--d', `${gold}s`);
+    const count = el('div', 'coll-count');
+    count.textContent = `0/${n}`;
+    const grid = el('div', 'coll-grid');
+    grid.style.setProperty('--d', `${gold}s`);
+    cards.forEach((c, i) => {
+        const slot = el('div', `coll-card rarity-${c.rarity}${i === n - 1 ? ' is-last' : ''}`);
+        slot.style.setProperty('--d', `${at(i)}s`);
+        const back = el('div', 'coll-back');
+        const logo = el('img');
+        logo.src = 'icons/logo.svg';
+        logo.alt = '';
+        back.append(logo);
+        const front = el('div', 'coll-front');
+        front.append(cardImg(c));
+        slot.append(back, front);
+        grid.append(slot);
     });
-    checkBadges();
-    if (go) { showScreen('profile'); setProfileTab('cards'); }
+    // Ruban rouge avec le K (comme le tampon « Sans faute »)
+    const ribbon = step('coll-ribbon', gold + 0.25);
+    const ns = 'http://www.w3.org/2000/svg';
+    const k = document.createElementNS(ns, 'svg');
+    k.setAttribute('viewBox', '0 0 100 100');
+    k.setAttribute('class', 'coll-k');
+    k.setAttribute('aria-hidden', 'true');
+    k.innerHTML = `<circle cx="50" cy="50" r="48" fill="#fff"/><g transform="translate(28 27) scale(.245)"><path d="${K_PATH}" fill="#e5484d"/></g>`;
+    const rt = el('span');
+    rt.textContent = 'Thème complet !';
+    ribbon.append(k, rt);
+    const icon = (THEME_DECOR.find(t => t.theme === theme) || {}).icon || '🃏';
+    const title = step('coll-title', gold + 0.6, `Collection ${theme} complète !`);
+    const sub = step('coll-sub', gold + 0.75, `${icon} ${n} cartes réunies, carte Maître comprise`);
+    const say = step('coll-kulti', gold + 0.9);
+    const face = el('div', 'medal-kulti-face');
+    face.append(kultiEl('fier', 'kulti-blink'));
+    const bubble = el('div', 'medal-bubble');
+    bubble.textContent = 'Toutes les cartes du thème ! Bravo !';
+    say.append(face, bubble);
+    const go = el('button', 'btn coll-step coll-go');
+    go.type = 'button';
+    go.style.setProperty('--d', `${gold + 1.05}s`);
+    go.textContent = 'Voir ma collection';
+    const ok = el('button', 'coll-step coll-ok');
+    ok.type = 'button';
+    ok.style.setProperty('--d', `${gold + 1.15}s`);
+    ok.textContent = 'Super !';
+    const close = see => {
+        if (ov.hidden || ov.classList.contains('is-closing')) return;   // double tap : une seule fois
+        if (onDone) onDone(see);
+        closeCelebrationLayer('collectionAnim');
+    };
+    go.addEventListener('click', e => { e.stopPropagation(); close(true); });
+    ok.addEventListener('click', e => { e.stopPropagation(); close(false); });
+    ov.append(rays, count, grid, ribbon, title, sub, say, go, ok);
+    ov._close = close;   // touche retour du téléphone
+    // compteur qui monte au rythme des cartes
+    const timers = cards.map((_, i) => setTimeout(() => {
+        count.textContent = `${i + 1}/${n}`;
+        if (i === n - 1) count.classList.add('is-full');
+    }, (flipAt(i) + 0.2) * 1000));
+    ov.addEventListener('pointerdown', () => {
+        timers.forEach(clearTimeout);
+        count.textContent = `${n}/${n}`;
+        count.classList.add('is-full');
+        ov.classList.add('is-skip');
+    }, { once: true });
+    if (state.data.sound) {
+        try {
+            for (let i = 0; i < n - 1; i++) synthTone(520 + i * 50, flipAt(i), 0.09, 'triangle', 0.07);           // cartes qui se retournent
+            [0, 0.1, 0.2, 0.3, 0.4, 0.5].forEach(s => synthTone(300, at(n - 1) + s, 0.05, 'square', 0.03));     // la dernière tremble
+            synthTone(880, flipAt(n - 1), 0.2, 'sine', 0.14);
+            [523, 659, 784, 1047].forEach((f, i) => synthTone(f, gold + i * 0.1, 0.35, 'triangle', 0.12));      // fanfare
+            [1047, 1319, 1568].forEach(f => synthTone(f, gold + 0.45, 0.9, 'sine', 0.08));
+        } catch (err) { /* pas de son */ }
+    }
 }
 
 /** Carte retournable : dos (logo) + face. */
@@ -11052,6 +11139,8 @@ function initBac() {
         if (more2) { recapSlides = []; openRecap(monthKeyOf(todayKey())); return; }
         const more3 = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le gel de série puis le nouveau titre ?', yes: 'Gel + titre', no: 'Plus d’options' });
         if (more3) { celebrate(() => showFreezeAnim(state.data.streak || 1)); const t = titleFor(state.data.xp); celebrate(() => showTitleAnim({ from: 'Curieux', to: t.current.name, next: t.next })); return; }
+        const coll = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir la fête « collection complète » (thème Histoire) ?', yes: 'Voir la fête', no: 'Plus d’options' });
+        if (coll) { celebrate(() => showCollectionAnim('Histoire', see => { if (see) { showScreen('profile'); setProfileTab('cards'); } })); return; }
         const hopIt = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir Kulti ouvrir le niveau suivant (comme après un niveau réussi) ?', yes: 'Voir Kulti', no: 'Plus d’options' });
         if (hopIt) { showScreen('map'); setTimeout(() => playKultiHop(Math.min(state.data.unlocked, MAX_LEVEL) - 1, Math.min(state.data.unlocked, MAX_LEVEL)), 400); return; }
         const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Fermer' });
@@ -11120,6 +11209,7 @@ function closeTopOverlay() {
     const open = id => !$(id).hidden;
     if ($('streakAnim') && !$('streakAnim').hidden) { closeStreakAnim(); return true; }
     if (closeCelebrationLayer('titleAnim') || closeCelebrationLayer('freezeAnim') || closeCelebrationLayer('medalAnim')) return true;
+    { const o = $('collectionAnim'); if (o && !o.hidden && o._close) { o._close(false); return true; } }
     if ($('recapShare') && !$('recapShare').hidden) { $('recapShare').hidden = true; return true; }
     if ($('recapStory') && !$('recapStory').hidden) { closeRecap(); return true; }
     if (open('askModal')) { $('askNo').click(); return true; }
