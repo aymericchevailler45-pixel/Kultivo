@@ -1,4 +1,4 @@
-TECHNOLOGIE — 85 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
+TECHNOLOGIE — 150 questions nouvelles (de la plus facile à la plus dure, note de 1 à 5)
 
 1. [1.0] Quel mode du téléphone coupe le réseau pendant un vol ?
    → Le mode avion / Mode avion
@@ -8,334 +8,594 @@ TECHNOLOGIE — 85 questions nouvelles (de la plus facile à la plus dure, note 
    → L’imprimante / Imprimante
    (Jet d’encre ou laser.)
 
-3. [1.1] Comment s’appelle l’image qui décore le fond de l’écran d’accueil ?
+3. [1.0] Quel petit appareil fait sonner une alarme le matin pour se lever ?
+   → Le réveil / Réveil / Réveille-matin
+   (Aujourd’hui, souvent remplacé par le téléphone.)
+
+4. [1.0] Avec quoi change-t-on de chaîne de télévision depuis le canapé ?
+   → La télécommande / Télécommande / Zapette
+   (Elle envoie un signal infrarouge invisible.)
+
+5. [1.1] Comment s’appelle l’image qui décore le fond de l’écran d’accueil ?
    → Le fond d’écran / Fond d’écran / Wallpaper
    (Aussi appelé « papier peint ».)
 
-4. [1.1] Où vont les fichiers supprimés sur un ordinateur, avant d’être effacés pour de bon ?
+6. [1.1] Où vont les fichiers supprimés sur un ordinateur, avant d’être effacés pour de bon ?
    → La corbeille / Corbeille
    (On peut encore les récupérer tant qu’elle n’est pas vidée.)
 
-5. [1.2] Comment appelle-t-on une image de ce qui est affiché à l’écran ?
+7. [1.1] Comment appelle-t-on les petites alertes qui apparaissent en haut de l’écran du téléphone ?
+   → Les notifications / Notification / Notifications
+   (On peut les couper dans les réglages.)
+
+8. [1.1] Quel mode du téléphone coupe la sonnerie sans l’éteindre ?
+   → Le mode silencieux / Mode silencieux / Silencieux / Vibreur
+   (Le vibreur peut rester actif.)
+
+9. [1.1] Quels talkies portables permettent de se parler à distance en appuyant sur un bouton ?
+   → Les talkies-walkies / Talkie-walkie / Talkies-walkies
+   (On dit « à vous » pour passer la parole.)
+
+10. [1.2] Comment appelle-t-on une image de ce qui est affiché à l’écran ?
    → Une capture d’écran / Capture d’écran / Screenshot
    (Sur Windows : touche Impr écran ; sur téléphone, souvent deux boutons.)
 
-6. [1.2] Quelle petite caméra filme l’utilisateur pendant les appels vidéo sur ordinateur ?
+11. [1.2] Quelle petite caméra filme l’utilisateur pendant les appels vidéo sur ordinateur ?
    → La webcam / Webcam
    (La première filmait une cafetière à Cambridge, en 1991.)
 
-7. [1.3] Quel thème d’affichage met des fonds noirs pour reposer les yeux ?
+12. [1.2] Quel appareil permet aux parents d’entendre leur bébé depuis une autre pièce ?
+   → Le babyphone / Babyphone / Écoute-bébé
+   (Certains ont aussi une caméra.)
+
+13. [1.2] Quel clavier à code ouvre la porte d’un immeuble ?
+   → Le digicode / Digicode
+   (Une marque devenue un mot courant.)
+
+14. [1.2] Comment appelle-t-on le code secret à 4 chiffres d’une carte bancaire ?
+   → Le code PIN / Code PIN / Code confidentiel / PIN
+   (Trois erreurs et la carte se bloque.)
+
+15. [1.3] Quel thème d’affichage met des fonds noirs pour reposer les yeux ?
    → Le mode sombre / Mode sombre / Dark mode / Thème sombre
    (Il économise aussi la batterie sur les écrans OLED.)
 
-8. [1.3] Quel câble ou bloc branche-t-on pour recharger un téléphone ?
+16. [1.3] Quel câble ou bloc branche-t-on pour recharger un téléphone ?
    → Le chargeur / Chargeur
    (L’Europe impose l’USB-C depuis fin 2024.)
 
-9. [1.3] Comment appelle-t-on un fichier envoyé avec un e-mail ?
+17. [1.3] Comment appelle-t-on un fichier envoyé avec un e-mail ?
    → Une pièce jointe / Pièce jointe / PJ
    (Symbolisée par un trombone.)
 
-10. [1.4] Quel logiciel de Microsoft sert à écrire des textes ?
+18. [1.3] Quelle petite carte du téléphone contient le numéro de l’abonné ?
+   → La carte SIM / Carte SIM / SIM
+   (De plus en plus remplacée par l’eSIM, intégrée au téléphone.)
+
+19. [1.3] Comment appelle-t-on l’offre mensuelle d’appels et d’Internet d’un opérateur ?
+   → Le forfait / Forfait / Abonnement
+   (Au-delà, on parle de « hors forfait ».)
+
+20. [1.3] Comment appelle-t-on la batterie de secours qu’on emporte pour recharger son téléphone ?
+   → Une batterie externe / Batterie externe / Powerbank / Power bank
+   (Limitée en avion à environ 100 Wh en cabine.)
+
+21. [1.4] Quel logiciel de Microsoft sert à écrire des textes ?
    → Word / Microsoft Word
    (Sorti en 1983.)
 
-11. [1.4] Quel logiciel de Microsoft sert à faire des tableaux et des calculs ?
+22. [1.4] Quel logiciel de Microsoft sert à faire des tableaux et des calculs ?
    → Excel / Microsoft Excel
    (Un tableur, avec ses cellules A1, B2…)
 
-12. [1.4] Quel logiciel de Microsoft sert à faire des présentations en diapositives ?
+23. [1.4] Quel logiciel de Microsoft sert à faire des présentations en diapositives ?
    → PowerPoint / Microsoft PowerPoint
    (Racheté par Microsoft en 1987.)
 
-13. [1.5] Comment appelle-t-on une personne qui fait connaître des produits sur les réseaux sociaux ?
+24. [1.4] Quel petit carré tactile remplace la souris sur un ordinateur portable ?
+   → Le pavé tactile / Pavé tactile / Touchpad
+   (On y fait défiler avec deux doigts.)
+
+25. [1.4] Quelle petite carte mémoire se glisse dans les appareils photo et certains téléphones ?
+   → La carte SD / Carte SD / Carte microSD / Micro SD
+   (SD pour Secure Digital.)
+
+26. [1.4] Comment appelle-t-on chaque page ouverte en haut d’un navigateur Internet ?
+   → Un onglet / Onglet / Onglets
+   (Comme les intercalaires d’un classeur.)
+
+27. [1.5] Comment appelle-t-on une personne qui fait connaître des produits sur les réseaux sociaux ?
    → Un influenceur / Influenceur / Influenceuse
    (Une loi française encadre ce métier depuis 2023.)
 
-14. [1.5] Comment appelle-t-on un vidéaste qui publie sur YouTube ?
+28. [1.5] Comment appelle-t-on un vidéaste qui publie sur YouTube ?
    → Un youtubeur / Youtubeur / YouTuber / Youtubeuse
    (Squeezie est l’un des plus suivis en France.)
 
-15. [1.5] Quel écran tactile plus grand qu’un téléphone, sans clavier, s’appelle aussi « iPad » chez Apple ?
+29. [1.5] Quel écran tactile plus grand qu’un téléphone, sans clavier, s’appelle aussi « iPad » chez Apple ?
    → Une tablette / Tablette / Tablette tactile
    (L’iPad est sorti en 2010.)
 
-16. [1.6] Quelle montre affiche les messages et compte les pas ?
+30. [1.5] Quel mode du navigateur n’enregistre pas l’historique ?
+   → La navigation privée / Navigation privée / Mode incognito / Incognito
+   (Mais le site et le fournisseur d’accès voient quand même la visite.)
+
+31. [1.5] Quelle petite icône dans la barre d’adresse montre qu’une connexion est chiffrée ?
+   → Le cadenas / Cadenas / Un cadenas
+   (Elle accompagne les adresses en « https ».)
+
+32. [1.5] Quel petit bloc de l’écran d’accueil affiche directement la météo ou l’heure ?
+   → Un widget / Widget
+   (Contraction de « window gadget ».)
+
+33. [1.5] Quel appareil, à l’entrée d’un immeuble, permet de parler au visiteur avant de lui ouvrir ?
+   → L’interphone / Interphone / Visiophone
+   (Avec une caméra, c’est un visiophone.)
+
+34. [1.6] Quelle montre affiche les messages et compte les pas ?
    → La montre connectée / Montre connectée / Smartwatch
    (L’Apple Watch est sortie en 2015.)
 
-17. [1.6] Comment appelle-t-on un robot à l’apparence humaine ?
+35. [1.6] Comment appelle-t-on un robot à l’apparence humaine ?
    → Un androïde / Androïde / Androide / Humanoïde
    (Une femme robot s’appelle une gynoïde.)
 
-18. [1.6] Quel petit robot rond nettoie le sol tout seul ?
+36. [1.6] Quel petit robot rond nettoie le sol tout seul ?
    → Le robot aspirateur / Robot aspirateur / Roomba
    (Le Roomba est sorti en 2002.)
 
-19. [1.7] Quel lecteur de CD portable de Sony a succédé au Walkman ?
+37. [1.6] Quelle astuce universelle règle beaucoup de problèmes informatiques ?
+   → Éteindre et rallumer / Redémarrer / Le redémarrage / Redémarrage
+   (« Avez-vous essayé de l’éteindre et de le rallumer ? »)
+
+38. [1.6] Quel écran d’erreur de Windows est célèbre pour sa couleur ?
+   → L’écran bleu / Écran bleu / Écran bleu de la mort / BSOD
+   (« Blue Screen of Death ».)
+
+39. [1.6] Quelle boutique d’applications d’Apple a ouvert en 2008 ?
+   → L’App Store / App Store
+   (Celle d’Android s’appelle Google Play.)
+
+40. [1.7] Quel lecteur de CD portable de Sony a succédé au Walkman ?
    → Le Discman / Discman
    (Sorti en 1984.)
 
-20. [1.7] Quel appareil enregistrait les émissions de télévision sur cassettes VHS ?
+41. [1.7] Quel appareil enregistrait les émissions de télévision sur cassettes VHS ?
    → Le magnétoscope / Magnétoscope / Magnetoscope
    (Il a disparu avec le DVD.)
 
-21. [1.7] Quel appareil envoyait des documents papier par la ligne téléphonique ?
+42. [1.7] Quel appareil envoyait des documents papier par la ligne téléphonique ?
    → Le fax / Fax / Télécopieur
    (Un ancêtre existait dès 1843.)
 
-22. [1.8] Comment appelle-t-on le fait de dupliquer un texte puis de le placer ailleurs ?
+43. [1.7] Quel service d’appel vidéo est propre aux appareils Apple ?
+   → FaceTime
+   (Lancé en 2010 avec l’iPhone 4.)
+
+44. [1.7] Comment appelle-t-on le fait de travailler depuis chez soi grâce à Internet ?
+   → Le télétravail / Télétravail / Teletravail
+   (Généralisé pendant le confinement de 2020.)
+
+45. [1.7] Comment appelle-t-on le fait de regarder plusieurs épisodes d’une série d’affilée ?
+   → Le binge-watching / Binge-watching / Binge watching / Visionnage boulimique
+   (En français : « visionnage boulimique ».)
+
+46. [1.8] Comment appelle-t-on le fait de dupliquer un texte puis de le placer ailleurs ?
    → Le copier-coller / Copier-coller / Copier coller
    (Inventé par Larry Tesler dans les années 1970.)
 
-23. [1.8] Quelle combinaison de touches ouvre le gestionnaire des tâches sous Windows ?
+47. [1.8] Quelle combinaison de touches ouvre le gestionnaire des tâches sous Windows ?
    → Ctrl+Alt+Suppr / Ctrl Alt Suppr / Ctrl+Alt+Del
    (Bill Gates a reconnu que c’était une erreur de ne pas avoir mis une seule touche.)
 
-24. [1.8] Comment appelle-t-on un texte cliquable qui mène vers une autre page ?
+48. [1.8] Comment appelle-t-on un texte cliquable qui mène vers une autre page ?
    → Un lien hypertexte / Lien hypertexte / Lien / Hyperlien
    (Souvent bleu et souligné.)
 
-25. [1.8] Quel appareil du salon distribue Internet en Wi-Fi dans la maison ?
+49. [1.8] Quel appareil du salon distribue Internet en Wi-Fi dans la maison ?
    → Le routeur / Routeur / Box / Box Internet
    (En France, il est souvent dans la « box ».)
 
-26. [1.9] Comment dit-on qu’un appareil n’est plus connecté à Internet ?
+50. [1.8] Comment appelle-t-on une liste de morceaux de musique choisis ?
+   → Une playlist / Playlist / Liste de lecture
+   (« Liste de lecture » en bon français.)
+
+51. [1.8] Quel mot québécois remplace « spoiler » ?
+   → Divulgâcheur / Divulgacheur / Divulgâchage
+   (Mélange de « divulguer » et « gâcher ».)
+
+52. [1.8] Quelle liseuse électronique d’Amazon affiche des livres numériques ?
+   → Le Kindle / Kindle
+   (Sortie en 2007.)
+
+53. [1.9] Comment dit-on qu’un appareil n’est plus connecté à Internet ?
    → Hors ligne / Hors connexion / Offline
    (Le contraire : en ligne.)
 
-27. [1.9] Comment appelle-t-on le fait d’installer une nouvelle version d’un logiciel ?
+54. [1.9] Comment appelle-t-on le fait d’installer une nouvelle version d’un logiciel ?
    → Une mise à jour / Mise à jour / Update
    (Souvent pour corriger des failles de sécurité.)
 
-28. [2.0] Quel petit appareil tournant refroidit le processeur d’un ordinateur ?
+55. [1.9] Quelle technologie d’écran de liseuse imite le papier et ne consomme presque rien ?
+   → L’encre électronique / Encre électronique / E-ink / E Ink
+   (Lisible au soleil, sans rétroéclairage.)
+
+56. [1.9] Quelle petite caméra résistante filme les sports extrêmes, du nom d’une marque ?
+   → La GoPro / GoPro / Caméra sportive
+   (Créée par un surfeur américain en 2002.)
+
+57. [1.9] Quel bâton télescopique permet de faire des selfies de plus loin ?
+   → La perche à selfie / Perche à selfie / Selfie stick / Perche
+   (Interdite dans certains musées.)
+
+58. [2.0] Quel petit appareil tournant refroidit le processeur d’un ordinateur ?
    → Le ventilateur / Ventilateur / Ventilo
    (C’est lui qu’on entend quand l’ordinateur chauffe.)
 
-29. [2.0] Quel support de stockage à disques magnétiques tournants est remplacé par le SSD ?
+59. [2.0] Quel support de stockage à disques magnétiques tournants est remplacé par le SSD ?
    → Le disque dur / Disque dur / HDD
    (Ses plateaux tournent jusqu’à 7 200 tours par minute.)
 
-30. [2.0] Quel casque permet de s’immerger dans un monde en 3D ?
+60. [2.0] Quel casque permet de s’immerger dans un monde en 3D ?
    → Le casque de réalité virtuelle / Casque VR / Casque de réalité virtuelle / Réalité virtuelle
    (Comme le Meta Quest ou l’Apple Vision Pro.)
 
-31. [2.0] Quelle enceinte répond à la voix, comme Alexa ou Google Home ?
+61. [2.0] Quelle enceinte répond à la voix, comme Alexa ou Google Home ?
    → Une enceinte connectée / Enceinte connectée / Enceinte intelligente
    (Elle écoute en permanence un mot de déclenchement.)
 
-32. [2.1] Comment appelle-t-on l’automatisation de la maison (lumières, chauffage, volets) ?
+62. [2.0] Quel service de Google permet de se promener en photos dans les rues du monde ?
+   → Street View / Google Street View
+   (Lancé en 2007, avec des voitures surmontées de caméras.)
+
+63. [2.0] Quelle technologie supprime les bruits extérieurs dans certains casques audio ?
+   → La réduction de bruit / Réduction de bruit / Réduction de bruit active / Noise cancelling
+   (Elle émet un son inverse qui annule le bruit.)
+
+64. [2.0] Quel petit connecteur rond de 3,5 mm branchait les écouteurs ?
+   → La prise jack / Prise jack / Jack
+   (Supprimée de l’iPhone en 2016.)
+
+65. [2.1] Comment appelle-t-on l’automatisation de la maison (lumières, chauffage, volets) ?
    → La domotique / Domotique
    (Du latin « domus », la maison.)
 
-33. [2.1] Comment appelle-t-on un objet du quotidien relié à Internet, comme un thermostat ?
+66. [2.1] Comment appelle-t-on un objet du quotidien relié à Internet, comme un thermostat ?
    → Un objet connecté / Objet connecté / IoT
    (On parle d’« Internet des objets ».)
 
-34. [2.1] Quel navigateur de Microsoft a remplacé Internet Explorer en 2015 ?
+67. [2.1] Quel navigateur de Microsoft a remplacé Internet Explorer en 2015 ?
    → Edge / Microsoft Edge
    (Fondé depuis 2020 sur Chromium, comme Chrome.)
 
-35. [2.1] Quel portail Internet américain, très populaire dans les années 1990, a un point d’exclamation dans son nom ?
+68. [2.1] Quel portail Internet américain, très populaire dans les années 1990, a un point d’exclamation dans son nom ?
    → Yahoo / Yahoo!
    (Fondé en 1994 par deux étudiants de Stanford.)
 
-36. [2.2] Quel forum géant a pour mascotte un petit alien blanc et des « subreddits » ?
+69. [2.1] Quel câble relie un ordinateur à une box pour une connexion filaire ?
+   → Le câble Ethernet / Câble Ethernet / Ethernet / RJ45
+   (Plus stable que le Wi-Fi.)
+
+70. [2.1] Comment appelle-t-on la recharge d’un téléphone simplement posé sur un socle ?
+   → La recharge sans fil / Recharge sans fil / Recharge par induction / Induction
+   (Par induction magnétique, norme Qi.)
+
+71. [2.2] Quel forum géant a pour mascotte un petit alien blanc et des « subreddits » ?
    → Reddit
    (Il se surnomme « la page d’accueil d’Internet ».)
 
-37. [2.2] Quelle marque chinoise de smartphones a été fondée en 2010 par Lei Jun ?
+72. [2.2] Quelle marque chinoise de smartphones a été fondée en 2010 par Lei Jun ?
    → Xiaomi
    (Elle fabrique aussi des voitures électriques depuis 2024.)
 
-38. [2.2] Quel format de fichier compresse plusieurs fichiers en un seul ?
+73. [2.2] Quel format de fichier compresse plusieurs fichiers en un seul ?
    → ZIP / Le format ZIP / .zip
    (Créé en 1989 par Phil Katz.)
 
-39. [2.2] Quel format est le plus courant pour les vidéos sur ordinateur et téléphone ?
+74. [2.2] Quel format est le plus courant pour les vidéos sur ordinateur et téléphone ?
    → MP4 / .mp4
    (Le cousin vidéo du MP3.)
 
-40. [2.3] Comment appelle-t-on l’adresse d’une page web, qui commence par « https:// » ?
+75. [2.2] Quel sigle désigne les écrans plats à cristaux liquides ?
+   → LCD / L’écran LCD
+   (Liquid Crystal Display.)
+
+76. [2.2] Quelle télévision numérique gratuite a remplacé l’analogique en France à partir de 2005 ?
+   → La TNT / TNT / Télévision numérique terrestre
+   (Télévision numérique terrestre.)
+
+77. [2.2] Quelle antenne en forme d’assiette capte la télévision par satellite ?
+   → La parabole / Parabole / Antenne parabolique
+   (Toujours orientée vers le sud, en France.)
+
+78. [2.3] Comment appelle-t-on l’adresse d’une page web, qui commence par « https:// » ?
    → L’URL / URL / Adresse URL
    (Uniform Resource Locator.)
 
-41. [2.3] Comment appelle-t-on la partie lisible d’une adresse web, comme « wikipedia.org » ?
+79. [2.3] Comment appelle-t-on la partie lisible d’une adresse web, comme « wikipedia.org » ?
    → Le nom de domaine / Nom de domaine / Domaine
    (Le plus ancien encore actif, symbolics.com, date de 1985.)
 
-42. [2.3] Quelle est l’extension Internet de la France ?
+80. [2.3] Quelle est l’extension Internet de la France ?
    → .fr / fr / Point fr
    (Gérée par l’Afnic depuis 1997.)
 
-43. [2.3] Comment appelle-t-on la quantité de données qu’une connexion peut transporter par seconde ?
+81. [2.3] Comment appelle-t-on la quantité de données qu’une connexion peut transporter par seconde ?
    → La bande passante / Bande passante / Débit
    (Mesurée en mégabits par seconde.)
 
-44. [2.4] Quel mot désigne le temps de réponse d’une connexion, crucial pour les joueurs en ligne ?
+82. [2.3] Quel appareil photo à visée par miroir est préféré des photographes professionnels ?
+   → Le reflex / Reflex
+   (Peu à peu remplacé par les « hybrides », sans miroir.)
+
+83. [2.3] Quelle entreprise américaine a donné son nom à la photocopie ?
+   → Xerox
+   (On dit « to xerox » en anglais.)
+
+84. [2.3] Quel type de calculatrice trace des courbes, utilisé au lycée ?
+   → La calculatrice graphique / Calculatrice graphique
+   (Casio et Texas Instruments se partagent le marché.)
+
+85. [2.4] Quel mot désigne le temps de réponse d’une connexion, crucial pour les joueurs en ligne ?
    → Le ping / Ping / Latence
    (Mesuré en millisecondes.)
 
-45. [2.4] Comment appelle-t-on le texte d’un programme écrit par les développeurs ?
+86. [2.4] Comment appelle-t-on le texte d’un programme écrit par les développeurs ?
    → Le code source / Code source / Code
    (Il est ensuite traduit en langage machine.)
 
-46. [2.4] Comment appelle-t-on la chasse aux erreurs d’un programme ?
+87. [2.4] Comment appelle-t-on la chasse aux erreurs d’un programme ?
    → Le débogage / Débogage / Debug / Déboguer
    (Un « bug » était à l’origine un vrai insecte coincé dans un relais, en 1947.)
 
-47. [2.4] Quel langage décrit l’apparence des pages web (couleurs, polices, marges) ?
+88. [2.4] Quel langage décrit l’apparence des pages web (couleurs, polices, marges) ?
    → Le CSS / CSS
    (Le HTML donne la structure, le CSS le style.)
 
-48. [2.5] Comment appelle-t-on un logiciel que chacun peut utiliser, étudier, modifier et partager ?
+89. [2.4] Quelles caisses permettent au client de scanner lui-même ses courses ?
+   → Les caisses automatiques / Caisse automatique / Caisses automatiques / Caisse libre-service
+   (On les appelle aussi caisses libre-service.)
+
+90. [2.4] Quel système d’Apple déverrouille l’iPhone en reconnaissant le visage ?
+   → Face ID / FaceID
+   (Lancé en 2017 avec l’iPhone X.)
+
+91. [2.5] Comment appelle-t-on un logiciel que chacun peut utiliser, étudier, modifier et partager ?
    → Un logiciel libre / Logiciel libre / Open source
    (Comme Firefox, VLC ou Linux.)
 
-49. [2.5] Comment appelle-t-on un grand bâtiment rempli de serveurs informatiques ?
+92. [2.5] Comment appelle-t-on un grand bâtiment rempli de serveurs informatiques ?
    → Un data center / Data center / Centre de données / Datacenter
    (Ils consomment beaucoup d’électricité, surtout pour le refroidissement.)
 
-50. [2.5] Comment appelle-t-on un ensemble organisé d’informations, comme les clients d’un site ?
+93. [2.5] Comment appelle-t-on un ensemble organisé d’informations, comme les clients d’un site ?
    → Une base de données / Base de données
    (On l’interroge souvent en langage SQL.)
 
-51. [2.5] Comment appelle-t-on un passionné d’informatique qui contourne les protections ?
+94. [2.5] Comment appelle-t-on un passionné d’informatique qui contourne les protections ?
    → Un hacker / Hacker / Pirate informatique
    (Les « white hats » le font pour aider à corriger les failles.)
 
-52. [2.6] Comment appelle-t-on la science des codes secrets ?
+95. [2.5] Quel système d’Apple déverrouillait l’iPhone avec l’empreinte digitale ?
+   → Touch ID / TouchID
+   (Lancé en 2013 avec l’iPhone 5s.)
+
+96. [2.5] Quel logiciel mémorise tous vos mots de passe derrière un seul mot de passe maître ?
+   → Un gestionnaire de mots de passe / Gestionnaire de mots de passe
+   (Comme Bitwarden ou 1Password.)
+
+97. [2.5] Comment appelle-t-on le programme qui choisit les vidéos qu’on vous propose sur les réseaux ?
+   → L’algorithme de recommandation / Algorithme / Algorithme de recommandation
+   (Il s’appuie sur ce que vous avez déjà regardé.)
+
+98. [2.6] Comment appelle-t-on la science des codes secrets ?
    → La cryptographie / Cryptographie / Chiffrement
    (César décalait déjà les lettres de l’alphabet.)
 
-53. [2.6] Quels réseaux informatiques s’inspirent du cerveau pour apprendre ?
+99. [2.6] Quels réseaux informatiques s’inspirent du cerveau pour apprendre ?
    → Les réseaux de neurones / Réseau de neurones / Réseaux de neurones artificiels
    (La base de l’IA moderne.)
 
-54. [2.6] Quel nom anglais désigne l’apprentissage « profond » des IA ?
+100. [2.6] Quel nom anglais désigne l’apprentissage « profond » des IA ?
    → Le deep learning / Deep learning / Apprentissage profond
    (Le Français Yann LeCun en est un pionnier.)
 
-55. [2.6] Quelle disposition de clavier anglo-saxonne commence par six lettres en haut à gauche ?
+101. [2.6] Quelle disposition de clavier anglo-saxonne commence par six lettres en haut à gauche ?
    → QWERTY
    (Les Français utilisent l’AZERTY.)
 
-56. [2.7] Quelle unité vaut environ mille octets ?
+102. [2.6] Quel service d’Apple stocke les photos et fichiers en ligne ?
+   → iCloud
+   (Lancé en 2011.)
+
+103. [2.6] Quel service de stockage en ligne, à l’icône de boîte ouverte bleue, a été créé en 2007 ?
+   → Dropbox
+   (Fondé par Drew Houston, qui oubliait toujours sa clé USB.)
+
+104. [2.6] Comment appelle-t-on le fait de rendre un appareil volontairement moins durable pour en vendre d’autres ?
+   → L’obsolescence programmée / Obsolescence programmée
+   (C’est un délit en France depuis 2015.)
+
+105. [2.6] Quel service de Google, lancé en 2005, affiche des cartes et calcule des itinéraires ?
+   → Google Maps / Maps
+   (Plus d’un milliard d’utilisateurs par mois.)
+
+106. [2.7] Quelle unité vaut environ mille octets ?
    → Le kilo-octet / Kilo-octet / Ko / Kilooctet
    (Pour être précis, 1 000 ou 1 024 octets selon les cas.)
 
-57. [2.7] Quelle unité vaut environ un million d’octets ?
+107. [2.7] Quelle unité vaut environ un million d’octets ?
    → Le mégaoctet / Mégaoctet / Mo / Megaoctet
    (Une chanson en MP3 pèse environ 4 Mo.)
 
-58. [2.7] Quel disque optique lisait des logiciels et des encyclopédies dans les années 1990 ?
+108. [2.7] Quel disque optique lisait des logiciels et des encyclopédies dans les années 1990 ?
    → Le CD-ROM / CD-ROM / CD ROM / Cédérom
    (Environ 700 Mo de données.)
 
-59. [2.7] Quel style graphique dessine avec de gros pixels visibles, comme dans les vieux jeux ?
+109. [2.7] Quel style graphique dessine avec de gros pixels visibles, comme dans les vieux jeux ?
    → Le pixel art / Pixel art
    (Très apprécié des jeux indépendants.)
 
-60. [2.8] Quel ancien instrument de calcul à boules qui glissent sur des tiges est encore utilisé en Asie ?
+110. [2.7] Quelle note sur 10 indique en France si un appareil est facile à réparer ?
+   → L’indice de réparabilité / Indice de réparabilité / Indice de durabilité
+   (Obligatoire depuis 2021, devenu indice de durabilité pour certains produits.)
+
+111. [2.7] Quel smartphone néerlandais est conçu pour être réparé facilement et durer ?
+   → Le Fairphone / Fairphone
+   (On peut changer soi-même la batterie ou l’écran.)
+
+112. [2.7] Comment appelle-t-on un téléphone d’occasion remis en état et revendu ?
+   → Reconditionné / Un téléphone reconditionné / Smartphone reconditionné
+   (Back Market, une entreprise française, en a fait sa spécialité.)
+
+113. [2.8] Quel ancien instrument de calcul à boules qui glissent sur des tiges est encore utilisé en Asie ?
    → Le boulier / Boulier
    (Le boulier japonais s’appelle le soroban.)
 
-61. [2.8] Quel instrument à réglettes coulissantes utilisaient les ingénieurs avant la calculatrice ?
+114. [2.8] Quel instrument à réglettes coulissantes utilisaient les ingénieurs avant la calculatrice ?
    → La règle à calcul / Règle à calcul
    (Elle a servi jusqu’aux missions Apollo.)
 
-62. [2.8] Quel instrument permet de voir des choses minuscules, comme les cellules ?
+115. [2.8] Quel instrument permet de voir des choses minuscules, comme les cellules ?
    → Le microscope / Microscope
    (Van Leeuwenhoek a observé les bactéries au XVIIe siècle.)
 
-63. [2.8] Quelle invention chinoise, à base de salpêtre, de soufre et de charbon, a changé la guerre ?
+116. [2.8] Quelle invention chinoise, à base de salpêtre, de soufre et de charbon, a changé la guerre ?
    → La poudre à canon / Poudre à canon / Poudre noire
    (Inventée vers le IXe siècle.)
 
-64. [2.9] Quelle fermeture à dents qui s’emboîtent a été popularisée dans les années 1920 ?
+117. [2.8] Quel entrepreneur a fondé l’opérateur Free et lancé la Freebox ?
+   → Xavier Niel / Niel
+   (La Freebox est sortie en 2002.)
+
+118. [2.8] Quelle puce intégrée remplace la carte SIM physique dans les téléphones récents ?
+   → L’eSIM / eSIM / E-SIM
+   (On l’active avec un QR code.)
+
+119. [2.8] Depuis 2017, que ne paie-t-on plus quand on utilise son téléphone dans un autre pays de l’Union européenne ?
+   → Les frais d’itinérance / Itinérance / Roaming / Frais de roaming
+   (« Roam like at home ».)
+
+120. [2.9] Quelle fermeture à dents qui s’emboîtent a été popularisée dans les années 1920 ?
    → La fermeture éclair / Fermeture éclair / Fermeture à glissière
    (« Éclair » était une marque française.)
 
-65. [2.9] Quelles petites lentilles posées sur l’œil remplacent les lunettes ?
+121. [2.9] Quelles petites lentilles posées sur l’œil remplacent les lunettes ?
    → Les lentilles de contact / Lentilles de contact / Lentilles
    (Les premières, en verre, dataient de 1888.)
 
-66. [2.9] Quelle fibre synthétique inventée par DuPont en 1935 a d’abord servi aux bas ?
+122. [2.9] Quelle fibre synthétique inventée par DuPont en 1935 a d’abord servi aux bas ?
    → Le nylon / Nylon
    (Pendant la guerre, il a servi pour les parachutes.)
 
-67. [2.9] Quel revêtement antiadhésif recouvre beaucoup de poêles ?
+123. [2.9] Quel revêtement antiadhésif recouvre beaucoup de poêles ?
    → Le Téflon / Téflon / Teflon / PTFE
    (Découvert par hasard en 1938.)
 
-68. [3.0] Quelle fibre très résistante, inventée par Stephanie Kwolek, sert aux gilets pare-balles ?
+124. [2.9] Quel système de saisie permettait d’écrire des SMS avec une seule pression par touche ?
+   → Le T9 / T9
+   (Le téléphone devinait le mot.)
+
+125. [2.9] Comment appelait-on les messages contenant photos ou sons, après le SMS ?
+   → Les MMS / MMS
+   (Multimedia Messaging Service.)
+
+126. [3.0] Quelle fibre très résistante, inventée par Stephanie Kwolek, sert aux gilets pare-balles ?
    → Le Kevlar / Kevlar
    (Cinq fois plus résistante que l’acier, à poids égal.)
 
-69. [3.0] Quel matériau léger et rigide, fait de fils noirs tissés, est utilisé dans les vélos de course et les F1 ?
+127. [3.0] Quel matériau léger et rigide, fait de fils noirs tissés, est utilisé dans les vélos de course et les F1 ?
    → La fibre de carbone / Fibre de carbone / Carbone
    (Très résistant pour un poids minime.)
 
-70. [3.0] Quel matériau fait d’une seule couche d’atomes de carbone a valu un Nobel en 2010 ?
+128. [3.0] Quel matériau fait d’une seule couche d’atomes de carbone a valu un Nobel en 2010 ?
    → Le graphène / Graphène / Graphene
    (Isolé avec… du ruban adhésif.)
 
-71. [3.1] Comment appelle-t-on les technologies à l’échelle du milliardième de mètre ?
+129. [3.0] Quel traducteur automatique allemand, né à Cologne, rivalise avec Google Traduction ?
+   → DeepL
+   (Lancé en 2017, réputé pour sa qualité.)
+
+130. [3.0] Comment appelle-t-on la voix artificielle qui lit un texte à voix haute ?
+   → La synthèse vocale / Synthèse vocale / Text-to-speech
+   (Très utile aux personnes malvoyantes.)
+
+131. [3.1] Comment appelle-t-on les technologies à l’échelle du milliardième de mètre ?
    → Les nanotechnologies / Nanotechnologie / Nanotechnologies
    (Un nanomètre : un cheveu est 80 000 fois plus épais.)
 
-72. [3.1] Quelle machine à vapeur améliorée par James Watt a lancé la révolution industrielle ?
+132. [3.1] Quelle machine à vapeur améliorée par James Watt a lancé la révolution industrielle ?
    → La machine à vapeur / Machine à vapeur / Moteur à vapeur
    (Brevetée en 1769.)
 
-73. [3.1] Quel ingénieur anglais a construit la locomotive « Rocket » en 1829 ?
+133. [3.1] Quel ingénieur anglais a construit la locomotive « Rocket » en 1829 ?
    → George Stephenson / Robert Stephenson / Stephenson
    (Avec son fils Robert.)
 
-74. [3.1] Quelle voiture de Ford, sortie en 1908, a été la première fabriquée à la chaîne ?
+134. [3.1] Quelle voiture de Ford, sortie en 1908, a été la première fabriquée à la chaîne ?
    → La Ford T / Ford T / Ford Model T / Model T
    (« Disponible dans toutes les couleurs, du moment que c’est noir ».)
 
-75. [3.2] Quel ingénieur allemand a déposé en 1886 le brevet de la première automobile ?
+135. [3.1] Comment appelle-t-on la description orale des images d’un film pour les personnes aveugles ?
+   → L’audiodescription / Audiodescription
+   (Elle se glisse entre les dialogues.)
+
+136. [3.1] Comment appelle-t-on une radio diffusée uniquement sur Internet ?
+   → Une webradio / Webradio / Radio en ligne
+   (Il en existe des dizaines de milliers.)
+
+137. [3.2] Quel ingénieur allemand a déposé en 1886 le brevet de la première automobile ?
    → Carl Benz / Karl Benz / Benz
    (Sa femme Bertha fit le premier long trajet en voiture.)
 
-76. [3.2] Quel ingénieur français a fait décoller l’« Éole » en 1890 et inventé le mot « avion » ?
+138. [3.2] Quel ingénieur français a fait décoller l’« Éole » en 1890 et inventé le mot « avion » ?
    → Clément Ader / Ader
    (Un saut d’une cinquantaine de mètres.)
 
-77. [3.2] Quel moteur fait exploser un mélange d’air et d’essence dans des cylindres ?
+139. [3.2] Quel moteur fait exploser un mélange d’air et d’essence dans des cylindres ?
    → Le moteur à explosion / Moteur à explosion / Moteur thermique / Moteur à combustion interne
    (Le moteur de nos voitures à essence.)
 
-78. [3.2] Quel constructeur américain a fabriqué le 747, surnommé « Jumbo Jet » ?
+140. [3.2] Quel constructeur américain a fabriqué le 747, surnommé « Jumbo Jet » ?
    → Boeing
    (Premier vol commercial en 1970.)
 
-79. [3.3] Quel train flotte au-dessus des rails grâce à des aimants ?
+141. [3.2] Quel sigle désigne les déchets d’équipements électriques et électroniques ?
+   → DEEE / D3E
+   (Les magasins doivent reprendre l’ancien appareil quand on en achète un neuf.)
+
+142. [3.3] Quel train flotte au-dessus des rails grâce à des aimants ?
    → Le Maglev / Maglev / Train à sustentation magnétique
    (Un Maglev japonais a atteint 603 km/h en 2015.)
 
-80. [3.3] Quel projet de capsules dans un tube sous vide a été relancé par Elon Musk en 2013 ?
+143. [3.3] Quel projet de capsules dans un tube sous vide a été relancé par Elon Musk en 2013 ?
    → L’Hyperloop / Hyperloop
    (Aucune ligne commerciale n’existe à ce jour.)
 
-81. [3.3] Quel inventeur français a mis au point en 1839 un procédé photographique sur plaque d’argent ?
+144. [3.3] Quel inventeur français a mis au point en 1839 un procédé photographique sur plaque d’argent ?
    → Louis Daguerre / Daguerre
    (Le daguerréotype.)
 
-82. [3.4] Quel sous-marin français d’exploration a plongé sur l’épave du Titanic ?
+145. [3.3] Quelle entreprise américaine fabrique les calculatrices TI utilisées au lycée ?
+   → Texas Instruments / TI
+   (Un de ses ingénieurs, Jack Kilby, a coinventé la puce électronique.)
+
+146. [3.4] Quel sous-marin français d’exploration a plongé sur l’épave du Titanic ?
    → Le Nautile / Nautile
    (Il descend jusqu’à 6 000 m.)
 
-83. [3.4] Quelle machine abstraite imaginée en 1936 est à la base de l’informatique ?
+147. [3.4] Quelle machine abstraite imaginée en 1936 est à la base de l’informatique ?
    → La machine de Turing / Machine de Turing
    (Un ruban, une tête de lecture et des règles.)
 
-84. [3.5] Quelle machine permettait de taper des lettres sur papier avant l’ordinateur ?
+148. [3.4] Quelle technologie identifie quelqu’un d’après les traits de son visage, parfois sur les caméras de rue ?
+   → La reconnaissance faciale / Reconnaissance faciale
+   (Très encadrée dans l’Union européenne.)
+
+149. [3.5] Quelle machine permettait de taper des lettres sur papier avant l’ordinateur ?
    → La machine à écrire / Machine à écrire
    (Le clavier QWERTY vient d’elle (1873).)
 
-85. [3.5] Quelle invention électrique a fait la gloire d’Edison en 1879 ?
+150. [3.5] Quelle invention électrique a fait la gloire d’Edison en 1879 ?
    → L’ampoule à incandescence / Ampoule / Ampoule électrique
    (L’Anglais Joseph Swan y travaillait en même temps.)

@@ -269,9 +269,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
   (sur toutes les questions du thème), carte Maître au palier 10. BROUILLONS (pas dans le jeu) : dossier `_brouillons-paliers/`
-  (.js au format du jeu + .txt lisibles), 1 442 questions nouvelles, ids x151+ : Cinéma 150, Musique 150 (rendue plus accessible :
+  (.js au format du jeu + .txt lisibles), 1 637 questions nouvelles, ids x151+ : Cinéma 150, Musique 150 (rendue plus accessible :
   moins de compositeurs, plus de tubes), Géographie 150 (28 capitales retirées, notes du vocabulaire remontées), Histoire 85,
-  Sport 111, Sciences 115, Littérature 114, Arts 75, Gastronomie 118, Technologie 85, Jeux 97, Langue française 94, Mythologie 49,
+  Sport 150, Sciences 150, Littérature 114, Arts 75, Gastronomie 118, Technologie 150, Jeux 153 (Sport/Sciences/Techno/Jeux
+  complétés le 09/11 à la demande de l’utilisateur : 300 questions, sujets accessibles), Langue française 94, Mythologie 49,
   Monuments 49 (sans photo), Drapeaux 0. Sujets vérifiés libres avec free.py + check4.py (scratchpad). Avis de l'utilisateur :
   Cinéma bien ; Musique trop dure (corrigé) ; Géo trop de capitales et notes trop basses (corrigé). RESTE À FAIRE avant de les
   mettre dans le jeu : vérifier en ligne les faits précis, coder TRAIN_TIERS = 10 + conversion des sauvegardes (trainTier,
