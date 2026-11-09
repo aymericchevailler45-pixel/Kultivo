@@ -284,12 +284,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   NOMS : Découverte, Curieux, Initié, Amateur, Confirmé, Averti, Expert, Érudit, Virtuose, Maître. MÉDAILLES : 1/3, 2/3, 100 % des
   questions du thème ; RECALCULÉES UNE FOIS à la conversion (un or 150/150 devient bronze 150/300), badges gardés, annoncé dans
   « Quoi de neuf ? » ; ensuite une médaille gagnée reste. Brouillons : faits vérifiés le 09/11 (1 880 questions, ~40 corrections).
-  Fenêtre des médailles : nombre de maîtrisées en gros (`.medal-count`, pas encore en ligne).
+  Fenêtre des médailles : nombre de maîtrisées en gros (`.medal-count`, en ligne le 09/11).
+  « QUOI DE NEUF ? » des 10 paliers (validé) : 10 paliers + ~1 900 questions + noms ; progression gardée (N → 2N, nouvelles questions
+  petit à petit) ; médailles recalculées (badges gardés) ; 1 carte par palier, 2 aux paliers 5 et 10. PAS de ligne sur la correction des réponses.
 - FAIT le 09/11 : EXPRESSIONS plus tolérantes (demande de l’utilisateur : accepter les tournures équivalentes partout) : `judgeV2`
   ignore « avoir / être » au début pour TOUTE question qui contient « expression » (avant : seulement les rébus) ; synonymes ajoutés
   aux questions qui demandent un sens sans imposer de mot (questions.js : 2229, 4077, 4230, 4570, 4572, 4573, 4621-4623, 4670-4672 ;
   brouillons 21152-21172 etc.). Quand la question impose un élément (« avec un fruit », rébus), on garde la contrainte.
-- FAIT le 09/11 soir (PAS ENCORE EN LIGNE : l’utilisateur a dit « publie pas encore » ; commit local, v=20261109s, cache kultivo-v81) :
+- FAIT le 09/11 soir (EN LIGNE le 09/11, v=20261109s, cache kultivo-v81) :
   CORRECTION DES RÉPONSES revue sur tout le jeu (demande : « rouge et bleu » refusé, « Tibre » accepté pour « Tigre ») :
   1) une « faute de frappe » qui est EXACTEMENT la réponse d’une autre question est refusée (`knownAnswers`, cache sur la taille des
      banques ; ANNULE le refus du 25/10). Tolérance seulement pour le genre / nombre d’un NOM COMMUN (`sameStem`, `isCommonRaw` = article
