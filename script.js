@@ -5950,7 +5950,9 @@ function showCard() {
     input.hidden = tf;
     $('tfActions').hidden = !tf;
     if (tf) $('answerActions').hidden = true;
-    input.inputMode = item.q.year !== undefined ? 'numeric' : 'text';
+    // réponse en chiffres (année, « combien… ») → pavé numérique (avec la virgule : 42,195) ; « 8 » suffit même si « huit » est aussi accepté
+    const numAnswer = /^\d[\d\s.,]*$/.test(String((item.q.a && item.q.a[0]) || '').trim());
+    input.inputMode = item.q.year !== undefined ? 'numeric' : numAnswer ? 'decimal' : 'text';
     input.placeholder = item.q.year !== undefined ? 'Année' : 'Ta réponse';
     $('pairsView').hidden = true;
     $('orderView').hidden = true;

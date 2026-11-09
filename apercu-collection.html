@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collection complète</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=col1">
+<!-- Page d'APERÇU (2026-11-09) : 3 idées d'animation quand on complète la collection d'un thème. Rien n'est encore dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .lead { margin: 0; color: var(--muted); font-weight: 700; }
+    .where { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .9rem; }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+    .btns .btn { padding: 8px 12px; font-size: .9rem; }
+    h2 { margin: 0 0 4px; }
+
+    /* Faux téléphone */
+    .phone { position: relative; width: 100%; max-width: 340px; height: 620px; margin: 0 auto; border-radius: 26px; overflow: hidden;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; text-align: center; padding: 20px 16px;
+        background: radial-gradient(120% 80% at 50% 30%, #2b3550, #121726); user-select: none; cursor: pointer; }
+    .phone > * { position: relative; }
+    .fade { opacity: 0; }
+    .go .fade { animation: fadeUp .4s forwards; animation-delay: var(--d, 0s); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .done .fade, .done .card-slot, .done .mini, .done .ring-fill, .done .stamp, .done .fly, .done .master-pop, .done .ribbon, .done .album.close { animation-delay: 0s !important; animation-duration: .01s !important; }
+    .done .rays { animation: spin 14s linear infinite !important; opacity: 1; }
+    .rays { position: absolute !important; top: 50%; left: 50%; width: 560px; height: 560px; margin: -330px 0 0 -280px; opacity: 0; border-radius: 50%;
+        background: repeating-conic-gradient(rgba(255,215,64,.22) 0 10deg, transparent 10deg 20deg);
+        -webkit-mask: radial-gradient(circle, #000 25%, transparent 68%); mask: radial-gradient(circle, #000 25%, transparent 68%); }
+    .go .rays { animation: raysIn .6s forwards, spin 14s linear infinite; animation-delay: var(--d, 0s), 0s; }
+    @keyframes raysIn { to { opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .title { font-size: 1.55rem; font-weight: 900; line-height: 1.1; }
+    .sub { font-size: .95rem; font-weight: 800; opacity: .85; }
+    .kulti-row { display: flex; align-items: center; gap: 8px; }
+    .kulti-row .k { width: 52px; height: 52px; }
+    .bubble { background: #fff; color: #333; padding: 8px 12px; border-radius: 14px; font-weight: 800; font-size: .86rem; max-width: 200px; text-align: left; }
+    .phone .btn { width: 100%; max-width: 260px; background: #ffc800; color: #4a3500; box-shadow: 0 4px 0 #c99a00; }
+    .small-btn { font-size: .85rem; font-weight: 800; opacity: .75; }
+    .emo { width: 70%; height: 70%; object-fit: contain; }
+
+    /* ---------- A : les cartes se retournent ---------- */
+    .grid { display: grid; grid-template-columns: repeat(4, 54px); gap: 8px; perspective: 600px; }
+    .card-slot { width: 54px; height: 72px; position: relative; transform-style: preserve-3d; }
+    .card-back, .card-front { position: absolute; inset: 0; border-radius: 9px; backface-visibility: hidden; display: grid; place-items: center; }
+    .card-back { background: #46a302; box-shadow: 0 3px 0 #23600a; }
+    .card-back img { width: 60%; }
+    .card-front { background: color-mix(in srgb, var(--r) 30%, #fff); border: 3px solid var(--r); transform: rotateY(180deg); box-shadow: 0 0 10px 1px var(--r); }
+    .card-slot.is-last .card-front { box-shadow: 0 0 18px 4px var(--r); }
+    .go .card-slot { animation: flipCard .45s cubic-bezier(.3,1.4,.5,1) forwards; animation-delay: var(--d); }
+    @keyframes flipCard { 0% { transform: rotateY(0) scale(1); } 50% { transform: rotateY(90deg) scale(1.15); } 100% { transform: rotateY(180deg) scale(1); } }
+    .go .card-slot.is-last { animation: shake .6s linear var(--d), flipCard .5s cubic-bezier(.3,1.4,.5,1) calc(var(--d) + .6s) forwards; }
+    @keyframes shake { 0%,100% { transform: rotate(0); } 20% { transform: rotate(-6deg); } 40% { transform: rotate(6deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(5deg); } }
+    .grid-glow { border-radius: 16px; padding: 10px; }
+    .go .grid-glow { animation: glow 1.6s ease-in-out infinite; animation-delay: var(--d); }
+    @keyframes glow { 0%,100% { box-shadow: 0 0 0 0 rgba(255,200,0,0); } 50% { box-shadow: 0 0 26px 6px rgba(255,200,0,.55); background: rgba(255,200,0,.08); } }
+    .count { font-size: 2.6rem; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1; }
+    .count.is-full { color: #ffd740; text-shadow: 0 0 14px rgba(255,215,64,.7); }
+
+    /* ---------- B : le compteur façon série ---------- */
+    .ring { width: 160px; height: 160px; position: relative; display: grid; place-items: center; }
+    .ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: rgba(255,255,255,.12); stroke-width: 12; }
+    .ring-fill { fill: none; stroke: #ffd740; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 503; stroke-dashoffset: 84; }
+    .go .ring-fill { animation: ringFull .5s ease-out forwards; animation-delay: var(--d); }
+    @keyframes ringFull { to { stroke-dashoffset: 0; } }
+    .ring .big { font-size: 3.4rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .ring .big small { font-size: 1.6rem; opacity: .6; }
+    .master-pop { position: absolute; width: 90px; height: 90px; opacity: 0; display: grid; place-items: center; }
+    .go .master-pop { animation: pop .6s cubic-bezier(.3,1.5,.5,1) forwards; animation-delay: var(--d); }
+    @keyframes pop { 0% { opacity: 0; transform: scale(.2) rotate(-30deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+    .stamp { position: absolute !important; top: 6px; right: -26px; width: 92px; height: 92px; border-radius: 50%; border: 4px solid #ffd740; color: #ffd740;
+        display: grid; place-items: center; font-weight: 900; font-size: .78rem; line-height: 1.05; transform: rotate(14deg) scale(3); opacity: 0;
+        background: rgba(18,23,38,.6); box-shadow: inset 0 0 0 3px rgba(255,215,64,.35); }
+    .go .stamp { animation: stampIn .35s cubic-bezier(.5,0,.8,1) forwards; animation-delay: var(--d); }
+    @keyframes stampIn { 0% { opacity: 0; transform: rotate(14deg) scale(3); } 80% { opacity: 1; transform: rotate(14deg) scale(.92); } 100% { opacity: 1; transform: rotate(14deg) scale(1); } }
+    .go .ring.thump { animation: thump .35s ease-out; animation-delay: var(--d); }
+    @keyframes thump { 30% { transform: scale(.94); } 60% { transform: scale(1.04); } }
+    .strip { display: grid; grid-template-columns: repeat(6, 36px); gap: 5px; }
+    .mini { width: 36px; height: 36px; border-radius: 8px; background: color-mix(in srgb, var(--r) 30%, #fff); border: 2px solid var(--r); display: grid; place-items: center; opacity: 0; }
+    .go .mini { animation: miniIn .3s cubic-bezier(.3,1.5,.5,1) forwards; animation-delay: var(--d); }
+    @keyframes miniIn { from { opacity: 0; transform: translateY(14px) scale(.5); } to { opacity: 1; transform: none; } }
+    .sparks { position: absolute !important; inset: 0; pointer-events: none; }
+    .sparks i { position: absolute; bottom: -20px; font-style: normal; font-size: 1rem; opacity: 0; }
+    .go .sparks i { animation: rise 2.6s linear infinite; animation-delay: var(--d); }
+    @keyframes rise { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: .9; } 100% { opacity: 0; transform: translateY(-640px); } }
+
+    /* ---------- C : l'album qui se referme ---------- */
+    .album { width: 250px; padding: 12px; border-radius: 14px; background: #f6efe0; color: #5b4630; box-shadow: 0 6px 0 #b79f75, 0 10px 30px rgba(0,0,0,.4); }
+    .album h3 { margin: 0 0 8px; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .album .tag { font-size: .8rem; padding: 2px 8px; border-radius: 999px; background: #e7dcc4; transition: background .3s, color .3s; }
+    .album .tag.is-gold { background: #ffc800; color: #4a3500; }
+    .slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .slot { aspect-ratio: 3 / 4; border-radius: 7px; border: 2px dashed #cdbb98; position: relative; }
+    .fly { position: absolute; inset: -2px; border-radius: 7px; background: color-mix(in srgb, var(--r) 30%, #fff); border: 2px solid var(--r); display: grid; place-items: center; opacity: 0; }
+    .go .fly { animation: flyIn .45s cubic-bezier(.2,.9,.3,1.2) forwards; animation-delay: var(--d); }
+    @keyframes flyIn { from { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(1.4); } to { opacity: 1; transform: none; } }
+    .album-wrap { perspective: 900px; }
+    .go .album.close { animation: shine 1.2s ease-out forwards; animation-delay: var(--d); }
+    @keyframes shine { 0% { box-shadow: 0 6px 0 #b79f75, 0 10px 30px rgba(0,0,0,.4); } 40% { box-shadow: 0 6px 0 #c99a00, 0 0 40px 12px rgba(255,200,0,.75); background: #fff3c4; }
+        100% { box-shadow: 0 6px 0 #c99a00, 0 0 22px 4px rgba(255,200,0,.45); background: #fff6d6; } }
+    .ribbon { padding: 8px 18px; background: #e53935; color: #fff; font-weight: 900; border-radius: 6px; box-shadow: 0 3px 0 #9b1b18; transform: scale(0) rotate(-8deg); }
+    .go .ribbon { animation: ribbon .45s cubic-bezier(.3,1.6,.5,1) forwards; animation-delay: var(--d); }
+    @keyframes ribbon { to { transform: scale(1) rotate(-3deg); } }
+
+    @media (max-width: 380px) { .stamp { right: -10px; width: 80px; height: 80px; } }
+</style>
+<script src="kulti.js?v=col1"></script>
+</head>
+<body>
+<div class="wrap">
+    <article class="card">
+        <h1 style="margin:0 0 4px">🃏 Collection complète</h1>
+        <p class="lead">Trois idées à comparer. Aujourd'hui, le jeu montre juste des confettis et une fenêtre « Collection complète ! ». Comme pour la série, l'animation passerait en plein écran, sur fond sombre, quand le coffre qui donne la dernière carte se referme. Un tap pendant l'animation la termine tout de suite. Le son est joué quand tu appuies sur « ▶ Rejouer ».</p>
+    </article>
+
+    <article class="card">
+        <h2>A · Les cartes se retournent</h2>
+        <p class="lead">Les 12 cartes du thème se retournent une à une, avec un petit son qui monte. La dernière (celle que tu viens de gagner) tremble avant de se retourner, puis tout le tableau s'illumine en doré.</p>
+        <div class="phone" id="pA"></div>
+        <div class="btns"><button class="btn btn-ghost" type="button" data-play="A">▶ Rejouer</button></div>
+    </article>
+
+    <article class="card">
+        <h2>B · Le compteur, comme la série du jour</h2>
+        <p class="lead">Un anneau presque plein « 11/12 ». Le chiffre tourne comme la roulette de la série et tombe sur 12/12. L'anneau se ferme, la carte Maître apparaît au centre et un tampon doré « COMPLÈTE » s'abat à côté. Puis les 12 cartes défilent en dessous.</p>
+        <div class="phone" id="pB"></div>
+        <div class="btns"><button class="btn btn-ghost" type="button" data-play="B">▶ Rejouer</button></div>
+    </article>
+
+    <article class="card">
+        <h2>C · L'album</h2>
+        <p class="lead">Une page d'album avec 12 emplacements. Les 11 cartes déjà là se posent très vite, la dernière arrive de loin en tournant. La page brille, l'étiquette passe à « 12/12 ✓ » et un ruban « Thème complet ! » apparaît.</p>
+        <div class="phone" id="pC"></div>
+        <div class="btns"><button class="btn btn-ghost" type="button" data-play="C">▶ Rejouer</button></div>
+    </article>
+
+    <article class="card">
+        <p class="where">Dans les trois cas, l'écran finit sur le même texte (« Collection Histoire complète ! »), Kulti fier et les boutons « Voir ma collection » / « Super ! ». Les badges de collection se récupèrent ensuite comme d'habitude. Tu peux aussi mélanger : par exemple l'anneau de B suivi de l'album de C.</p>
+    </article>
+</div>
+<script>
+const CARDS = [
+    ['🪖', 'common'], ['🪶', 'common'], ['🏹', 'common'], ['🪓', 'common'],
+    ['⚔️', 'rare'], ['👑', 'rare'], ['🚢', 'rare'], ['🗞️', 'rare'],
+    ['📜', 'epic'], ['🗝️', 'epic'], ['🧵', 'legendary'], ['⚜️', 'master']
+];
+const R = { common: '#9aa6bd', rare: '#1899d6', epic: '#8b5cf6', legendary: '#ffb300', master: '#46a302' };
+function emo(e) {
+    let cps = [...e].map(c => c.codePointAt(0));
+    if (!cps.includes(0x200D)) cps = cps.filter(cp => cp !== 0xFE0F);
+    const i = document.createElement('img'); i.className = 'emo'; i.alt = e; i.draggable = false;
+    i.src = `emoji/${cps.map(c => c.toString(16)).join('-')}.svg`; return i;
+}
+const h = (tag, cls, d, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (d !== undefined) n.style.setProperty('--d', d + 's'); if (html) n.innerHTML = html; return n; };
+
+/* --- Son --- */
+let ctx = null;
+function tone(f, start, dur, type = 'sine', vol = .14, end) {
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t + start); if (end) o.frequency.exponentialRampToValueAtTime(end, t + start + dur);
+    g.gain.setValueAtTime(.0001, t + start); g.gain.exponentialRampToValueAtTime(vol, t + start + .01); g.gain.exponentialRampToValueAtTime(.0001, t + start + dur);
+    o.connect(g).connect(ctx.destination); o.start(t + start); o.stop(t + start + dur + .02);
+}
+const fanfare = s => { [523, 659, 784, 1047].forEach((f, i) => tone(f, s + i * .1, .35, 'triangle', .12)); [1047, 1319, 1568].forEach(f => tone(f, s + .45, .9, 'sine', .08)); };
+const thud = s => { tone(140, s, .25, 'sine', .3, 60); tone(900, s, .05, 'square', .05); };
+const SOUND = {
+    A() { for (let i = 0; i < 11; i++) tone(520 + i * 55, .5 + i * .12, .09, 'triangle', .07); [0, .1, .2, .3, .4, .5].forEach(s => tone(300, 1.9 + s, .05, 'square', .03)); tone(880, 2.55, .2, 'sine', .14); fanfare(2.8); },
+    B() { let t = .4; for (let i = 0; i < 18; i++) { tone(1200, t, .03, 'square', .04); t += .04 + i * i * .0009; } tone(1568, t, .3, 'sine', .14); thud(t + .75); fanfare(t + 1); },
+    C() { for (let i = 0; i < 11; i++) tone(700, .4 + i * .07, .04, 'square', .035); tone(400, 1.35, .5, 'sawtooth', .04, 1400); thud(1.85); fanfare(2.1); }
+};
+
+/* --- Fin commune --- */
+function ending(d) {
+    return [
+        h('div', 'title fade', d, 'Collection Histoire complète !'),
+        h('div', 'sub fade', d + .15, '12 cartes réunies, carte Maître comprise'),
+        (() => { const r = h('div', 'kulti-row fade', d + .3); const k = h('div', 'k'); k.append(kultiEl('fier', 'kulti-blink')); r.append(k, h('div', 'bubble', undefined, 'Toute l’Histoire dans ta poche !')); return r; })(),
+        (() => { const b = h('button', 'btn fade', d + .45); b.textContent = 'Voir ma collection'; return b; })(),
+        h('div', 'small-btn fade', d + .55, 'Super !')
+    ];
+}
+
+/* --- A --- */
+function buildA(p) {
+    const glow = h('div', 'grid-glow', 2.75), grid = h('div', 'grid');
+    CARDS.forEach(([e, r], i) => {
+        const last = i === CARDS.length - 1;
+        const s = h('div', 'card-slot' + (last ? ' is-last' : ''), last ? 1.9 : .5 + i * .12);
+        s.style.setProperty('--r', R[r]);
+        const back = h('div', 'card-back'); const logo = document.createElement('img'); logo.src = 'icons/logo.svg'; back.append(logo);
+        const front = h('div', 'card-front'); front.append(emo(e));
+        s.append(back, front); grid.append(s);
+    });
+    glow.append(grid);
+    const count = h('div', 'count'); count.textContent = '0/12';
+    p.append(h('div', 'rays', 2.75), count, glow, ...ending(3.1));
+    const steps = CARDS.map((_, i) => (i === 11 ? 2.5 : .55 + i * .12));
+    p._timers = steps.map((t, i) => setTimeout(() => { count.textContent = `${i + 1}/12`; if (i === 11) count.classList.add('is-full'); }, t * 1000));
+    p._finish = () => { count.textContent = '12/12'; count.classList.add('is-full'); };
+}
+
+/* --- B --- */
+function buildB(p) {
+    const ring = h('div', 'ring thump', 2.2);
+    ring.innerHTML = '<svg viewBox="0 0 180 180"><circle class="ring-bg" cx="90" cy="90" r="80"/><circle class="ring-fill" cx="90" cy="90" r="80" style="--d:1.6s"/></svg>';
+    const big = h('div', 'big', undefined, '11<small>/12</small>');
+    const pop = h('div', 'master-pop', 2.0); pop.append(emo('⚜️'));
+    const stamp = h('div', 'stamp', 2.15, 'COMPLÈTE<br>★ 12/12 ★');
+    ring.append(big, pop, stamp);
+    const strip = h('div', 'strip');
+    CARDS.forEach(([e, r], i) => { const m = h('div', 'mini', 2.7 + i * .06); m.style.setProperty('--r', R[r]); m.append(emo(e)); strip.append(m); });
+    const sparks = h('div', 'sparks');
+    for (let i = 0; i < 12; i++) { const s = h('i', '', 2 + i * .2); s.textContent = i % 3 ? '✨' : '⭐'; s.style.left = (5 + (i * 37) % 90) + '%'; sparks.append(s); }
+    p.append(sparks, h('div', 'rays', 2.2), ring, strip, ...ending(3.5));
+    // roulette : chiffres au hasard qui ralentissent et tombent sur 12
+    let t = 400; const timers = [];
+    for (let i = 0; i < 18; i++) {
+        timers.push(setTimeout(() => { big.innerHTML = `${1 + Math.floor(Math.random() * 24)}<small>/12</small>`; }, t));
+        t += 40 + i * i * .9;
+    }
+    timers.push(setTimeout(() => { big.innerHTML = '12<small>/12</small>'; big.style.color = '#ffd740'; }, t));
+    timers.push(setTimeout(() => { big.style.opacity = 0; }, 1950));
+    p._timers = timers;
+    p._finish = () => { big.style.opacity = 0; };
+}
+
+/* --- C --- */
+function buildC(p) {
+    const wrap = h('div', 'album-wrap'), album = h('div', 'album close', 1.85);
+    const tag = h('span', 'tag', undefined, '11/12');
+    const head = h('h3'); head.append(document.createTextNode('🏛️ Histoire'), tag);
+    const slots = h('div', 'slots');
+    CARDS.forEach(([e, r], i) => {
+        const last = i === CARDS.length - 1;
+        const sl = h('div', 'slot'), f = h('div', 'fly', last ? 1.35 : .4 + i * .07);
+        f.style.setProperty('--r', R[r]);
+        f.style.setProperty('--fx', last ? '160px' : '0px'); f.style.setProperty('--fy', last ? '-260px' : '-30px'); f.style.setProperty('--fr', last ? '540deg' : '0deg');
+        f.append(emo(e)); sl.append(f); slots.append(sl);
+    });
+    album.append(head, slots); wrap.append(album);
+    p.append(h('div', 'rays', 1.9), wrap, h('div', 'ribbon', 2.2, 'Thème complet !'), ...ending(2.6));
+    p._timers = [setTimeout(() => { tag.textContent = '12/12 ✓'; tag.classList.add('is-gold'); }, 1850)];
+    p._finish = () => { tag.textContent = '12/12 ✓'; tag.classList.add('is-gold'); };
+}
+
+const BUILD = { A: buildA, B: buildB, C: buildC };
+function play(k, withSound) {
+    const p = document.getElementById('p' + k);
+    (p._timers || []).forEach(clearTimeout);
+    p.className = 'phone'; p.replaceChildren();
+    BUILD[k](p);
+    void p.offsetWidth; p.classList.add('go');
+    if (withSound) { try { SOUND[k](); } catch (e) { /* pas de son */ } }
+}
+document.querySelectorAll('[data-play]').forEach(b => { b.onclick = () => play(b.dataset.play, true); });
+['A', 'B', 'C'].forEach(k => {
+    const p = document.getElementById('p' + k);
+    p.onclick = () => { if (p.classList.contains('done')) return play(k, true); (p._timers || []).forEach(clearTimeout); p._finish && p._finish(); p.classList.add('done'); };
+    play(k, false);
+});
+</script>
+</body>
+</html>
