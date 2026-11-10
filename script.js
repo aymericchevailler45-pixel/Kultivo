@@ -644,10 +644,16 @@ const PERSON_Q = /(?<!\p{L})(qui(?!\p{L})|quel(?:le)?s?(?!\p{L})[^?]{0,40}(?<!\p
 /** Nom de famille d'une réponse « Prénom Nom » : tout sauf le 1er mot (« van Gogh ») et le dernier mot seul (« King »). */
 function surnames(raw) {
     const w = String(raw).replace(/[’']/g, ' ').split(/\s+/).filter(Boolean);
-    if (w.length < 2 || w.length > 4 || /\s(le|la)\s/i.test(` ${w.slice(1).join(' ')} `)) return [];
+    if (w.length < 2 || w.length > 4 || /\s(le|la)\s/.test(` ${w.slice(1).join(' ')} `)) return [];   // « le Grand » ; pas « La Fontaine »
     const out = [w.slice(1).join(' '), w[w.length - 1]];
+    const cap = w.findIndex((x, i) => i > 0 && /^(La|Le|Da|Di|De|Du|Van|Von)$/.test(x));   // « Jean de La Fontaine » → « La Fontaine »
+    if (cap > 0) out.push(w.slice(cap).join(' '));
     return out.filter(s => s.replace(/\s/g, '').length >= 4 && !/\d/.test(s) && !/^[IVXLC]+$/.test(s));
 }
+/* Petits mots de liaison des noms (10/11) : un oubli ou une confusion entre eux = petite faute (« du costa » / « Da Costa »).
+   Pas « il » ni « un » (Kim Jong-il / Kim Jong-un). */
+const LINK_PARTICLES = new Set(['de', 'da', 'du', 'di', 'do', 'des', 'dos', 'das', 'del', 'della', 'van', 'von', 'der', 'den', 'ten', 'el', 'al', 'la', 'le', 'lo', 'los', 'las', 'les', 'd', 'l']);
+const noParticles = str => str.split(' ').filter(w => w && !LINK_PARTICLES.has(w)).join('');
 /** Liste « A, B et C » : morceaux normalisés (sans articles), ou null si ce n'est pas une liste. */
 function listParts(raw) {
     const parts = String(raw).split(/\s*[,;/+&]\s*|\s+et\s+/i).map(p => { const n = normalize(p); return stripArticles(n) || n; }).filter(Boolean);
@@ -726,6 +732,14 @@ function judgeV2(input, rawAnswers, question = '') {
         const r = initialsMatch(typed, ans);
         if (r === 'exact') return 'exact';
         if (r === 'typo') typo = true;
+    }
+    // 10/11 (signalement « du costa » pour « Da Costa ») : mots collés ou séparés = même réponse (« yoyo », « dicaprio ») ;
+    // petit mot de liaison faux ou oublié (de / da / du / di / el / van…) = petite faute, si le reste est exactement juste
+    const compact = typed.replace(/ /g, '');
+    for (const [ans] of answers) {
+        if (compact.length >= 4 && compact === ans.replace(/ /g, '')) return 'exact';
+        const core = noParticles(ans);
+        if (core.length >= 4 && noParticles(typed) === core) typo = true;
     }
     // « Faute de frappe » qui est en fait la réponse d'une autre question (Tibre / Tigre) : refusée
     if (listed === 'typo') typo = true;
