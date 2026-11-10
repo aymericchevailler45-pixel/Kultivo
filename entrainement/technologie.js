@@ -9,7 +9,7 @@ TRAINING_QUESTIONS.push(
     { id: 13006, theme: "Technologie", d: 1.2, q: "Comment appelle-t-on un programme malveillant qui infecte les ordinateurs ?", a: ["Un virus", "Virus", "Un malware", "Malware"], exp: "Comme son nom l’indique, il se propage de machine en machine." },
     { id: 13007, theme: "Technologie", d: 1.2, q: "Quelle entreprise coréenne fabrique les smartphones Galaxy ?", a: ["Samsung"], exp: "Elle a commencé en 1938… en vendant du poisson séché et des nouilles." },
     { id: 13008, theme: "Technologie", d: 1.4, q: "Comment s’appelle l’assistant vocal d’Apple ?", a: ["Siri"], exp: "Il équipe les iPhone depuis 2011." },
-    { id: 13009, theme: "Technologie", d: 1.4, q: "Quelle unité de mémoire vaut environ 1 000 mégaoctets ?", a: ["Le gigaoctet", "Gigaoctet", "Go", "Giga"], exp: "Et 1 000 gigaoctets font un téraoctet." },
+    { id: 13009, theme: "Technologie", d: 1.4, q: "Quelle unité de mémoire vaut environ 1 000 mégaoctets ?", a: ["Le gigaoctet", "Gigaoctet", "Go", "Giga", "1 gigaoctet", "Un gigaoctet", "1 Go"], exp: "Et 1 000 gigaoctets font un téraoctet." },
     { id: 13010, theme: "Technologie", d: 1.4, q: "Comment s’appelle le symbole @ des adresses e-mail ?", a: ["L’arobase", "Arobase", "Arrobase"], exp: "Il servait autrefois d’unité de mesure en Espagne." },
 
     // Palier 2
@@ -45,7 +45,7 @@ TRAINING_QUESTIONS.push(
     { id: 13036, theme: "Technologie", d: 3.0, q: "Qui a cofondé Microsoft avec Bill Gates ?", a: ["Paul Allen", "Allen"], exp: "Amis d’enfance, ils se sont connus au lycée à Seattle." },
     { id: 13037, theme: "Technologie", d: 3.0, q: "Comment appelle-t-on la connexion qui demande un mot de passe puis un code ?", a: ["La double authentification", "Double authentification", "2FA", "Authentification à deux facteurs"], exp: "Elle protège un compte même si le mot de passe est volé." },
     { id: 13038, theme: "Technologie", d: 3.0, q: "Quel robot de la NASA s’est posé sur Mars en février 2021 ?", a: ["Perseverance", "Persévérance"], exp: "Il emportait un petit hélicoptère, Ingenuity." },
-    { id: 13039, theme: "Technologie", d: 3.0, q: "En quelle unité exprime-t-on la fréquence d’un processeur ?", a: ["Le hertz", "Hertz", "Gigahertz", "GHz"], exp: "Un processeur à 3 GHz fait 3 milliards de cycles par seconde." },
+    { id: 13039, theme: "Technologie", d: 3.0, q: "En quelle unité exprime-t-on la fréquence d’un processeur ?", a: ["Le hertz", "Hertz", "Gigahertz", "GHz", "Hz"], exp: "Un processeur à 3 GHz fait 3 milliards de cycles par seconde." },
     { id: 13040, theme: "Technologie", d: 3.0, q: "Quelle machine de chiffrement allemande a été percée à Bletchley Park ?", a: ["Enigma", "La machine Enigma"], exp: "Ce succès aurait raccourci la guerre de deux ans." },
 
     // Palier 5

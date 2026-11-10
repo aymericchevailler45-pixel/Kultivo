@@ -519,6 +519,8 @@ function wordClose(t, a) {
     if (t === a) return true;
     if (/\d/.test(t) || /\d/.test(a)) return false;   // jamais de marge sur un nombre
     const len = a.length;
+    // 10/11 (signalement « Ecco » pour « Eco ») : mot court avec juste une lettre doublée = petite faute
+    if (len >= 2 && len <= 3 && t.length === len + 1 && [...t].some((c, i) => c === t[i + 1] && t.slice(0, i) + t.slice(i + 1) === a)) return true;
     if (len <= 3) return false;
     const cost = typoCost(t, a);
     if (len === 4 ? cost <= 0.5 || (cost === 1 && t.length === 4 && [...t].sort().join('') === [...a].sort().join('')) : cost <= (len >= 9 ? 2 : 1)) return true;
@@ -600,7 +602,7 @@ function initialsMatch(typed, ans) {
     if (!ok) return null;
     return close || tLast !== last ? 'typo' : 'exact';
 }
-const dropLeadingVerb = str => { const w = str.split(' '); return w.length > 1 && (w[0] === 'avoir' || w[0] === 'etre') ? w.slice(1).join(' ') : str; };
+const dropLeadingVerb = str => { const w = str.split(' ').filter(x => x !== 'ne' && x !== 'n'); return w.length > 1 && (w[0] === 'avoir' || w[0] === 'etre') ? w.slice(1).join(' ') : w.join(' ') || str; };   // 10/11 : le « ne » oublié est ignoré (« pas aller… »)
 
 /* 2026-11-09 (demande de l'utilisateur, après « Tibre » accepté pour « Tigre », « Venise » pour « Vénus ») : une « faute de
    frappe » qui est EXACTEMENT la bonne réponse d'une autre question du jeu est refusée (sauf simple différence de genre ou de
@@ -691,7 +693,7 @@ function listMatch(input, rawAnswers, question) {
 function judgeV2(input, rawAnswers, question = '') {
     // Réponse faite d'un seul « article » (la note « La », la lettre « D ») : on ne l'efface pas
     // Expressions (rébus ou « Quelle expression… ») : « avoir » / « être » au début ignorés (« la main verte » = « avoir la main verte »)
-    const expression = /expression/i.test(question);
+    const expression = /expression|que veut dire|que signifie/i.test(question);   // 10/11 : aussi « Que veut dire « coûter les yeux de la tête » ? »
     const full = str => (expression ? dropLeadingVerb(normalize(str)) : normalize(str));
     const keep = str => { const n = full(str); return stripArticles(n) || n; };
     const typed = keep(input);

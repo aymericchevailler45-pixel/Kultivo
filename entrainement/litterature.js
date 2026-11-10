@@ -10,7 +10,7 @@ TRAINING_QUESTIONS.push(
     { id: 15007, theme: "Littérature", d: 1.4, q: "Quel fabuliste a écrit « La Cigale et la Fourmi » ?", a: ["Jean de La Fontaine", "La Fontaine"], exp: "Il s’inspirait souvent du Grec Ésope." },
     { id: 15008, theme: "Littérature", d: 1.4, q: "Quel animal de conte porte des bottes et sert le marquis de Carabas ?", a: ["Le Chat botté", "Chat botté", "Le chat"], exp: "Un conte de Charles Perrault, paru en 1697." },
     { id: 15009, theme: "Littérature", d: 1.4, q: "Quel cow-boy de bande dessinée tire plus vite que son ombre ?", a: ["Lucky Luke"], exp: "Créé par le Belge Morris en 1946." },
-    { id: 15010, theme: "Littérature", d: 1.6, q: "Quel détective belge à la moustache impeccable a créé Agatha Christie ?", a: ["Hercule Poirot", "Poirot"], exp: "Il compte sur ses « petites cellules grises »." },
+    { id: 15010, theme: "Littérature", d: 1.6, q: "Quel détective belge à la moustache impeccable Agatha Christie a-t-elle créé ?", a: ["Hercule Poirot", "Poirot"], exp: "Il compte sur ses « petites cellules grises »." },
 
     // Palier 2
     { id: 15011, theme: "Littérature", d: 1.6, q: "Quel naufragé de Daniel Defoe partage son île avec Vendredi ?", a: ["Robinson Crusoé", "Robinson", "Robinson Crusoe", "Crusoé", "Crusoe"], exp: "Inspiré d’un vrai marin resté seul quatre ans sur une île." },

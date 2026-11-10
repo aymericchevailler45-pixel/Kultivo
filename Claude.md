@@ -292,6 +292,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   de l'utilisateur, 10/11) : oublié ou faux = « attention à l'orthographe » (`innerForm`, `slip` dans judgeV2 : « lune miel »,
   « lune du miel ») ; article du début libre ; proverbes à compléter = faux ; formes raccourcies par le jeu (nom seul, sans mot
   générique) libres (3e élément `loose` dans answers). Test : 14 084 réponses du jeu toutes « juste ».
+- SIGNALEMENTS DU 10/11 (choix de l'utilisateur) : acceptés étoile (Maroc), Élisabeth 1, Hz, missile(s) de Cuba / crise cubaine,
+  coûter cher, en deuil, bleu clair (ONU), 1 / un gigaoctet, hand, Douanier, Djoko, pois, saut de haies ; « ne » oublié ignoré dans
+  les expressions et « Que veut dire / signifie » (dropLeadingVerb) ; mot court avec une lettre doublée = petite faute (« Ecco ») ;
+  REFUSÉ exprès : « mail » pour courriel. Questions corrigées : Poirot (« Agatha Christie a-t-elle créé »), Angola (les deux outils
+  obligatoires), Autriche (« rouge vif… trois bandes égales », la Lettonie), régions : « chef-lieu » au lieu de « capitale ».
+  ATTENTION : `_brouillons-paliers/` n'est plus tenu à jour (les vraies questions sont dans entrainement/).
 - BARRE DES 10 PALIERS (10/11) : l'utilisateur trouve les 10 morceaux sur 2 lignes « un peu lourds ». Refusés : A (5 morceaux de
   2 paliers), B (une seule barre), C (10 points). Idée E (une ligne, palier en cours plus large, `.train-steps.is-accordion`) dans le
   BAC À SABLE seulement : « pas convaincu, on en reparle plus tard ». Autres idées proposées : D (barre du palier en cours + « 12/20 »),

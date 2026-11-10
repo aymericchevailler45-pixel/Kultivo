@@ -28,11 +28,11 @@ TRAINING_QUESTIONS.push(
     { id: 19021, theme: "Sport", d: 2.0, q: "Quel basketteur américain est surnommé « King James » ?", a: ["LeBron", "LeBron James", "Lebron James"], exp: "Le meilleur marqueur de l’histoire de la NBA." },
     { id: 19022, theme: "Sport", d: 2.0, q: "Quel sport de batte est le plus populaire en Inde ?", a: ["Le cricket", "Cricket"], exp: "Certains matchs internationaux durent cinq jours." },
     { id: 19023, theme: "Sport", d: 2.0, q: "Quel sport enchaîne natation, vélo et course à pied ?", a: ["Le triathlon", "Triathlon"], exp: "La version « Ironman » dépasse 220 km au total." },
-    { id: 19024, theme: "Sport", d: 2.2, q: "Comment est le maillot du meilleur grimpeur du Tour de France ?", a: ["À pois", "Blanc à pois rouges", "A pois", "Maillot à pois"], exp: "Créé en 1975, il est blanc à pois rouges." },
+    { id: 19024, theme: "Sport", d: 2.2, q: "Comment est le maillot du meilleur grimpeur du Tour de France ?", a: ["À pois", "Blanc à pois rouges", "A pois", "Maillot à pois", "Pois"], exp: "Créé en 1975, il est blanc à pois rouges." },
     { id: 19025, theme: "Sport", d: 2.2, q: "Quelle épreuve de ski alpin fait passer entre des portes très rapprochées ?", a: ["Le slalom", "Slalom"], exp: "Plus serré que le slalom géant." },
     { id: 19026, theme: "Sport", d: 2.2, q: "Quel pilote allemand a remporté sept titres de Formule 1, dont cinq avec Ferrari ?", a: ["Michael Schumacher", "Schumacher"], exp: "Champion en 1994, 1995 puis de 2000 à 2004." },
     { id: 19027, theme: "Sport", d: 2.2, q: "Quel pilote britannique a égalé ce record de sept titres de Formule 1 ?", a: ["Lewis Hamilton", "Hamilton"], exp: "Six de ses titres ont été gagnés avec Mercedes." },
-    { id: 19028, theme: "Sport", d: 2.4, q: "Quel tennisman serbe détient le record de titres du Grand Chelem chez les hommes ?", a: ["Novak Djokovic", "Djokovic"], exp: "Au moins 24 titres en simple, un record." },
+    { id: 19028, theme: "Sport", d: 2.4, q: "Quel tennisman serbe détient le record de titres du Grand Chelem chez les hommes ?", a: ["Novak Djokovic", "Djokovic", "Djoko"], exp: "Au moins 24 titres en simple, un record." },
     { id: 19029, theme: "Sport", d: 2.4, q: "Quelle ville a accueilli les premiers Jeux olympiques modernes, en 1896 ?", a: ["Athènes", "Athenes"], exp: "Un hommage aux Jeux de la Grèce antique." },
     { id: 19030, theme: "Sport", d: 2.4, q: "Quelle gymnaste américaine est la plus titrée de l’histoire aux championnats du monde ?", a: ["Simone Biles", "Biles"], exp: "Plusieurs figures portent son nom." },
 

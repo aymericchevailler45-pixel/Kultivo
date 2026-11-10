@@ -67,7 +67,7 @@ TRAINING_QUESTIONS.push(
     { id: 21051, theme: "Langue française", d: 1.0, q: "Que veut dire « meuf » en verlan ?", a: ["Femme", "Une femme", "La femme"], exp: "Le verlan inverse les syllabes : « l’envers »." },
     { id: 21052, theme: "Langue française", d: 1.0, q: "Que veut dire « relou » en verlan ?", a: ["Lourd", "Pénible", "Embêtant", "Énervant"], exp: "Un « relou », c’est quelqu’un de lourd, d’agaçant." },
     { id: 21053, theme: "Langue française", d: 1.2, q: "Que veut dire « chelou » en verlan ?", a: ["Louche", "Bizarre", "Étrange", "Suspect"], exp: "Encore un mot de verlan entré dans le dictionnaire." },
-    { id: 21054, theme: "Langue française", d: 1.2, q: "Que veut dire l’expression « poser un lapin » ?", a: ["Ne pas venir à un rendez-vous", "Ne pas venir", "Ne pas venir au rendez-vous", "Faire faux bond", "Louper un rendez-vous", "Rater un rendez-vous", "Manquer un rendez-vous", "Ne pas aller au rendez-vous"], exp: "On attend… et personne n’arrive." },
+    { id: 21054, theme: "Langue française", d: 1.2, q: "Que veut dire l’expression « poser un lapin » ?", a: ["Ne pas venir à un rendez-vous", "Ne pas venir", "Ne pas venir au rendez-vous", "Faire faux bond", "Louper un rendez-vous", "Rater un rendez-vous", "Manquer un rendez-vous", "Ne pas aller au rendez-vous", "Ne pas aller à un rendez-vous", "Ne pas venir à un rendez-vous"], exp: "On attend… et personne n’arrive." },
     { id: 21055, theme: "Langue française", d: 1.3, q: "Quel est le féminin de « empereur » ?", a: ["Impératrice"], exp: "Comme Joséphine, épouse de Napoléon." },
     { id: 21056, theme: "Langue française", d: 1.4, q: "Quel est le pluriel de « monsieur » ?", a: ["Messieurs"], exp: "Et « madame » devient « mesdames »." },
     { id: 21057, theme: "Langue française", d: 1.4, q: "Comment appelle-t-on le petit du cheval ?", a: ["Le poulain", "Poulain", "Pouliche"], exp: "La femelle s’appelle une pouliche." },
@@ -117,7 +117,7 @@ TRAINING_QUESTIONS.push(
     // Lot 3
     { id: 21101, theme: "Langue française", d: 1.0, q: "Que veut dire « ouf » en verlan ?", a: ["Fou", "Dingue"], exp: "« C’est ouf ! » : c’est incroyable." },
     { id: 21102, theme: "Langue française", d: 1.2, q: "Que veut dire « vénère » en verlan ?", a: ["Énervé", "Enervé", "En colère", "Fâché"], exp: "Le verlan raccourcit souvent les mots." },
-    { id: 21103, theme: "Langue française", d: 1.2, q: "Que veut dire « coûter les yeux de la tête » ?", a: ["Très cher", "Coûter très cher", "Être très cher", "Hors de prix"], exp: "Comme si on devait donner ce qu’on a de plus précieux." },
+    { id: 21103, theme: "Langue française", d: 1.2, q: "Que veut dire « coûter les yeux de la tête » ?", a: ["Très cher", "Coûter très cher", "Être très cher", "Hors de prix", "Coûter cher", "Cher", "Très coûteux", "Coûter une fortune"], exp: "Comme si on devait donner ce qu’on a de plus précieux." },
     { id: 21104, theme: "Langue française", d: 1.3, q: "Que veut dire « avoir la chair de poule » ?", a: ["Frissonner", "Avoir des frissons", "Avoir froid", "Avoir peur", "Des frissons"], exp: "La peau ressemble alors à celle d’une volaille plumée." },
     { id: 21105, theme: "Langue française", d: 1.4, q: "Quel verbe décrit le cri du mouton ?", a: ["Bêler", "Beler"], exp: "« Bê ! »" },
     { id: 21106, theme: "Langue française", d: 1.4, q: "Comment appelle-t-on le petit de la chèvre ?", a: ["Le chevreau", "Chevreau", "Cabri", "Biquet"], exp: "On dit aussi un cabri." },
