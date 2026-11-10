@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fin du parcours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20261110g">
+<!-- Page d'APERÇU (2026-11-10) : 3 idées d'animation quand on réussit le DERNIER niveau du parcours. Rien n'est encore dans le jeu. -->
+<style>
+    body { padding: 16px; overflow-x: hidden; }
+    .wrap .card { box-sizing: border-box; max-width: 100%; min-width: 0; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .lead { margin: 0; color: var(--muted); font-weight: 700; }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+    .btns .btn { padding: 8px 12px; font-size: .9rem; }
+    h2 { margin: 0 0 4px; }
+    .phone { position: relative; width: 100%; max-width: 340px; height: 640px; margin: 0 auto; border-radius: 26px; overflow: hidden;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #fff; text-align: center; padding: 20px 16px;
+        user-select: none; cursor: pointer; }
+    .phone > * { position: relative; }
+    .fade { opacity: 0; }
+    .go .fade { animation: fadeUp .45s forwards; animation-delay: var(--d, 0s); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .done * { animation-delay: 0s !important; animation-duration: .01s !important; }
+    .done .spin { animation: spin 14s linear infinite !important; }
+    .title { font-size: 1.6rem; font-weight: 900; line-height: 1.1; }
+    .sub { font-size: .95rem; font-weight: 800; color: rgba(255,255,255,.9); max-width: 290px; }
+    .xpill { padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.15); font-size: .88rem; font-weight: 800; }
+    .kulti-row { display: flex; align-items: center; gap: 8px; }
+    .kulti-row .k { width: 54px; height: 54px; position: relative; }
+    .bubble { background: #fff; color: #333; padding: 8px 12px; border-radius: 14px; font-weight: 800; font-size: .86rem; max-width: 200px; text-align: left; }
+    .phone .btn { width: 100%; max-width: 260px; background: #ffd54a; color: #3b2c00; box-shadow: 0 4px 0 rgba(0,0,0,.25); }
+    .count { font-size: 3.1rem; font-weight: 900; line-height: 1; color: #ffd54a; font-variant-numeric: tabular-nums; text-shadow: 0 3px 0 rgba(0,0,0,.3); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- A : le sommet (nuit, chemin qui grimpe, drapeau K) ---------- */
+    #pA { background: linear-gradient(180deg, #0b1530 0%, #1b2b57 55%, #3a3f7a 100%); }
+    .stars { position: absolute !important; inset: 0; pointer-events: none; }
+    .stars i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: .25; animation: tw 2.4s ease-in-out infinite; }
+    @keyframes tw { 50% { opacity: .95; } }
+    .scene { width: 100%; max-width: 300px; }
+    .path { clip-path: inset(100% 0 0 0); }
+    .go .path { animation: climb 2s ease-out .2s forwards; }
+    @keyframes climb { to { clip-path: inset(0 0 0 0); } }
+    .flag { transform-origin: 150px 44px; transform: scaleY(0); }
+    .go .flag { animation: flagUp .5s cubic-bezier(.3,1.5,.5,1) 2.15s forwards; }
+    @keyframes flagUp { to { transform: scaleY(1); } }
+
+    /* ---------- B : le parcours en accéléré (les niveaux s'allument jusqu'au trophée) ---------- */
+    #pB { background: linear-gradient(180deg, #58cc02, #2f8f00); justify-content: flex-start; padding-top: 26px; }
+    .road { position: relative; width: 240px; height: 300px; overflow: hidden; border-radius: 18px; background: rgba(0,0,0,.12); }
+    .road-in { position: absolute; left: 0; right: 0; bottom: 0; height: 1200px; }
+    .go .road-in { animation: roadUp 2.6s cubic-bezier(.5,0,.3,1) forwards; }
+    @keyframes roadUp { to { transform: translateY(900px); } }
+    .dot { position: absolute; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%; background: #c8d3de; box-shadow: 0 3px 0 rgba(0,0,0,.2); }
+    .go .dot { animation: lit .2s forwards; animation-delay: var(--d); }
+    @keyframes lit { to { background: #ffc800; box-shadow: 0 3px 0 #c99a00, 0 0 12px 2px rgba(255,213,74,.8); } }
+    .trophy { position: absolute; width: 64px; height: 64px; margin-left: -32px; top: 12px; left: 50%; opacity: 0; }
+    .go .trophy { animation: trophyIn .6s cubic-bezier(.3,1.6,.5,1) 2.6s forwards; }
+    @keyframes trophyIn { 0% { opacity: 0; transform: scale(.2) rotate(-20deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+    .bar300 { width: 240px; height: 14px; border-radius: 999px; background: rgba(0,0,0,.18); overflow: hidden; }
+    .bar300 i { display: block; height: 100%; width: 0; background: #ffd54a; border-radius: inherit; }
+    .go .bar300 i { animation: fill 2.6s cubic-bezier(.5,0,.3,1) forwards; }
+    @keyframes fill { to { width: 100%; } }
+
+    /* ---------- C : le couronnement (trophée d'or, feux d'artifice, ruban K, Kulti couronné) ---------- */
+    #pC { background: radial-gradient(120% 80% at 50% 30%, #ffcf3f, #e08a00 70%, #b35f00); }
+    .raysC { position: absolute !important; top: 34%; left: 50%; width: 600px; height: 600px; margin: -300px 0 0 -300px; border-radius: 50%; opacity: 0;
+        background: repeating-conic-gradient(rgba(255,255,255,.28) 0 10deg, transparent 10deg 20deg);
+        -webkit-mask: radial-gradient(circle, #000 20%, transparent 66%); mask: radial-gradient(circle, #000 20%, transparent 66%); }
+    .go .raysC { animation: raysIn .6s .9s forwards, spin 14s linear infinite; }
+    @keyframes raysIn { to { opacity: 1; } }
+    .bigTrophy { width: 150px; height: 150px; opacity: 0; filter: drop-shadow(0 8px 0 rgba(0,0,0,.2)); }
+    .go .bigTrophy { animation: drop 1s cubic-bezier(.3,1.3,.5,1) .3s forwards; }
+    @keyframes drop { 0% { opacity: 0; transform: translateY(-280px) scale(.6); } 70% { opacity: 1; transform: translateY(10px) scale(1.05); } 100% { opacity: 1; transform: none; } }
+    .fw { position: absolute !important; width: 6px; height: 6px; border-radius: 50%; opacity: 0; }
+    .go .fw { animation: boom 1.1s ease-out forwards; animation-delay: var(--d); }
+    @keyframes boom { 0% { opacity: 1; box-shadow: 0 0 0 0 var(--c); } 100% { opacity: 0; box-shadow:
+        0 -60px 0 0 var(--c), 42px -42px 0 0 var(--c), 60px 0 0 0 var(--c), 42px 42px 0 0 var(--c), 0 60px 0 0 var(--c), -42px 42px 0 0 var(--c), -60px 0 0 0 var(--c), -42px -42px 0 0 var(--c); } }
+    .ribbon { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; background: #e5484d; color: #fff; font-weight: 900; font-size: 1.05rem;
+        border-radius: 6px; box-shadow: 0 4px 0 #a32a2e; transform: rotate(-3deg); opacity: 0; }
+    .go .ribbon { animation: stampIn .45s cubic-bezier(.3,1.5,.5,1) forwards; animation-delay: var(--d); }
+    @keyframes stampIn { 0% { opacity: 0; transform: scale(2.2) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-3deg); } }
+    .ribbon svg { width: 26px; height: 26px; }
+    .crown { position: absolute; width: 30px; left: 12px; top: -16px; transform: rotate(-12deg); opacity: 0; }
+    .go .crown { animation: crownIn .5s cubic-bezier(.3,1.6,.5,1) forwards; animation-delay: var(--d); }
+    @keyframes crownIn { 0% { opacity: 0; transform: translateY(-40px) rotate(-12deg); } 100% { opacity: 1; transform: rotate(-12deg); } }
+    #pC .xpill { background: rgba(0,0,0,.16); }
+    #pC .btn { background: #fff; color: #6b4300; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <h1 style="margin:0 0 6px">🏁 Fin du parcours : 3 idées</h1>
+        <p class="lead">L’animation se lance après l’écran de fin, la toute première fois qu’on réussit le <b>dernier</b> niveau (300), même s’il reste des niveaux facultatifs derrière. Touche un téléphone pour sauter à la fin, « Rejouer » pour revoir.</p>
+    </div>
+
+    <div class="card">
+        <h2>A · Le sommet</h2>
+        <p class="lead">Nuit étoilée, le chemin grimpe la montagne pendant que le compteur monte jusqu’à 300, puis le drapeau avec le K se plante au sommet.</p>
+        <div class="phone" id="pA"></div>
+        <div class="btns"><button class="btn btn-green" data-replay="A">↻ Rejouer A</button></div>
+    </div>
+
+    <div class="card">
+        <h2>B · Le parcours en accéléré</h2>
+        <p class="lead">On revoit son parcours défiler à toute vitesse : les niveaux s’allument un à un, la barre se remplit jusqu’à 300/300, et un trophée apparaît tout en haut. Aux couleurs du jeu (vert).</p>
+        <div class="phone" id="pB"></div>
+        <div class="btns"><button class="btn btn-green" data-replay="B">↻ Rejouer B</button></div>
+    </div>
+
+    <div class="card">
+        <h2>C · Le couronnement</h2>
+        <p class="lead">Fond doré, un grand trophée tombe, feux d’artifice, ruban rouge « Parcours terminé » avec le K (comme « Thème complet »), et Kulti reçoit une couronne.</p>
+        <div class="phone" id="pC"></div>
+        <div class="btns"><button class="btn btn-green" data-replay="C">↻ Rejouer C</button></div>
+    </div>
+</div>
+<script src="kulti.js?v=som1"></script>
+<script>
+const K_PATH = 'M0 0h52v66l64-66h66l-86 86 90 102h-66l-62-73-6 7v66h-52z';
+const h = (tag, cls, d, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (d !== undefined) n.style.setProperty('--d', d + 's'); if (html) n.innerHTML = html; return n; };
+const kRow = (d, text, crownAt) => {
+    const r = h('div', 'kulti-row fade', d);
+    const k = h('div', 'k');
+    k.append(kultiEl('fier', 'kulti-blink'));
+    if (crownAt !== undefined) { const c = h('img', 'crown', crownAt); c.src = 'emoji/1f451.svg'; c.alt = ''; k.append(c); }
+    r.append(k, h('div', 'bubble', undefined, text));
+    return r;
+};
+const extras = d => [h('div', 'xpill fade', d, '🎨 Nouveau fond d’avatar : Or'), h('div', 'xpill fade', d + .1, '🗺️ 10 niveaux facultatifs à faire quand tu veux')];
+const counters = {};
+function countUp(id, el, from, to, delay, dur) {
+    clearTimeout(counters[id]); cancelAnimationFrame(counters[id + 'r']);
+    el.textContent = from;
+    counters[id] = setTimeout(() => {
+        const t0 = performance.now();
+        const tick = now => { const k = Math.min(1, (now - t0) / dur); el.textContent = Math.max(from, Math.round(to * (1 - Math.pow(1 - k, 2.2)))); if (k < 1) counters[id + 'r'] = requestAnimationFrame(tick); };
+        counters[id + 'r'] = requestAnimationFrame(tick);
+    }, delay);
+}
+
+const builds = {
+    A(p) {
+        const stars = h('div', 'stars');
+        for (let i = 0; i < 28; i++) { const s = h('i'); s.style.left = (i * 37) % 100 + '%'; s.style.top = (i * 53) % 60 + '%'; s.style.animationDelay = (i % 7) * .3 + 's'; stars.append(s); }
+        const count = h('div', 'count', undefined, '1');
+        const scene = h('div', undefined, undefined, `<svg class="scene" viewBox="0 0 300 190" aria-hidden="true">
+            <path d="M-10 190 L70 95 L105 130 L150 40 L195 110 L230 80 L310 190 Z" fill="#2c3e66"/>
+            <path d="M150 40 L132 76 L142 70 L150 82 L158 70 L168 76 Z" fill="#e8eefc"/>
+            <path d="M-10 190 L40 150 L85 175 L130 140 L175 172 L225 145 L310 190 Z" fill="#1d2a4a"/>
+            <path class="path" d="M40 185 L95 165 L60 148 L120 128 L95 110 L135 92 L118 74 L146 50" fill="none" stroke="#ffd54a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 9"/>
+            <g class="flag"><line x1="150" y1="44" x2="150" y2="6" stroke="#f4f4f4" stroke-width="3" stroke-linecap="round"/>
+            <path d="M151 7 L188 15 L151 24 Z" fill="#58cc02"/><g transform="translate(160 10) scale(.06)"><path d="${K_PATH}" fill="#fff"/></g></g></svg>`);
+        p.append(stars, count, scene, h('div', 'title fade', 2.4, 'Sommet atteint !'), h('div', 'sub fade', 2.55, 'Tu as réussi le niveau 300, le dernier du parcours.'),
+            ...extras(2.7), kRow(2.9, 'Tout le parcours ! Je suis super fier de toi.'), h('button', 'btn fade', 3.05, 'Incroyable !'));
+        countUp('A', count, 1, 300, 300, 2000);
+    },
+    B(p) {
+        const road = h('div', 'road');
+        const inner = h('div', 'road-in');
+        const N = 40;
+        for (let i = 0; i < N; i++) {
+            const d = h('span', 'dot', (i / N) * 2.5);
+            d.style.bottom = (20 + i * 28) + 'px';
+            d.style.left = (50 + Math.sin(i * .7) * 28) + '%';
+            inner.append(d);
+        }
+        const tr = h('img', 'trophy'); tr.src = 'emoji/1f3c6.svg'; tr.alt = '';
+        road.append(inner, tr);
+        const count = h('div', 'count', undefined, '1');
+        count.style.color = '#fff';
+        const bar = h('div', 'bar300', undefined, '<i></i>');
+        p.append(road, bar, count, h('div', 'title fade', 2.9, 'Parcours terminé !'), h('div', 'sub fade', 3, '300 niveaux réussis, jusqu’au dernier.'),
+            ...extras(3.1), kRow(3.3, 'On l’a fait ! Quelle aventure !'), h('button', 'btn fade', 3.45, 'Incroyable !'));
+        p.querySelectorAll('.xpill').forEach(x => { x.style.background = 'rgba(0,0,0,.16)'; });
+        countUp('B', count, 1, 300, 0, 2600);
+    },
+    C(p) {
+        const rays = h('div', 'raysC spin');
+        const fws = [[18, 14, '#fff', .9], [80, 10, '#e5484d', 1.1], [70, 34, '#58cc02', 1.35], [12, 40, '#fff', 1.55], [50, 6, '#8b5cf6', 1.75]].map(([x, y, c, d]) => {
+            const f = h('i', 'fw', d); f.style.left = x + '%'; f.style.top = y + '%'; f.style.setProperty('--c', c); f.style.background = c; return f;
+        });
+        const tr = h('img', 'bigTrophy'); tr.src = 'emoji/1f3c6.svg'; tr.alt = '';
+        const rib = h('div', 'ribbon', 1.3, `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff"/><g transform="translate(28 27) scale(.245)"><path d="${K_PATH}" fill="#e5484d"/></g></svg><span>Parcours terminé !</span>`);
+        p.append(rays, ...fws, tr, rib, h('div', 'title fade', 1.7, 'Maître du parcours'), h('div', 'sub fade', 1.85, 'Les 300 niveaux, jusqu’au dernier !'),
+            ...extras(2), kRow(2.2, 'Une couronne pour toi… enfin, pour nous deux !', 2.5), h('button', 'btn fade', 2.6, 'Incroyable !'));
+    }
+};
+function play(id) {
+    const p = document.getElementById('p' + id);
+    p.className = 'phone';
+    p.replaceChildren();
+    builds[id](p);
+    void p.offsetWidth;
+    p.classList.add('go');
+}
+function finish(id) {
+    const p = document.getElementById('p' + id);
+    p.classList.add('done');
+    clearTimeout(counters[id]); cancelAnimationFrame(counters[id + 'r']);
+    const c = p.querySelector('.count'); if (c) c.textContent = '300';
+}
+['A', 'B', 'C'].forEach(id => { play(id); document.getElementById('p' + id).addEventListener('pointerdown', () => finish(id)); });
+if (location.search.includes('fin')) setTimeout(() => ['A', 'B', 'C'].forEach(finish), 100);   // capture : directement la fin
+document.querySelectorAll('[data-replay]').forEach(b => b.addEventListener('click', () => play(b.dataset.replay)));
+</script>
+</body>
+</html>
