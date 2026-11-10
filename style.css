@@ -2754,6 +2754,10 @@ input, textarea, [contenteditable] {
 .train-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
 .train-step { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .train-step i { display: block; height: 100%; border-radius: inherit; background: var(--violet); }
+/* Idée E (bac à sable, 10/11) : une seule ligne, le palier en cours prend la place de 5 */
+.train-steps.is-accordion { display: flex; gap: 3px; }
+.train-steps.is-accordion .train-step { flex: 1 1 0; min-width: 0; }
+.train-steps.is-accordion .train-step.is-current { flex: 5 1 0; }
 #askText { white-space: pre-line; }
 .train-errors { color: var(--red-ink); font-size: 0.75rem; font-weight: 800; }
 .train-master { color: var(--r-master); font-size: 0.72rem; font-weight: 800; }

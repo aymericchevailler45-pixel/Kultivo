@@ -8609,11 +8609,12 @@ function renderTraining() {
             const label = el('span', 'train-tier');
             label.textContent = `Palier ${pr.tier} / ${TRAIN_TIERS}\n${TRAIN_TIER_NAMES[pr.tier - 1]}`;   // toujours 2 lignes : cases de même allure
             // 10 morceaux : pleins = paliers passés, le palier en cours se remplit selon ce qu'il reste à faire
-            const bar = el('div', 'train-steps');
+            // Bac à sable (10/11, idée E) : 10 morceaux sur UNE ligne, celui du palier en cours plus large
+            const bar = el('div', `train-steps${BAC ? ' is-accordion' : ''}`);
             const goal = pr.needRight + pr.needMastered;
             const done = Math.min(pr.right, pr.needRight) + Math.min(pr.mastered, pr.needMastered);
             for (let i = 1; i <= TRAIN_TIERS; i++) {
-                const seg = el('span', 'train-step');
+                const seg = el('span', `train-step${i === pr.tier ? ' is-current' : ''}`);
                 const fill = el('i');
                 const part = i < pr.tier ? 1 : i > pr.tier ? 0 : (pr.tier >= TRAIN_TIERS && pr.ready ? 1 : goal ? done / goal : 0);
                 fill.style.width = `${Math.round(part * 100)}%`;
