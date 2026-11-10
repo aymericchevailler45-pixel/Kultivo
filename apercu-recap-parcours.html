@@ -51,7 +51,7 @@
             <button type="button" class="recap-x" aria-label="Fermer">✕</button>
             <div class="recap-slide"></div>
             <span class="tag"></span>
-            <p class="recap-hint">Touche à droite : suivant · à gauche : retour</p>
+            <p class="recap-hint">Touche à droite : suivant · à gauche : retour · doigt appuyé : pause</p>
         </div>
         <div class="btns"><button class="btn btn-green" id="restart">↻ Recommencer</button></div>
     </div>
@@ -76,7 +76,7 @@ const SLIDES = [
     { name: 'La question qui t’a résisté', bg: 'linear-gradient(160deg, #ef4444, #b91c1c)', make: () => [el('h3', '', 'Celle qui t’a résisté'), el('div', 'quote', '« Comment s’appelle le marteau de Thor ? »'), el('p', '', 'Ratée 4 fois avant de la réussir. Aujourd’hui, Mjöllnir n’a plus de secret pour toi.')] },
     { name: 'Tes meilleurs moments', bg: 'linear-gradient(160deg, #ec4899, #be185d)', make: () => {
         const t = el('div', 'tiles');
-        [['42', 'niveaux sans faute'], ['26 j', 'plus longue série'], ['30', 'défis relevés'], ['15', 'frises parfaites']].forEach(([b, l]) => t.append(el('div', '', `<b>${b}</b>${l}`)));
+        [['42', 'niveaux sans faute'], ['26 j', 'plus longue série'], ['30', 'défis relevés'], ['48', 'défis du jour joués']].forEach(([b, l]) => t.append(el('div', '', `<b>${b}</b>${l}`)));
         return [el('h3', '', 'Tes meilleurs moments'), t]; } },
     { name: 'Ta collection', bg: 'linear-gradient(160deg, #14b8a6, #0f766e)', make: () => {
         const t = el('div', 'tiles');
@@ -84,7 +84,7 @@ const SLIDES = [
         return [el('h3', '', 'Ta collection'), t, el('p', '', 'Et ce nouveau fond d’avatar Or, rien que pour toi.')]; } },
     { name: 'Avec tes amis', bg: 'linear-gradient(160deg, #6366f1, #4338ca)', make: () => {
         const t = el('div', 'tiles');
-        [['14', 'duels gagnés'], ['3', 'semaines 1er de la ligue'], ['9 j', 'série avec Léa 🔥🤝'], ['5', 'amis']].forEach(([b, l]) => t.append(el('div', '', `<b>${b}</b>${l}`)));
+        [['14', 'duels gagnés'], ['3', 'semaines 1er de la ligue'], ['7', 'podiums de la semaine'], ['5', 'amis']].forEach(([b, l]) => t.append(el('div', '', `<b>${b}</b>${l}`)));
         return [el('h3', '', 'Avec tes amis'), t]; } },
     { name: 'Fin + partage', bg: 'linear-gradient(160deg, #8b5cf6, #ec4899)', make: () => {
         const t = el('div', 'tiles');
@@ -103,16 +103,37 @@ function show(i) {
     const sl = story.querySelector('.recap-slide');
     sl.replaceChildren(...s.make());
     story.querySelector('.tag').textContent = `Écran ${idx + 1} · ${s.name}`;
-    const ms = 6000;
+    // Plus lent qu'avant (10/11) : 9 s au moins, plus pour un écran chargé ; doigt appuyé = pause
+    const ms = Math.min(16000, Math.max(9000, 3500 + sl.textContent.length * 55));
     const bar = story.querySelector('.recap-prog .is-cur b');
     if (bar) bar.style.animationDuration = ms + 'ms';
     clearTimeout(timer);
+    left = ms;
+    startAt = performance.now();
     if (idx < SLIDES.length - 1) timer = setTimeout(() => show(idx + 1), ms);
 }
-story.querySelector('.recap-slide').addEventListener('click', e => {
-    const r = e.currentTarget.getBoundingClientRect();
+let left = 0, startAt = 0, downAt = 0;
+const slideEl = story.querySelector('.recap-slide');
+slideEl.addEventListener('pointerdown', () => {   // pause tant que le doigt reste appuyé
+    downAt = performance.now();
+    clearTimeout(timer);
+    left -= performance.now() - startAt;
+    const bar = story.querySelector('.recap-prog .is-cur b');
+    if (bar) bar.style.animationPlayState = 'paused';
+});
+const resume = () => {
+    const bar = story.querySelector('.recap-prog .is-cur b');
+    if (bar) bar.style.animationPlayState = 'running';
+    startAt = performance.now();
+    clearTimeout(timer);
+    if (idx < SLIDES.length - 1) timer = setTimeout(() => show(idx + 1), Math.max(300, left));
+};
+slideEl.addEventListener('pointerup', e => {
+    if (performance.now() - downAt > 300) { resume(); return; }   // appui long : on reprend là où on en était
+    const r = slideEl.getBoundingClientRect();
     show(idx + (e.clientX - r.left > r.width / 3 ? 1 : -1));
 });
+slideEl.addEventListener('pointercancel', resume);
 story.querySelector('.recap-x').addEventListener('click', () => show(0));
 document.getElementById('restart').addEventListener('click', () => show(0));
 document.getElementById('toc').innerHTML = SLIDES.map((s, i) => `<li><a href="#" data-i="${i}"><b>${s.name}</b></a></li>`).join('');
