@@ -299,7 +299,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   « Sommet atteint ! », fond Or, Kulti couronné ; sons (`synthNoise` ajouté). ~9 s, IMPOSSIBLE à sauter (tap et retour bloqués jusqu’au bouton). Bac à sable : option.
   Texte de fin du niveau 300 corrigé (avant : « Ajoute des questions dans questions.js »). COURONNE GARDÉE (10/11, oui de l'utilisateur) : Kulti du
   parcours la porte pour toujours après le sommet (`KULTI_HATS.crown` dans kulti.js ; le chapeau d'un événement passe devant) ;
-  avec la personnalisation de Kulti : objet spécial « Couronne du sommet », jamais vendu. RÉCAP DU PARCOURS : aperçu demandé.
+  avec la personnalisation de Kulti : objet spécial « Couronne du sommet », jamais vendu. RÉCAP DU PARCOURS : aperçu apercu-recap-parcours.html (10 écrans, 9-16 s par écran, doigt appuyé = pause ; « Avec tes
+  amis » sauté sans compte) — PAS encore codé, attend le feu vert. Proposé : même lenteur + pause pour le récap du mois.
 - SIGNALEMENTS DU 10/11 (choix de l'utilisateur) : acceptés étoile (Maroc), Élisabeth 1, Hz, missile(s) de Cuba / crise cubaine,
   coûter cher, en deuil, bleu clair (ONU), 1 / un gigaoctet, hand, Douanier, Djoko, pois, saut de haies ; « ne » oublié ignoré dans
   les expressions et « Que veut dire / signifie » (dropLeadingVerb) ; mot court avec une lettre doublée = petite faute (« Ecco ») ;
@@ -909,6 +910,9 @@ Failles de triche repérées (ordre conseillé) :
 3. 🟠 Horloge du téléphone : avancer la date = gouttes pleines, défi du jour de DEMAIN jouable en avance (même pour tous),
    série gonflée. → heure de Supabase au lancement.
 4. 🟢 Sauvegarde locale modifiable (pièces, cartes) : ne touche que le tricheur ; impossible à bloquer sans serveur.
+SAUVEGARDE (noté le 10/11) : sans compte, tout est sur l'appareil ; PWABuilder garde la sauvegarde de Chrome pour l'adresse,
+Capacitor a sa PROPRE mémoire (un joueur sans compte repartirait de zéro, désinstaller efface tout) → avant la sortie : inciter
+au compte sans pop-up (ligne dans le Profil, rappel doux après le sommet / une médaille) ; ne JAMAIS changer l'adresse du site.
 Play Store (PWABuilder, aucun changement de code) : compte développeur 25 $ ; compte PERSONNEL récent → test fermé
 12 testeurs Android pendant 14 jours d'affilée (à trouver par l'utilisateur : proches, ou groupes d'échange de tests ;
 compte organisation dispensé mais SIRET + D-U-N-S). À faire dans le jeu avant : bouton « Supprimer mon compte » (exigé
