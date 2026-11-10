@@ -7,206 +7,309 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=20261110g">
-<!-- Page d'APERÇU (2026-11-10) : 3 idées d'animation quand on réussit le DERNIER niveau du parcours. Rien n'est encore dans le jeu. -->
+<!-- Page d'APERÇU (2026-11-10, 2e version) : 3 idées d'animation de la montagne quand on réussit le DERNIER niveau.
+     Avec du son, plus longues, Kulti qui grimpe, ruban « Parcours terminé » avec le K, couronne pour Kulti. Rien dans le jeu. -->
 <style>
     body { padding: 16px; overflow-x: hidden; }
-    .wrap .card { box-sizing: border-box; max-width: 100%; min-width: 0; }
     .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .wrap .card { box-sizing: border-box; max-width: 100%; min-width: 0; }
     .lead { margin: 0; color: var(--muted); font-weight: 700; }
-    .btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
-    .btns .btn { padding: 8px 12px; font-size: .9rem; }
     h2 { margin: 0 0 4px; }
-    .phone { position: relative; width: 100%; max-width: 340px; height: 640px; margin: 0 auto; border-radius: 26px; overflow: hidden;
-        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #fff; text-align: center; padding: 20px 16px;
-        user-select: none; cursor: pointer; }
-    .phone > * { position: relative; }
-    .fade { opacity: 0; }
-    .go .fade { animation: fadeUp .45s forwards; animation-delay: var(--d, 0s); }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-    .done * { animation-delay: 0s !important; animation-duration: .01s !important; }
-    .done .spin { animation: spin 14s linear infinite !important; }
-    .title { font-size: 1.6rem; font-weight: 900; line-height: 1.1; }
-    .sub { font-size: .95rem; font-weight: 800; color: rgba(255,255,255,.9); max-width: 290px; }
-    .xpill { padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.15); font-size: .88rem; font-weight: 800; }
-    .kulti-row { display: flex; align-items: center; gap: 8px; }
-    .kulti-row .k { width: 54px; height: 54px; position: relative; }
-    .bubble { background: #fff; color: #333; padding: 8px 12px; border-radius: 14px; font-weight: 800; font-size: .86rem; max-width: 200px; text-align: left; }
-    .phone .btn { width: 100%; max-width: 260px; background: #ffd54a; color: #3b2c00; box-shadow: 0 4px 0 rgba(0,0,0,.25); }
-    .count { font-size: 3.1rem; font-weight: 900; line-height: 1; color: #ffd54a; font-variant-numeric: tabular-nums; text-shadow: 0 3px 0 rgba(0,0,0,.3); }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+    .btns .btn { padding: 8px 14px; font-size: .9rem; }
 
-    /* ---------- A : le sommet (nuit, chemin qui grimpe, drapeau K) ---------- */
-    #pA { background: linear-gradient(180deg, #0b1530 0%, #1b2b57 55%, #3a3f7a 100%); }
-    .stars { position: absolute !important; inset: 0; pointer-events: none; }
+    .phone { position: relative; width: 100%; max-width: 340px; height: 660px; margin: 0 auto; border-radius: 26px; overflow: hidden; color: #fff;
+        text-align: center; user-select: none; background: linear-gradient(180deg, #070f26 0%, #15244d 55%, #2d356d 100%); }
+    .sky-sun { position: absolute; inset: 0; opacity: 0; background: linear-gradient(180deg, #ff9f43 0%, #ffcf5c 40%, #ffe9a8 70%, #fff6dc 100%); transition: opacity 1.6s; }
+    .phone.is-dawn .sky-sun { opacity: 1; }
+    .stars { position: absolute; inset: 0 0 40% 0; pointer-events: none; transition: opacity 1.2s; }
+    .phone.is-dawn .stars { opacity: 0; }
     .stars i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: .25; animation: tw 2.4s ease-in-out infinite; }
     @keyframes tw { 50% { opacity: .95; } }
-    .scene { width: 100%; max-width: 300px; }
-    .path { clip-path: inset(100% 0 0 0); }
-    .go .path { animation: climb 2s ease-out .2s forwards; }
-    @keyframes climb { to { clip-path: inset(0 0 0 0); } }
-    .flag { transform-origin: 150px 44px; transform: scaleY(0); }
-    .go .flag { animation: flagUp .5s cubic-bezier(.3,1.5,.5,1) 2.15s forwards; }
+
+    /* la montagne : on la voit d'en bas, la caméra monte avec Kulti */
+    .view { position: absolute; left: 0; right: 0; top: 0; height: 380px; overflow: hidden; }
+    .world { position: absolute; left: 0; width: 100%; aspect-ratio: 300 / 440; will-change: transform; transform-origin: 50% 9%; }
+    .world svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .sun { position: absolute; left: 50%; top: 9%; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; opacity: 0;
+        background: radial-gradient(circle, #fff7d1 0 30%, #ffd54a 31% 45%, rgba(255, 213, 74, 0) 70%); transform: translateY(120px); transition: transform 2s cubic-bezier(.2,.8,.3,1), opacity 1s; }
+    .phone.is-dawn .sun { opacity: 1; transform: none; }
+    .sunrays { position: absolute; left: 50%; top: 9%; width: 520px; height: 520px; margin: -260px 0 0 -260px; border-radius: 50%; opacity: 0;
+        background: repeating-conic-gradient(rgba(255, 255, 255, .35) 0 8deg, transparent 8deg 16deg); animation: spin 18s linear infinite;
+        -webkit-mask: radial-gradient(circle, #000 18%, transparent 62%); mask: radial-gradient(circle, #000 18%, transparent 62%); transition: opacity 1.4s .6s; }
+    .phone.is-dawn .sunrays { opacity: 1; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .climber { position: absolute; width: 34px; height: 34px; margin: -30px 0 0 -17px; z-index: 3; }
+    .climber .crownS { position: absolute; width: 20px; left: 7px; top: -14px; opacity: 0; }
+    .flag { transform-origin: 150px 48px; transform: scaleY(0); }
+    .phone.is-flag .flag { animation: flagUp .5s cubic-bezier(.3,1.6,.5,1) forwards; }
+    .phone.is-flag .flag-cloth { animation: wave 1s ease-in-out .5s infinite; transform-origin: 151px 15px; }
     @keyframes flagUp { to { transform: scaleY(1); } }
+    @keyframes wave { 50% { transform: scaleX(.86) skewY(3deg); } }
+    .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 6; }
+    .phone.is-flash .flash { animation: flash .7s ease-out; }
+    @keyframes flash { 0% { opacity: .85; } 100% { opacity: 0; } }
+    canvas.fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
 
-    /* ---------- B : le parcours en accéléré (les niveaux s'allument jusqu'au trophée) ---------- */
-    #pB { background: linear-gradient(180deg, #58cc02, #2f8f00); justify-content: flex-start; padding-top: 26px; }
-    .road { position: relative; width: 240px; height: 300px; overflow: hidden; border-radius: 18px; background: rgba(0,0,0,.12); }
-    .road-in { position: absolute; left: 0; right: 0; bottom: 0; height: 1200px; }
-    .go .road-in { animation: roadUp 2.6s cubic-bezier(.5,0,.3,1) forwards; }
-    @keyframes roadUp { to { transform: translateY(900px); } }
-    .dot { position: absolute; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%; background: #c8d3de; box-shadow: 0 3px 0 rgba(0,0,0,.2); }
-    .go .dot { animation: lit .2s forwards; animation-delay: var(--d); }
-    @keyframes lit { to { background: #ffc800; box-shadow: 0 3px 0 #c99a00, 0 0 12px 2px rgba(255,213,74,.8); } }
-    .trophy { position: absolute; width: 64px; height: 64px; margin-left: -32px; top: 12px; left: 50%; opacity: 0; }
-    .go .trophy { animation: trophyIn .6s cubic-bezier(.3,1.6,.5,1) 2.6s forwards; }
-    @keyframes trophyIn { 0% { opacity: 0; transform: scale(.2) rotate(-20deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
-    .bar300 { width: 240px; height: 14px; border-radius: 999px; background: rgba(0,0,0,.18); overflow: hidden; }
-    .bar300 i { display: block; height: 100%; width: 0; background: #ffd54a; border-radius: inherit; }
-    .go .bar300 i { animation: fill 2.6s cubic-bezier(.5,0,.3,1) forwards; }
-    @keyframes fill { to { width: 100%; } }
-
-    /* ---------- C : le couronnement (trophée d'or, feux d'artifice, ruban K, Kulti couronné) ---------- */
-    #pC { background: radial-gradient(120% 80% at 50% 30%, #ffcf3f, #e08a00 70%, #b35f00); }
-    .raysC { position: absolute !important; top: 34%; left: 50%; width: 600px; height: 600px; margin: -300px 0 0 -300px; border-radius: 50%; opacity: 0;
-        background: repeating-conic-gradient(rgba(255,255,255,.28) 0 10deg, transparent 10deg 20deg);
-        -webkit-mask: radial-gradient(circle, #000 20%, transparent 66%); mask: radial-gradient(circle, #000 20%, transparent 66%); }
-    .go .raysC { animation: raysIn .6s .9s forwards, spin 14s linear infinite; }
-    @keyframes raysIn { to { opacity: 1; } }
-    .bigTrophy { width: 150px; height: 150px; opacity: 0; filter: drop-shadow(0 8px 0 rgba(0,0,0,.2)); }
-    .go .bigTrophy { animation: drop 1s cubic-bezier(.3,1.3,.5,1) .3s forwards; }
-    @keyframes drop { 0% { opacity: 0; transform: translateY(-280px) scale(.6); } 70% { opacity: 1; transform: translateY(10px) scale(1.05); } 100% { opacity: 1; transform: none; } }
-    .fw { position: absolute !important; width: 6px; height: 6px; border-radius: 50%; opacity: 0; }
-    .go .fw { animation: boom 1.1s ease-out forwards; animation-delay: var(--d); }
-    @keyframes boom { 0% { opacity: 1; box-shadow: 0 0 0 0 var(--c); } 100% { opacity: 0; box-shadow:
-        0 -60px 0 0 var(--c), 42px -42px 0 0 var(--c), 60px 0 0 0 var(--c), 42px 42px 0 0 var(--c), 0 60px 0 0 var(--c), -42px 42px 0 0 var(--c), -60px 0 0 0 var(--c), -42px -42px 0 0 var(--c); } }
-    .ribbon { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; background: #e5484d; color: #fff; font-weight: 900; font-size: 1.05rem;
-        border-radius: 6px; box-shadow: 0 4px 0 #a32a2e; transform: rotate(-3deg); opacity: 0; }
-    .go .ribbon { animation: stampIn .45s cubic-bezier(.3,1.5,.5,1) forwards; animation-delay: var(--d); }
-    @keyframes stampIn { 0% { opacity: 0; transform: scale(2.2) rotate(-12deg); } 100% { opacity: 1; transform: scale(1) rotate(-3deg); } }
-    .ribbon svg { width: 26px; height: 26px; }
-    .crown { position: absolute; width: 30px; left: 12px; top: -16px; transform: rotate(-12deg); opacity: 0; }
-    .go .crown { animation: crownIn .5s cubic-bezier(.3,1.6,.5,1) forwards; animation-delay: var(--d); }
-    @keyframes crownIn { 0% { opacity: 0; transform: translateY(-40px) rotate(-12deg); } 100% { opacity: 1; transform: rotate(-12deg); } }
-    #pC .xpill { background: rgba(0,0,0,.16); }
-    #pC .btn { background: #fff; color: #6b4300; }
+    /* bas de l'écran : compteur, puis ruban, titre, Kulti couronné */
+    .bottom { position: absolute; left: 0; right: 0; top: 380px; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        gap: 9px; padding: 8px 16px 16px; z-index: 4; }
+    .count { font-size: 3.3rem; font-weight: 900; line-height: 1; color: #ffd54a; font-variant-numeric: tabular-nums; text-shadow: 0 3px 0 rgba(0,0,0,.3); }
+    .count small { display: block; font-size: .8rem; color: #fff; opacity: .8; text-shadow: none; margin-top: 4px; }
+    .phone.is-end .count { display: none; }
+    .step { opacity: 0; transform: translateY(10px); transition: opacity .45s, transform .45s; }
+    .step.on { opacity: 1; transform: none; }
+    .ribbon { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; background: #e5484d; color: #fff; font-weight: 900; font-size: 1.1rem;
+        border-radius: 6px; box-shadow: 0 4px 0 #a32a2e; opacity: 0; transform: scale(2.4) rotate(-14deg); }
+    .ribbon.on { opacity: 1; transform: rotate(-3deg); transition: transform .35s cubic-bezier(.3,1.5,.5,1), opacity .15s; }
+    .ribbon svg { width: 28px; height: 28px; }
+    .title { font-size: 1.55rem; font-weight: 900; line-height: 1.1; }
+    .sub { font-size: .95rem; font-weight: 800; color: rgba(255,255,255,.92); }
+    .phone.is-dawn .title { color: #5a3300; }
+    .phone.is-dawn .sub { color: #7a4a00; }
+    .xpill { padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.15); font-size: .88rem; font-weight: 800; }
+    .phone.is-dawn .xpill { background: rgba(255,255,255,.55); color: #5a3300; }
+    .kulti-row { display: flex; align-items: center; gap: 10px; }
+    .kulti-row .k { width: 58px; height: 58px; position: relative; flex: none; }
+    .kulti-row .crown { position: absolute; width: 32px; left: 13px; top: -22px; opacity: 0; transform: translateY(-90px) rotate(-20deg); }
+    .kulti-row .crown.on { opacity: 1; transform: rotate(-10deg); transition: transform .55s cubic-bezier(.3,1.7,.5,1), opacity .2s; }
+    .bubble { background: #fff; color: #333; padding: 8px 12px; border-radius: 14px; font-weight: 800; font-size: .86rem; max-width: 190px; text-align: left; }
+    .go { width: 100%; max-width: 260px; background: #ffd54a; color: #3b2c00; box-shadow: 0 4px 0 rgba(0,0,0,.25); }
+    .phone.is-dawn .go { background: #fff; color: #7a4a00; }
+    .start { position: absolute; inset: 0; z-index: 9; display: grid; place-items: center; background: rgba(5, 10, 30, .55); }
+    .start .btn { background: #ffd54a; color: #3b2c00; box-shadow: 0 4px 0 #b78a00; font-size: 1.05rem; padding: 14px 22px; }
 </style>
 </head>
 <body>
 <div class="wrap">
     <div class="card">
-        <h1 style="margin:0 0 6px">🏁 Fin du parcours : 3 idées</h1>
-        <p class="lead">L’animation se lance après l’écran de fin, la toute première fois qu’on réussit le <b>dernier</b> niveau (300), même s’il reste des niveaux facultatifs derrière. Touche un téléphone pour sauter à la fin, « Rejouer » pour revoir.</p>
+        <h1 style="margin:0 0 6px">🏔️ Fin du parcours : 3 nouvelles idées</h1>
+        <p class="lead">Toutes partent du bas de la montagne : Kulti grimpe le chemin pendant que les niveaux s’allument et que le compteur monte jusqu’à 300, puis il plante le drapeau K au sommet. Ensuite : ruban « Parcours terminé » avec le K, et Kulti reçoit sa couronne. Environ 8 secondes. <b>Monte le son</b> 🔊, puis touche « ▶ Lancer ». Un tap pendant l’animation : directement la fin.</p>
     </div>
-
     <div class="card">
-        <h2>A · Le sommet</h2>
-        <p class="lead">Nuit étoilée, le chemin grimpe la montagne pendant que le compteur monte jusqu’à 300, puis le drapeau avec le K se plante au sommet.</p>
+        <h2>A · Feux d’artifice au sommet</h2>
+        <p class="lead">Nuit étoilée. Le drapeau planté : un éclair blanc, une fanfare, et de grands feux d’artifice éclatent au-dessus du sommet pendant la suite.</p>
         <div class="phone" id="pA"></div>
-        <div class="btns"><button class="btn btn-green" data-replay="A">↻ Rejouer A</button></div>
+        <div class="btns"><button class="btn btn-green" data-play="A">▶ Relancer A</button></div>
     </div>
-
     <div class="card">
-        <h2>B · Le parcours en accéléré</h2>
-        <p class="lead">On revoit son parcours défiler à toute vitesse : les niveaux s’allument un à un, la barre se remplit jusqu’à 300/300, et un trophée apparaît tout en haut. Aux couleurs du jeu (vert).</p>
+        <h2>B · Le lever de soleil</h2>
+        <p class="lead">On grimpe dans la nuit… et quand le drapeau est planté, le soleil se lève derrière le sommet : le ciel devient doré, des rayons tournent, une pluie de confettis dorés tombe. Un grand accord, puis des cloches.</p>
         <div class="phone" id="pB"></div>
-        <div class="btns"><button class="btn btn-green" data-replay="B">↻ Rejouer B</button></div>
+        <div class="btns"><button class="btn btn-green" data-play="B">▶ Relancer B</button></div>
     </div>
-
     <div class="card">
-        <h2>C · Le couronnement</h2>
-        <p class="lead">Fond doré, un grand trophée tombe, feux d’artifice, ruban rouge « Parcours terminé » avec le K (comme « Thème complet »), et Kulti reçoit une couronne.</p>
+        <h2>C · Le couronnement au sommet</h2>
+        <p class="lead">Arrivée en haut, la caméra zoome sur Kulti : il plante le drapeau, la couronne tombe sur sa tête <b>au sommet même</b>, puis on dézoome sur la montagne illuminée avec des feux d’artifice.</p>
         <div class="phone" id="pC"></div>
-        <div class="btns"><button class="btn btn-green" data-replay="C">↻ Rejouer C</button></div>
+        <div class="btns"><button class="btn btn-green" data-play="C">▶ Relancer C</button></div>
     </div>
 </div>
-<script src="kulti.js?v=som1"></script>
+<script src="kulti.js?v=som2"></script>
 <script>
 const K_PATH = 'M0 0h52v66l64-66h66l-86 86 90 102h-66l-62-73-6 7v66h-52z';
-const h = (tag, cls, d, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (d !== undefined) n.style.setProperty('--d', d + 's'); if (html) n.innerHTML = html; return n; };
-const kRow = (d, text, crownAt) => {
-    const r = h('div', 'kulti-row fade', d);
-    const k = h('div', 'k');
-    k.append(kultiEl('fier', 'kulti-blink'));
-    if (crownAt !== undefined) { const c = h('img', 'crown', crownAt); c.src = 'emoji/1f451.svg'; c.alt = ''; k.append(c); }
-    r.append(k, h('div', 'bubble', undefined, text));
-    return r;
+const MAX = 300;
+const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html !== undefined) n.innerHTML = html; return n; };
+
+/* ---------- Sons (Web Audio, comme dans le jeu) ---------- */
+let ac = null;
+const audio = () => { if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); return ac; };
+function tone(f, at, dur, type = 'sine', vol = .12, f2) {
+    const a = audio(), t = a.currentTime + at, o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
+}
+function brass(f, at, dur, vol = .08) {
+    const a = audio(), t = a.currentTime + at, o = a.createOscillator(), fl = a.createBiquadFilter(), g = a.createGain();
+    o.type = 'sawtooth'; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.setValueAtTime(600, t); fl.frequency.linearRampToValueAtTime(2600, t + .08);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .04); g.gain.setValueAtTime(vol, t + dur - .05); g.gain.linearRampToValueAtTime(0, t + dur);
+    o.connect(fl).connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
+}
+function noise(at, dur, vol = .2, freq = 1200, q = .7, sweep) {
+    const a = audio(), t = a.currentTime + at, len = Math.ceil(a.sampleRate * dur), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const s = a.createBufferSource(), fl = a.createBiquadFilter(), g = a.createGain();
+    s.buffer = buf; fl.type = 'bandpass'; fl.frequency.setValueAtTime(freq, t); if (sweep) fl.frequency.exponentialRampToValueAtTime(sweep, t + dur); fl.Q.value = q;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    s.connect(fl).connect(g).connect(a.destination); s.start(t); s.stop(t + dur);
+}
+let muted = false;   // un tap pour sauter à la fin : plus de son
+const S = {
+    step: i => tone(320 + i * 14, 0, .07, 'triangle', .05),
+    wind: () => noise(0, 4.2, .05, 500, .4, 1400),
+    flag: () => { noise(0, .35, .25, 2400, .8, 600); tone(140, .3, .25, 'sine', .3, 60); },          // whoosh + « poc » du drapeau planté
+    fanfare: () => { [[392, 0, .16], [523, .18, .16], [659, .36, .16], [784, .56, 1.3]].forEach(([f, s, d]) => { brass(f, s, d); brass(f * 1.5, s, d, .035); });
+        [659, 988].forEach(f => brass(f, .56, 1.1, .04)); },
+    boom: () => { tone(90, 0, .5, 'sine', .35, 40); noise(0, .9, .12, 3000, .5, 900); for (let i = 0; i < 10; i++) noise(.25 + Math.random() * .6, .05, .06, 5000, 2); },
+    stamp: () => { tone(110, 0, .2, 'square', .12, 55); noise(0, .15, .3, 300, .7); },
+    crown: () => [1319, 1568, 1976, 2637].forEach((f, i) => tone(f, i * .07, .7, 'sine', .07)),
+    dawn: () => { [262, 330, 392, 523].forEach((f, i) => tone(f, i * .12, 2.6, 'sine', .07)); [784, 988, 1175].forEach((f, i) => tone(f, .9 + i * .18, 1.4, 'triangle', .045)); },
+    zoom: () => noise(0, .8, .12, 400, .6, 2200)
 };
-const extras = d => [h('div', 'xpill fade', d, '🎨 Nouveau fond d’avatar : Or'), h('div', 'xpill fade', d + .1, '🗺️ 10 niveaux facultatifs à faire quand tu veux')];
-const counters = {};
-function countUp(id, el, from, to, delay, dur) {
-    clearTimeout(counters[id]); cancelAnimationFrame(counters[id + 'r']);
-    el.textContent = from;
-    counters[id] = setTimeout(() => {
-        const t0 = performance.now();
-        const tick = now => { const k = Math.min(1, (now - t0) / dur); el.textContent = Math.max(from, Math.round(to * (1 - Math.pow(1 - k, 2.2)))); if (k < 1) counters[id + 'r'] = requestAnimationFrame(tick); };
-        counters[id + 'r'] = requestAnimationFrame(tick);
-    }, delay);
+const play = (name, ...args) => { if (!muted && ac) try { S[name](...args); } catch (e) { /* pas de son */ } };
+
+/* ---------- Effets : feux d'artifice et confettis (canvas) ---------- */
+function fxCanvas(p) {
+    const c = el('canvas', 'fx'); p.append(c);
+    const r = p.getBoundingClientRect(); c.width = r.width * 2; c.height = r.height * 2;
+    const g = c.getContext('2d'); g.scale(2, 2);
+    const parts = []; let raf = 0;
+    const loop = () => {
+        g.clearRect(0, 0, r.width, r.height);
+        for (let i = parts.length - 1; i >= 0; i--) {
+            const q = parts[i]; q.life -= 1; if (q.life <= 0) { parts.splice(i, 1); continue; }
+            q.vy += q.grav; q.x += q.vx; q.y += q.vy; q.vx *= q.drag; q.vy *= q.drag; q.rot += q.vr;
+            g.globalAlpha = Math.min(1, q.life / 30); g.fillStyle = q.c;
+            if (q.rect) { g.save(); g.translate(q.x, q.y); g.rotate(q.rot); g.fillRect(-4, -2, 8, 4); g.restore(); }
+            else { g.beginPath(); g.arc(q.x, q.y, q.s, 0, 7); g.fill(); }
+        }
+        raf = requestAnimationFrame(loop);
+    };
+    loop();
+    return {
+        burst(x, y, color) { for (let i = 0; i < 46; i++) { const a = Math.random() * 7, v = 1.5 + Math.random() * 3.2; parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, grav: .04, drag: .975, life: 60 + Math.random() * 30, c: color, s: 1.6 + Math.random() * 1.2, rot: 0, vr: 0 }); } },
+        rain(colors, n = 90) { for (let i = 0; i < n; i++) parts.push({ x: Math.random() * r.width, y: -20 - Math.random() * 300, vx: (Math.random() - .5) * 1.2, vy: 1 + Math.random() * 1.5, grav: .02, drag: .995, life: 260, c: colors[i % colors.length], rect: true, rot: Math.random() * 6, vr: (Math.random() - .5) * .25, s: 3 }); },
+        stop() { cancelAnimationFrame(raf); }
+    };
 }
 
-const builds = {
-    A(p) {
-        const stars = h('div', 'stars');
-        for (let i = 0; i < 28; i++) { const s = h('i'); s.style.left = (i * 37) % 100 + '%'; s.style.top = (i * 53) % 60 + '%'; s.style.animationDelay = (i % 7) * .3 + 's'; stars.append(s); }
-        const count = h('div', 'count', undefined, '1');
-        const scene = h('div', undefined, undefined, `<svg class="scene" viewBox="0 0 300 190" aria-hidden="true">
-            <path d="M-10 190 L70 95 L105 130 L150 40 L195 110 L230 80 L310 190 Z" fill="#2c3e66"/>
-            <path d="M150 40 L132 76 L142 70 L150 82 L158 70 L168 76 Z" fill="#e8eefc"/>
-            <path d="M-10 190 L40 150 L85 175 L130 140 L175 172 L225 145 L310 190 Z" fill="#1d2a4a"/>
-            <path class="path" d="M40 185 L95 165 L60 148 L120 128 L95 110 L135 92 L118 74 L146 50" fill="none" stroke="#ffd54a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 9"/>
-            <g class="flag"><line x1="150" y1="44" x2="150" y2="6" stroke="#f4f4f4" stroke-width="3" stroke-linecap="round"/>
-            <path d="M151 7 L188 15 L151 24 Z" fill="#58cc02"/><g transform="translate(160 10) scale(.06)"><path d="${K_PATH}" fill="#fff"/></g></g></svg>`);
-        p.append(stars, count, scene, h('div', 'title fade', 2.4, 'Sommet atteint !'), h('div', 'sub fade', 2.55, 'Tu as réussi le niveau 300, le dernier du parcours.'),
-            ...extras(2.7), kRow(2.9, 'Tout le parcours ! Je suis super fier de toi.'), h('button', 'btn fade', 3.05, 'Incroyable !'));
-        countUp('A', count, 1, 300, 300, 2000);
-    },
-    B(p) {
-        const road = h('div', 'road');
-        const inner = h('div', 'road-in');
-        const N = 40;
-        for (let i = 0; i < N; i++) {
-            const d = h('span', 'dot', (i / N) * 2.5);
-            d.style.bottom = (20 + i * 28) + 'px';
-            d.style.left = (50 + Math.sin(i * .7) * 28) + '%';
-            inner.append(d);
-        }
-        const tr = h('img', 'trophy'); tr.src = 'emoji/1f3c6.svg'; tr.alt = '';
-        road.append(inner, tr);
-        const count = h('div', 'count', undefined, '1');
-        count.style.color = '#fff';
-        const bar = h('div', 'bar300', undefined, '<i></i>');
-        p.append(road, bar, count, h('div', 'title fade', 2.9, 'Parcours terminé !'), h('div', 'sub fade', 3, '300 niveaux réussis, jusqu’au dernier.'),
-            ...extras(3.1), kRow(3.3, 'On l’a fait ! Quelle aventure !'), h('button', 'btn fade', 3.45, 'Incroyable !'));
-        p.querySelectorAll('.xpill').forEach(x => { x.style.background = 'rgba(0,0,0,.16)'; });
-        countUp('B', count, 1, 300, 0, 2600);
-    },
-    C(p) {
-        const rays = h('div', 'raysC spin');
-        const fws = [[18, 14, '#fff', .9], [80, 10, '#e5484d', 1.1], [70, 34, '#58cc02', 1.35], [12, 40, '#fff', 1.55], [50, 6, '#8b5cf6', 1.75]].map(([x, y, c, d]) => {
-            const f = h('i', 'fw', d); f.style.left = x + '%'; f.style.top = y + '%'; f.style.setProperty('--c', c); f.style.background = c; return f;
-        });
-        const tr = h('img', 'bigTrophy'); tr.src = 'emoji/1f3c6.svg'; tr.alt = '';
-        const rib = h('div', 'ribbon', 1.3, `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff"/><g transform="translate(28 27) scale(.245)"><path d="${K_PATH}" fill="#e5484d"/></g></svg><span>Parcours terminé !</span>`);
-        p.append(rays, ...fws, tr, rib, h('div', 'title fade', 1.7, 'Maître du parcours'), h('div', 'sub fade', 1.85, 'Les 300 niveaux, jusqu’au dernier !'),
-            ...extras(2), kRow(2.2, 'Une couronne pour toi… enfin, pour nous deux !', 2.5), h('button', 'btn fade', 2.6, 'Incroyable !'));
+/* ---------- Une animation (A, B ou C) ---------- */
+const runs = {};
+function build(id) {
+    if (runs[id]) runs[id].kill();
+    muted = false;
+    const p = document.getElementById('p' + id);
+    p.className = 'phone'; p.replaceChildren();
+    p.append(el('div', 'sky-sun'));
+    const stars = el('div', 'stars');
+    for (let i = 0; i < 34; i++) { const s = el('i'); s.style.left = (i * 37) % 100 + '%'; s.style.top = (i * 53) % 100 + '%'; s.style.animationDelay = (i % 7) * .3 + 's'; stars.append(s); }
+    p.append(stars);
+    const view = el('div', 'view'), world = el('div', 'world');
+    world.append(el('div', 'sunrays'), el('div', 'sun'));
+    const pathD = 'M60 430 L210 396 L90 352 L220 318 L100 270 L215 236 L112 190 L200 158 L132 118 L176 88 L150 52';
+    world.insertAdjacentHTML('beforeend', `<svg viewBox="0 0 300 440" aria-hidden="true">
+        <path d="M-30 440 L40 250 L80 290 L150 40 L220 230 L250 200 L330 440 Z" fill="#2c3e66"/>
+        <path d="M150 40 L125 92 L139 84 L150 100 L161 84 L175 92 Z" fill="#eef3ff"/>
+        <path d="M-30 440 L30 330 L80 370 L140 300 L200 360 L260 310 L330 440 Z" fill="#1d2a4a"/>
+        <path d="${pathD}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="4" stroke-dasharray="5 8" stroke-linecap="round"/>
+        <path class="trail" d="${pathD}" fill="none" stroke="#ffd54a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <g class="lamps"></g>
+        <g class="flag"><line x1="150" y1="48" x2="150" y2="4" stroke="#f4f4f4" stroke-width="3" stroke-linecap="round"/>
+        <g class="flag-cloth"><path d="M151 5 L194 14 L151 25 Z" fill="#58cc02"/><g transform="translate(161 9) scale(.065)"><path d="${K_PATH}" fill="#fff"/></g></g></g></svg>`);
+    const climber = el('div', 'climber');
+    climber.append(kultiEl('content', 'kulti-blink'));
+    const crownS = el('img', 'crownS'); crownS.src = 'emoji/1f451.svg'; crownS.alt = ''; climber.append(crownS);
+    world.append(climber);
+    view.append(world); p.append(view);
+    const flash = el('div', 'flash'); p.append(flash);
+    const bottom = el('div', 'bottom');
+    const count = el('div', 'count', `1<small>niveaux réussis</small>`);
+    const ribbon = el('div', 'ribbon', `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff"/><g transform="translate(28 27) scale(.245)"><path d="${K_PATH}" fill="#e5484d"/></g></svg><span>Parcours terminé !</span>`);
+    const title = el('div', 'title step', 'Sommet atteint !');
+    const sub = el('div', 'sub step', `Les ${MAX} niveaux du parcours, jusqu’au dernier.`);
+    const pill = el('div', 'xpill step', '🎨 Nouveau fond d’avatar : Or');
+    const row = el('div', 'kulti-row step');
+    const k = el('div', 'k'); k.append(kultiEl('fier', 'kulti-blink'));
+    const crown = el('img', 'crown'); crown.src = 'emoji/1f451.svg'; crown.alt = ''; k.append(crown);
+    const bubble = el('div', 'bubble', id === 'C' ? 'J’ai même eu une couronne ! Merci à toi !' : 'Une couronne pour moi ? On l’a bien méritée !');
+    row.append(k, bubble);
+    const go = el('button', 'btn go step', 'Incroyable !');
+    bottom.append(count, ribbon, title, sub, pill, row, go);
+    p.append(bottom);
+    const fx = fxCanvas(p);
+
+    // chemin, lampes des niveaux qui s'allument au passage de Kulti
+    const svg = world.querySelector('svg'), trail = svg.querySelector('.trail'), lamps = svg.querySelector('.lamps');
+    const L = trail.getTotalLength();
+    trail.style.strokeDasharray = `${L} ${L}`; trail.style.strokeDashoffset = L;
+    const LAMPS = 24;
+    const lampEls = Array.from({ length: LAMPS }, (_, i) => {
+        const pt = trail.getPointAtLength(L * (i + .5) / LAMPS);
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.setAttribute('r', 5); c.setAttribute('fill', '#55607f');
+        lamps.append(c); return c;
+    });
+    const viewH = 380;
+
+    const timers = []; let raf = 0, dead = false, ended = false;
+    const at = (ms, fn) => timers.push(setTimeout(() => { if (!dead) fn(); }, ms));
+    const CLIMB = 4600;
+    const place = k01 => {
+        const pt = trail.getPointAtLength(L * k01);
+        climber.style.left = (pt.x / 300 * 100) + '%'; climber.style.top = (pt.y / 440 * 100) + '%';
+        trail.style.strokeDashoffset = L * (1 - k01);
+        const pan = -(world.offsetHeight - viewH) * (1 - Math.min(1, k01 * 1.15));   // la caméra monte avec Kulti
+        if (!world.classList.contains('zoomed')) world.style.transform = `translateY(${pan}px)`;
+        count.firstChild.textContent = Math.max(1, Math.round(MAX * k01));
+        const lit = Math.floor(k01 * LAMPS + .001);
+        lampEls.forEach((c, i) => { if (i < lit && c.getAttribute('fill') !== '#ffd54a') { c.setAttribute('fill', '#ffd54a'); c.setAttribute('r', 6); play('step', i); } });
+    };
+    place(0);
+    const t0 = performance.now();
+    const climb = now => {
+        if (dead || ended) return;
+        const kk = Math.min(1, (now - t0) / CLIMB);
+        place(1 - Math.pow(1 - kk, 1.5));
+        if (kk < 1) raf = requestAnimationFrame(climb);
+    };
+    raf = requestAnimationFrame(climb);
+    play('wind');
+
+    const summit = CLIMB + 150;
+    if (id === 'C') {   // zoom sur le sommet avant de planter le drapeau
+        at(summit - 300, () => { world.classList.add('zoomed'); world.style.transition = 'transform 1s cubic-bezier(.3,.8,.3,1)'; world.style.transform = 'translateY(70px) scale(2.1)'; play('zoom'); });
     }
-};
-function play(id) {
-    const p = document.getElementById('p' + id);
-    p.className = 'phone';
-    p.replaceChildren();
-    builds[id](p);
-    void p.offsetWidth;
-    p.classList.add('go');
+    const flagAt = id === 'C' ? summit + 900 : summit;
+    at(flagAt, () => { p.classList.add('is-flag'); play('flag'); });
+    const bigAt = flagAt + 700;
+    at(bigAt, () => {
+        p.classList.add('is-flash');
+        if (id === 'B') { p.classList.add('is-dawn'); play('dawn'); fx.rain(['#ffd54a', '#ffffff', '#ff9f43', '#58cc02'], 110); at(1400, () => fx.rain(['#ffd54a', '#ffffff', '#ff9f43'], 70)); }
+        else play('fanfare');
+    });
+    if (id === 'C') {
+        at(bigAt - 200, () => { crownS.style.transform = 'translateY(-40px)'; crownS.style.transition = 'opacity .2s, transform .5s cubic-bezier(.3,1.7,.5,1)'; requestAnimationFrame(() => { crownS.style.opacity = 1; crownS.style.transform = 'none'; }); play('crown'); });
+        at(bigAt + 700, () => { world.style.transition = 'transform 1.3s cubic-bezier(.4,0,.2,1)'; world.style.transform = 'translateY(0) scale(1)'; play('zoom'); });
+    }
+    if (id !== 'B') {
+        const fwStart = bigAt + (id === 'C' ? 1300 : 200);
+        const spots = [[.5, .12, '#ffd54a'], [.22, .2, '#ff6b6b'], [.78, .18, '#58cc02'], [.35, .08, '#8b5cf6'], [.66, .1, '#ffffff'], [.5, .22, '#ff9f43'], [.18, .1, '#ffd54a'], [.82, .08, '#ff6b6b']];
+        spots.forEach(([x, y, c], i) => at(fwStart + i * 420, () => { const r = p.getBoundingClientRect(); fx.burst(r.width * x, r.height * y, c); play('boom'); }));
+    }
+    const endAt = bigAt + (id === 'C' ? 1700 : 500);
+    at(endAt, () => { p.classList.add('is-end'); ended = true; });
+    at(endAt + 200, () => { ribbon.classList.add('on'); play('stamp'); });
+    at(endAt + 650, () => title.classList.add('on'));
+    at(endAt + 800, () => sub.classList.add('on'));
+    at(endAt + 950, () => pill.classList.add('on'));
+    at(endAt + 1150, () => row.classList.add('on'));
+    at(endAt + 1600, () => { crown.classList.add('on'); play('crown'); });
+    at(endAt + 2100, () => go.classList.add('on'));
+
+    const skip = () => {   // un tap : directement la fin (sans son)
+        if (go.classList.contains('on')) return;
+        ended = true; muted = true;
+        timers.forEach(clearTimeout); cancelAnimationFrame(raf);
+        world.classList.remove('zoomed'); world.style.transition = 'none';
+        place(1);
+        p.classList.add('is-flag', 'is-end'); if (id === 'B') p.classList.add('is-dawn');
+        crownS.style.transition = 'none'; crownS.style.opacity = id === 'C' ? 1 : 0; crownS.style.transform = 'none';
+        [ribbon, title, sub, pill, row, go, crown].forEach(e => e.classList.add('on'));
+    };
+    p.addEventListener('pointerdown', skip);
+    runs[id] = { kill() { dead = true; timers.forEach(clearTimeout); cancelAnimationFrame(raf); fx.stop(); p.removeEventListener('pointerdown', skip); } };
 }
-function finish(id) {
+function prepare(id) {   // écran d'attente : le son a besoin d'un premier tap
     const p = document.getElementById('p' + id);
-    p.classList.add('done');
-    clearTimeout(counters[id]); cancelAnimationFrame(counters[id + 'r']);
-    const c = p.querySelector('.count'); if (c) c.textContent = '300';
+    p.className = 'phone'; p.replaceChildren();
+    const s = el('div', 'start'); const b = el('button', 'btn', '▶ Lancer (avec le son)');
+    b.addEventListener('click', e => { e.stopPropagation(); audio(); build(id); });
+    s.append(b); p.append(s);
 }
-['A', 'B', 'C'].forEach(id => { play(id); document.getElementById('p' + id).addEventListener('pointerdown', () => finish(id)); });
-if (location.search.includes('fin')) setTimeout(() => ['A', 'B', 'C'].forEach(finish), 100);   // capture : directement la fin
-document.querySelectorAll('[data-replay]').forEach(b => b.addEventListener('click', () => play(b.dataset.replay)));
+['A', 'B', 'C'].forEach(prepare);
+document.querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', () => { audio(); build(b.dataset.play); }));
+if (location.search.includes('fin')) ['A', 'B', 'C'].forEach(id => { build(id); setTimeout(() => document.getElementById('p' + id).dispatchEvent(new Event('pointerdown')), 300); });
 </script>
 </body>
 </html>
