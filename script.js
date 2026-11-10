@@ -4093,7 +4093,7 @@ const RARITY_ORDER = ['common', 'rare', 'epic', 'legendary', 'master'];
    Nuit étoilée : Kulti grimpe le chemin en zigzag (la caméra monte avec lui, les lampes des niveaux s'allument, compteur 1 → 300),
    zoom sur le sommet, il plante le drapeau K, la couronne lui tombe sur la tête, dézoom + feux d'artifice, puis ruban
    « Parcours terminé ! » avec le K, « Sommet atteint ! », fond d'avatar Or, Kulti couronné. ~9 s, sons (réglage `sound`).
-   File `celebrate`, après l'écran de fin. Un tap : directement la fin, sans son. Bac à sable : « Voir la fête du sommet ». */
+   File `celebrate`, après l'écran de fin. Impossible à sauter (10/11). Bac à sable : « Voir la fête du sommet ». */
 function synthNoise(start, dur, vol = 0.2, freq = 1200, q = 0.7, sweep) {
     const ctx = audio(), t = ctx.currentTime + start, len = Math.ceil(ctx.sampleRate * dur);
     const buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
@@ -4262,23 +4262,9 @@ function showSummitAnim() {
     at(endAt + 1150, () => show(row));
     at(endAt + 1600, () => { crown.classList.add('is-on'); sfx(SND.crown); });
     at(endAt + 2100, () => show(go));
-    const skip = () => {   // un tap : directement la fin, sans son
-        if (go.classList.contains('is-on')) return;
-        ended = true; muted = true;
-        timers.forEach(clearTimeout);
-        cancelAnimationFrame(raf);
-        zoomed = false;
-        world.style.transition = 'none';
-        place(1);
-        world.style.transform = 'none';
-        ov.classList.add('is-flag', 'is-end', 'is-skip');
-        crownS.classList.add('is-on');
-        crown.classList.add('is-on');
-        [ribbon, title, sub, pill, row, go].forEach(show);
-    };
-    ov.addEventListener('pointerdown', skip);
+    // 10/11 (demande de l'utilisateur) : l'animation ne peut PAS être sautée (ni tap, ni bouton retour avant « Incroyable ! »)
     const close = () => {
-        if (ov.hidden || ov.classList.contains('is-closing')) return;
+        if (ov.hidden || ov.classList.contains('is-closing') || !go.classList.contains('is-on')) return;
         timers.forEach(clearTimeout);
         cancelAnimationFrame(raf);
         cancelAnimationFrame(fxRaf);

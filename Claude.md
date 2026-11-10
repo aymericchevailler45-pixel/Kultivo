@@ -296,7 +296,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   de niveau, même s'il reste des niveaux facultatifs derrière : PAS de mention des facultatifs, demande de l'utilisateur) →
   `showSummitAnim` (file `celebrate`) : Kulti grimpe le zigzag (caméra qui monte, 24 lampes, compteur 1 → 300), zoom au sommet,
   drapeau K planté, couronne sur Kulti, dézoom + 8 feux d'artifice (canvas), ruban rouge « Parcours terminé ! » avec le K,
-  « Sommet atteint ! », fond Or, Kulti couronné ; sons (`synthNoise` ajouté). ~9 s, tap = fin sans son. Bac à sable : option.
+  « Sommet atteint ! », fond Or, Kulti couronné ; sons (`synthNoise` ajouté). ~9 s, IMPOSSIBLE à sauter (tap et retour bloqués jusqu’au bouton). Bac à sable : option.
   Texte de fin du niveau 300 corrigé (avant : « Ajoute des questions dans questions.js »). Couronne de Kulti : à reprendre pour
   la future personnalisation de Kulti.
 - SIGNALEMENTS DU 10/11 (choix de l'utilisateur) : acceptés étoile (Maroc), Élisabeth 1, Hz, missile(s) de Cuba / crise cubaine,
