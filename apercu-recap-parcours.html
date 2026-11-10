@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Récap du parcours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20261110i">
+<!-- Page d'APERÇU (2026-11-10) : récap du parcours entier, juste après la fête du sommet (style « récap du mois »).
+     Faux chiffres. Rien n'est dans le jeu. -->
+<style>
+    body { padding: 16px; overflow-x: hidden; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .wrap .card { box-sizing: border-box; max-width: 100%; min-width: 0; }
+    .lead { margin: 0; color: var(--muted); font-weight: 700; }
+    .phone { position: relative; width: 100%; max-width: 340px; height: 640px; margin: 0 auto; border-radius: 26px; overflow: hidden; color: #fff;
+        display: flex; flex-direction: column; user-select: none; transition: background .5s; }
+    .phone .recap-prog { padding-top: 14px; }
+    .phone .recap-x { top: 24px; }
+    .phone .recap-slide { gap: 10px; padding: 20px; }
+    .tag { position: absolute; left: 12px; bottom: 44px; padding: 3px 9px; border-radius: 999px; background: rgba(0,0,0,.3); color: #fff; font-size: .72rem; font-weight: 900; }
+    .crowned { position: relative; }
+    .crowned .kulti-hat { top: 0; }
+    .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 280px; }
+    .tiles div { padding: 10px 6px; border-radius: 14px; background: rgba(255,255,255,.16); font-size: .78rem; font-weight: 800; }
+    .tiles b { display: block; font-size: 1.35rem; font-weight: 900; }
+    .themes { display: grid; gap: 6px; width: 100%; max-width: 280px; text-align: left; }
+    .themes div { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: .88rem; }
+    .themes i { flex: 1; height: 10px; border-radius: 99px; background: rgba(255,255,255,.2); overflow: hidden; }
+    .themes i b { display: block; height: 100%; border-radius: inherit; background: #ffd54a; }
+    .quote { max-width: 280px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.95); color: #333; font-weight: 800; font-size: .9rem; }
+    .sign { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-weight: 900; font-size: .85rem; opacity: .9; }
+    .sign img { width: 22px; height: 22px; border-radius: 6px; }
+    .list { margin: 0; padding: 0 0 0 18px; font-weight: 700; color: var(--ink); }
+    .list li { margin: 3px 0; }
+    .list b { color: var(--violet-ink, #6d28d9); }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+    .btns .btn { padding: 8px 14px; font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <h1 style="margin:0 0 6px">📜 Récap du parcours</h1>
+        <p class="lead">Il s’ouvrirait juste après la fête du sommet (bouton « Incroyable ! »), comme les récaps du mois : des écrans qui défilent seuls, touche à droite pour avancer, à gauche pour revenir. On pourrait le revoir dans le Profil → Records. <b>Chiffres inventés</b> pour l’exemple. Chaque écran a un numéro en bas à gauche : dis-moi ceux que tu gardes, enlèves ou changes.</p>
+    </div>
+    <div class="card">
+        <div class="phone" id="story">
+            <div class="recap-prog"></div>
+            <button type="button" class="recap-x" aria-label="Fermer">✕</button>
+            <div class="recap-slide"></div>
+            <span class="tag"></span>
+            <p class="recap-hint">Touche à droite : suivant · à gauche : retour</p>
+        </div>
+        <div class="btns"><button class="btn btn-green" id="restart">↻ Recommencer</button></div>
+    </div>
+    <div class="card">
+        <h2 style="margin:0 0 6px">Les écrans proposés</h2>
+        <ol class="list" id="toc"></ol>
+    </div>
+</div>
+<script src="kulti.js?v=rp1"></script>
+<script>
+const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html !== undefined) n.innerHTML = html; return n; };
+const kulti = (face, crown) => { const k = el('div', 'recap-kulti crowned'); k.append(kultiEl(face, 'kulti-blink kulti-float', false, crown ? 'crown' : null)); return k; };
+const SLIDES = [
+    { name: 'Ouverture', bg: 'linear-gradient(180deg, #070f26, #2d356d)', make: s => [kulti('fier', true), el('h3', '', 'Ton aventure Kultivo'), el('p', '', 'Du niveau 1 au niveau 300. On revoit tout ça ensemble ?')] },
+    { name: 'Le voyage', bg: 'linear-gradient(160deg, #0ea5e9, #2563eb)', make: () => [el('div', 'recap-big', '26 jours'), el('h3', '', 'pour atteindre le sommet'), el('p', '', 'Premier niveau le 16 octobre 2026, sommet le 10 novembre. Tu as joué 24 de ces 26 jours.')] },
+    { name: 'Les questions', bg: 'linear-gradient(160deg, #22c55e, #15803d)', make: () => [el('div', 'recap-big', '2 184'), el('h3', '', 'questions répondues'), el('p', '', 'Dont 1 712 du premier coup : 78 % de bonnes réponses. Une encyclopédie sur pattes !')] },
+    { name: 'XP et titre', bg: 'linear-gradient(160deg, #8b5cf6, #6d28d9)', make: () => [el('div', 'recap-big', '18 450'), el('h3', '', 'XP gagnés'), el('p', '', 'Tu es passé de « Curieux » à « Oracle ». Prochain titre : Légende de Kultivo.')] },
+    { name: 'Tes thèmes', bg: 'linear-gradient(160deg, #f59e0b, #d97706)', make: () => {
+        const t = el('div', 'themes');
+        [['🌍', 'Géographie', 91], ['🎬', 'Cinéma', 86], ['⚽', 'Sport', 83], ['🎵', 'Musique', 74], ['🎨', 'Arts', 58]].forEach(([i, n, v]) => t.append(el('div', '', `${i} ${n} <i><b style="width:${v}%"></b></i> ${v} %`)));
+        return [el('h3', '', 'Ton podium des thèmes'), t, el('p', '', 'Ton point fort : 🌍 Géographie. Ta bête noire : 🎨 Arts… pour l’instant !')]; } },
+    { name: 'La question qui t’a résisté', bg: 'linear-gradient(160deg, #ef4444, #b91c1c)', make: () => [el('h3', '', 'Celle qui t’a résisté'), el('div', 'quote', '« Comment s’appelle le marteau de Thor ? »'), el('p', '', 'Ratée 4 fois avant de la réussir. Aujourd’hui, Mjöllnir n’a plus de secret pour toi.')] },
+    { name: 'Tes meilleurs moments', bg: 'linear-gradient(160deg, #ec4899, #be185d)', make: () => {
+        const t = el('div', 'tiles');
+        [['42', 'niveaux sans faute'], ['26 j', 'plus longue série'], ['30', 'défis relevés'], ['15', 'frises parfaites']].forEach(([b, l]) => t.append(el('div', '', `<b>${b}</b>${l}`)));
+        return [el('h3', '', 'Tes meilleurs moments'), t]; } },
+    { name: 'Ta collection', bg: 'linear-gradient(160deg, #14b8a6, #0f766e)', make: () => {
+        const t = el('div', 'tiles');
+        [['152 / 180', 'cartes'], ['12', 'brillantes ✨'], ['41', 'badges'], ['3', 'collections complètes']].forEach(([b, l]) => t.append(el('div', '', `<b>${b}</b>${l}`)));
+        return [el('h3', '', 'Ta collection'), t, el('p', '', 'Et ce nouveau fond d’avatar Or, rien que pour toi.')]; } },
+    { name: 'Avec tes amis', bg: 'linear-gradient(160deg, #6366f1, #4338ca)', make: () => {
+        const t = el('div', 'tiles');
+        [['14', 'duels gagnés'], ['3', 'semaines 1er de la ligue'], ['9 j', 'série avec Léa 🔥🤝'], ['5', 'amis']].forEach(([b, l]) => t.append(el('div', '', `<b>${b}</b>${l}`)));
+        return [el('h3', '', 'Avec tes amis'), t]; } },
+    { name: 'Fin + partage', bg: 'linear-gradient(160deg, #8b5cf6, #ec4899)', make: () => {
+        const t = el('div', 'tiles');
+        [['300', 'niveaux'], ['2 184', 'questions'], ['78 %', 'réussite'], ['26 j', 'pour le sommet']].forEach(([b, l]) => t.append(el('div', '', `<b>${b}</b>${l}`)));
+        const share = el('button', 'btn recap-share-btn', '📤 Partager mon parcours');
+        const sign = el('div', 'sign', '<img src="icons/logo.svg" alt=""> Kultivo · joue avec moi !');
+        return [kulti('fier', true), el('h3', '', 'Parcours terminé !'), t, share, sign]; } }
+];
+const story = document.getElementById('story');
+let idx = 0, timer = 0;
+function show(i) {
+    idx = Math.max(0, Math.min(SLIDES.length - 1, i));
+    const s = SLIDES[idx];
+    story.style.background = s.bg;
+    story.querySelector('.recap-prog').innerHTML = SLIDES.map((_, k) => `<i class="${k < idx ? 'is-done' : k === idx ? 'is-cur' : ''}"><b></b></i>`).join('');
+    const sl = story.querySelector('.recap-slide');
+    sl.replaceChildren(...s.make());
+    story.querySelector('.tag').textContent = `Écran ${idx + 1} · ${s.name}`;
+    const ms = 6000;
+    const bar = story.querySelector('.recap-prog .is-cur b');
+    if (bar) bar.style.animationDuration = ms + 'ms';
+    clearTimeout(timer);
+    if (idx < SLIDES.length - 1) timer = setTimeout(() => show(idx + 1), ms);
+}
+story.querySelector('.recap-slide').addEventListener('click', e => {
+    const r = e.currentTarget.getBoundingClientRect();
+    show(idx + (e.clientX - r.left > r.width / 3 ? 1 : -1));
+});
+story.querySelector('.recap-x').addEventListener('click', () => show(0));
+document.getElementById('restart').addEventListener('click', () => show(0));
+document.getElementById('toc').innerHTML = SLIDES.map((s, i) => `<li><a href="#" data-i="${i}"><b>${s.name}</b></a></li>`).join('');
+document.querySelectorAll('#toc a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); show(+a.dataset.i); story.scrollIntoView({ block: 'center', behavior: 'smooth' }); }));
+const q = new URLSearchParams(location.search).get('e');
+show(q ? +q - 1 : 0);
+if (q) clearTimeout(timer);
+</script>
+</body>
+</html>
