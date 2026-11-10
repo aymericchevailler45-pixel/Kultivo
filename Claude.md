@@ -292,6 +292,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   de l'utilisateur, 10/11) : oublié ou faux = « attention à l'orthographe » (`innerForm`, `slip` dans judgeV2 : « lune miel »,
   « lune du miel ») ; article du début libre ; proverbes à compléter = faux ; formes raccourcies par le jeu (nom seul, sans mot
   générique) libres (3e élément `loose` dans answers). Test : 14 084 réponses du jeu toutes « juste ».
+- FÊTE DU SOMMET (10/11, choix C sur apercu-sommet.html) : DERNIER niveau réussi pour la 1re fois (`summitDone`, posé dans la fin
+  de niveau, même s'il reste des niveaux facultatifs derrière : PAS de mention des facultatifs, demande de l'utilisateur) →
+  `showSummitAnim` (file `celebrate`) : Kulti grimpe le zigzag (caméra qui monte, 24 lampes, compteur 1 → 300), zoom au sommet,
+  drapeau K planté, couronne sur Kulti, dézoom + 8 feux d'artifice (canvas), ruban rouge « Parcours terminé ! » avec le K,
+  « Sommet atteint ! », fond Or, Kulti couronné ; sons (`synthNoise` ajouté). ~9 s, tap = fin sans son. Bac à sable : option.
+  Texte de fin du niveau 300 corrigé (avant : « Ajoute des questions dans questions.js »). Couronne de Kulti : à reprendre pour
+  la future personnalisation de Kulti.
 - SIGNALEMENTS DU 10/11 (choix de l'utilisateur) : acceptés étoile (Maroc), Élisabeth 1, Hz, missile(s) de Cuba / crise cubaine,
   coûter cher, en deuil, bleu clair (ONU), 1 / un gigaoctet, hand, Douanier, Djoko, pois, saut de haies ; « ne » oublié ignoré dans
   les expressions et « Que veut dire / signifie » (dropLeadingVerb) ; mot court avec une lettre doublée = petite faute (« Ecco ») ;

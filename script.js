@@ -3250,7 +3250,7 @@ function placeMapKulti() {
    et le niveau s'allume. Une fois par niveau débloqué, avec son (réglage `sound`). Un tap la termine tout de suite. */
 let kultiHop = 0;          // niveau qui vient d'être débloqué (pas sauvegardé : appli fermée = pas d'animation)
 let kultiHopRun = 0;
-const KULTI_HOP_WAIT = '.modal-overlay:not([hidden]), #titleAnim:not([hidden]), #medalAnim:not([hidden]), #collectionAnim:not([hidden]), #streakAnim:not([hidden]), #freezeAnim:not([hidden]), #tour:not([hidden]), .recap-story:not([hidden])';
+const KULTI_HOP_WAIT = '.modal-overlay:not([hidden]), #titleAnim:not([hidden]), #medalAnim:not([hidden]), #collectionAnim:not([hidden]), #summitAnim:not([hidden]), #streakAnim:not([hidden]), #freezeAnim:not([hidden]), #tour:not([hidden]), .recap-story:not([hidden])';
 function startKultiHop(tries = 0) {
     const to = kultiHop;
     if (!to || $('mapScreen').hidden) return;
@@ -4088,6 +4088,207 @@ async function checkThemeComplete(silent = false) {
    Fond sombre, les cartes du thème se retournent une à une (compteur qui monte), la dernière tremble puis se retourne,
    tout s'illumine en doré, ruban « Thème complet ! » avec le K, puis texte, Kulti, boutons. Un tap = tout de suite à la fin. */
 const RARITY_ORDER = ['common', 'rare', 'epic', 'legendary', 'master'];
+/* ---------- Sommet du parcours (2026-11-10, choix C de l'utilisateur, aperçu apercu-sommet.html) ----------
+   Le DERNIER niveau réussi pour la 1re fois (`summitDone`), même si des niveaux facultatifs restent derrière (pas de mention).
+   Nuit étoilée : Kulti grimpe le chemin en zigzag (la caméra monte avec lui, les lampes des niveaux s'allument, compteur 1 → 300),
+   zoom sur le sommet, il plante le drapeau K, la couronne lui tombe sur la tête, dézoom + feux d'artifice, puis ruban
+   « Parcours terminé ! » avec le K, « Sommet atteint ! », fond d'avatar Or, Kulti couronné. ~9 s, sons (réglage `sound`).
+   File `celebrate`, après l'écran de fin. Un tap : directement la fin, sans son. Bac à sable : « Voir la fête du sommet ». */
+function synthNoise(start, dur, vol = 0.2, freq = 1200, q = 0.7, sweep) {
+    const ctx = audio(), t = ctx.currentTime + start, len = Math.ceil(ctx.sampleRate * dur);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = buf;
+    f.type = 'bandpass';
+    f.frequency.setValueAtTime(freq, t);
+    if (sweep) f.frequency.exponentialRampToValueAtTime(sweep, t + dur);
+    f.Q.value = q;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    src.connect(f).connect(g).connect(ctx.destination);
+    src.start(t);
+    src.stop(t + dur);
+}
+function showSummitAnim() {
+    const ov = celebrationLayer('summitAnim', 'summit-anim');
+    let muted = !state.data.sound;
+    const sfx = fn => { if (!muted) try { fn(); } catch (err) { /* pas de son */ } };
+    const SND = {
+        step: i => synthTone(320 + i * 14, 0, 0.07, 'triangle', 0.05),
+        wind: () => synthNoise(0, 4.2, 0.05, 500, 0.4, 1400),
+        flag: () => { synthNoise(0, 0.35, 0.25, 2400, 0.8, 600); synthTone(140, 0.3, 0.25, 'sine', 0.3, 60); },
+        fanfare: () => { [[392, 0, 0.16], [523, 0.18, 0.16], [659, 0.36, 0.16], [784, 0.56, 1.3]].forEach(([f, s0, d]) => { synthBrass(f, s0, d, 0.08); synthBrass(f * 1.5, s0, d, 0.035); });
+            [659, 988].forEach(f => synthBrass(f, 0.56, 1.1, 0.04)); },
+        boom: () => { synthTone(90, 0, 0.5, 'sine', 0.35, 40); synthNoise(0, 0.9, 0.12, 3000, 0.5, 900); for (let i = 0; i < 10; i++) synthNoise(0.25 + Math.random() * 0.6, 0.05, 0.06, 5000, 2); },
+        stamp: () => { synthTone(110, 0, 0.2, 'square', 0.12, 55); synthNoise(0, 0.15, 0.3, 300, 0.7); },
+        crown: () => [1319, 1568, 1976, 2637].forEach((f, i) => synthTone(f, i * 0.07, 0.7, 'sine', 0.07)),
+        zoom: () => synthNoise(0, 0.8, 0.12, 400, 0.6, 2200)
+    };
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const stars = el('div', 'summit-stars');
+    for (let i = 0; i < 34; i++) { const st = el('i'); st.style.left = `${(i * 37) % 100}%`; st.style.top = `${(i * 53) % 100}%`; st.style.animationDelay = `${(i % 7) * 0.3}s`; stars.append(st); }
+    const view = el('div', 'summit-view');
+    const world = el('div', 'summit-world');
+    const pathD = 'M60 430 L210 396 L90 352 L220 318 L100 270 L215 236 L112 190 L200 158 L132 118 L176 88 L150 52';
+    world.insertAdjacentHTML('beforeend', `<svg viewBox="0 0 300 440" aria-hidden="true">
+        <path d="M-30 440 L40 250 L80 290 L150 40 L220 230 L250 200 L330 440 Z" fill="#2c3e66"/>
+        <path d="M150 40 L125 92 L139 84 L150 100 L161 84 L175 92 Z" fill="#eef3ff"/>
+        <path d="M-30 440 L30 330 L80 370 L140 300 L200 360 L260 310 L330 440 Z" fill="#1d2a4a"/>
+        <path d="${pathD}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="4" stroke-dasharray="5 8" stroke-linecap="round"/>
+        <path class="summit-trail" d="${pathD}" fill="none" stroke="#ffd54a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <g class="summit-lamps"></g>
+        <g class="summit-flag"><line x1="150" y1="48" x2="150" y2="4" stroke="#f4f4f4" stroke-width="3" stroke-linecap="round"/>
+        <g class="summit-cloth"><path d="M151 5 L194 14 L151 25 Z" fill="#58cc02"/><g transform="translate(161 9) scale(.065)"><path d="${K_PATH}" fill="#fff"/></g></g></g></svg>`);
+    const climber = el('div', 'summit-climber');
+    climber.append(kultiEl('content', 'kulti-blink'));
+    const crownS = el('img', 'summit-crown-s');
+    crownS.src = 'emoji/1f451.svg';
+    crownS.alt = '';
+    climber.append(crownS);
+    world.append(climber);
+    view.append(world);
+    const flash = el('div', 'summit-flash');
+    const bottom = el('div', 'summit-bottom');
+    const count = el('div', 'summit-count');
+    count.append(document.createTextNode('1'));
+    const cs = el('small');
+    cs.textContent = 'niveaux réussis';
+    count.append(cs);
+    const ribbon = el('div', 'summit-ribbon');
+    const k = document.createElementNS(svgNS, 'svg');
+    k.setAttribute('viewBox', '0 0 100 100');
+    k.setAttribute('aria-hidden', 'true');
+    k.innerHTML = `<circle cx="50" cy="50" r="48" fill="#fff"/><g transform="translate(28 27) scale(.245)"><path d="${K_PATH}" fill="#e5484d"/></g>`;
+    const rt = el('span');
+    rt.textContent = 'Parcours terminé !';
+    ribbon.append(k, rt);
+    const step = (cls, text) => { const e = el('div', `summit-step ${cls}`); if (text) e.textContent = text; return e; };
+    const title = step('summit-title', 'Sommet atteint !');
+    const sub = step('summit-sub', `Les ${MAX_LEVEL} niveaux du parcours, jusqu’au dernier.`);
+    const pill = AVI && AVI['bg-or'] ? step('summit-pill', '🎨 Nouveau fond d’avatar : Or') : null;
+    const row = step('summit-kulti');
+    const face = el('div', 'summit-face');
+    face.append(kultiEl('fier', 'kulti-blink'));
+    const crown = el('img', 'summit-crown');
+    crown.src = 'emoji/1f451.svg';
+    crown.alt = '';
+    face.append(crown);
+    const bubble = el('div', 'medal-bubble');
+    bubble.textContent = 'J’ai même eu une couronne ! Merci à toi !';
+    row.append(face, bubble);
+    const go = el('button', 'btn summit-step summit-go');
+    go.type = 'button';
+    go.textContent = 'Incroyable !';
+    bottom.append(...[count, ribbon, title, sub, pill, row, go].filter(Boolean));
+    const canvas = el('canvas', 'summit-fx');
+    ov.append(stars, view, flash, bottom, canvas);
+
+    // feux d'artifice (canvas)
+    const box = ov.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = box.width * dpr;
+    canvas.height = box.height * dpr;
+    const g = canvas.getContext('2d');
+    g.scale(dpr, dpr);
+    const parts = [];
+    let fxRaf = 0;
+    const fxLoop = () => {
+        g.clearRect(0, 0, box.width, box.height);
+        for (let i = parts.length - 1; i >= 0; i--) {
+            const q = parts[i];
+            if (--q.life <= 0) { parts.splice(i, 1); continue; }
+            q.vy += 0.04; q.x += q.vx; q.y += q.vy; q.vx *= 0.975; q.vy *= 0.975;
+            g.globalAlpha = Math.min(1, q.life / 30);
+            g.fillStyle = q.c;
+            g.beginPath(); g.arc(q.x, q.y, q.s, 0, 7); g.fill();
+        }
+        fxRaf = requestAnimationFrame(fxLoop);
+    };
+    fxLoop();
+    const burst = (x, y, c) => { for (let i = 0; i < 46; i++) { const a = Math.random() * 7, v = 1.5 + Math.random() * 3.2; parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 60 + Math.random() * 30, c, s: 1.6 + Math.random() * 1.2 }); } };
+
+    // chemin et lampes des niveaux
+    const svg = world.querySelector('svg'), trail = svg.querySelector('.summit-trail'), lamps = svg.querySelector('.summit-lamps');
+    const L = trail.getTotalLength();
+    trail.style.strokeDasharray = `${L} ${L}`;
+    trail.style.strokeDashoffset = L;
+    const LAMPS = 24;
+    const lampEls = Array.from({ length: LAMPS }, (_, i) => {
+        const pt = trail.getPointAtLength(L * (i + 0.5) / LAMPS);
+        const c = document.createElementNS(svgNS, 'circle');
+        c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.setAttribute('r', 5); c.setAttribute('fill', '#55607f');
+        lamps.append(c);
+        return c;
+    });
+    const timers = [];
+    let raf = 0, ended = false, zoomed = false;
+    const at = (ms, fn) => timers.push(setTimeout(() => { if (!ov.hidden) fn(); }, ms));
+    const place = k01 => {
+        const pt = trail.getPointAtLength(L * k01);
+        climber.style.left = `${pt.x / 300 * 100}%`;
+        climber.style.top = `${pt.y / 440 * 100}%`;
+        trail.style.strokeDashoffset = L * (1 - k01);
+        const pan = -(world.offsetHeight - view.offsetHeight) * (1 - Math.min(1, k01 * 1.15));   // la caméra monte avec Kulti
+        if (!zoomed) world.style.transform = `translateY(${pan}px)`;
+        count.firstChild.textContent = String(Math.max(1, Math.round(MAX_LEVEL * k01)));
+        const lit = Math.floor(k01 * LAMPS + 0.001);
+        lampEls.forEach((c, i) => { if (i < lit && c.getAttribute('fill') !== '#ffd54a') { c.setAttribute('fill', '#ffd54a'); c.setAttribute('r', 6); sfx(() => SND.step(i)); } });
+    };
+    place(0);
+    const CLIMB = 4600, t0 = performance.now();
+    const climb = now => {
+        if (ended || ov.hidden) return;
+        const kk = Math.min(1, (now - t0) / CLIMB);
+        place(1 - Math.pow(1 - kk, 1.5));
+        if (kk < 1) raf = requestAnimationFrame(climb);
+    };
+    raf = requestAnimationFrame(climb);
+    sfx(SND.wind);
+    const summit = CLIMB + 150, flagAt = summit + 900, bigAt = flagAt + 700, endAt = bigAt + 1700;
+    at(summit - 300, () => { zoomed = true; world.style.transition = 'transform 1s cubic-bezier(.3,.8,.3,1)'; world.style.transform = 'translateY(70px) scale(2.1)'; sfx(SND.zoom); });
+    at(flagAt, () => { ov.classList.add('is-flag'); sfx(SND.flag); });
+    at(bigAt - 200, () => { crownS.classList.add('is-on'); sfx(SND.crown); });
+    at(bigAt, () => { ov.classList.add('is-flash'); sfx(SND.fanfare); });
+    at(bigAt + 700, () => { world.style.transition = 'transform 1.3s cubic-bezier(.4,0,.2,1)'; world.style.transform = 'none'; sfx(SND.zoom); });
+    const spots = [[0.5, 0.12, '#ffd54a'], [0.22, 0.2, '#ff6b6b'], [0.78, 0.18, '#58cc02'], [0.35, 0.08, '#8b5cf6'], [0.66, 0.1, '#ffffff'], [0.5, 0.22, '#ff9f43'], [0.18, 0.1, '#ffd54a'], [0.82, 0.08, '#ff6b6b']];
+    spots.forEach(([x, y, c], i) => at(bigAt + 1300 + i * 420, () => { burst(box.width * x, box.height * y, c); sfx(SND.boom); }));
+    const show = e => e && e.classList.add('is-on');
+    at(endAt, () => { ended = true; ov.classList.add('is-end'); });
+    at(endAt + 200, () => { show(ribbon); sfx(SND.stamp); });
+    at(endAt + 650, () => show(title));
+    at(endAt + 800, () => show(sub));
+    at(endAt + 950, () => show(pill));
+    at(endAt + 1150, () => show(row));
+    at(endAt + 1600, () => { crown.classList.add('is-on'); sfx(SND.crown); });
+    at(endAt + 2100, () => show(go));
+    const skip = () => {   // un tap : directement la fin, sans son
+        if (go.classList.contains('is-on')) return;
+        ended = true; muted = true;
+        timers.forEach(clearTimeout);
+        cancelAnimationFrame(raf);
+        zoomed = false;
+        world.style.transition = 'none';
+        place(1);
+        world.style.transform = 'none';
+        ov.classList.add('is-flag', 'is-end', 'is-skip');
+        crownS.classList.add('is-on');
+        crown.classList.add('is-on');
+        [ribbon, title, sub, pill, row, go].forEach(show);
+    };
+    ov.addEventListener('pointerdown', skip);
+    const close = () => {
+        if (ov.hidden || ov.classList.contains('is-closing')) return;
+        timers.forEach(clearTimeout);
+        cancelAnimationFrame(raf);
+        cancelAnimationFrame(fxRaf);
+        muted = true;
+        closeCelebrationLayer('summitAnim');
+    };
+    go.addEventListener('click', e => { e.stopPropagation(); close(); });
+    ov._close = close;   // touche retour du téléphone
+}
+
 function showCollectionAnim(theme, onDone) {
     const ov = celebrationLayer('collectionAnim', 'coll-anim');
     const cards = CARDS.filter(c => c.theme === theme).sort((a, b) => RARITY_ORDER.indexOf(a.rarity) - RARITY_ORDER.indexOf(b.rarity));
@@ -6770,14 +6971,17 @@ function endSession(win) {
             state.sessionCoins += owed;
         }
 
+        // 10/11 : DERNIER niveau réussi pour la 1re fois = fête du sommet (même si des niveaux facultatifs restent derrière)
+        const summitNow = state.level === MAX_LEVEL && !state.data.summitDone;
         state.data.done[state.level] = true;
+        if (summitNow) state.data.summitDone = todayKey();
         const unlockedBefore = state.data.unlocked;
         state.data.unlocked = Math.max(state.data.unlocked, Math.min(state.level + 1, MAX_LEVEL));
         if (state.data.unlocked > unlockedBefore) kultiHop = state.data.unlocked;   // Kulti ira ouvrir ce niveau sur le parcours
 
         const next = state.level < MAX_LEVEL
             ? `Le niveau ${state.level + 1} est débloqué.`
-            : "Tu as terminé tous les niveaux. Ajoute des questions dans questions.js pour continuer !";
+            : `Tu as atteint le niveau ${MAX_LEVEL}, le sommet du parcours !`;
         setEnd({
             emoji: challenge ? '🏆' : '🎉',
             face: challenge || state.errors === 0 ? 'fier' : 'content',
@@ -6789,6 +6993,7 @@ function endSession(win) {
             primary: 'Continuer',
             onPrimary: returnToMap
         });
+        if (summitNow) celebrate(() => showSummitAnim());
     }
 
     playSound('win');
@@ -11319,6 +11524,8 @@ function initBac() {
         if (more2) { recapSlides = []; openRecap(monthKeyOf(todayKey())); return; }
         const more3 = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le gel de série puis le nouveau titre ?', yes: 'Gel + titre', no: 'Plus d’options' });
         if (more3) { celebrate(() => showFreezeAnim(state.data.streak || 1)); const t = titleFor(state.data.xp); celebrate(() => showTitleAnim({ from: 'Curieux', to: t.current.name, next: t.next })); return; }
+        const summit = await askConfirm({ title: '🧪 Bac à sable', text: `Voir la fête du sommet (niveau ${MAX_LEVEL} réussi) ?`, yes: 'Voir la fête', no: 'Plus d’options' });
+        if (summit) { celebrate(() => showSummitAnim()); return; }
         const coll = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir la fête « collection complète » (thème Histoire) ?', yes: 'Voir la fête', no: 'Plus d’options' });
         if (coll) { celebrate(() => showCollectionAnim('Histoire', see => { if (see) { showScreen('profile'); setProfileTab('cards'); } })); return; }
         const hopIt = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir Kulti ouvrir le niveau suivant (comme après un niveau réussi) ?', yes: 'Voir Kulti', no: 'Plus d’options' });
@@ -11384,6 +11591,7 @@ function closeTopOverlay() {
     if ($('streakAnim') && !$('streakAnim').hidden) { closeStreakAnim(); return true; }
     if (closeCelebrationLayer('titleAnim') || closeCelebrationLayer('freezeAnim') || closeCelebrationLayer('medalAnim')) return true;
     { const o = $('collectionAnim'); if (o && !o.hidden && o._close) { o._close(false); return true; } }
+    { const o = $('summitAnim'); if (o && !o.hidden && o._close) { o._close(); return true; } }
     if ($('recapShare') && !$('recapShare').hidden) { $('recapShare').hidden = true; return true; }
     if ($('recapStory') && !$('recapStory').hidden) { closeRecap(); return true; }
     if (open('askModal')) { $('askNo').click(); return true; }
