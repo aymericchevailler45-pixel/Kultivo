@@ -3726,7 +3726,7 @@ function recapOverlay() {
         ov = el('div', 'recap-story');
         ov.id = 'recapStory';
         ov.setAttribute('role', 'dialog');
-        ov.innerHTML = '<div class="recap-prog"></div><button type="button" class="recap-x" aria-label="Fermer">✕</button><div class="recap-slide"></div><p class="recap-hint">À droite : suivant · à gauche : retour · appui long : pause</p>';
+        ov.innerHTML = '<div class="recap-prog"></div><button type="button" class="recap-x" aria-label="Fermer">✕</button><div class="recap-slide"></div>';
         document.body.append(ov);
         ov.querySelector('.recap-x').addEventListener('click', e => { e.stopPropagation(); closeRecap(); });
         const slide = ov.querySelector('.recap-slide');
