@@ -286,6 +286,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   « Quoi de neuf ? » : `NOTES_DAY` (indépendant de PATCH_DAY, qui garde les réglages du 26/10) + nouvelles `PATCH_NOTES`.
   Faux amis ajoutés : android/androïde, cross/crosse. Limite : « pralines » accepté pour « praliné » (même mot sans accents).
   Test conversion (migr10.js) : palier 3 en cours → 5, or 150/150 → bronze, palier 4 réussi → 8 + coffres dus 1+1.
+- BARRE DES 10 PALIERS (10/11) : l'utilisateur trouve les 10 morceaux sur 2 lignes « un peu lourds ». Refusés : A (5 morceaux de
+  2 paliers), B (une seule barre), C (10 points). Idée E (une ligne, palier en cours plus large, `.train-steps.is-accordion`) dans le
+  BAC À SABLE seulement : « pas convaincu, on en reparle plus tard ». Autres idées proposées : D (barre du palier en cours + « 12/20 »),
+  F (anneau autour de l'icône). Case de thème : sous le trait (`.train-foot`) = page des médailles, au-dessus = palier.
 - 10 PALIERS, DÉCISIONS DU 09/11 : conversion palier N/5 → 2N/10 ; RATTRAPAGE seulement pour les joueurs
   convertis : jusqu'à 3 questions jamais vues des paliers validés d'office par session (à la place de questions du palier en cours),
   s'arrête quand tout est vu ; aucune carte pour les paliers sautés. CARTES : 1 par palier, 2 aux paliers 5 et 10, carte Maître au 10.
