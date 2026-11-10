@@ -3230,7 +3230,8 @@ function placeMapKulti() {
     const btn = el('button', `map-kulti ${right ? 'is-right' : 'is-left'}`);
     btn.type = 'button';
     btn.setAttribute('aria-label', 'Kulti, la mascotte');
-    btn.append(kultiEl(sleepy ? 'dort' : 'content', sleepy ? '' : 'kulti-blink kulti-float', false, ev ? ev.bank : null));
+    // chapeau : celui de l'événement en cours, sinon la couronne du sommet (dernier niveau réussi, 10/11)
+    btn.append(kultiEl(sleepy ? 'dort' : 'content', sleepy ? '' : 'kulti-blink kulti-float', false, ev ? ev.bank : state.data.summitDone ? 'crown' : null));
     if (sleepy) {
         const z = el('span', 'map-kulti-zzz');
         z.innerHTML = '<i>Z</i><i>z</i><i>z</i>';
