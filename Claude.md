@@ -297,6 +297,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   les expressions et « Que veut dire / signifie » (dropLeadingVerb) ; mot court avec une lettre doublée = petite faute (« Ecco ») ;
   REFUSÉ exprès : « mail » pour courriel. Questions corrigées : Poirot (« Agatha Christie a-t-elle créé »), Angola (les deux outils
   obligatoires), Autriche (« rouge vif… trois bandes égales », la Lettonie), régions : « chef-lieu » au lieu de « capitale ».
+  2e lot (10/11) : acceptés sd, aspirateur, contrôle alt suppr, faire la liaison, « vient le beau temps » ; « Brady » pour Brody
+  GARDÉ REFUSÉ (Tom Brady est une autre réponse du jeu, règle Tibre / Tigre).
   ATTENTION : `_brouillons-paliers/` n'est plus tenu à jour (les vraies questions sont dans entrainement/).
 - BARRE DES 10 PALIERS (10/11) : l'utilisateur trouve les 10 morceaux sur 2 lignes « un peu lourds ». Refusés : A (5 morceaux de
   2 paliers), B (une seule barre), C (10 points). Idée E (une ligne, palier en cours plus large, `.train-steps.is-accordion`) dans le
