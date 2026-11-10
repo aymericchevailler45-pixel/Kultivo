@@ -654,6 +654,8 @@ function surnames(raw) {
    Pas « il » ni « un » (Kim Jong-il / Kim Jong-un). */
 const LINK_PARTICLES = new Set(['de', 'da', 'du', 'di', 'do', 'des', 'dos', 'das', 'del', 'della', 'van', 'von', 'der', 'den', 'ten', 'el', 'al', 'la', 'le', 'lo', 'los', 'las', 'les', 'd', 'l']);
 const noParticles = str => str.split(' ').filter(w => w && !LINK_PARTICLES.has(w)).join('');
+/** Réponse sans le (ou les) article(s) du début, mais avec ceux du milieu : « la lune de miel » → « lune de miel ». */
+const innerForm = str => { const w = str.split(' ').filter(Boolean); let i = 0; while (i < w.length - 1 && ARTICLES.has(w[i])) i++; return w.slice(i).join(' '); };
 /** Liste « A, B et C » : morceaux normalisés (sans articles), ou null si ce n'est pas une liste. */
 function listParts(raw) {
     const parts = String(raw).split(/\s*[,;/+&]\s*|\s+et\s+/i).map(p => { const n = normalize(p); return stripArticles(n) || n; }).filter(Boolean);
@@ -707,23 +709,32 @@ function judgeV2(input, rawAnswers, question = '') {
         if (!ans) continue;
         answers.push([ans, full(raw)]);
         const short = answerWithoutGeneric(ans);
-        if (short && short.length >= 3 && !short.split(' ').every(w => questionWords.has(w))) answers.push([short, short]);
+        if (short && short.length >= 3 && !short.split(' ').every(w => questionWords.has(w))) answers.push([short, short, true]);
         if (!expression && looksLikeName(raw)) {   // nom avant le prénom : « Sartre Jean-Paul », « Khan Kubilaï »
             const w = ans.split(' ');
-            if (w.length >= 2) { const turned = [w[w.length - 1], ...w.slice(0, -1)].join(' '); answers.push([turned, turned]); }
+            if (w.length >= 2) { const turned = [w[w.length - 1], ...w.slice(0, -1)].join(' '); answers.push([turned, turned, true]); }
             names.push(ans);
             // personne connue par son prénom (le prénom seul est dans les réponses : Dante, Zlatan, Léonard…) : pas de nom seul
             const firstOnly = rawAnswers.some(r => keep(r) === keep(String(raw).split(/[\s’']+/)[0]));
-            if (PERSON_Q.test(question) && !firstOnly) for (const s of surnames(raw)) { const k = keep(s); if (k && k.length >= 4) answers.push([k, k]); }
+            if (PERSON_Q.test(question) && !firstOnly) for (const s of surnames(raw)) { const k = keep(s); if (k && k.length >= 4) answers.push([k, k, true]); }
         }
     }
-    for (const [ans, ansFull] of answers) {
+    // 10/11 (choix de l'utilisateur) : un petit mot (de, du, la…) oublié ou faux AU MILIEU de la réponse = « attention à
+    // l'orthographe » (« lune miel », « lune du miel » pour « lune de miel ») ; l'article du début reste libre. Proverbes à
+    // compléter : la tournure exacte est demandée, c'est faux. Formes raccourcies par le jeu (nom seul, « Orsay ») : libres.
+    let slip = false;
+    const proverb = /complète le proverbe/i.test(question);
+    for (const [ans, ansFull, loose] of answers) {
         if (/^\d+(\.\d+)?$/.test(ans)) {   // nombre (date, distance…) : exact uniquement
             if (numbersTyped.length && numbersTyped.every(n => n === ans)) return 'exact';   // « 4x100 » n'est pas « 100 »
             continue;
         }
         if (addsLink(typedFull, ansFull)) continue;
-        if (typed === ans) return 'exact';
+        if (typed === ans) {
+            if (loose || innerForm(typedFull) === innerForm(ansFull)) return 'exact';
+            slip = true;
+            continue;
+        }
         const numbersAns = ans.match(/\d+(?:\.\d+)?/g) || [];
         const sameNumbers = numbersAns.join(' ') === (typed.match(/\d+(?:\.\d+)?/g) || []).join(' ');
         if (sameNumbers && answerClose(typed, ans)) typo = true;
@@ -733,6 +744,7 @@ function judgeV2(input, rawAnswers, question = '') {
         if (r === 'exact') return 'exact';
         if (r === 'typo') typo = true;
     }
+    if (slip) return proverb ? 'wrong' : 'typo';
     // 10/11 (signalement « du costa » pour « Da Costa ») : mots collés ou séparés = même réponse (« yoyo », « dicaprio ») ;
     // petit mot de liaison faux ou oublié (de / da / du / di / el / van…) = petite faute, si le reste est exactement juste
     const compact = typed.replace(/ /g, '');

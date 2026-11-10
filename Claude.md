@@ -288,9 +288,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Test conversion (migr10.js) : palier 3 en cours → 5, or 150/150 → bronze, palier 4 réussi → 8 + coffres dus 1+1.
 - CORRECTION, 10/11 (signalement « du costa » / « Da Costa ») : petit mot de liaison faux ou oublié (`LINK_PARTICLES` : de, da, du,
   di, el, van…, PAS il / un à cause de Kim Jong-il / Kim Jong-un) = « attention à l'orthographe » si le reste est exact (`noParticles`) ;
-  mots collés = juste (« yoyo », « dicaprio ») ; nom seul avec particule majuscule accepté (« La Fontaine »). Les articles (de, du,
-  la…) au milieu restent ignorés sans remarque (« lune miel » = « lune de miel ») : l'utilisateur n'a pas encore choisi (options :
-  ne rien changer / petite faute / refuser ; mon conseil : petite faute).
+  mots collés = juste (« yoyo », « dicaprio ») ; nom seul avec particule majuscule accepté (« La Fontaine »). PETIT MOT AU MILIEU (choix
+  de l'utilisateur, 10/11) : oublié ou faux = « attention à l'orthographe » (`innerForm`, `slip` dans judgeV2 : « lune miel »,
+  « lune du miel ») ; article du début libre ; proverbes à compléter = faux ; formes raccourcies par le jeu (nom seul, sans mot
+  générique) libres (3e élément `loose` dans answers). Test : 14 084 réponses du jeu toutes « juste ».
 - BARRE DES 10 PALIERS (10/11) : l'utilisateur trouve les 10 morceaux sur 2 lignes « un peu lourds ». Refusés : A (5 morceaux de
   2 paliers), B (une seule barre), C (10 points). Idée E (une ligne, palier en cours plus large, `.train-steps.is-accordion`) dans le
   BAC À SABLE seulement : « pas convaincu, on en reparle plus tard ». Autres idées proposées : D (barre du palier en cours + « 12/20 »),
