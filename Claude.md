@@ -299,8 +299,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   « Sommet atteint ! », fond Or, Kulti couronné ; sons (`synthNoise` ajouté). ~9 s, IMPOSSIBLE à sauter (tap et retour bloqués jusqu’au bouton). Bac à sable : option.
   Texte de fin du niveau 300 corrigé (avant : « Ajoute des questions dans questions.js »). COURONNE GARDÉE (10/11, oui de l'utilisateur) : Kulti du
   parcours la porte pour toujours après le sommet (`KULTI_HATS.crown` dans kulti.js ; le chapeau d'un événement passe devant) ;
-  avec la personnalisation de Kulti : objet spécial « Couronne du sommet », jamais vendu. RÉCAP DU PARCOURS : aperçu apercu-recap-parcours.html (10 écrans, 9-16 s par écran, doigt appuyé = pause ; « Avec tes
-  amis » sauté sans compte) — PAS encore codé, attend le feu vert. Proposé : même lenteur + pause pour le récap du mois.
+  avec la personnalisation de Kulti : objet spécial « Couronne du sommet », jamais vendu. RÉCAP DU PARCOURS FAIT le 10/11 : `parcoursRecap`, `parcoursRecapSlides`, `openParcoursRecap`
+  (ouvert depuis la file `celebrate` juste après « Incroyable ! » de la fête du sommet, `recapFromQueue`) ; écrans riches (`node` :
+  `.rp-tiles`, `.rp-themes`, `.rp-quote`), Kulti couronné (`crown` sur la diapo) ; 9-16 s par écran ; « Avec tes amis » seulement
+  avec un compte ; image de partage (`drawRecapImage('parcours')`) ; Records → « 🏔️ Mon récap du parcours » ; bac à sable : option.
+  Calque commun `recapOverlay` : appui long = PAUSE aussi pour le récap du mois (sa vitesse 5-14 s inchangée).
 - SIGNALEMENTS DU 10/11 (choix de l'utilisateur) : acceptés étoile (Maroc), Élisabeth 1, Hz, missile(s) de Cuba / crise cubaine,
   coûter cher, en deuil, bleu clair (ONU), 1 / un gigaoctet, hand, Douanier, Djoko, pois, saut de haies ; « ne » oublié ignoré dans
   les expressions et « Que veut dire / signifie » (dropLeadingVerb) ; mot court avec une lettre doublée = petite faute (« Ecco ») ;

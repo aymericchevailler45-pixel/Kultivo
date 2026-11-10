@@ -3718,25 +3718,51 @@ function recapSlidesFor(m) {
     return slides;
 }
 let recapMonth = null;
-function openRecap(m) {
-    recapMonth = m;
-    recapSlides = recapSlidesFor(m);
-    if (!state.data.recapSeen[m]) { state.data.recapSeen[m] = todayKey(); saveData(); }
+let recapLeft = 0, recapStart = 0, recapDown = 0, recapFromQueue = false;
+/** Calque des récaps (mois ou parcours) : tap à droite = suivant, à gauche = retour, doigt appuyé = pause (10/11). */
+function recapOverlay() {
     let ov = $('recapStory');
     if (!ov) {
         ov = el('div', 'recap-story');
         ov.id = 'recapStory';
         ov.setAttribute('role', 'dialog');
-        ov.innerHTML = '<div class="recap-prog"></div><button type="button" class="recap-x" aria-label="Fermer">✕</button><div class="recap-slide"></div><p class="recap-hint">Touche à droite : suivant · à gauche : retour</p>';
+        ov.innerHTML = '<div class="recap-prog"></div><button type="button" class="recap-x" aria-label="Fermer">✕</button><div class="recap-slide"></div><p class="recap-hint">À droite : suivant · à gauche : retour · appui long : pause</p>';
         document.body.append(ov);
         ov.querySelector('.recap-x').addEventListener('click', e => { e.stopPropagation(); closeRecap(); });
-        ov.querySelector('.recap-slide').addEventListener('click', e => {
-            const r = e.currentTarget.getBoundingClientRect();
+        const slide = ov.querySelector('.recap-slide');
+        const bar = () => ov.querySelector('.recap-prog .is-cur b');
+        slide.addEventListener('pointerdown', e => {
+            if (e.target.closest('button')) return;
+            recapDown = performance.now();
+            clearTimeout(recapTimer);
+            recapLeft -= performance.now() - recapStart;
+            if (bar()) bar().style.animationPlayState = 'paused';
+        });
+        const resume = () => {
+            if (bar()) bar().style.animationPlayState = 'running';
+            recapStart = performance.now();
+            clearTimeout(recapTimer);
+            if (recapIdx < recapSlides.length - 1) recapTimer = setTimeout(() => showRecapSlide(recapIdx + 1), Math.max(300, recapLeft));
+        };
+        slide.addEventListener('pointerup', e => {
+            if (e.target.closest('button') || !recapDown) return;
+            const long = performance.now() - recapDown > 300;
+            recapDown = 0;
+            if (long) { resume(); return; }   // appui long : on reprend là où on en était
+            const r = slide.getBoundingClientRect();
             const next = e.clientX - r.left > r.width / 3;
             if (next && recapIdx >= recapSlides.length - 1) closeRecap(); else showRecapSlide(recapIdx + (next ? 1 : -1));
         });
+        slide.addEventListener('pointercancel', () => { recapDown = 0; resume(); });
     }
     ov.hidden = false;
+    return ov;
+}
+function openRecap(m) {
+    recapMonth = m;
+    recapSlides = recapSlidesFor(m);
+    if (!state.data.recapSeen[m]) { state.data.recapSeen[m] = todayKey(); saveData(); }
+    recapOverlay();
     showRecapSlide(0);
     renderMonthRecapBtn();
     updateNavNotifications();
@@ -3748,26 +3774,124 @@ function showRecapSlide(i) {
     ov.querySelector('.recap-prog').innerHTML = recapSlides.map((_, k) => `<i class="${k < recapIdx ? 'is-done' : k === recapIdx ? 'is-cur' : ''}"><b></b></i>`).join('');
     const sl = ov.querySelector('.recap-slide');
     sl.replaceChildren();
-    if (s.face) { const k = el('div', 'recap-kulti'); k.append(kultiEl(s.face, 'kulti-blink kulti-float')); sl.append(k); }
+    if (s.face) { const k = el('div', 'recap-kulti'); k.append(kultiEl(s.face, 'kulti-blink kulti-float', false, s.crown ? 'crown' : null)); sl.append(k); }
     if (s.big) { const b = el('div', 'recap-big'); b.textContent = s.big; sl.append(b); }
     const h = el('h3');
     h.textContent = s.h;
-    const p = el('p');
-    p.textContent = s.p;
-    sl.append(h, p);
+    sl.append(h);
+    if (s.node) sl.append(s.node());
+    if (s.p) { const p = el('p'); p.textContent = s.p; sl.append(p); }
     if (RECAP_SHARE && recapIdx === recapSlides.length - 1) {
         const share = el('button', 'btn recap-share-btn');
         share.type = 'button';
-        share.textContent = '📤 Partager mon mois';
+        share.textContent = recapMonth === 'parcours' ? '📤 Partager mon parcours' : '📤 Partager mon mois';
         share.addEventListener('click', e => { e.stopPropagation(); openRecapShare(recapMonth); });
         sl.append(share);
     }
-    // Temps de lecture selon la longueur du texte (2026-10-27 : la « bête noire » passait trop vite) : 5 à 14 s
-    const ms = Math.min(14000, Math.max(5000, 2500 + (s.h.length + s.p.length) * 60));
+    // Temps de lecture selon la longueur du texte (2026-10-27 : la « bête noire » passait trop vite) : 5 à 14 s ;
+    // récap du parcours (10/11, « on n'a pas le temps de tout lire ») : 9 à 16 s
+    const len = sl.textContent.length;
+    const ms = recapMonth === 'parcours' ? Math.min(16000, Math.max(9000, 3500 + len * 55)) : Math.min(14000, Math.max(5000, 2500 + len * 60));
     const bar = ov.querySelector('.recap-prog .is-cur b');
     if (bar) bar.style.animationDuration = `${ms}ms`;
     clearTimeout(recapTimer);
+    recapLeft = ms;
+    recapStart = performance.now();
     if (recapIdx < recapSlides.length - 1) recapTimer = setTimeout(() => showRecapSlide(recapIdx + 1), ms);
+}
+
+/* ---------- Récap du parcours (2026-11-10, aperçu apercu-recap-parcours.html) ----------
+   Après la fête du sommet (« Incroyable ! ») : le parcours entier en « stories », comme le récap du mois, avec les vrais chiffres
+   de la sauvegarde (depuis la remise à zéro du 20/10). « Avec tes amis » seulement avec un compte et des amis / duels.
+   Pour toujours dans Records → « 🏔️ Mon récap du parcours ». Bac à sable : option. */
+const fmtDay = key => `${Number(key.slice(8, 10))}${key.slice(8, 10) === '01' ? 'er' : ''} ${MONTH_NAMES[Number(key.slice(5, 7)) - 1]} ${key.slice(0, 4)}`;
+function parcoursRecap() {
+    const d = state.data;
+    const days = Object.keys(d.activeDays || {}).filter(k => d.activeDays[k] > 0).sort();
+    const summit = d.summitDone || todayKey();
+    const first = days[0] || summit;
+    const span = Math.max(1, Math.round((new Date(summit) - new Date(first)) / 86400000) + 1);
+    const played = days.filter(k => k >= first && k <= summit).length || 1;
+    const themes = profileThemeStats().filter(t => t.tries >= 10).map(t => ({ ...t, rate: Math.round(t.right / t.tries * 100) })).sort((a, b) => b.rate - a.rate);
+    let resisted = null;
+    for (const id in d.stats) {
+        const st = d.stats[id], miss = (st.tries || 0) - (st.right || 0);
+        if (st.right >= 1 && miss >= 2 && (!resisted || miss > resisted.miss)) { const q = anyQuestion(id); if (q) resisted = { q, miss }; }
+    }
+    const podium = Object.values(d.podium || {});
+    const owned = CARDS.filter(c => d.cards[c.id] > 0).length;
+    return {
+        first, summit, span, played, themes, resisted,
+        start: d.placement && d.placement.start > 1 ? d.placement.start : 0,
+        tries: d.totals.tries || 0, right: d.totals.right || 0, xp: d.xp || 0,
+        title: titleFor(d.xp || 0),
+        flawless: d.totals.flawless || 0,
+        bestStreak: Math.max(d.best.streak || 0, d.streak || 0),
+        challenges: Object.keys(d.done).filter(n => d.done[n] && Number(n) % CHALLENGE_EVERY === 0).length,
+        dailies: Object.keys(d.daily || {}).length,
+        cards: owned, cardsTotal: CARDS.length, shiny: Object.keys(d.shinyCards || {}).length,
+        badges: Object.keys(d.badges || {}).length, complete: completeThemes().length,
+        duels: d.totals.duelsWon || 0, wins: podium.filter(v => v === 1).length, podiums: podium.filter(v => v >= 1 && v <= 3).length,
+        friends: league?.friends?.length || 0
+    };
+}
+const recapTiles = cells => () => {
+    const t = el('div', 'rp-tiles');
+    cells.forEach(([b, l]) => { const c = el('div'); const v = el('b'); v.textContent = b; c.append(v, document.createTextNode(l)); t.append(c); });
+    return t;
+};
+function parcoursRecapSlides() {
+    const r = parcoursRecap();
+    const fmt = n => n.toLocaleString('fr-FR');
+    const rate = r.tries ? Math.round(r.right / r.tries * 100) : 0;
+    const icon = th => (THEME_DECOR.find(t => t.theme === th) || {}).icon || '⭐';
+    const slides = [{ bg: 'linear-gradient(180deg,#070f26,#2d356d)', face: 'fier', crown: true, h: 'Ton aventure Kultivo', p: `Du niveau 1 au niveau ${MAX_LEVEL}. On revoit tout ça ensemble ?` }];
+    slides.push({ bg: 'linear-gradient(160deg,#0ea5e9,#2563eb)', big: plural(r.span, 'jour', 'jours'), h: 'pour atteindre le sommet',
+        p: `Premier niveau le ${fmtDay(r.first)}, sommet le ${fmtDay(r.summit)}. Tu as joué ${r.played} ${r.played > 1 ? 'de ces' : 'de ces'} ${r.span} jours.`
+            + (r.start ? ` Départ au niveau ${r.start}, grâce à ton test de placement.` : '') });
+    if (r.tries) slides.push({ bg: 'linear-gradient(160deg,#22c55e,#15803d)', big: fmt(r.tries), h: r.tries > 1 ? 'questions répondues' : 'question répondue',
+        p: `Dont ${fmt(r.right)} du premier coup : ${rate} % de bonnes réponses.${rate >= 75 ? ' Une encyclopédie sur pattes !' : ''}` });
+    slides.push({ bg: 'linear-gradient(160deg,#8b5cf6,#6d28d9)', big: fmt(r.xp), h: 'XP gagnés',
+        p: `Ton titre aujourd’hui : « ${r.title.current.name} ».${r.title.next ? ` Prochain titre : ${r.title.next.name}.` : ''}` });
+    if (r.themes.length >= 2) {
+        const top = r.themes.slice(0, 5), best = r.themes[0], worst = r.themes[r.themes.length - 1];
+        slides.push({ bg: 'linear-gradient(160deg,#f59e0b,#d97706)', h: 'Ton podium des thèmes',
+            node: () => {
+                const box = el('div', 'rp-themes');
+                top.forEach(t => {
+                    const row = el('div');
+                    const name = el('span'); name.textContent = `${icon(t.theme)} ${t.theme}`;
+                    const bar = el('i'); const fill = el('b'); fill.style.width = `${t.rate}%`; bar.append(fill);
+                    const v = el('span'); v.textContent = `${t.rate} %`;
+                    row.append(name, bar, v);
+                    box.append(row);
+                });
+                return box;
+            },
+            p: `Ton point fort : ${icon(best.theme)} ${best.theme}. Ta bête noire : ${icon(worst.theme)} ${worst.theme}… pour l’instant !` });
+    }
+    if (r.resisted) slides.push({ bg: 'linear-gradient(160deg,#ef4444,#b91c1c)', h: 'Celle qui t’a résisté',
+        node: () => { const q = el('div', 'rp-quote'); q.textContent = `« ${r.resisted.q.q} »`; return q; },
+        p: `Ratée ${r.resisted.miss} fois avant de la réussir. La réponse : ${r.resisted.q.a[0]}. Elle n’a plus de secret pour toi !` });
+    slides.push({ bg: 'linear-gradient(160deg,#ec4899,#be185d)', h: 'Tes meilleurs moments',
+        node: recapTiles([[fmt(r.flawless), r.flawless > 1 ? 'niveaux sans faute' : 'niveau sans faute'], [`${r.bestStreak} j`, 'plus longue série'],
+            [fmt(r.challenges), r.challenges > 1 ? 'défis relevés' : 'défi relevé'], [fmt(r.dailies), 'défis du jour joués']]) });
+    slides.push({ bg: 'linear-gradient(160deg,#14b8a6,#0f766e)', h: 'Ta collection',
+        node: recapTiles([[`${r.cards} / ${r.cardsTotal}`, 'cartes'], [fmt(r.shiny), 'brillantes ✨'], [fmt(r.badges), 'badges'], [fmt(r.complete), r.complete > 1 ? 'collections complètes' : 'collection complète']]),
+        p: 'Et ce nouveau fond d’avatar Or, rien que pour toi.' });
+    if (cloudUser && (r.friends || r.duels || r.podiums)) slides.push({ bg: 'linear-gradient(160deg,#6366f1,#4338ca)', h: 'Avec tes amis',
+        node: recapTiles([[fmt(r.duels), r.duels > 1 ? 'duels gagnés' : 'duel gagné'], [fmt(r.wins), r.wins > 1 ? 'semaines 1er de la ligue' : 'semaine 1er de la ligue'],
+            [fmt(r.podiums), r.podiums > 1 ? 'podiums de la semaine' : 'podium de la semaine'], [fmt(r.friends), r.friends > 1 ? 'amis' : 'ami']]) });
+    slides.push({ bg: 'linear-gradient(160deg,#8b5cf6,#ec4899)', face: 'fier', crown: true, h: 'Parcours terminé !',
+        node: recapTiles([[String(MAX_LEVEL), 'niveaux'], [fmt(r.tries), 'questions'], [`${rate} %`, 'réussite'], [plural(r.span, 'jour', 'jours').replace(' jours', ' j').replace(' jour', ' j'), 'pour le sommet']]) });
+    return slides;
+}
+function openParcoursRecap(fromQueue = false) {
+    recapFromQueue = fromQueue;
+    recapMonth = 'parcours';
+    recapSlides = parcoursRecapSlides();
+    recapOverlay();
+    showRecapSlide(0);
 }
 function closeRecap() {
     clearTimeout(recapTimer);
@@ -3775,6 +3899,7 @@ function closeRecap() {
     if (ov) ov.hidden = true;
     const sh = $('recapShare');
     if (sh) sh.hidden = true;
+    if (recapFromQueue) { recapFromQueue = false; nextCelebration(); }   // récap du parcours ouvert depuis la file des fêtes
 }
 
 /* Partage du récap, façon Spotify Wrapped (2026-10-27, à essayer d'abord dans le bac à sable : `RECAP_SHARE`) :
@@ -3784,7 +3909,9 @@ const RECAP_SHARE = true;   // ouvert à tous le 27/10 (essayé dans le bac à s
 const GAME_URL = 'https://aymericchevailler45-pixel.github.io/Kultivo/';
 const loadImg = src => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; });
 async function drawRecapImage(m) {
-    const r = monthRecap(m);
+    const P = m === 'parcours';   // récap du parcours (10/11)
+    const r = P ? null : monthRecap(m);
+    const rp = P ? parcoursRecap() : null;
     const W = 1080, H = 1920;
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
@@ -3818,20 +3945,33 @@ async function drawRecapImage(m) {
     g.textAlign = 'center';
     g.font = font(800, 54);
     g.fillStyle = 'rgba(255,255,255,0.85)';
-    g.fillText('Mon mois', W / 2, 330);
+    g.fillText(P ? 'Mon parcours' : 'Mon mois', W / 2, 330);
     g.fillStyle = '#fff';
     g.font = font(900, 110);
-    g.fillText(monthOf(m), W / 2, 450);
+    g.fillText(P ? 'Sommet atteint !' : monthOf(m), W / 2, 450);
     // Kulti fier
     try {
         const svg = kultiSVG('fier').replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" ');
         const k = await loadImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
         g.drawImage(k, W / 2 - 210, 480, 420, 420);
+        if (P && KULTI_HATS.crown) {   // Kulti couronné
+            const hat = KULTI_HATS.crown.replace(/<svg [^>]*>/, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="420" height="420" style="overflow:visible">');
+            const hi = await loadImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(hat));
+            g.drawImage(hi, W / 2 - 210, 480, 420, 420);
+        }
     } catch (err) { /* sans Kulti */ }
     // 6 cases de chiffres
     const fmt = n => n.toLocaleString('fr-FR');
-    const themeIcon = r.theme ? (THEME_DECOR.find(t => t.theme === r.theme[0]) || {}).icon || '⭐' : '';
-    const cells = [
+    const themeIcon = r && r.theme ? (THEME_DECOR.find(t => t.theme === r.theme[0]) || {}).icon || '⭐' : '';
+    const best = P && rp.themes[0];
+    const cells = P ? [
+        ['🏔️', fmt(MAX_LEVEL), 'niveaux'],
+        ['❓', fmt(rp.tries), 'questions'],
+        ['✅', rp.tries ? `${Math.round(rp.right / rp.tries * 100)} %` : '—', 'de bonnes réponses'],
+        ['⭐', fmt(rp.xp), 'XP gagnés'],
+        [best ? (THEME_DECOR.find(t => t.theme === best.theme) || {}).icon || '🎯' : '🎯', best ? best.theme : '—', 'mon thème star'],
+        ['📅', fmt(rp.span), rp.span > 1 ? 'jours pour le sommet' : 'jour pour le sommet']
+    ] : [
         ['❓', fmt(r.answers), r.answers > 1 ? 'questions' : 'question'],
         ['✅', r.answers ? `${Math.round(r.right / r.answers * 100)} %` : '—', 'de bonnes réponses'],
         ['⭐', fmt(r.xp), 'XP gagnés'],
@@ -3897,9 +4037,9 @@ async function openRecapShare(m) {
 }
 async function shareRecapImage(m) {
     if (!recapShareBlob) return;
-    const name = `kultivo-${monthName(m)}.png`;
+    const name = m === 'parcours' ? 'kultivo-parcours.png' : `kultivo-${monthName(m)}.png`;
     const file = new File([recapShareBlob], name, { type: 'image/png' });
-    const text = `Mon mois ${monthOf(m)} sur Kultivo 🧠 À toi de jouer : ${GAME_URL}`;
+    const text = m === 'parcours' ? `J’ai terminé les ${MAX_LEVEL} niveaux de Kultivo 🏔️ À toi de jouer : ${GAME_URL}` : `Mon mois ${monthOf(m)} sur Kultivo 🧠 À toi de jouer : ${GAME_URL}`;
     try {
         if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text }); return; }
     } catch (err) {
@@ -4270,6 +4410,7 @@ function showSummitAnim() {
         cancelAnimationFrame(raf);
         cancelAnimationFrame(fxRaf);
         muted = true;
+        celebrations.unshift(() => openParcoursRecap(true));   // 10/11 : le récap du parcours juste après
         closeCelebrationLayer('summitAnim');
     };
     go.addEventListener('click', e => { e.stopPropagation(); close(); });
@@ -4917,6 +5058,19 @@ function renderProfile() {
             b.addEventListener('click', () => openRecap(m));
             right.append(b);
         });
+        li.append(left, right);
+        list.append(li);
+    }
+    if (state.data.summitDone) {   // 10/11 : récap du parcours, pour toujours
+        const li = el('li', 'records-recaps');
+        const left = el('span');
+        left.textContent = '🏔️ Mon récap du parcours';
+        const right = el('div', 'records-recap-list');
+        const b = el('button', 'records-recap');
+        b.type = 'button';
+        b.textContent = 'Revoir';
+        b.addEventListener('click', () => openParcoursRecap());
+        right.append(b);
         li.append(left, right);
         list.append(li);
     }
@@ -11513,6 +11667,8 @@ function initBac() {
         if (more3) { celebrate(() => showFreezeAnim(state.data.streak || 1)); const t = titleFor(state.data.xp); celebrate(() => showTitleAnim({ from: 'Curieux', to: t.current.name, next: t.next })); return; }
         const summit = await askConfirm({ title: '🧪 Bac à sable', text: `Voir la fête du sommet (niveau ${MAX_LEVEL} réussi) ?`, yes: 'Voir la fête', no: 'Plus d’options' });
         if (summit) { celebrate(() => showSummitAnim()); return; }
+        const rp = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le récap du parcours (avec les chiffres de cette partie) ?', yes: 'Voir le récap', no: 'Plus d’options' });
+        if (rp) { if (!state.data.summitDone) state.data.summitDone = todayKey(); openParcoursRecap(); return; }
         const coll = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir la fête « collection complète » (thème Histoire) ?', yes: 'Voir la fête', no: 'Plus d’options' });
         if (coll) { celebrate(() => showCollectionAnim('Histoire', see => { if (see) { showScreen('profile'); setProfileTab('cards'); } })); return; }
         const hopIt = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir Kulti ouvrir le niveau suivant (comme après un niveau réussi) ?', yes: 'Voir Kulti', no: 'Plus d’options' });
