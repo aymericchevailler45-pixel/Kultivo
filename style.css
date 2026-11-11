@@ -3825,3 +3825,7 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 .rp-themes i b { display: block; height: 100%; border-radius: inherit; background: #ffd54a; }
 .rp-quote { max-width: 300px; padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.95); color: #333; font-size: 0.92rem; font-weight: 800; }
 .recap-kulti .kulti-hat { overflow: visible; }
+
+/* Jour de série : « Continuer » n'apparaît qu'à la fin de l'animation (11/11) */
+.streak-continue.is-wait { opacity: 0; pointer-events: none; }
+.streak-continue { transition: opacity 0.4s; }

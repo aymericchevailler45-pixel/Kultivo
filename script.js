@@ -1438,6 +1438,9 @@ function showStreakAnim(streak) {
     btn.type = 'button';
     btn.textContent = 'Continuer';
     btn.addEventListener('click', closeStreakAnim);
+    btn.classList.add('is-wait');   // 11/11 : on ne peut pas passer l'animation
+    btn.disabled = true;
+    ov._ready = false;
     ov.append(digits, label, capLine, week, btn);
     ov.classList.remove('is-on', 'is-closing');
     ov.hidden = false;
@@ -1455,12 +1458,13 @@ function showStreakAnim(streak) {
         setTimeout(() => { label.classList.add('is-on'); capLine.classList.add('is-on'); }, spin + 150),
         setTimeout(() => { if (cap) launchConfetti(); }, spin + 200),
         setTimeout(() => week.classList.add('is-on'), spin + 450),
-        setTimeout(() => { const t = week.querySelector('.is-today'); if (t) t.classList.add('is-lit'); }, spin + 950)
+        setTimeout(() => { const t = week.querySelector('.is-today'); if (t) t.classList.add('is-lit'); }, spin + 950),
+        setTimeout(() => { btn.disabled = false; btn.classList.remove('is-wait'); ov._ready = true; }, spin + 1300)
     ];
 }
 function closeStreakAnim() {
     const ov = $('streakAnim');
-    if (!ov || ov.hidden) return;
+    if (!ov || ov.hidden || ov._ready === false) return;
     streakTimers.forEach(clearTimeout);
     ov.classList.add('is-closing');
     setTimeout(() => { ov.hidden = true; ov.classList.remove('is-on', 'is-closing'); ov.replaceChildren(); nextCelebration(); }, 250);
@@ -3203,13 +3207,15 @@ function renderMap() {
         li.append(btn, label);
         list.append(li);
 
-        if (!locked && (!done || n === state.data.unlocked)) focusNode = btn;
+        if (!locked && (!done || n === state.data.unlocked) && !mapFocusLevel) focusNode = btn;
+        if (mapFocusLevel && n === mapFocusLevel) focusNode = btn;   // niveau refait : on revient juste après lui
         if (n % CHEST_EVERY === 0) list.append(chestStop(n));
     }
 
     renderMapFriends();
     placeMapKulti();
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
+    mapFocusLevel = 0;
     if (kultiHop) startKultiHop();
     setTimeout(updateToCurrentBtn, 50);
     if (!state.data.tipChest && readyChests().length) maybeShowChestTip();
@@ -4152,6 +4158,7 @@ function openChests(levels) {
 /** Tire les cartes de chaque coffre ({ size, rare : au moins une rare ou mieux }), les ajoute à la collection
     (carte en trop, au-delà de 3 exemplaires = pièces), enregistre, puis ouvre la fenêtre du coffre. */
 function openCardBoxes(boxes, title, avItem = null) {
+    $('closeChestBtn').hidden = true;   // 11/11 : on va jusqu'au bout de l'ouverture (bouton du bas)
     const data = state.data;
     if (avItem) {   // objet d'avatar trouvé dans le coffre : à moi tout de suite, montré à la fermeture du coffre
         data.av.owned[avItem.id] = 1;
@@ -4628,6 +4635,7 @@ function closeChest() {
     if (wasChest) clearTimeout(state.chest.timer);
     state.chest = null;
     $('chestModal').hidden = true;
+    $('closeChestBtn').hidden = false;
     if (chestBack) { const back = chestBack; chestBack = null; back(); return; }
     if (wasChest && state.chestAvItem) { const it = state.chestAvItem; state.chestAvItem = null; setTimeout(() => avFound(it), 250); }
     if (wasChest) {
@@ -4730,6 +4738,7 @@ function openCardView(card, onBack = null, friendShiny = false) {
         : !count ? '' : count >= SHINY_AT ? `✨ Carte brillante (${count} exemplaires)`
         : `${count} / ${SHINY_AT} exemplaires : à ${SHINY_AT}, elle devient brillante ✨`;
     $('chestBtn').textContent = onBack ? '← Retour' : 'Fermer';
+    $('closeChestBtn').hidden = false;   // vue d'une carte / d'un badge : ✕ visible
     $('chestModal').hidden = false;
 }
 
@@ -4749,6 +4758,7 @@ function openBadgeView(badge, onBack = null) {
     $('chestStage').replaceChildren(box);
     $('chestNote').textContent = '';
     $('chestBtn').textContent = onBack ? '← Retour' : 'Fermer';
+    $('closeChestBtn').hidden = false;   // vue d'une carte / d'un badge : ✕ visible
     $('chestModal').hidden = false;
 }
 
@@ -4763,6 +4773,7 @@ function revealShiny(card) {
     stage.replaceChildren(face);
     $('chestNote').textContent = 'Ta carte se transforme…';
     $('chestBtn').textContent = 'Super !';
+    $('closeChestBtn').hidden = false;   // vue d'une carte / d'un badge : ✕ visible
     $('chestModal').hidden = false;
     let done = false;
     const finish = () => {
@@ -4794,6 +4805,7 @@ function openLockedMaster(card) {
     $('chestStage').replaceChildren(box);
     $('chestNote').textContent = `Réussis le palier ${TRAIN_TIERS} en ${card.theme}, dans Défis → Entraînement, pour la gagner.`;
     $('chestBtn').textContent = 'Compris';
+    $('closeChestBtn').hidden = false;   // vue d'une carte / d'un badge : ✕ visible
     $('chestModal').hidden = false;
 }
 
@@ -5336,15 +5348,22 @@ function toggleHintPanel() {
 }
 
 /** Utilise un indice du stock, ou l'achète au prix de la boutique s'il n'y en a plus. */
-function useHint(id) {
+async function useHint(id) {
     if (state.phase !== 'answering' || state.hintUsed.has(id)) return;
     const best = Math.max(0, ...[...state.hintUsed].map(h => HINT_LEVEL[h] || 0));
     if (HINT_LEVEL[id] <= best) return;   // n'apporterait rien de plus
     const item = SHOP.find(i => i.id === id);
     const data = state.data;
+    const price = item.spot || item.price;
+    if (!((data.inv[id] || 0) > 0)) {   // 11/11 : payé en pièces sur le moment → confirmation
+        if (data.coins < price) return;
+        const ok = await askConfirm({ title: `💡 ${item.name}`, text: `${price} 🪙 sur le moment (${item.price} 🪙 en stock, à la boutique).
+Tu as ${data.coins} 🪙 · il t’en restera ${data.coins - price}.`,
+            yes: `Acheter · ${price} 🪙`, no: 'Annuler' });
+        if (!ok || state.phase !== 'answering' || state.hintUsed.has(id) || data.coins < price) return;
+    }
     if ((data.inv[id] || 0) > 0) data.inv[id]--;
-    else if (data.coins >= (item.spot || item.price)) data.coins -= (item.spot || item.price);
-    else return;
+    else data.coins -= price;
 
     state.hintUsed.add(id);
     saveData();
@@ -6975,8 +6994,10 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     state.onEndSecondary = onSecondary || null;
 }
 
+let mapFocusLevel = 0;   // 11/11 : niveau à montrer en revenant sur le parcours (après un niveau refait)
 function endSession(win) {
     stopTimer();
+    if (state.replay && state.level) mapFocusLevel = win ? Math.min(state.level + 1, MAX_LEVEL) : state.level;
     if (state.mode === 'kulti') win = true;   // défi de Kulti : toujours l'écran du défi (réussi ou raté)
     queueStats(win ? 'won' : 'lost');
     state.phase = 'over';
@@ -11352,7 +11373,9 @@ function bindEvents() {
     $('dropsModal').addEventListener('click', e => { if (e.target === $('dropsModal')) closeDropsModal(); });
     $('dropsTrainBtn').addEventListener('click', () => dropsGo('training'));
     $('dropsReviewBtn').addEventListener('click', () => dropsGo('review'));
-    $('dropsRefillBtn').addEventListener('click', () => { if (refillDrops()) closeDropsModal(); });
+    $('dropsRefillBtn').addEventListener('click', async () => {   // 11/11 : confirmation avant de payer
+        if (await askBuy('Recharge de gouttes', DROPS_REFILL_PRICE, `Toutes tes gouttes d’un coup (${DROPS_MAX}).`) && refillDrops()) closeDropsModal();
+    });
     setInterval(renderDrops, 30000);   // les gouttes se rechargent même sans rien toucher
     $('streakChip').addEventListener('click', openStreakModal);
     $('closeStreakBtn').addEventListener('click', () => { $('streakModal').hidden = true; });
@@ -11748,7 +11771,7 @@ function closeTopOverlay() {
         if (state.phase === 'answering') { $('userInput').readOnly = false; $('userInput').focus(); }
         return true;
     }
-    if (open('chestModal')) { closeChest(); return true; }
+    if (open('chestModal')) { if (!state.chest) closeChest(); return true; }   // coffre en cours d'ouverture : on ne ferme pas
     if (open('dropsModal')) { closeDropsModal(); return true; }
     if (open('missionsModal')) { $('missionsModal').hidden = true; return true; }
     if (open('questModal')) { $('questModal').hidden = true; return true; }

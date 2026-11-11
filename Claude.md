@@ -292,6 +292,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   de l'utilisateur, 10/11) : oublié ou faux = « attention à l'orthographe » (`innerForm`, `slip` dans judgeV2 : « lune miel »,
   « lune du miel ») ; article du début libre ; proverbes à compléter = faux ; formes raccourcies par le jeu (nom seul, sans mot
   générique) libres (3e élément `loose` dans answers). Test : 14 084 réponses du jeu toutes « juste ».
+- 11/11 (demandes de l'utilisateur) : CONFIRMATION avant de payer partout (recharge dans la fenêtre des gouttes, indice payé en
+  pièces pendant une question ; le reste l'avait déjà) ; niveau REFAIT terminé → le parcours s'ouvre sur le niveau suivant (raté :
+  sur le même) (`mapFocusLevel`) ; jour de série IMPOSSIBLE à passer (« Continuer » après l'animation, `ov._ready`) ; coffres : ni ✕
+  ni retour pendant l'ouverture (`closeChestBtn` caché, remis à la fermeture et dans les vues de carte / badge).
 - FÊTE DU SOMMET (10/11, choix C sur apercu-sommet.html) : DERNIER niveau réussi pour la 1re fois (`summitDone`, posé dans la fin
   de niveau, même s'il reste des niveaux facultatifs derrière : PAS de mention des facultatifs, demande de l'utilisateur) →
   `showSummitAnim` (file `celebrate`) : Kulti grimpe le zigzag (caméra qui monte, 24 lampes, compteur 1 → 300), zoom au sommet,
