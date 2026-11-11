@@ -50,6 +50,11 @@ h2 { margin: 34px 0 10px; font-size: 1.25rem; font-weight: 900; }
 .book img { width: 24px; height: 24px; }
 .book b { font-size: .72rem; font-weight: 900; line-height: 1.1; }
 .book small { font-size: .66rem; font-weight: 800; opacity: .92; }
+.book .st2 { display: block; margin-top: 2px; font-size: .6rem; font-weight: 800; opacity: .95; white-space: nowrap; }
+.bookstats { display: flex; gap: 6px; margin: 0 0 12px; }
+.bookstats div { flex: 1; text-align: center; background: #fff; border-radius: 12px; padding: 6px 2px; box-shadow: 0 2px 0 var(--line); }
+.bookstats b { display: block; font-size: 1.05rem; font-weight: 900; }
+.bookstats span { font-size: .64rem; color: var(--muted); font-weight: 800; }
 .book .mini { height: 4px; border-radius: 3px; background: rgba(255,255,255,.35); margin-top: 3px; overflow: hidden; }
 .book .mini i { display: block; height: 100%; background: #fff; }
 .book.is-full::after { content: '✨'; position: absolute; right: 5px; top: 4px; font-size: .8rem; }
@@ -144,7 +149,7 @@ h2 { margin: 34px 0 10px; font-size: 1.25rem; font-weight: 900; }
 <h2>Les écrans</h2>
 <div class="phones">
 
-<div class="phone-wrap"><b>1 · Profil → 📚 Savoirs</b><span>Le total, les 3 derniers savoirs, puis les 15 livres. Un livre complet brille (bord doré ✨).</span>
+<div class="phone-wrap"><b>1 · Profil → 📚 Savoirs</b><span>Le total, les 3 derniers savoirs, puis les 15 livres. Sur chaque livre : découverts / total, ✨ maîtrisés et % de réussite (comme l’onglet Thèmes d’aujourd’hui). Un livre complet brille (bord doré).</span>
 <div class="phone"><div class="scr">
     <div class="top"><img src="icons/logo-bleu.svg" alt=""><b>Kultivo</b></div>
     <div class="tabs"><span>🏅 Badges</span><span>🃏 Cartes</span><span>📊 Records</span><span class="on">📚 Savoirs</span></div>
@@ -169,7 +174,8 @@ h2 { margin: 34px 0 10px; font-size: 1.25rem; font-weight: 900; }
 <div class="phone-wrap"><b>2 · Un livre : Histoire</b><span>Recherche, filtres, la liste des fiches. Les savoirs pas encore trouvés restent cachés (on voit seulement combien il en reste).</span>
 <div class="phone"><div class="scr">
     <div class="top"><span class="back">‹</span><img src="emoji/1f4dc.svg" alt=""><b>Histoire</b><span class="chip" style="background:#f3e9d8;color:#7a4b12">164 / 441</span></div>
-    <div class="bar" style="margin:0 0 12px"><i style="width:37%;background:linear-gradient(90deg,#d79b5a,#b9722e)"></i></div>
+    <div class="bar" style="margin:0 0 10px"><i style="width:37%;background:linear-gradient(90deg,#d79b5a,#b9722e)"></i></div>
+    <div class="bookstats"><div><b>164</b><span>découverts</span></div><div><b style="color:#9a6a00">✨ 61</b><span>maîtrisés</span></div><div><b style="color:var(--ok-ink)">78 %</b><span>de réussite</span></div></div>
     <div class="search">🔍 Chercher un savoir…</div>
     <div class="filters"><span class="on">Tous · 164</span><span>✨ Maîtrisés · 61</span><span>🔁 À revoir · 9</span><span>🕒 Récents</span></div>
     <div class="list">
@@ -245,16 +251,19 @@ h2 { margin: 34px 0 10px; font-size: 1.25rem; font-weight: 900; }
 
 <script src="kulti.js"></script>
 <script>
+// [nom, icône, découverts, total, couleur, maîtrisés, % de réussite]
 const BOOKS = [['Arts','1f3a8',88,317,'#d9468f'],['Cinéma','1f3ac',152,409,'#e5484d'],['Drapeaux','1f6a9',140,229,'#c2410c'],['Gastronomie','1f9c0',96,396,'#d97706'],
   ['Géographie','1f30d',131,406,'#16a34a'],['Histoire','1f4dc',164,441,'#a16207'],['Jeux','1f3b2',73,379,'#7c3aed'],['Langue française','1f4ac',58,405,'#2563eb'],
   ['Littérature','1f4da',77,406,'#0f766e'],['Monuments','1f3db',97,295,'#475569'],['Musique','1f3bc',69,389,'#db2777'],['Mythologie','26a1',241,241,'#4338ca'],
   ['Sciences','1f52c',112,452,'#0891b2'],['Sport','26bd',121,388,'#15803d'],['Technologie','1f4a1',69,401,'#3d8bff']];
 const box = document.getElementById('books');
-BOOKS.slice(0, 12).forEach(([n, ic, got, all, c]) => {
+const EXTRA = [[31, 74], [58, 81], [77, 88], [29, 69], [49, 76], [61, 78], [22, 71], [18, 66], [25, 72], [40, 79], [21, 64], [241, 93], [37, 73], [44, 80], [26, 75]];
+BOOKS.slice(0, 12).forEach(([n, ic, got, all, c], i) => {
+  const [mast, pct] = EXTRA[i];
   const d = document.createElement('div');
   d.className = 'book' + (got >= all ? ' is-full' : '');
   d.style.background = `linear-gradient(160deg, ${c}, color-mix(in srgb, ${c} 70%, #000))`;
-  d.innerHTML = `<img src="emoji/${ic}.svg" alt=""><div><b>${n}</b><br><small>${got} / ${all}</small><div class="mini"><i style="width:${Math.round(got / all * 100)}%"></i></div></div>`;
+  d.innerHTML = `<img src="emoji/${ic}.svg" alt=""><div><b>${n}</b><br><small>${got} / ${all}</small><span class="st2">✨ ${mast} · ${pct} %</span><div class="mini"><i style="width:${Math.round(got / all * 100)}%"></i></div></div>`;
   box.append(d);
 });
 if (typeof kultiEl === 'function') {
