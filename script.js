@@ -11932,6 +11932,8 @@ function initBac() {
         if (more2) { recapSlides = []; openRecap(monthKeyOf(todayKey())); return; }
         const more3 = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le gel de série puis le nouveau titre ?', yes: 'Gel + titre', no: 'Plus d’options' });
         if (more3) { celebrate(() => showFreezeAnim(state.data.streak || 1)); const t = titleFor(state.data.xp); celebrate(() => showTitleAnim({ from: 'Curieux', to: t.current.name, next: t.next })); return; }
+        const streakA = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir l’animation du jour de série ?', yes: 'Voir l’animation', no: 'Plus d’options' });
+        if (streakA) { celebrate(() => showStreakAnim(Math.max(2, state.data.streak || 12))); return; }
         const summit = await askConfirm({ title: '🧪 Bac à sable', text: `Voir la fête du sommet (niveau ${MAX_LEVEL} réussi) ?`, yes: 'Voir la fête', no: 'Plus d’options' });
         if (summit) { celebrate(() => showSummitAnim()); return; }
         const rp = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le récap du parcours (avec les chiffres de cette partie) ?', yes: 'Voir le récap', no: 'Plus d’options' });
