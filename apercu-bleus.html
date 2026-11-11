@@ -33,7 +33,7 @@
 <div class="wrap">
     <div>
         <h1>🔵 Kultivo en bleu</h1>
-        <p class="lead">Pour chaque bleu : le <b>logo recoloré</b> (le fond et le K prennent la couleur, le cerveau rose ne change pas) et, à côté, <b>ton vrai jeu</b> en bac à sable (une copie de ta partie). Touche un logo pour voir le jeu dans cette couleur.</p>
+        <p class="lead">⚠️ Les azurs (éclatant, lumineux) sont presque le bleu de <b>Sapio</b> (#00a4ff), un concurrent direct : à éviter. Les 4 premiers bleus en sont loin, avec le vert pomme pour les bonnes réponses. Pour chaque bleu : le <b>logo recoloré</b> (le fond et le K prennent la couleur, le cerveau rose ne change pas) et, à côté, <b>ton vrai jeu</b> en bac à sable (une copie de ta partie). Touche un logo pour voir le jeu dans cette couleur.</p>
     </div>
     <div class="layout">
         <div class="pals" id="pals"></div>
@@ -43,6 +43,10 @@
 <script>
 const PALS = [
     { id: '', main: '#58cc02', name: 'Actuel', desc: 'Le vert de Duolingo, pour comparer', light: '#5fd40a', deep: '#46a302' },
+    { id: 'elec', main: '#3d8bff', ok: '#4fc72c', name: 'Bleu électrique', desc: 'Vif et profond, loin de Sapio et de Duolingo', light: '#64a5ff', deep: '#2266d6' },
+    { id: 'elecClair', main: '#4a95ff', ok: '#4fc72c', name: 'Électrique clair', desc: 'Un cran plus clair et plus lumineux', light: '#72adff', deep: '#2a6fdc' },
+    { id: 'elecVif', main: '#2f7bff', ok: '#4fc72c', name: 'Électrique vif', desc: 'Plus saturé, plus « pop »', light: '#5a97ff', deep: '#1c5bd6' },
+    { id: 'bleuet', main: '#5b8def', ok: '#4fc72c', name: 'Bleuet', desc: 'Plus doux, comme la fleur', light: '#7fa7f5', deep: '#3a68c6' },
     { id: 'azur3pomme', main: '#33a3ff', ok: '#4fc72c', name: 'Éclatant + vert pomme ✓', desc: 'Presque le vert d’avant, un peu moins jaune', light: '#5cbcff', deep: '#1a7ad6' },
     { id: 'azur3frais', main: '#33a3ff', ok: '#2ec457', name: 'Éclatant + vert frais ✓', desc: 'Lumineux, entre le pomme et l’émeraude', light: '#5cbcff', deep: '#1a7ad6' },
     { id: 'azur3menthe', main: '#33a3ff', ok: '#22c98a', name: 'Éclatant + menthe vif ✓', desc: 'Clair et pétillant, un peu plus bleuté', light: '#5cbcff', deep: '#1a7ad6' },
@@ -77,7 +81,7 @@ fetch('icons/logo.svg').then(r => r.text()).then(t => {
         b.addEventListener('click', () => pick(p));
         box.append(b);
     });
-    pick(PALS.find(p => p.id === 'azur3pomme'));
+    pick(PALS.find(p => p.id === 'elec'));
 });
 </script>
 </body>

@@ -311,7 +311,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - COULEUR PRINCIPALE (11/11, avis de Gemini sur la ressemblance avec Duolingo) : notre vert #58cc02 / #46a302, le doré #ffc800 et
   le bleu #1cb0f6 sont EXACTEMENT ceux de Duolingo → à changer avant le Play Store. Aperçu apercu-palettes.html : le bac à sable
   recoloré par ?bac=1&pal=… (`TRY_PALETTES` : emeraude, royal, lagon, indigo, corail). L'utilisateur veut un BLEU : 2e page apercu-bleus.html
-  (azur, cobalt, klein, royal, nuit, petrole, avec le LOGO recoloré : fond dégradé + K de la couleur). Préféré : AZUR ÉCLATANT (#33a3ff) ; couleur de RÉUSSITE séparée
+  (azur, cobalt, klein, royal, nuit, petrole, avec le LOGO recoloré : fond dégradé + K de la couleur). Préféré d'abord : AZUR ÉCLATANT (#33a3ff), ÉCARTÉ : presque le bleu de SAPIO (#00a4ff, appli
+  française de culture G, mascotte koala bleu) → bleus « électriques » (elec #3d8bff, elecClair, elecVif, bleuet) + vert pomme ✓ ; couleur de RÉUSSITE séparée
   (`--ok`, `--ok-deep`, `--ok-tint`, `--ok-ink`, `.btn-ok` : bandeau de bonne réponse, champ, paires, frises, ✓) = le vert pour l'instant ;
   essai « azur3ok » = azur + vert émeraude #1fb86b pour les bonnes réponses. EN ATTENTE du choix. Au passage il faudra :
   remplacer les #ffc800 / #58cc02 écrits en dur (css ~23, js ~10), le logo (fond vert), l'écran de chargement, manifest
