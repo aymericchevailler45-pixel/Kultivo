@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kultivo en bleu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<!-- Page d'APERÇU (2026-11-11, 2e série) : 6 bleus avec le LOGO recoloré + le bac à sable du jeu recoloré (?bac=1&pal=…). -->
+<style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; font-family: Nunito, system-ui, sans-serif; background: #eef1f6; color: #1b2745; }
+    .wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 14px; }
+    h1 { margin: 0; font-size: 1.5rem; }
+    .lead { margin: 4px 0 0; color: #66728f; font-weight: 700; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    @media (min-width: 800px) { .layout { grid-template-columns: 1fr 380px; align-items: start; } }
+    .pals { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .pal { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border: 3px solid transparent; border-radius: 18px; background: #fff;
+        font: inherit; cursor: pointer; box-shadow: 0 2px 0 #d9e1ec; }
+    .pal.on { border-color: #1b2745; }
+    .logo { width: 84px; height: 84px; }
+    .logo svg { width: 100%; height: 100%; }
+    .pal b { font-size: .98rem; }
+    .pal small { color: #66728f; font-weight: 700; font-size: .78rem; line-height: 1.25; text-align: center; }
+    .btnp { display: inline-block; margin-top: 2px; padding: 5px 12px; border-radius: 10px; color: #fff; font-weight: 900; font-size: .8rem; }
+    .phone { width: 360px; max-width: 100%; height: 740px; margin: 0 auto; border: 10px solid #1b2745; border-radius: 34px; overflow: hidden; background: #fff; }
+    .phone iframe { width: 100%; height: 100%; border: 0; display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div>
+        <h1>🔵 Kultivo en bleu : 6 propositions</h1>
+        <p class="lead">Pour chaque bleu : le <b>logo recoloré</b> (le fond et le K prennent la couleur, le cerveau rose ne change pas) et, à côté, <b>ton vrai jeu</b> en bac à sable (une copie de ta partie). Touche un logo pour voir le jeu dans cette couleur.</p>
+    </div>
+    <div class="layout">
+        <div class="pals" id="pals"></div>
+        <div class="phone"><iframe id="game" title="Kultivo en bac à sable"></iframe></div>
+    </div>
+</div>
+<script>
+const PALS = [
+    { id: '', main: '#58cc02', name: 'Actuel', desc: 'Le vert de Duolingo, pour comparer', light: '#5fd40a', deep: '#46a302' },
+    { id: 'azur', main: '#1f8ce6', name: 'Azur', desc: 'Bleu lumineux et franc, très lisible', light: '#3aa0f0', deep: '#1567b0' },
+    { id: 'cobalt', main: '#0b62c4', name: 'Cobalt', desc: 'Bleu soutenu, sérieux sans être triste', light: '#1c7ad9', deep: '#084a94' },
+    { id: 'klein', main: '#2b3fd1', name: 'Bleu Klein', desc: 'Outremer intense, clin d’œil à Yves Klein', light: '#4256e0', deep: '#1d2c99' },
+    { id: 'royal', main: '#2f5bd3', name: 'Bleu roi', desc: 'Celui de la 1re série, pour comparer', light: '#4a72e0', deep: '#1f3f9c' },
+    { id: 'nuit', main: '#274690', name: 'Bleu nuit et or', desc: 'Profond et « académie », avec un doré chaud', light: '#3a5aa8', deep: '#1a3166' },
+    { id: 'petrole', main: '#127a8a', name: 'Bleu pétrole', desc: 'Entre le bleu et le vert, élégant', light: '#1d93a5', deep: '#0c5964' }
+];
+const box = document.getElementById('pals'), frame = document.getElementById('game');
+let logoSrc = '';
+function logoFor(p) {
+    // fond = dégradé de la couleur, K = la couleur foncée (comme le logo actuel)
+    return logoSrc.replace('stop-color="#5fd40a"', `stop-color="${p.light}"`).replace('stop-color="#46a302"', `stop-color="${p.deep}"`).replace('fill="#46a302"', `fill="${p.deep}"`)
+        .replace('<svg ', `<svg id="lg-${p.id || 'now'}" `).replace(/id="g"/g, `id="g-${p.id || 'now'}"`).replace(/url\(#g\)/g, `url(#g-${p.id || 'now'})`);
+}
+function pick(p) {
+    frame.src = `index.html?bac=1${p.id ? `&pal=${p.id}` : ''}`;
+    box.querySelectorAll('.pal').forEach(b => b.classList.toggle('on', b.dataset.id === p.id));
+}
+fetch('icons/logo.svg').then(r => r.text()).then(t => {
+    logoSrc = t;
+    PALS.forEach(p => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'pal'; b.dataset.id = p.id;
+        b.innerHTML = `<span class="logo">${logoFor(p)}</span><b>${p.name}</b><small>${p.desc}</small><span class="btnp" style="background:${p.main}; box-shadow: 0 3px 0 ${p.deep}">Bouton</span>`;
+        b.addEventListener('click', () => pick(p));
+        box.append(b);
+    });
+    pick(PALS[1]);
+});
+</script>
+</body>
+</html>

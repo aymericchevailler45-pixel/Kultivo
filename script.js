@@ -25,6 +25,12 @@ const TRY_PALETTES = {
     royal:     { '--green': '#2f5bd3', '--green-deep': '#1f3f9c', '--green-tint': '#dfe7fb', '--green-ink': '#1b347f', '--on-green': '#ffffff', '--glow': 'rgba(47, 91, 211, 0.10)', '--gold': '#f5b301', '--gold-deep': '#c98f00', '--blue': '#3fa9f5' },
     lagon:     { '--green': '#12b3a8', '--green-deep': '#0c857c', '--green-tint': '#d2f4ef', '--green-ink': '#0b5f56', '--on-green': '#ffffff', '--glow': 'rgba(18, 179, 168, 0.10)', '--gold': '#ffb627', '--gold-deep': '#d6920a', '--blue': '#2b8fe0' },
     indigo:    { '--green': '#5b5bd6', '--green-deep': '#3f3fa8', '--green-tint': '#e3e3fb', '--green-ink': '#32328a', '--on-green': '#ffffff', '--glow': 'rgba(91, 91, 214, 0.10)', '--gold': '#ffbf2e', '--gold-deep': '#d99a0b', '--blue': '#1f9bd6' },
+    // 2e série (11/11, « un bleu, mais pas encore fan ») : 5 bleus
+    azur:      { '--green': '#1f8ce6', '--green-deep': '#1567b0', '--green-tint': '#dbeefd', '--green-ink': '#0f4f8a', '--on-green': '#ffffff', '--glow': 'rgba(31, 140, 230, 0.10)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88' },
+    cobalt:    { '--green': '#0b62c4', '--green-deep': '#084a94', '--green-tint': '#d8e7fa', '--green-ink': '#063a75', '--on-green': '#ffffff', '--glow': 'rgba(11, 98, 196, 0.10)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#2b9bd8' },
+    klein:     { '--green': '#2b3fd1', '--green-deep': '#1d2c99', '--green-tint': '#e0e3fb', '--green-ink': '#18237a', '--on-green': '#ffffff', '--glow': 'rgba(43, 63, 209, 0.10)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#2b9bd8' },
+    nuit:      { '--green': '#274690', '--green-deep': '#1a3166', '--green-tint': '#dde4f3', '--green-ink': '#172b59', '--on-green': '#ffffff', '--glow': 'rgba(39, 70, 144, 0.10)', '--gold': '#f2b632', '--gold-deep': '#c98f12', '--blue': '#2b9bd8' },
+    petrole:   { '--green': '#127a8a', '--green-deep': '#0c5964', '--green-tint': '#d4eef1', '--green-ink': '#0a4a53', '--on-green': '#ffffff', '--glow': 'rgba(18, 122, 138, 0.10)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#2b8fe0' },
     corail:    { '--green': '#f2674e', '--green-deep': '#c24a35', '--green-tint': '#fde3dc', '--green-ink': '#8a3221', '--on-green': '#ffffff', '--glow': 'rgba(242, 103, 78, 0.10)', '--gold': '#ffbf2e', '--gold-deep': '#d99a0b', '--blue': '#1f9bd6' }
 };
 (() => { try {
