@@ -2834,7 +2834,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .league-people li.duel-row .duel-play { flex: none; width: auto; padding: 7px 16px; }
 .duel-right { display: flex; align-items: center; gap: 6px; flex: none; }
 .duel-score { padding: 3px 9px; border-radius: 999px; font-weight: 900; font-size: 0.9rem; white-space: nowrap; }
-.duel-score.is-win  { background: var(--green-tint); color: var(--green-deep); }
+.duel-score.is-win  { background: var(--ok-tint); color: var(--ok-ink); }   /* 12/11 : victoire = vert de réussite (pas le bleu principal) */
 .duel-score.is-loss { background: var(--red-tint); color: var(--red-ink); }
 .duel-score.is-tie  { background: var(--line); color: var(--muted); }
 .duel-back { display: block; margin: 0 0 8px; padding: 4px 0; border: 0; background: none; color: var(--violet-ink); font: inherit; font-weight: 800; cursor: pointer; text-align: left; }
@@ -2865,7 +2865,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .league-people li.duel-row[data-notif]::after { left: -6px; }
 
 .modal-content p.duel-news { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; font-weight: 800; color: var(--ink); }
-.modal-content p.duel-news.is-win { background: var(--green-tint); color: var(--green-deep); }
+.modal-content p.duel-news.is-win { background: var(--ok-tint); color: var(--ok-ink); }
 .modal-content p.duel-news.is-loss { background: var(--line); }
 
 /* Halloween (2026-10-23) : paliers de dessins, citrouilles cachées, amis */
@@ -3980,3 +3980,10 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .pal-elec .streak-continue { --btn: #ff9600; --btn-deep: #c46a00; --btn-ink: #ffffff; }
 /* 11/11 : quête entre duo — le partenaire en orange (toi = bleu principal ; avant, deux bleus impossibles à distinguer) */
 .pal-elec .quest-bar .is-mate, .pal-elec .quest-legend .is-mate::before, .pal-elec .quest-row-bar .is-mate { background: #ff9600; }
+/* 12/11 : personnalité de Kulti — bulle sur l'écran de fin, à sa gauche (le tampon « Sans faute » est à droite) ; ne change pas la hauteur */
+.end-say { position: absolute; right: calc(100% + 10px); top: 8px; width: max-content; max-width: min(140px, calc(50vw - 72px)); padding: 7px 10px;
+    border-radius: 14px 14px 4px 14px; background: var(--surface); color: var(--ink); box-shadow: 0 3px 10px rgba(27, 39, 69, 0.14);
+    font-size: 0.8rem; font-weight: 800; line-height: 1.25; text-align: left; opacity: 0; animation: endSay 0.35s ease 0.6s forwards; }
+.end-say::after { content: ''; position: absolute; right: -6px; bottom: 6px; border: 6px solid transparent; border-left-color: var(--surface); border-right: 0; }
+@keyframes endSay { from { opacity: 0; transform: translateY(6px) scale(0.9); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .end-say { animation: none; opacity: 1; } }

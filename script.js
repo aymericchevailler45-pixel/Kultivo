@@ -3487,6 +3487,12 @@ function kultiLines() {
     if (streak >= 2) lines.push(`Tu es sur une série de ${plural(streak, 'jour', 'jours')} 🔥`);
     const ev = currentEvent();
     if (ev) lines.push(`${ev.icon} L’événement ${ev.name} t’attend dans Défis !`);
+    // 12/11 : un peu de caractère (moment de la journée, thème où il est moins à l'aise, petites blagues de cerveau)
+    const h = new Date().getHours();
+    lines.push(h < 11 ? 'Bonjour ! Mes neurones sont réveillés, et les tiens ?' : h < 14 ? 'Une question avant de manger ?' : h < 18 ? 'Une petite pause culture G ?' : 'Un niveau avant le dîner ?');
+    const weak = themeStats().filter(t => t.tries >= 10).sort((a, b) => a.right / a.tries - b.right / b.tries)[0];
+    if (weak) lines.push(`Je te sens moins à l’aise en ${weak.theme}… On s’y met dans l’entraînement ?`);
+    lines.push(pickOne(['Je suis un cerveau, mais sans toi je ne pense à rien !', 'Chaque bonne réponse me fait pousser un neurone 🌱', 'Psst… Tu savais que je sais tout ? Enfin presque.', 'Ne le dis à personne : moi aussi je confonds Autriche et Australie.']));
     const themes = typeof THEME_FACTS !== 'undefined' ? Object.keys(THEME_FACTS) : [];
     if (themes.length) {
         const facts = THEME_FACTS[themes[Math.floor(Math.random() * themes.length)]];
@@ -6833,6 +6839,9 @@ function verify(skipped = false) {
     const comboShow = clean && (COMBO_STEPS.includes(state.combo) || (state.combo > 10 && state.combo % 5 === 0));
     const flash = clean && !['sprint', 'daily', 'duel'].includes(state.mode) && Date.now() - (state.cardShownAt || 0) < FLASH_MS;
     renderStickers(comboShow ? state.combo : 0, flash, trainReadyNow(clean));
+    state.fbCombo = comboShow ? state.combo : 0;
+    state.fbFlash = flash;
+    state.fbClean = clean;
     showFeedback(verdict, skipped);
     updateKeyboardMode();   // correction : retour à la taille normale
     const semis = clean ? Math.min(state.combo - 1, 8) * 2 : 0;
@@ -6866,6 +6875,45 @@ function trainReadyNow(clean) {
     return true;
 }
 
+/* ---------- Personnalité de Kulti (12/11, demande de l'utilisateur) ----------
+   Un cerveau curieux, un peu fier de savoir des choses, gentiment taquin, jamais méchant. Il parle À PETITES DOSES :
+   sur la carte de correction (à la place du titre, phrases courtes pour ne pas agrandir la carte), dans une bulle sur l'écran
+   de fin, et quand on le touche sur le parcours. Jamais sur les messages utiles (orthographe, « à 5 ans près », réponse montrée). */
+const KULTI_CHANCE = 0.3;   // phrase « au hasard » sur une bonne / mauvaise réponse ordinaire
+const pickOne = list => list[Math.floor(Math.random() * list.length)];
+// Phrases de la carte : 22 caractères au plus (sinon le titre passe sur 2 lignes et la carte grandit)
+const KULTI_RIGHT = ['Bien vu !', 'Exactement !', 'Neurones validés !', 'Tu le savais, hein ?', 'Joli coup !', 'Je le savais aussi !', 'Rien à redire !'];
+const KULTI_WRONG = ['Elle était piégeuse !', 'Elle m’a eu aussi…', 'Presque ! Ou pas…', 'Retiens-la bien !'];
+const KULTI_COMBO = { 3: 'Tu chauffes !', 5: 'Rien ne t’arrête !', 7: 'Je suis bluffé !', 10: 'Un vrai génie !' };   // la pastille dit déjà « N d'affilée »
+function kultiFeedbackLine(verdict, skipped) {
+    if (skipped || verdict === 'typo' || verdict === 'near') return null;
+    if (['sprint', 'placement'].includes(state.mode)) return null;   // sprint : ça va trop vite ; placement : on reste sobre
+    const q = state.current.q;
+    if (verdict === 'exact') {
+        if (state.fbCombo) return { text: KULTI_COMBO[state.fbCombo] || 'Incroyable !', face: 'fier' };
+        if (state.fbFlash && Math.random() < 0.5) return { text: 'Quelle vitesse !', face: 'surpris' };
+        const s = state.data.stats[q.id];
+        if (state.fbClean && s && (s.tries || 0) > (s.right || 0) && Math.random() < 0.6) return { text: 'Tu la tiens enfin !', face: 'fier' };
+        if (state.fbClean && (q.d || 0) >= 4 && Math.random() < 0.6) return { text: 'Pas facile, bravo !', face: 'surpris' };
+        return Math.random() < KULTI_CHANCE ? { text: pickOne(KULTI_RIGHT), face: 'clin' } : null;
+    }
+    if (Math.random() >= KULTI_CHANCE) return null;
+    const reviews = ['level', 'challenge', 'review', 'training'].includes(state.mode);
+    return { text: pickOne(reviews ? [...KULTI_WRONG, 'Raté, tu la reverras !'] : KULTI_WRONG), face: 'triste' };
+}
+/** Phrase de Kulti pour l'écran de fin (bulle à côté de lui). */
+function kultiEndLine(mood, stamp) {
+    const h = new Date().getHours();
+    if (mood === 'triste') return pickOne(['Pas grave, on réessaie ?', 'Elles m’ont eu aussi, la première fois.', 'On se relève, on recommence !']);
+    if (stamp) return pickOne(['Tu m’impressionnes, et je suis un cerveau !', 'Sans faute ! Je suis fier de toi.', 'Zéro faute. Chapeau !']);
+    const pct = state.total ? state.correct / state.total : 1;
+    if (pct < 0.7) return pickOne(['Ouf ! De justesse, mais on l’a !', 'Gagné ! On a eu chaud…']);
+    const list = ['Mes neurones applaudissent !', 'Encore un dans la poche !', 'Chaque bonne réponse me fait pousser un neurone.', 'Bien joué ! On continue ?'];
+    if (h >= 21 || h < 5) list.push('Un dernier avant de dormir ?');
+    else if (h < 11) list.push('Belle façon de commencer la journée !');
+    return pickOne(list);
+}
+
 function showFeedback(verdict, skipped) {
     const q = state.current.q;
     const ok = verdict !== 'wrong';
@@ -6882,9 +6930,11 @@ function showFeedback(verdict, skipped) {
                               'Pas tout à fait';
     $('feedbackAnswer').textContent = `Réponse : ${q.a[0]}`;
     $('explanationText').textContent = q.exp;
-    if (PAL_ELEC) {   // 11/11 (bac à sable) : carte flottante avec Kulti qui réagit, dans la ligne du titre (pas plus haut)
+    if (PAL_ELEC) {   // 11/11 : carte flottante avec Kulti qui réagit, dans la ligne du titre (pas plus haut)
+        const said = kultiFeedbackLine(verdict, skipped);   // 12/11 : de temps en temps, Kulti parle à la place du titre
+        if (said) $('feedbackTitle').textContent = said.text;
         const face = el('span', 'fb-kulti');
-        face.append(kultiEl(ok ? 'content' : 'triste', 'kulti-blink'));
+        face.append(kultiEl(said?.face || (ok ? 'content' : 'triste'), 'kulti-blink'));
         $('feedbackTitle').prepend(face);
     }
 
@@ -7174,6 +7224,11 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     $('endEmoji').classList.toggle('is-kulti', !!mood);
     if (mood) $('endEmoji').replaceChildren(kultiEl(mood, 'kulti-blink kulti-float', emoji === '💔'));
     else $('endEmoji').textContent = emoji;
+    if (mood && PAL_ELEC && state.mode !== 'placement') {   // 12/11 : Kulti dit un mot, dans une bulle à sa gauche (le tampon est à droite)
+        const bub = el('span', 'end-say');
+        bub.textContent = kultiEndLine(mood, stamp);
+        $('endEmoji').append(bub);
+    }
     clearTimeout(stampTimer);
     if (stamp) {
         const st = stampSans();
