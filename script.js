@@ -1778,8 +1778,8 @@ function profileThemeStats() {
 const ENC_ON = BAC;
 // 12/11 : 15 couleurs bien distinctes (Cinéma et Drapeaux se ressemblaient), l'icône est posée sur un rond blanc
 const ENC_COLORS = { 'Arts': '#c026d3', 'Cinéma': '#dc2626', 'Drapeaux': '#ea580c', 'Gastronomie': '#ca8a04', 'Géographie': '#15803d', 'Histoire': '#92400e',
-    'Jeux': '#7c3aed', 'Langue française': '#2563eb', 'Littérature': '#0f766e', 'Monuments': '#64748b', 'Musique': '#db2777', 'Mythologie': '#1e3a8a',
-    'Sciences': '#0891b2', 'Sport': '#65a30d', 'Technologie': '#1f2937' };
+    'Jeux': '#7c3aed', 'Langue française': '#2563eb', 'Littérature': '#0f766e', 'Monuments': '#78716c', 'Musique': '#db2777', 'Mythologie': '#1e3a8a',
+    'Sciences': '#0891b2', 'Sport': '#65a30d', 'Technologie': '#4b5563' };
 let encCache = null, encCount = -1;
 function encAll() {
     const n = QUESTIONS.length + (typeof TRAINING_QUESTIONS === 'undefined' ? 0 : TRAINING_QUESTIONS.length);
@@ -1792,10 +1792,9 @@ function encAll() {
 }
 /** Icône d'un thème en image Twemoji, ou en texte si l'image manque (🗣️). */
 function encIconEl(theme) {
-    const e = encIcon(theme);
-    const img = emojiImg(e);
-    img.onerror = () => img.replaceWith(document.createTextNode(e));
-    return img;
+    const sp = el('span', 'enc-emo');   // 12/11 : emoji du téléphone, comme les cases de l'entraînement
+    sp.textContent = encIcon(theme);
+    return sp;
 }
 const encQuestion = id => encAll().get(id);
 const encKnown = q => (state.data.stats[q.id]?.right || 0) > 0;
@@ -1805,8 +1804,8 @@ const encWhen = q => { const s = state.data.stats[q.id] || {}; return s.first ||
 /** 12/11 : un tap sur « savoirs », « maîtrisés » ou « réussite » réexplique ce que c'est. */
 function encExplain(kind) {
     const T = {
-        known: ['📚 Les savoirs', 'Un savoir, c’est une question que tu as réussie au moins une fois (parcours, entraînement, défis…).\n\nUne fois dans ton encyclopédie, il y reste pour toujours, même si tu te trompes plus tard.\n\nLes questions vues mais encore jamais réussies n’y sont pas : réussis-les pour les ajouter !'],
-        mastered: ['✨ Les savoirs maîtrisés', 'Une question est maîtrisée quand tu l’as réussie 2 fois d’affilée, à des jours différents.\n\nUne question maîtrisée le reste pour toujours. Les maîtrisées comptent aussi pour les médailles de l’entraînement.'],
+        known: ['📚 Les questions sues', 'Une question sue (un savoir), c’est une question que tu as réussie au moins une fois (parcours, entraînement, défis…).\n\nUne fois dans ton encyclopédie, il y reste pour toujours, même si tu te trompes plus tard.\n\nLes questions vues mais encore jamais réussies n’y sont pas : réussis-les pour les ajouter !'],
+        mastered: ['✨ Les questions maîtrisées', 'Une question est maîtrisée quand tu l’as réussie 2 fois d’affilée, à des jours différents.\n\nUne question maîtrisée le reste pour toujours. Les maîtrisées comptent aussi pour les médailles de l’entraînement.'],
         rate: ['🎯 La réussite', 'C’est la part de bonnes réponses sur toutes tes réponses aux questions de ce thème, depuis le début.\n\nExemple : 78 % = 78 bonnes réponses sur 100.']
     };
     const [title, text] = T[kind];
@@ -1869,7 +1868,7 @@ function renderEncyclopedia(box) {
     fill.style.width = `${total ? Math.max(known ? 1 : 0, Math.round(known / total * 100)) : 0}%`;
     bar.append(fill);
     const sub = el('p', 'enc-sub');
-    sub.textContent = `${fmtNum(known)} sur ${fmtNum(total)}${week ? ` · +${fmtNum(week)} cette semaine` : ''}`;
+    sub.textContent = `${fmtNum(known)} question${known > 1 ? 's' : ''} sue${known > 1 ? 's' : ''} sur ${fmtNum(total)}${week ? ` · +${fmtNum(week)} cette semaine` : ''}`;
     box.append(head, bar, sub);
 
     if (recent.length) {
@@ -1903,7 +1902,8 @@ function renderEncyclopedia(box) {
         const cnt = el('span', 'enc-book-n');
         const kn = el('b');
         kn.textContent = fmtNum(b.known);
-        cnt.append(kn, document.createTextNode(` / ${fmtNum(b.total)} savoirs`));   // le mot dit ce que compte le x / y (et la barre juste dessous)
+        cnt.append(kn, document.createTextNode(` / ${fmtNum(b.total)}`), el('i'));
+        cnt.lastChild.textContent = b.known > 1 ? 'questions sues' : 'question sue';   // le mot dit ce que compte le x / y (et la barre juste dessous)
         const m = el('small');
         m.textContent = `✨ ${b.mastered} maîtrisé${b.mastered > 1 ? 's' : ''}`;
         const r = el('small');
@@ -1933,7 +1933,7 @@ function openEncBook(theme, keep = false) {
     fill.style.width = `${Math.round(book.known / book.total * 100)}%`;
     bar.append(fill);
     const tiles = el('div', 'enc-tiles');
-    [[fmtNum(book.known), `savoir${book.known > 1 ? 's' : ''} sur ${fmtNum(book.total)}`, '', 'known'],
+    [[fmtNum(book.known), `sue${book.known > 1 ? 's' : ''} sur ${fmtNum(book.total)}`, '', 'known'],
      [`✨ ${book.mastered}`, `maîtrisé${book.mastered > 1 ? 's' : ''}`, 'is-gold', 'mastered'],
      [book.tries ? `${Math.round(book.right / book.tries * 100)} %` : '–', 'de réussite', 'is-ok', 'rate']].forEach(([v, l, cls, kind]) => {
         const d = el('div', cls);

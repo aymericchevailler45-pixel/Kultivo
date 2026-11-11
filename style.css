@@ -4083,3 +4083,20 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-tip { cursor: pointer; }
 .enc-tip:active { transform: translateY(1px); opacity: 0.8; }
 .enc-mchip.enc-tip::after, .enc-tiles .enc-tip span::after { content: " ⓘ"; opacity: 0.6; }
+/* 12/11 : livres en teinte douce (les blocs de couleur vive tranchaient avec le reste du jeu) */
+.enc-emo { line-height: 1; }
+.enc-book { color: var(--ink); border: 2px solid color-mix(in srgb, var(--c) 30%, var(--line));
+    background: color-mix(in srgb, var(--c) 9%, var(--surface));
+    box-shadow: inset 7px 0 0 var(--c), 0 3px 0 color-mix(in srgb, var(--c) 30%, var(--line)); padding-left: 16px; }
+.enc-book:active { box-shadow: inset 7px 0 0 var(--c); }
+.enc-book.is-full { box-shadow: inset 7px 0 0 var(--c), 0 0 0 3px var(--gold), 0 3px 0 var(--gold-deep); }
+.enc-book > b { color: color-mix(in srgb, var(--c) 70%, var(--ink)); }
+.enc-book small { color: var(--muted); opacity: 1; }
+.enc-book-ic { background: color-mix(in srgb, var(--c) 16%, var(--surface)); box-shadow: none; }
+.enc-book-ic .enc-emo { font-size: 1.35rem; }
+.enc-book-bar { background: color-mix(in srgb, var(--c) 16%, var(--line)); }
+.enc-book-bar i { background: var(--c); }
+.enc-row-ic .enc-emo { font-size: 1.3rem; }
+.enc-book-n i { display: block; margin-top: -1px; color: var(--muted); font-size: 0.72rem; font-style: normal; font-weight: 800; }
+:root[data-theme="dark"] .enc-book > b { color: color-mix(in srgb, var(--c) 45%, var(--ink)); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .enc-book > b { color: color-mix(in srgb, var(--c) 45%, var(--ink)); } }
