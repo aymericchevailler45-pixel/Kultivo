@@ -12327,7 +12327,19 @@ function buildHalloweenExtras() {
 
 /** Bac à sable : pastille 🧪 toujours visible (menu : +1 000 🪙, recommencer, quitter) et quelques faux amis. */
 function initBac() {
-    if (!BAC) return;
+    if (!BAC) {   // 12/11 : entrée cachée DANS l'appli installée (même mémoire que le vrai jeu → la copie de la partie marche) : 5 taps rapides sur le logo
+        const logo = document.querySelector('.brand');
+        let taps = [];
+        logo?.addEventListener('click', async () => {
+            const now = Date.now();
+            taps = taps.filter(t => now - t < 2500).concat(now);
+            if (taps.length < 5) return;
+            taps = [];
+            if (await askConfirm({ title: '🧪 Bac à sable', text: 'Ouvrir le bac à sable ? C’est une copie de ta partie : rien n’y est envoyé en ligne et ton vrai jeu ne change pas.', yes: 'Ouvrir', no: 'Annuler' }))
+                location.href = `${location.pathname}?bac=1`;
+        });
+        return;
+    }
     const pill = el('button', 'bac-pill');
     pill.type = 'button';
     pill.textContent = '🧪';
@@ -12362,8 +12374,10 @@ function initBac() {
         if (coll) { celebrate(() => showCollectionAnim('Histoire', see => { if (see) { showScreen('profile'); setProfileTab('cards'); } })); return; }
         const hopIt = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir Kulti ouvrir le niveau suivant (comme après un niveau réussi) ?', yes: 'Voir Kulti', no: 'Plus d’options' });
         if (hopIt) { showScreen('map'); setTimeout(() => playKultiHop(Math.min(state.data.unlocked, MAX_LEVEL) - 1, Math.min(state.data.unlocked, MAX_LEVEL)), 400); return; }
-        const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Fermer' });
-        if (reset) { try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* tant pis */ } location.reload(); }
+        const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Plus d’options' });
+        if (reset) { try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* tant pis */ } location.reload(); return; }
+        const leave = await askConfirm({ title: '🧪 Bac à sable', text: 'Revenir au vrai jeu ? (ta copie du bac à sable est gardée)', yes: 'Revenir au vrai jeu', no: 'Fermer' });
+        if (leave) location.href = location.pathname;
     });
     document.body.append(pill);
     // Faux amis, pour voir les cadres et les fonds chez les autres

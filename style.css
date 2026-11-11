@@ -2258,7 +2258,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .auth-input.is-good { border-color: var(--green); }
 .pseudo-msg { min-height: 1.3em; margin: 0; color: var(--muted); font-size: 0.88rem; font-weight: 700; }
 .pseudo-msg.is-bad  { color: var(--red-ink); }
-.pseudo-msg.is-good { color: var(--green-ink); }
+.pseudo-msg.is-good { color: var(--ok-ink); }
 .onboard-body .pseudo-field { max-width: 420px; margin: 8px auto 0; }
 
 /* Classement redessiné : en-tête, podium (2e · 1er · 3e), liste avec barres, avatars colorés */
@@ -2385,7 +2385,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .review-media { display: flex; gap: 4px; margin-top: 6px; }
 .review-media img { height: 44px; width: auto; max-width: 100%; border-radius: 4px; }
 .review-media .emoji-img { height: 32px; }
-.review-a { margin-top: 4px; font-size: 0.85rem; font-weight: 800; color: var(--green-ink, #2b7a0b); }
+.review-a { margin-top: 4px; font-size: 0.85rem; font-weight: 800; color: var(--ok-ink, #2b7a0b); }   /* 12/11 : bonne réponse = vert de réussite */
 .review-me { margin-top: 2px; font-size: 0.8rem; font-weight: 700; color: var(--red-ink); }
 .review-friends { margin-top: 4px; font-size: 0.8rem; font-weight: 700; color: var(--muted); }
 .daily-friends-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -3180,7 +3180,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .vitrine-look-text small { color: var(--muted); font-weight: 800; font-size: 0.8rem; }
 .vitrine-look-text .vitrine-all { margin-top: 4px; padding: 8px 14px; font-size: 0.95rem; }
 .vitrine-look-text .vitrine-was { text-decoration: line-through; }
-.vitrine-look-text .vitrine-done { color: var(--green-ink); }
+.vitrine-look-text .vitrine-done { color: var(--ok-ink); }
 
 /* Défis : 3 onglets (avec l'événement) sur une seule ligne, comme quand il n'y en avait que 2 (2026-10-25) */
 .challenges-tab { white-space: nowrap; }
@@ -3206,7 +3206,7 @@ body.event-halloween .challenges-tab[data-sub="event"] { color: var(--r-event); 
 .node.is-locked { font-size: 1.6rem; }
 .node.is-locked .node-num { color: var(--muted); }
 /* Entraînement : palier du jour déjà gagné */
-.train-today { display: block; margin-top: 4px; font-size: 0.75rem; font-weight: 900; color: var(--green-ink); }
+.train-today { display: block; margin-top: 4px; font-size: 0.75rem; font-weight: 900; color: var(--ok-ink); }
 
 /* Coup de pouce des frises et des paires (2026-10-25) */
 .nudge-btn { align-self: center; padding: 8px 16px; font-size: 0.9rem; }
@@ -3892,12 +3892,12 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 #hintBtn { justify-content: center; gap: 0; }   /* 11/11 : le 💡 de la leçon reste centré */
 .btn-hint .hint-name { min-width: 0; }
 .hint-tag { flex: none; padding: 3px 9px; border-radius: 999px; font-size: 0.82rem; font-weight: 900; white-space: nowrap; }
-.hint-tag.is-stock { background: color-mix(in srgb, var(--green) 22%, var(--surface)); color: var(--green-ink); }
+.hint-tag.is-stock { background: color-mix(in srgb, var(--ok) 22%, var(--surface)); color: var(--ok-ink); }
 .hint-tag.is-price { background: color-mix(in srgb, #ffc800 30%, var(--surface)); color: #8a5a00; }
 .hint-tag.is-used { background: var(--bg); color: var(--muted); }
 .end-rescue-info { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
 .rescue-chip { padding: 4px 10px; border-radius: 999px; background: var(--bg); font-size: 0.85rem; font-weight: 900; color: var(--ink); }
-.rescue-chip.is-good { background: color-mix(in srgb, var(--green) 22%, var(--surface)); color: var(--green-ink); }
+.rescue-chip.is-good { background: color-mix(in srgb, var(--ok) 22%, var(--surface)); color: var(--ok-ink); }
 .rescue-chip.is-warn { background: color-mix(in srgb, #ffc800 30%, var(--surface)); color: #8a5a00; }
 .end-extra.is-chips { display: flex; flex-direction: column; align-items: center; gap: 6px; white-space: normal; }
 .end-chip { padding: 5px 12px; border-radius: 14px; background: var(--bg); font-size: 0.88rem; font-weight: 800; color: var(--ink); text-align: center; }
