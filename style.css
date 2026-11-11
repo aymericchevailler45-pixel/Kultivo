@@ -1071,7 +1071,9 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .drops-row .is-off { filter: grayscale(1); opacity: 0.3; }
 .drops-timer { font-weight: 800; color: var(--blue-ink); margin: 4px 0; }
 #dropsModal .btn-full { font-size: 1.05rem; padding: 14px; margin-top: 8px; }
-.drops-earn { margin: 10px 0 2px; font-weight: 800; color: var(--blue-ink); }
+.drops-earn { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; padding: 10px 12px; border-radius: 14px; text-align: left;
+    background: color-mix(in srgb, var(--blue-ink) 12%, var(--surface)); color: var(--ink); font-weight: 800; font-size: 0.88rem; line-height: 1.25; }
+.drops-earn-n { flex: none; font-size: 1.5rem; font-weight: 900; color: var(--blue-ink); white-space: nowrap; }
 #dropsText { margin: 6px 0 0; font-size: 0.92rem; }
 /* Fenêtre de départ : ce que coûte le niveau */
 .modal-content p.modal-cost {   /* (sinon la règle des paragraphes de fenêtre retire le centrage) */
@@ -3861,3 +3863,8 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 .sh-spark { grid-area: 1 / 1; z-index: 4; font-style: normal; font-size: 1.3rem; pointer-events: none; animation: shSparkOut 0.9s ease-out forwards; }
 @keyframes shSparkOut { 0% { opacity: 1; transform: translate(0, 0) scale(0.4); } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.2); } }
 @media (prefers-reduced-motion: reduce) { .shiny-stage .kcard, .shiny-halo, .shiny-flash, .sh-spark { animation: none !important; } .sh-spark { display: none; } }
+
+/* Boutique : ce qu'on possède en pastille sous le nom (11/11) */
+.shop-line .sl-text .sl-chip { display: inline-block; margin: 3px 0 4px; padding: 2px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 900;
+    background: color-mix(in srgb, var(--violet) 16%, var(--surface)); color: var(--violet-ink, var(--violet)); }
+.shop-line .sl-text .sl-chip.is-zero { background: var(--bg); color: var(--muted); }

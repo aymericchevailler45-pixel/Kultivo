@@ -3097,9 +3097,15 @@ function openDropsModal() {
         $('dropsText').textContent = '1 goutte par nouveau niveau · +1 par heure';
         const practice = n < DROPS_MAX && left > 0;
         $('dropsEarn').hidden = n >= DROPS_MAX;
-        $('dropsEarn').textContent = left > 0
-            ? `🎁 Réussis une révision ou un entraînement : +1 💧 (encore ${plural(left, 'fois', 'fois')} aujourd’hui)`
-            : `✅ Tes ${DROPS_PRACTICE_DAY} gouttes bonus du jour sont gagnées.`;
+        // 11/11 : encadré bien visible avec le nombre de gouttes bonus encore possibles aujourd'hui
+        const earn = $('dropsEarn');
+        earn.replaceChildren();
+        const big = el('b', 'drops-earn-n');
+        big.textContent = left > 0 ? `${left} / ${DROPS_PRACTICE_DAY}` : '✅';
+        const txt = el('span');
+        txt.textContent = left > 0 ? `gouttes bonus encore possibles aujourd’hui : +1 💧 par révision ou entraînement réussi`
+            : `Tes ${DROPS_PRACTICE_DAY} gouttes bonus du jour sont gagnées.`;
+        earn.append(big, txt);
         $('dropsTrainBtn').hidden = !practice;
         $('dropsReviewBtn').hidden = !practice || missedCards().length === 0;
         $('dropsRefillBtn').hidden = n >= DROPS_MAX;
@@ -5596,7 +5602,7 @@ function renderShopV2() {
     // 2) Coffre de cartes
     const owned = CARDS.filter(c => d.cards[c.id]).length;
     const chestCard = el('article', 'card shop-lines');
-    const line = (icon, title, sub, buttons) => {
+    const line = (icon, title, sub, buttons, chip = null) => {
         const l = el('div', 'shop-line');
         const ic = el('span', 'sl-icon');
         ic.textContent = icon;
@@ -5605,7 +5611,13 @@ function renderShopV2() {
         b.textContent = title;
         const sm = el('small');
         sm.textContent = sub;
-        tx.append(b, sm);
+        tx.append(b);
+        if (chip) {   // 11/11 : ce qu'on possède, bien visible (avant : noyé dans la description)
+            const c = el('span', `sl-chip${chip.zero ? ' is-zero' : ''}`);
+            c.textContent = chip.text;
+            tx.append(c);
+        }
+        tx.append(sm);
         const bt = el('span', 'sl-btns');
         buttons.forEach(x => bt.append(x));
         l.append(ic, tx, bt);
@@ -5619,7 +5631,7 @@ function renderShopV2() {
         b.addEventListener('click', onClick);
         return b;
     };
-    chestCard.append(line('🎁', 'Coffre de cartes', `${SHOP_CHEST.size} cartes, dont au moins une rare · collection ${owned}/${CARDS.length}`,
+    chestCard.append(line('🎁', 'Coffre de cartes', `${SHOP_CHEST.size} cartes, dont au moins une rare`,
         [mkBtn(`${SHOP_CHEST.price} 🪙`, 'btn-green', d.coins < SHOP_CHEST.price, async () => {
             if (!(await askBuy('Coffre de cartes', SHOP_CHEST.price, `${SHOP_CHEST.size} cartes, dont au moins une rare.`))) return;
             if (state.data.coins < SHOP_CHEST.price) return;
@@ -5627,7 +5639,7 @@ function renderShopV2() {
             openCardBoxes([{ size: SHOP_CHEST.size, rare: true }], '🎁 Coffre de cartes');
             renderHeader();
             renderShop();
-        })]));
+        })], { text: `🃏 ${owned} / ${CARDS.length} cartes` }));
     grid.append(chestCard);
 
     // 3) Objets utiles
@@ -5645,12 +5657,12 @@ function renderShopV2() {
         if (!item.max) buttons.push(mkBtn(`×${PACK_SIZE} · ${item.price * (PACK_SIZE - 1)} 🪙`, 'btn-violet', d.coins < item.price * (PACK_SIZE - 1), async () => {
             if (await askBuy(`${item.name} ×${PACK_SIZE}`, item.price * (PACK_SIZE - 1), `${PACK_SIZE} pour le prix de ${PACK_SIZE - 1}.`)) buyItem(item.id, PACK_SIZE);
         }));
-        tools.append(line(item.icon, item.name, `${item.desc.replace(/\.$/, '')} · ${item.max ? `${have}/${item.max}` : `en stock : ${have}`}`, buttons));
+        tools.append(line(item.icon, item.name, item.desc, buttons, { text: item.max ? `🎒 ${have} / ${item.max}` : `🎒 ${have} en stock`, zero: !have }));
     });
-    tools.append(line('💧', 'Recharge de gouttes', `Toutes tes gouttes d’un coup · ${d.drops}/${DROPS_MAX}`,
+    tools.append(line('💧', 'Recharge de gouttes', 'Toutes tes gouttes d’un coup.',
         [mkBtn(d.drops >= DROPS_MAX ? 'Plein' : `${DROPS_REFILL_PRICE} 🪙`, 'btn-green', d.drops >= DROPS_MAX || d.coins < DROPS_REFILL_PRICE, async () => {
             if (await askBuy('Recharge de gouttes', DROPS_REFILL_PRICE, `Toutes tes gouttes d’un coup (${DROPS_MAX}).`) && refillDrops()) renderShop();
-        })]));
+        })], { text: `💧 ${d.drops} / ${DROPS_MAX}`, zero: !d.drops }));
     grid.append(tools);
 }
 
