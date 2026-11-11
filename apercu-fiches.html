@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kultivo · aperçu Fiches de savoir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #eef3f8; --surface: #fff; --ink: #1b2745; --muted: #66728f; --line: #d9e1ec;
+    --blue: #3d8bff; --blue-deep: #2266d6; --violet-ink: #5230a8;
+    --ok: #4fc72c; --ok-tint: #dcf6d2; --ok-ink: #2a6b14;
+    --gold: #ffbe2e; --gold-deep: #d99a0b; --gold-tint: #fff4d6; --gold-ink: #8a5a00;
+    --c: #92400e;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #dfe6f0; color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 700; }
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; }
+.lead { margin: 0 0 22px; color: var(--muted); max-width: 760px; line-height: 1.45; }
+h2 { margin: 34px 0 10px; font-size: 1.25rem; font-weight: 900; }
+.note { max-width: 760px; line-height: 1.5; margin: 0 0 14px; }
+.phones { display: flex; flex-wrap: wrap; gap: 26px; align-items: flex-start; }
+.phone-wrap { display: flex; flex-direction: column; gap: 8px; width: 340px; max-width: 100%; }
+.phone-wrap > b { font-size: 1rem; font-weight: 900; }
+.phone-wrap > span { color: var(--muted); font-size: .9rem; line-height: 1.35; }
+.phone { position: relative; width: 340px; max-width: 100%; height: 680px; overflow: hidden; border-radius: 34px; border: 8px solid #1b2745;
+    background: rgba(27, 39, 69, .45); box-shadow: 0 18px 40px rgba(27, 39, 69, .25); }
+.sheet { position: absolute; inset: 14px 10px; border-radius: 24px; background: var(--surface); padding: 16px 14px; overflow: hidden; display: flex; flex-direction: column; }
+.x { position: absolute; top: 12px; right: 14px; color: var(--muted); font-size: 1.3rem; }
+.back { color: var(--violet-ink); font-weight: 900; height: 28px; display: flex; align-items: center; }
+.ttl { display: flex; align-items: center; gap: 8px; font-size: 1.5rem; font-weight: 900; margin: 4px 0 8px; }
+.bar { height: 8px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 24%; background: var(--c); }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 10px 0 8px; padding: 8px 10px; border-radius: 14px; background: var(--bg); font-size: .85rem; font-weight: 900; }
+.tg { width: 40px; height: 24px; border-radius: 999px; background: var(--line); position: relative; flex: none; }
+.tg::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.tg.on { background: var(--blue); }
+.tg.on::after { left: 19px; }
+.list { display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
+.row { display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 14px; background: var(--bg); }
+.ic { flex: none; width: 34px; height: 34px; border-radius: 10px; background: var(--surface); display: grid; place-items: center; font-size: 1.2rem; }
+.tx { flex: 1; min-width: 0; font-size: .8rem; line-height: 1.25; font-weight: 800; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tx.old b { display: block; font-size: .92rem; font-weight: 900; }
+.tx.old small { display: block; color: var(--muted); font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pill { flex: none; max-width: 112px; padding: 4px 9px; border-radius: 999px; background: var(--gold-tint); color: var(--gold-ink); border: 1.5px solid #f3d27a;
+    font-size: .76rem; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hide { color: transparent !important; background: repeating-linear-gradient(-45deg, #f6dfa0 0 6px, #fbe9b9 6px 12px); border-color: #f0cf73; position: relative; }
+.hide::after { content: "👆"; position: absolute; inset: 0; display: grid; place-items: center; color: initial; font-size: .8rem; }
+.pill.hide { min-width: 70px; }
+.card { flex: 1; margin-top: 8px; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--c) 30%, var(--line)); padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.chead { display: flex; justify-content: space-between; align-items: center; font-size: .72rem; font-weight: 900; letter-spacing: .05em; }
+.chip { white-space: nowrap; padding: 3px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 14%, #fff); color: var(--c); }
+.chip.m { background: var(--gold-tint); color: var(--gold-ink); }
+.q { font-size: 1.12rem; font-weight: 900; line-height: 1.3; }
+.key { padding: 12px 14px; border-radius: 16px; background: var(--gold-tint); border: 2px solid #f3d27a; }
+.key em { display: block; font-style: normal; font-size: .68rem; font-weight: 900; letter-spacing: .05em; color: var(--gold-ink); }
+.key b { display: block; font-size: 1.5rem; font-weight: 900; margin-top: 2px; }
+.key small { display: block; color: var(--muted); font-size: .78rem; }
+.key.hide b, .key.hide small { visibility: hidden; }
+.key.hide em { visibility: hidden; }
+.key.hide::after { font-size: 1rem; content: "👆 Touche pour vérifier"; font-weight: 900; color: var(--gold-ink); }
+.sv { padding: 10px 12px; border-radius: 14px; background: var(--bg); font-size: .88rem; line-height: 1.35; }
+.sv em { display: block; font-style: normal; font-size: .68rem; font-weight: 900; letter-spacing: .05em; color: var(--muted); margin-bottom: 2px; }
+.flag { display: block; margin: 0 auto; width: 120px; height: 84px; border-radius: 6px; background: #009b3a; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.flag::before { content: ""; position: absolute; inset: 12px 14px; background: #fedf00; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.flag::after { content: ""; position: absolute; left: 41px; top: 23px; width: 38px; height: 38px; border-radius: 50%; background: #002776; }
+.date { color: var(--ok-ink); font-size: .74rem; font-weight: 900; }
+.nav { display: flex; justify-content: space-between; color: var(--blue-deep); font-weight: 900; font-size: .82rem; padding-top: 10px; }
+.nav span { color: var(--muted); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: .75rem; font-weight: 900; margin-right: 6px; }
+.tag.now { background: #e6e9ef; color: var(--muted); }
+.tag.new { background: #dcf6d2; color: var(--ok-ink); }
+ul { margin: 6px 0 0; padding-left: 20px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>📚 Aperçu : les « fiches de savoir »</h1>
+<p class="lead">Ce que je propose pour l'Encyclopédie (exemples de questions du jeu). On garde ce qui existe (question, réponses, « Le savais-tu ? ») : rien à réécrire.
+Une fiche = une question réussie.</p>
+
+<h2>1. La liste d'un livre</h2>
+<p class="note">Aujourd'hui, la réponse est en gros titre : « 10 », « Au », « 2019 » ne veulent rien dire tout seuls.
+Proposé : la <b>question</b> devient le titre, et la <b>réponse</b> passe à droite dans une pastille dorée.</p>
+<div class="phones">
+  <div class="phone-wrap"><b><span class="tag now">Aujourd'hui</span></b><span>La réponse d'abord, la question en petit en dessous.</span>
+    <div class="phone"><div class="sheet">
+      <span class="x">✕</span>
+      <div class="ttl">🏃 Sport</div><div class="bar" style="--c:#65a30d"><i style="background:#65a30d"></i></div>
+      <div class="list" style="margin-top:12px">
+        <div class="row"><span class="ic">🏃</span><span class="tx old"><b>10</b><small>Dans les compétitions d'athlétisme, combien d'épreuves…</small></span><span>✨</span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx old"><b>42,195 km</b><small>Quelle est la distance officielle d'un marathon ?</small></span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx old"><b>Usain Bolt</b><small>Qui détient le record du monde du 100 m ?</small></span><span>✨</span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx old"><b>Roland-Garros</b><small>Quel tournoi du Grand Chelem se joue sur terre battue ?</small></span></div>
+      </div>
+    </div></div>
+  </div>
+  <div class="phone-wrap"><b><span class="tag new">Proposé</span></b><span>La question en titre (2 lignes), la réponse dorée à droite. ✨ = maîtrisée.</span>
+    <div class="phone"><div class="sheet">
+      <span class="x">✕</span>
+      <div class="ttl">🏃 Sport</div><div class="bar" style="--c:#65a30d"><i style="background:#65a30d"></i></div>
+      <div class="switch">🙈 Masquer les réponses <span class="tg"></span></div>
+      <div class="list">
+        <div class="row"><span class="ic">🏃</span><span class="tx">Combien d'épreuves différentes composent le décathlon masculin ?</span><span class="pill">✨ 10</span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx">Quelle est la distance officielle d'un marathon ?</span><span class="pill">42,195 km</span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx">Qui détient le record du monde du 100 m ?</span><span class="pill">✨ Usain Bolt</span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx">Quel tournoi du Grand Chelem se joue sur terre battue ?</span><span class="pill">Roland-Garros</span></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<h2>2. La fiche ouverte</h2>
+<p class="note">Une seule carte, sans « La question / La réponse » : en haut le thème et ✨ Maîtrisé, la question en titre,
+la réponse dans un encadré doré 🔑 (avec les autres façons de l'écrire), puis « 💡 À retenir » (le « Le savais-tu ? » d'aujourd'hui).
+On balaie pour passer d'une fiche à l'autre. Le bouton « Me la reposer » (et le clavier) disparaît.</p>
+<div class="phones">
+  <div class="phone-wrap"><b><span class="tag new">Proposé</span> Histoire</b><span>Question en titre, réponse dans l'encadré doré.</span>
+    <div class="phone"><div class="sheet">
+      <span class="back">← Histoire</span><span class="x">✕</span>
+      <div class="card">
+        <div class="chead"><span class="chip">📜 HISTOIRE</span><span class="chip m">✨ MAÎTRISÉ</span></div>
+        <div class="q">Quel jour de 1945 célèbre-t-on la victoire de la Seconde Guerre mondiale en Europe ?</div>
+        <div class="key"><em>🔑 LA RÉPONSE</em><b>Le 8 mai 1945</b><small>aussi : 8 mai</small></div>
+        <div class="sv"><em>💡 À RETENIR</em>Jour férié en France.</div>
+        <div class="date">✓ Découvert le 5 nov.</div>
+      </div>
+      <div class="nav">‹ Précédent <span>1 / 107</span> Suivant ›</div>
+    </div></div>
+  </div>
+  <div class="phone-wrap"><b><span class="tag new">Proposé</span> Sciences</b><span>« Au » seul ne voulait rien dire : ici la question est juste au-dessus.</span>
+    <div class="phone"><div class="sheet" style="--c:#0891b2">
+      <span class="back">← Sciences</span><span class="x">✕</span>
+      <div class="card">
+        <div class="chead"><span class="chip">🔬 SCIENCES</span><span class="chip m" style="background:#eef0f4;color:#66728f">À MAÎTRISER</span></div>
+        <div class="q">Quel est le symbole chimique de l'or ?</div>
+        <div class="key"><em>🔑 LA RÉPONSE</em><b>Au</b></div>
+        <div class="sv"><em>💡 À RETENIR</em>Il vient du latin « aurum ».</div>
+        <div class="date">✓ Découvert le 3 nov.</div>
+      </div>
+      <div class="nav">‹ Précédent <span>12 / 88</span> Suivant ›</div>
+    </div></div>
+  </div>
+  <div class="phone-wrap"><b><span class="tag new">Proposé</span> Drapeaux</b><span>Avec une image (drapeau, photo, rébus), elle se met en haut de la carte.</span>
+    <div class="phone"><div class="sheet" style="--c:#ea580c">
+      <span class="back">← Drapeaux</span><span class="x">✕</span>
+      <div class="card">
+        <div class="chead"><span class="chip">🚩 DRAPEAUX</span><span class="chip m">✨ MAÎTRISÉ</span></div>
+        <span class="flag"></span>
+        <div class="q">Combien d'étoiles compte le drapeau du Brésil ?</div>
+        <div class="key"><em>🔑 LA RÉPONSE</em><b>27</b></div>
+        <div class="sv"><em>💡 À RETENIR</em>Une par État, plus le district fédéral, dans le ciel de Rio du 15 novembre 1889.</div>
+      </div>
+      <div class="nav">‹ Précédent <span>2 / 58</span> Suivant ›</div>
+    </div></div>
+  </div>
+</div>
+
+<h2>3. Le mode « 🙈 Masquer les réponses » (révision)</h2>
+<p class="note">Un interrupteur en haut du livre. Allumé : toutes les réponses dorées sont cachées (rayures). <b>Un tap sur une réponse la dévoile</b>,
+pour voir si on s'en souvenait. Pas de clavier, pas de « Vérifier », rien d'enregistré. Le réglage reste d'une fois sur l'autre.</p>
+<div class="phones">
+  <div class="phone-wrap"><b>Liste, réponses cachées</b><span>On lit la question, on cherche dans sa tête, on touche la pastille. Ici, la 2e a été touchée.</span>
+    <div class="phone"><div class="sheet">
+      <span class="x">✕</span>
+      <div class="ttl">🏃 Sport</div><div class="bar" style="--c:#65a30d"><i style="background:#65a30d"></i></div>
+      <div class="switch">🙈 Masquer les réponses <span class="tg on"></span></div>
+      <div class="list">
+        <div class="row"><span class="ic">🏃</span><span class="tx">Combien d'épreuves différentes composent le décathlon masculin ?</span><span class="pill hide">✨ 10</span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx">Quelle est la distance officielle d'un marathon ?</span><span class="pill">42,195 km</span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx">Qui détient le record du monde du 100 m ?</span><span class="pill hide">Usain Bolt</span></div>
+        <div class="row"><span class="ic">🏃</span><span class="tx">Quel tournoi du Grand Chelem se joue sur terre battue ?</span><span class="pill hide">Roland-Garros</span></div>
+      </div>
+    </div></div>
+  </div>
+  <div class="phone-wrap"><b>Fiche, réponse cachée</b><span>L'encadré doré est caché (et « À retenir » aussi, il donne souvent la réponse). Un tap = tout s'affiche.</span>
+    <div class="phone"><div class="sheet">
+      <span class="back">← Histoire</span><span class="x">✕</span>
+      <div class="card">
+        <div class="chead"><span class="chip">📜 HISTOIRE</span><span class="chip m">✨ MAÎTRISÉ</span></div>
+        <div class="q">Quel jour de 1945 célèbre-t-on la victoire de la Seconde Guerre mondiale en Europe ?</div>
+        <div class="key hide"><em>🔑 LA RÉPONSE</em><b>Le 8 mai 1945</b><small>aussi : 8 mai</small></div>
+        <div class="sv" style="filter:blur(6px)"><em>💡 À RETENIR</em>Jour férié en France.</div>
+      </div>
+      <div class="nav">‹ Précédent <span>1 / 107</span> Suivant ›</div>
+    </div></div>
+  </div>
+</div>
+
+<h2>Ce qui change, en résumé</h2>
+<ul class="note">
+  <li>Liste : la question en titre, la réponse dans une pastille dorée à droite.</li>
+  <li>Fiche : une seule carte (thème, ✨, question, 🔑 réponse, 💡 à retenir), sans le « niveau ».</li>
+  <li>« Me la reposer » (avec le clavier) est remplacé par « 🙈 Masquer les réponses » + un tap pour dévoiler.</li>
+  <li>Plus tard, si tu veux : de vrais titres (« Le symbole de l'or ») pour quelques centaines de questions, montrés quand ils existent.</li>
+</ul>
+</div>
+</body>
+</html>
