@@ -325,7 +325,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   5 oui en GARDANT la roulette des chiffres. FAIT dans le bac à sable (bloc « Style à nous » en fin de style.css, `.fb-kulti`,
   `placeProgressRider`, `drawMapTrail`, `.streak-flame`, `.streak-kulti`).
   Quête entre duo : partenaire en ORANGE #ff9600 dans le bac à sable (toi = bleu principal).
-  POUR TOUT LE MONDE : recopier le bloc dans :root / mode sombre, poser la classe toujours (ou retirer les conditions), + icônes PNG
+  EN LIGNE POUR TOUS le 12/11 (v=20261112b, kultivo-v123) : la classe pal-elec est posée TOUJOURS par index.html (sauf ?bac=1 avec un autre ?pal=) ; icônes PNG bleues (rendu Edge de logo-bleu.svg carré + resize.py), manifest et meta theme-color #3d8bff, logos du <img> = logo-bleu.svg. Le vert d origine reste dans :root (inutilisé). Barre des paliers idée E : toujours bac à sable seulement. ENSUITE (gardés en tête, demande du 12/11) : 2) personnalité de Kulti (phrases, ton, garde-robe) ; 3) fonction unique (Encyclopédie des savoirs ou Qui suis-je ?).
+  ANCIEN PLAN : recopier le bloc dans :root / mode sombre, poser la classe toujours (ou retirer les conditions), + icônes PNG
   (icon-192, 512, favicon, apple-touch : rendu Edge + Python), manifest theme_color / background_color, meta theme-color. couleur de RÉUSSITE séparée
   (`--ok`, `--ok-deep`, `--ok-tint`, `--ok-ink`, `.btn-ok` : bandeau de bonne réponse, champ, paires, frises, ✓) = le vert pour l'instant ;
   essai « azur3ok » = azur + vert émeraude #1fb86b pour les bonnes réponses. EN ATTENTE du choix. Au passage il faudra :
