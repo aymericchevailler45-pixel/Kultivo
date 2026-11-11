@@ -3891,3 +3891,6 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 .end-extra.is-chips { display: flex; flex-direction: column; align-items: center; gap: 6px; white-space: normal; }
 .end-chip { padding: 5px 12px; border-radius: 14px; background: var(--bg); font-size: 0.88rem; font-weight: 800; color: var(--ink); text-align: center; }
 .end-chip.is-coins { background: color-mix(in srgb, #ffc800 30%, var(--surface)); color: #8a5a00; font-size: 1.05rem; font-weight: 900; border-radius: 999px; }
+
+/* 11/11 : petit espace entre la rangée de badges et la description (une règle plus forte remettait la marge à 0) */
+section.bdf p.bdf-detail { margin-top: 10px; }
