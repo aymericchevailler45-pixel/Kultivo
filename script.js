@@ -4641,6 +4641,7 @@ function closeChest() {
     state.chest = null;
     $('chestModal').hidden = true;
     $('closeChestBtn').hidden = false;
+    $('chestBtn').hidden = false;
     if (chestBack) { const back = chestBack; chestBack = null; back(); return; }
     if (wasChest && state.chestAvItem) { const it = state.chestAvItem; state.chestAvItem = null; setTimeout(() => avFound(it), 250); }
     if (wasChest) {
@@ -4770,7 +4771,7 @@ function openBadgeView(badge, onBack = null) {
 /** 3e exemplaire : la carte se charge (elle tremble et brille), puis prend son apparence brillante. */
 /* Carte qui devient brillante (11/11, choix A sur apercu-brillante.html, sans la pastille « Brillante ») : les 3 exemplaires
    arrivent en éventail, se rejoignent au centre, la carte tremble, éclair blanc, elle ressort brillante avec un halo
-   arc-en-ciel et des ✨. Un tap (ou le bouton) : directement la fin. */
+   arc-en-ciel et des ✨. ~2,2 s, IMPOSSIBLE à sauter (11/11) : ni bouton, ni ✕, ni retour avant la fin. */
 function revealShiny(card) {
     state.chest = null;
     chestBack = null;
@@ -4787,7 +4788,8 @@ function revealShiny(card) {
     stage.replaceChildren(box);
     $('chestNote').textContent = 'Ta carte se transforme…';
     $('chestBtn').textContent = 'Super !';
-    $('closeChestBtn').hidden = false;   // vue d'une carte / d'un badge : ✕ visible
+    $('chestBtn').hidden = true;        // rien pour fermer pendant l'animation
+    $('closeChestBtn').hidden = true;
     $('chestModal').hidden = false;
     const sfx = fn => { if (state.data.sound) try { fn(); } catch (err) { /* pas de son */ } };
     sfx(() => [0, 0.1, 0.2].forEach((d, i) => { synthNoise(d, 0.35, 0.15, 500, 0.7, 3000); synthTone(660 + i * 220, d + 0.3, 0.2, 'triangle', 0.07); }));
@@ -4808,6 +4810,8 @@ function revealShiny(card) {
         done = true;
         timers.forEach(clearTimeout);
         state.chest = null;   // le prochain tap sur le bouton ferme la fenêtre
+        $('chestBtn').hidden = false;
+        $('closeChestBtn').hidden = false;
         state.data.shinyCards[card.id] = Date.now();
         saveData();
         const shiny = cardFace(card, true, true);
@@ -4831,8 +4835,7 @@ function revealShiny(card) {
         checkBadges();   // « Tout brille » ?
     };
     timers.push(setTimeout(finish, 2200));
-    box.addEventListener('click', finish);
-    state.chest = { results: [], step: 0, finish };   // un tap sur le bouton pendant l'animation la termine
+    state.chest = { results: [], step: 0, finish: null, shiny: true };   // en cours : le retour du téléphone ne ferme pas
 }
 
 /** Carte Maître pas encore gagnée : comment l'obtenir. */
