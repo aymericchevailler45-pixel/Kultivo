@@ -1776,9 +1776,10 @@ function profileThemeStats() {
    Profil → onglet « 📚 Savoirs » (à la place de « Thèmes ») ; livre = un thème ; fiche = réponse, question, explication, image ;
    « Me la reposer » = petite question dans la fiche, pour le plaisir (rien n'est enregistré). Pas de « à revoir » (choix 12/11). */
 const ENC_ON = BAC;
-const ENC_COLORS = { 'Arts': '#d9468f', 'Cinéma': '#e5484d', 'Drapeaux': '#c2410c', 'Gastronomie': '#d97706', 'Géographie': '#16a34a', 'Histoire': '#a16207',
-    'Jeux': '#7c3aed', 'Langue française': '#2563eb', 'Littérature': '#0f766e', 'Monuments': '#475569', 'Musique': '#db2777', 'Mythologie': '#4338ca',
-    'Sciences': '#0891b2', 'Sport': '#15803d', 'Technologie': '#3d8bff' };
+// 12/11 : 15 couleurs bien distinctes (Cinéma et Drapeaux se ressemblaient), l'icône est posée sur un rond blanc
+const ENC_COLORS = { 'Arts': '#c026d3', 'Cinéma': '#dc2626', 'Drapeaux': '#ea580c', 'Gastronomie': '#ca8a04', 'Géographie': '#15803d', 'Histoire': '#92400e',
+    'Jeux': '#7c3aed', 'Langue française': '#2563eb', 'Littérature': '#0f766e', 'Monuments': '#64748b', 'Musique': '#db2777', 'Mythologie': '#1e3a8a',
+    'Sciences': '#0891b2', 'Sport': '#65a30d', 'Technologie': '#1f2937' };
 let encCache = null, encCount = -1;
 function encAll() {
     const n = QUESTIONS.length + (typeof TRAINING_QUESTIONS === 'undefined' ? 0 : TRAINING_QUESTIONS.length);
@@ -1882,7 +1883,9 @@ function renderEncyclopedia(box) {
         const nm = el('b');
         nm.textContent = b.theme;
         const cnt = el('span', 'enc-book-n');
-        cnt.textContent = `${fmtNum(b.known)} / ${fmtNum(b.total)}`;
+        const kn = el('b');
+        kn.textContent = fmtNum(b.known);
+        cnt.append(kn, document.createTextNode(` / ${fmtNum(b.total)} savoirs`));   // le mot dit ce que compte le x / y (et la barre juste dessous)
         const m = el('small');
         m.textContent = `✨ ${b.mastered} maîtrisé${b.mastered > 1 ? 's' : ''}`;
         const r = el('small');
@@ -1891,7 +1894,7 @@ function renderEncyclopedia(box) {
         const mf = el('i');
         mf.style.width = `${Math.round(b.known / b.total * 100)}%`;
         mini.append(mf);
-        btn.append(ic, nm, cnt, m, r, mini);
+        btn.append(ic, nm, cnt, mini, m, r);   // la barre sous « x / y savoirs », pas sous le % de réussite
         btn.addEventListener('click', () => openEncBook(b.theme));
         grid.append(btn);
     });
@@ -1912,7 +1915,7 @@ function openEncBook(theme, keep = false) {
     fill.style.width = `${Math.round(book.known / book.total * 100)}%`;
     bar.append(fill);
     const tiles = el('div', 'enc-tiles');
-    [[fmtNum(book.known), `découvert${book.known > 1 ? 's' : ''} sur ${fmtNum(book.total)}`, ''],
+    [[fmtNum(book.known), `savoir${book.known > 1 ? 's' : ''} sur ${fmtNum(book.total)}`, ''],
      [`✨ ${book.mastered}`, `maîtrisé${book.mastered > 1 ? 's' : ''}`, 'is-gold'],
      [book.tries ? `${Math.round(book.right / book.tries * 100)} %` : '–', 'de réussite', 'is-ok']].forEach(([v, l, cls]) => {
         const d = el('div', cls);
