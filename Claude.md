@@ -308,6 +308,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   série en danger / protégée et avant un palier d'entraînement (palier x / 10, réussies x / y) ; indices pendant une question =
   pastille « 🎒 2 · gratuit » (verte) ou « 45 🪙 » (dorée) ; cœur de secours = pastilles. ÉCRAN DE FIN en pastilles (pièces dorées,
   chaque ligne dans sa pastille) : dans le VRAI JEU depuis le 11/11 (validé après essai au bac à sable). Fenêtres : 18 px au-dessus et au-dessous des cases (`#askInfo`).
+- COULEUR PRINCIPALE (11/11, avis de Gemini sur la ressemblance avec Duolingo) : notre vert #58cc02 / #46a302, le doré #ffc800 et
+  le bleu #1cb0f6 sont EXACTEMENT ceux de Duolingo → à changer avant le Play Store. Aperçu apercu-palettes.html : le bac à sable
+  recoloré par ?bac=1&pal=… (`TRY_PALETTES` : emeraude, royal, lagon, indigo, corail). EN ATTENTE du choix. Au passage il faudra :
+  remplacer les #ffc800 / #58cc02 écrits en dur (css ~23, js ~10), le logo (fond vert), l'écran de chargement, manifest
+  (theme / background_color), images de partage. Boutons en relief gardés (style courant), éventuellement moins épais.
+  Autres idées de Gemini retenues : ENCYCLOPÉDIE des savoirs (fiches des questions réussies par thème, compteur) = prochaine
+  piste ; garde-robe de Kulti déjà prévue. Refusé / plus tard : duel en direct, choix multiple dans le parcours.
 - BADGES revus le 11/11 (75 badges, 16 familles, UN compteur par famille ; badge à compteur propre = 5e élément de la ligne) :
   parcours + 150 / 200 / 250 ; bonnes réponses + 25 000 ; défi du jour + 100 (et 10/10 dedans) ; SPRINT 8 / 10 / 12 (ids sprint10/20/30
   gardés) ; entraînement + « tous en or » (`goldAll`) ; « Spécialiste » caché sauf pour qui l'a (`hidden`) ; Ligue et Duels séparés,

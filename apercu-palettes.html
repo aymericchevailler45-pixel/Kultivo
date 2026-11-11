@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palettes du jeu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<!-- Page d'APERÇU (2026-11-11) : 5 palettes pour remplacer le vert de Duolingo. Le téléphone affiche le BAC À SABLE du jeu
+     (copie de la partie, rien d'envoyé en ligne) recoloré avec ?pal=… (TRY_PALETTES dans script.js). -->
+<style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; font-family: Nunito, system-ui, sans-serif; background: #eef1f6; color: #1b2745; }
+    .wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 14px; }
+    h1 { margin: 0; font-size: 1.5rem; }
+    .lead { margin: 4px 0 0; color: #66728f; font-weight: 700; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    @media (min-width: 760px) { .layout { grid-template-columns: 300px 1fr; align-items: start; } }
+    .pals { display: grid; gap: 8px; }
+    .pal { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 3px solid transparent; border-radius: 16px; background: #fff;
+        font: inherit; text-align: left; cursor: pointer; box-shadow: 0 2px 0 #d9e1ec; }
+    .pal.on { border-color: #1b2745; }
+    .sw { display: flex; flex: none; }
+    .sw i { width: 22px; height: 34px; }
+    .sw i:first-child { border-radius: 8px 0 0 8px; } .sw i:last-child { border-radius: 0 8px 8px 0; }
+    .pal b { display: block; font-size: 1rem; }
+    .pal small { display: block; color: #66728f; font-weight: 700; font-size: .82rem; line-height: 1.25; }
+    .phone { width: 360px; max-width: 100%; height: 740px; margin: 0 auto; border: 10px solid #1b2745; border-radius: 34px; overflow: hidden; background: #fff; }
+    .phone iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .tip { margin: 0; padding: 10px 12px; border-radius: 12px; background: #fff; color: #66728f; font-weight: 700; font-size: .88rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <div>
+        <h1>🎨 5 palettes pour Kultivo</h1>
+        <p class="lead">Le téléphone montre <b>ton vrai jeu</b>, en bac à sable (une copie de ta partie : rien n’est modifié ni envoyé). Choisis une palette, puis promène-toi : parcours, questions, Défis, Boutique… Seule la couleur principale (le vert actuel) et un peu le doré et le bleu changent.</p>
+    </div>
+    <div class="layout">
+        <div class="pals" id="pals"></div>
+        <div class="phone"><iframe id="game" title="Kultivo en bac à sable"></iframe></div>
+    </div>
+    <p class="tip">💡 Pour comparer, garde le même écran et change de palette. Les niveaux finis restent dorés, les frises roses, l’entraînement violet. Si une palette te plaît mais qu’une couleur gêne quelque part, dis-le-moi : on ajuste.</p>
+</div>
+<script>
+const PALS = [
+    { id: '', name: 'Actuelle', desc: 'Le vert de Duolingo (#58cc02), pour comparer.', c: ['#58cc02', '#46a302', '#ffc800'] },
+    { id: 'emeraude', name: 'Émeraude', desc: 'Un vert plus profond et élégant : on garde l’idée de « cultiver ».', c: ['#13a06a', '#0b7a50', '#ffbe2e'] },
+    { id: 'royal', name: 'Bleu roi et or', desc: 'Plus « savoir et académie », avec un doré chaud.', c: ['#2f5bd3', '#1f3f9c', '#f5b301'] },
+    { id: 'lagon', name: 'Turquoise lagon', desc: 'Frais et original, entre le vert et le bleu.', c: ['#12b3a8', '#0c857c', '#ffb627'] },
+    { id: 'indigo', name: 'Indigo', desc: 'Moderne et calme (attention : proche du violet de l’entraînement).', c: ['#5b5bd6', '#3f3fa8', '#ffbf2e'] },
+    { id: 'corail', name: 'Corail', desc: 'Chaleureux et très reconnaissable (attention : proche du rouge des erreurs).', c: ['#f2674e', '#c24a35', '#ffbf2e'] }
+];
+const box = document.getElementById('pals'), frame = document.getElementById('game');
+function pick(p) {
+    frame.src = `index.html?bac=1${p.id ? `&pal=${p.id}` : ''}`;
+    box.querySelectorAll('.pal').forEach(b => b.classList.toggle('on', b.dataset.id === p.id));
+}
+PALS.forEach(p => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'pal'; b.dataset.id = p.id;
+    b.innerHTML = `<span class="sw">${p.c.map(c => `<i style="background:${c}"></i>`).join('')}</span><span><b>${p.name}</b><small>${p.desc}</small></span>`;
+    b.addEventListener('click', () => pick(p));
+    box.append(b);
+});
+pick(PALS[1]);
+</script>
+</body>
+</html>
