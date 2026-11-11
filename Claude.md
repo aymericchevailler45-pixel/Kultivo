@@ -332,6 +332,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (theme / background_color), images de partage. Boutons en relief gardés (style courant), éventuellement moins épais.
   Autres idées de Gemini retenues : ENCYCLOPÉDIE des savoirs (fiches des questions réussies par thème, compteur) = prochaine
   piste ; garde-robe de Kulti déjà prévue. Refusé / plus tard : duel en direct, choix multiple dans le parcours.
+- 11/11 : badge « Parcours complet » donné à tort (probablement gagné quand le parcours était plus court) → retiré UNE fois
+  à ceux qui n'ont pas `done[MAX_LEVEL]` (`completeFix` dans normalizeData) ; les 15 🪙 déjà reçues restent.
 - BADGES revus le 11/11 (75 badges, 16 familles, UN compteur par famille ; badge à compteur propre = 5e élément de la ligne) :
   parcours + 150 / 200 / 250 ; bonnes réponses + 25 000 ; défi du jour + 100 (et 10/10 dedans) ; SPRINT 8 / 10 / 12 (ids sprint10/20/30
   gardés) ; entraînement + « tous en or » (`goldAll`) ; « Spécialiste » caché sauf pour qui l'a (`hidden`) ; Ligue et Duels séparés,
