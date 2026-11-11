@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kultivo · aperçu Encyclopédie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #eef3f8; --surface: #fff; --ink: #1b2745; --muted: #66728f; --line: #d9e1ec;
+    --green: #3d8bff; --green-deep: #2266d6; --green-tint: #dfeaff; --green-ink: #174a9e;
+    --ok: #4fc72c; --ok-tint: #dcf6d2; --ok-ink: #2a6b14;
+    --gold: #ffbe2e; --gold-deep: #d99a0b; --violet: #8b5cf6; --violet-tint: #ece4ff; --violet-ink: #5230a8;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #dfe6f0; color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 700; }
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; }
+.lead { margin: 0 0 22px; color: var(--muted); max-width: 760px; line-height: 1.45; }
+h2 { margin: 34px 0 10px; font-size: 1.25rem; font-weight: 900; }
+.note { max-width: 760px; line-height: 1.5; margin: 0 0 12px; }
+.phones { display: flex; flex-wrap: wrap; gap: 26px; align-items: flex-start; }
+.phone-wrap { display: flex; flex-direction: column; gap: 8px; width: 340px; max-width: 100%; }
+.phone-wrap > b { font-size: 1rem; font-weight: 900; }
+.phone-wrap > span { color: var(--muted); font-size: .9rem; line-height: 1.35; }
+.phone { position: relative; width: 340px; max-width: 100%; height: 700px; overflow: hidden; border-radius: 34px; border: 8px solid #1b2745;
+    background: linear-gradient(180deg, #eaf1ff, #f6f0ff); box-shadow: 0 18px 40px rgba(27, 39, 69, .25); }
+.scr { position: absolute; inset: 0; overflow: hidden; padding: 0 14px; }
+.top { display: flex; align-items: center; gap: 8px; height: 50px; margin: 0 -14px 12px; padding: 0 14px; background: rgba(255,255,255,.85); border-bottom: 1px solid var(--line); }
+.top img { width: 26px; height: 26px; }
+.top b { font-size: 1.05rem; font-weight: 900; flex: 1; }
+.top .back { font-size: 1.3rem; font-weight: 900; color: var(--muted); }
+.nav { position: absolute; left: 0; right: 0; bottom: 0; height: 58px; display: flex; justify-content: space-around; align-items: center; background: #fff; border-top: 1px solid var(--line); font-size: .66rem; color: var(--muted); }
+.nav span { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.nav span.on { color: var(--green-deep); font-weight: 900; }
+.nav i { font-style: normal; font-size: 1.2rem; }
+.card { background: var(--surface); border-radius: 20px; padding: 14px; box-shadow: 0 2px 0 var(--line); margin-bottom: 12px; }
+.tabs { display: flex; gap: 5px; margin-bottom: 12px; }
+.tabs span { flex: 1; text-align: center; padding: 7px 2px; border-radius: 999px; background: #fff; font-size: .72rem; font-weight: 800; color: var(--muted); box-shadow: 0 2px 0 var(--line); white-space: nowrap; }
+.tabs span.on { background: var(--green); color: #fff; box-shadow: 0 2px 0 var(--green-deep); }
+.big { display: flex; align-items: center; gap: 12px; }
+.big .num { font-size: 2rem; font-weight: 900; line-height: 1; color: var(--green-deep); }
+.big small { display: block; color: var(--muted); font-size: .8rem; font-weight: 800; }
+.bar { height: 10px; border-radius: 6px; background: var(--line); overflow: hidden; margin-top: 10px; }
+.bar i { display: block; height: 100%; background: linear-gradient(90deg, #64a5ff, var(--green)); border-radius: 6px; }
+.books { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.book { position: relative; border-radius: 12px 14px 14px 12px; padding: 9px 7px 8px 11px; color: #fff; min-height: 86px; display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: inset 5px 0 0 rgba(0,0,0,.18), 0 3px 0 rgba(0,0,0,.18); }
+.book img { width: 24px; height: 24px; }
+.book b { font-size: .72rem; font-weight: 900; line-height: 1.1; }
+.book small { font-size: .66rem; font-weight: 800; opacity: .92; }
+.book .mini { height: 4px; border-radius: 3px; background: rgba(255,255,255,.35); margin-top: 3px; overflow: hidden; }
+.book .mini i { display: block; height: 100%; background: #fff; }
+.book.is-full::after { content: '✨'; position: absolute; right: 5px; top: 4px; font-size: .8rem; }
+.book.is-full { box-shadow: inset 5px 0 0 rgba(0,0,0,.18), 0 0 0 2px var(--gold), 0 3px 0 var(--gold-deep); }
+.sec { font-size: .8rem; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 4px 2px 8px; }
+.recent { display: flex; gap: 8px; margin-bottom: 12px; }
+.recent div { flex: 1; min-width: 0; background: #fff; border-radius: 14px; padding: 8px; box-shadow: 0 2px 0 var(--line); }
+.recent em { font-style: normal; font-size: .62rem; color: var(--muted); font-weight: 800; }
+.recent b { display: block; font-size: .78rem; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: .74rem; font-weight: 900; }
+.search { display: flex; align-items: center; gap: 8px; background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 9px 12px; color: var(--muted); font-size: .88rem; margin-bottom: 10px; }
+.filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: nowrap; overflow: hidden; }
+.filters span { padding: 5px 10px; border-radius: 999px; background: #fff; font-size: .74rem; font-weight: 800; color: var(--muted); box-shadow: 0 2px 0 var(--line); white-space: nowrap; }
+.filters span.on { background: var(--ink); color: #fff; box-shadow: none; }
+.list { display: flex; flex-direction: column; gap: 7px; }
+.row { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px; padding: 9px 11px; box-shadow: 0 2px 0 var(--line); }
+.row .ic { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: #f3e9d8; font-size: 1rem; }
+.row .ic img { width: 22px; height: 22px; }
+.row .tx { flex: 1; min-width: 0; }
+.row .tx b { display: block; font-size: .9rem; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .tx small { display: block; color: var(--muted); font-size: .72rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .st { flex: none; font-size: .9rem; }
+.row.is-locked { background: transparent; box-shadow: none; border: 2px dashed #c3ccda; color: var(--muted); }
+.row.is-locked .ic { background: #e6ebf3; color: #9aa6bd; font-weight: 900; }
+.fiche { background: #fff; border-radius: 24px; padding: 16px; box-shadow: 0 10px 28px rgba(27, 39, 69, .16); border: 2px solid #f1e3c8; }
+.fiche .hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.fiche h3 { margin: 4px 0 2px; font-size: 1.6rem; font-weight: 900; }
+.fiche .q { margin: 12px 0 0; padding: 10px 12px; border-radius: 14px; background: var(--bg); font-size: .86rem; line-height: 1.35; }
+.fiche .q em { display: block; font-style: normal; font-size: .7rem; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 3px; }
+.fiche .sv { margin: 10px 0 0; padding: 10px 12px; border-radius: 14px; background: #fff7e0; font-size: .9rem; line-height: 1.4; }
+.fiche .sv em { display: block; font-style: normal; font-size: .7rem; font-weight: 900; color: #9a6a00; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 3px; }
+.fiche .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.fiche .photo { margin-top: 10px; border-radius: 14px; overflow: hidden; }
+.fiche .photo img { display: block; width: 100%; height: 150px; object-fit: cover; }
+.fiche .photo small { display: block; font-size: .6rem; color: var(--muted); padding: 3px 2px 0; }
+.btn { display: block; width: 100%; margin-top: 12px; padding: 13px; border-radius: 999px; border: 0; font: inherit; font-weight: 900; font-size: 1rem; color: #fff;
+    background: linear-gradient(180deg, #64a5ff, var(--green)); box-shadow: 0 2px 0 var(--green-deep), 0 6px 14px rgba(61,139,255,.28); text-align: center; }
+.btn.ghost { background: #fff; color: var(--ink); box-shadow: 0 2px 0 var(--line); border: 2px solid var(--line); }
+.nextprev { display: flex; justify-content: space-between; margin-top: 10px; color: var(--muted); font-size: .8rem; font-weight: 800; }
+.say { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; }
+.say .k { flex: none; width: 40px; height: 40px; }
+.say p { margin: 0; padding: 8px 11px; border-radius: 4px 14px 14px 14px; background: var(--violet-tint); color: var(--violet-ink); font-size: .8rem; line-height: 1.3; }
+.end { text-align: center; padding-top: 40px; }
+.end .kk { width: 100px; height: 100px; margin: 0 auto; }
+.end h4 { margin: 14px 0 4px; font-size: 1.5rem; font-weight: 900; }
+.end p { margin: 0 0 14px; color: var(--muted); }
+.tiles { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+.tiles div { flex: 1; background: #fff; border-radius: 14px; padding: 8px 4px; box-shadow: 0 2px 0 var(--line); }
+.tiles b { display: block; font-size: 1.2rem; font-weight: 900; }
+.tiles span { font-size: .7rem; color: var(--muted); font-weight: 800; }
+.endchip { display: inline-block; margin: 0 auto 8px; padding: 6px 12px; border-radius: 999px; background: #fff; box-shadow: 0 2px 0 var(--line); font-size: .85rem; font-weight: 800; }
+.endchip.is-enc { background: #fff3d6; color: #8a5a00; box-shadow: 0 2px 0 #f1d48a; position: relative; }
+.endchip.is-enc::after { content: 'NOUVEAU'; position: absolute; top: -9px; right: -8px; background: #e5484d; color: #fff; font-size: .55rem; font-weight: 900; padding: 1px 5px; border-radius: 6px; }
+.flagimg { display: block; height: 110px; margin: 10px auto 0; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; max-width: 1000px; }
+.opt { background: #fff; border-radius: 18px; padding: 14px 16px; box-shadow: 0 2px 0 var(--line); line-height: 1.45; }
+.opt b { font-size: 1rem; font-weight: 900; }
+.opt.is-rec { border: 3px solid var(--green); }
+.opt .tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--green); color: #fff; font-size: .7rem; font-weight: 900; vertical-align: 2px; }
+.opt p { margin: 6px 0 0; font-weight: 700; color: #3a4564; font-size: .92rem; }
+.rules { max-width: 860px; background: #fff; border-radius: 18px; padding: 6px 18px; box-shadow: 0 2px 0 var(--line); }
+.rules li { margin: 10px 0; line-height: 1.45; }
+.rules li b { font-weight: 900; }
+.kulti { position: relative; display: inline-block; width: 100%; height: 100%; }
+.kulti-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.kulti:not(.kulti-talking) .kulti-mouth-open { display: none; }
+@media (max-width: 400px) { .phone, .phone-wrap { width: 100%; } }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>📚 L'Encyclopédie des savoirs</h1>
+<p class="lead">Chaque question que tu réussis devient une <b>fiche</b> dans ton encyclopédie, rangée dans le livre de son thème. Tu vois enfin tout ce que tu as
+    appris, tu peux le feuilleter, le chercher et le revoir. Tout le contenu existe déjà dans le jeu (questions, réponses, explications, drapeaux, photos) :
+    rien à écrire. <i>Les chiffres de cet aperçu sont des exemples.</i></p>
+
+<h2>Où la mettre dans le jeu ?</h2>
+<div class="opts">
+    <div class="opt is-rec"><b>A · Profil → l'onglet « Thèmes » devient « 📚 Savoirs »</b><span class="tag">mon conseil</span>
+        <p>L'onglet Thèmes montre déjà, par thème, « N découvertes · M maîtrisées » : c'est exactement le début d'une encyclopédie. On le remplace par
+        les 15 livres, et un tap sur un livre ouvre ses fiches. Pas de nouveau bouton, pas de 6e onglet (il n'y a pas la place en bas), et la place
+        est logique : le Profil, c'est « ce que j'ai accompli ». Les % de réussite par thème restent en haut de chaque livre.</p></div>
+    <div class="opt"><b>B · Un bouton « 📚 Mon encyclopédie » en haut du Profil</b>
+        <p>Comme le bouton violet du récap du mois, sous la barre d'XP. Plus visible, mais un bouton de plus dans un Profil déjà chargé,
+        et l'onglet Thèmes ferait doublon.</p></div>
+    <div class="opt"><b>C · Dans l'onglet Défis, à côté de l'Entraînement</b>
+        <p>Proche du « jeu », mais l'encyclopédie se <i>lit</i>, elle ne se joue pas : elle serait perdue entre l'objectif du jour et le sprint.</p></div>
+</div>
+<p class="note" style="margin-top:14px">Dans tous les cas, on y arrive aussi depuis l'<b>écran de fin</b> (« 📚 +5 savoirs », un tap ouvre les nouvelles fiches) :
+    c'est là que le joueur sent qu'il construit quelque chose.</p>
+
+<h2>Les écrans</h2>
+<div class="phones">
+
+<div class="phone-wrap"><b>1 · Profil → 📚 Savoirs</b><span>Le total, les 3 derniers savoirs, puis les 15 livres. Un livre complet brille (bord doré ✨).</span>
+<div class="phone"><div class="scr">
+    <div class="top"><img src="icons/logo-bleu.svg" alt=""><b>Kultivo</b></div>
+    <div class="tabs"><span>🏅 Badges</span><span>🃏 Cartes</span><span>📊 Records</span><span class="on">📚 Savoirs</span></div>
+    <div class="card">
+        <div class="big"><div><div class="num">1 248</div><small>savoirs dans ton encyclopédie</small></div>
+            <div style="margin-left:auto;text-align:right"><span class="chip" style="background:#fff3d6;color:#8a5a00">✨ 412 maîtrisés</span></div></div>
+        <div class="bar"><i style="width:22%"></i></div>
+        <small style="display:block;margin-top:6px;color:var(--muted);font-size:.74rem">1 248 sur 5 754 · +36 cette semaine</small>
+    </div>
+    <div class="sec">Derniers savoirs</div>
+    <div class="recent">
+        <div><em>📜 Histoire</em><b>Constantinople</b></div>
+        <div><em>🚩 Drapeaux</em><b>Le Japon</b></div>
+        <div><em>💡 Technologie</em><b>Steve Jobs</b></div>
+    </div>
+    <div class="sec">Mes livres</div>
+    <div class="books" id="books"></div>
+</div>
+<div class="nav"><span><i>🗺️</i>Parcours</span><span><i>🏆</i>Défis</span><span><i>🏅</i>Classement</span><span><i>🛒</i>Boutique</span><span class="on"><i>👤</i>Profil</span></div>
+</div></div>
+
+<div class="phone-wrap"><b>2 · Un livre : Histoire</b><span>Recherche, filtres, la liste des fiches. Les savoirs pas encore trouvés restent cachés (on voit seulement combien il en reste).</span>
+<div class="phone"><div class="scr">
+    <div class="top"><span class="back">‹</span><img src="emoji/1f4dc.svg" alt=""><b>Histoire</b><span class="chip" style="background:#f3e9d8;color:#7a4b12">164 / 441</span></div>
+    <div class="bar" style="margin:0 0 12px"><i style="width:37%;background:linear-gradient(90deg,#d79b5a,#b9722e)"></i></div>
+    <div class="search">🔍 Chercher un savoir…</div>
+    <div class="filters"><span class="on">Tous · 164</span><span>✨ Maîtrisés · 61</span><span>🔁 À revoir · 9</span><span>🕒 Récents</span></div>
+    <div class="list">
+        <div class="row"><div class="ic">🏛️</div><div class="tx"><b>Constantinople</b><small>Capitale de l'Empire byzantin</small></div><span class="st">✨</span></div>
+        <div class="row"><div class="ic">⚔️</div><div class="tx"><b>732</b><small>Charles Martel, bataille de Poitiers</small></div><span class="st">✨</span></div>
+        <div class="row"><div class="ic">📜</div><div class="tx"><b>Les traités de Westphalie</b><small>Fin de la guerre de Trente Ans</small></div><span class="st">🔁</span></div>
+        <div class="row"><div class="ic">👑</div><div class="tx"><b>476</b><small>Chute de l'Empire romain d'Occident</small></div><span class="st"></span></div>
+        <div class="row"><div class="ic">🗺️</div><div class="tx"><b>Les accords Sykes-Picot</b><small>Découpage du Proche-Orient, 1916</small></div><span class="st"></span></div>
+        <div class="row is-locked"><div class="ic">?</div><div class="tx"><b>277 savoirs à découvrir</b><small>Joue en Histoire pour les trouver</small></div></div>
+    </div>
+</div>
+<div class="nav"><span><i>🗺️</i>Parcours</span><span><i>🏆</i>Défis</span><span><i>🏅</i>Classement</span><span><i>🛒</i>Boutique</span><span class="on"><i>👤</i>Profil</span></div>
+</div></div>
+
+<div class="phone-wrap"><b>3 · Une fiche</b><span>La réponse en grand, la question, le « Le savais-tu ? » (l'explication), l'image s'il y en a une, et Kulti qui ajoute son grain de sel.</span>
+<div class="phone"><div class="scr" style="padding-top:14px">
+    <div class="fiche">
+        <div class="hd"><span class="chip" style="background:#f3e9d8;color:#7a4b12">📜 Histoire</span><span style="color:var(--muted);font-weight:900">✕</span></div>
+        <h3>Constantinople</h3>
+        <span style="color:var(--muted);font-size:.8rem">aussi : Byzance, Istanbul</span>
+        <div class="q"><em>La question</em>Quelle ville était la capitale de l'Empire byzantin ?</div>
+        <div class="sv"><em>💡 Le savais-tu ?</em>Tombée aux mains des Ottomans en 1453.</div>
+        <div class="meta"><span class="chip" style="background:var(--ok-tint);color:var(--ok-ink)">✓ Découvert le 3 nov.</span><span class="chip" style="background:#fff3d6;color:#8a5a00">✨ Maîtrisé</span></div>
+        <div class="say"><div class="k" id="k1"></div><p>Byzance, Constantinople, Istanbul : trois noms pour une seule ville. Même moi je m'y perds !</p></div>
+        <div class="btn">🔁 Me la reposer</div>
+        <div class="nextprev"><span>‹ Précédent</span><span>12 / 164</span><span>Suivant ›</span></div>
+    </div>
+</div></div></div>
+
+<div class="phone-wrap"><b>3 bis · Fiche avec une image</b><span>Drapeaux, monuments et rébus gardent leur image (avec le crédit de la photo). Un drapeau s’affiche pareil, en grand.</span>
+<div class="phone"><div class="scr" style="padding-top:14px">
+    <div class="fiche">
+        <div class="hd"><span class="chip" style="background:#e3ecff;color:#174a9e">🏛️ Monuments</span><span style="color:var(--muted);font-weight:900">✕</span></div>
+        <h3>Angkor Vat</h3>
+        <div class="photo"><img src="monuments/angkor.jpg" alt=""><small>Photo : Bjørn Christian Tørrissen · CC BY-SA 4.0 · Wikimedia Commons</small></div>
+        <div class="sv"><em>💡 Le savais-tu ?</em>Cambodge. Le plus grand monument religieux du monde, construit au XIIe siècle.</div>
+        <div class="meta"><span class="chip" style="background:var(--ok-tint);color:var(--ok-ink)">✓ Découvert le 28 oct.</span><span class="chip" style="background:#e6ebf3;color:var(--muted)">Encore 1 bonne réponse pour ✨</span></div>
+        <div class="btn">🔁 Me la reposer</div>
+        <div class="nextprev"><span>‹ Précédent</span><span>4 / 97</span><span>Suivant ›</span></div>
+    </div>
+</div></div></div>
+
+<div class="phone-wrap"><b>4 · Écran de fin</b><span>Une pastille de plus : « 📚 +5 savoirs ». Un tap montre les nouvelles fiches de la partie.</span>
+<div class="phone"><div class="scr" style="background:linear-gradient(180deg,#eaf1ff,#f6f0ff)">
+    <div class="end">
+        <div class="kk" id="k2"></div>
+        <h4>Niveau réussi !</h4>
+        <p>Bravo, niveau 14 terminé.</p>
+        <div class="tiles"><div><b>42</b><span>XP</span></div><div><b style="color:var(--ok-ink)">86 %</b><span>Précision</span></div><div><b>1:12</b><span>Temps</span></div></div>
+        <div class="endchip is-enc">📚 +5 savoirs dans ton encyclopédie ›</div><br>
+        <div class="endchip" style="background:#fff3d6;color:#8a5a00">+5 🪙</div>
+        <div class="btn" style="margin-top:22px">Continuer</div>
+    </div>
+</div></div></div>
+
+</div>
+
+<h2>Les règles proposées</h2>
+<ul class="rules">
+    <li><b>Un savoir = une question réussie au moins une fois</b>, où que ce soit : parcours, entraînement, défi du jour, sprint, duel, événement.
+        Les questions des anciennes parties comptent aussi : chaque joueur démarre avec son encyclopédie déjà remplie.</li>
+    <li><b>On ne perd jamais un savoir.</b> Une fiche ratée ensuite passe juste en « 🔁 À revoir ».</li>
+    <li><b>✨ Maîtrisé</b> = la même règle que l'entraînement (bonnes réponses d'affilée). La fiche a un bord doré.</li>
+    <li><b>Les savoirs pas trouvés restent cachés</b> (seulement « 277 à découvrir ») : on ne gâche aucune question.</li>
+    <li><b>« Me la reposer »</b> : la question revient, pour le plaisir, sans XP, sans cœurs ni gouttes.</li>
+    <li><b>Un livre complet</b> (tous les savoirs du thème) brille. Plus tard, une nouvelle famille de badges : 100, 500, 1 000, 2 500, 5 000 savoirs.</li>
+    <li><b>Kulti</b> commente certaines fiches (une petite phrase à lui, comme sur le parcours).</li>
+    <li><b>Partager une fiche</b> en image (« Le savais-tu ? » + le K) : possible plus tard, pour faire connaître le jeu.</li>
+</ul>
+<p class="note" style="margin-top:14px"><b>À décider :</b> l'endroit (A, B ou C) ; si les savoirs à découvrir restent cachés ; si on montre aussi les questions de Kulti
+    (vrai / faux, années) ; si les commentaires de Kulti sur les fiches te plaisent (il faudrait en écrire un certain nombre, ou les garder rares).</p>
+</div>
+
+<script src="kulti.js"></script>
+<script>
+const BOOKS = [['Arts','1f3a8',88,317,'#d9468f'],['Cinéma','1f3ac',152,409,'#e5484d'],['Drapeaux','1f6a9',140,229,'#c2410c'],['Gastronomie','1f9c0',96,396,'#d97706'],
+  ['Géographie','1f30d',131,406,'#16a34a'],['Histoire','1f4dc',164,441,'#a16207'],['Jeux','1f3b2',73,379,'#7c3aed'],['Langue française','1f4ac',58,405,'#2563eb'],
+  ['Littérature','1f4da',77,406,'#0f766e'],['Monuments','1f3db',97,295,'#475569'],['Musique','1f3bc',69,389,'#db2777'],['Mythologie','26a1',241,241,'#4338ca'],
+  ['Sciences','1f52c',112,452,'#0891b2'],['Sport','26bd',121,388,'#15803d'],['Technologie','1f4a1',69,401,'#3d8bff']];
+const box = document.getElementById('books');
+BOOKS.slice(0, 12).forEach(([n, ic, got, all, c]) => {
+  const d = document.createElement('div');
+  d.className = 'book' + (got >= all ? ' is-full' : '');
+  d.style.background = `linear-gradient(160deg, ${c}, color-mix(in srgb, ${c} 70%, #000))`;
+  d.innerHTML = `<img src="emoji/${ic}.svg" alt=""><div><b>${n}</b><br><small>${got} / ${all}</small><div class="mini"><i style="width:${Math.round(got / all * 100)}%"></i></div></div>`;
+  box.append(d);
+});
+if (typeof kultiEl === 'function') {
+  document.getElementById('k1').append(kultiEl('clin'));
+  document.getElementById('k2').append(kultiEl('fier'));
+}
+</script>
+</body>
+</html>
