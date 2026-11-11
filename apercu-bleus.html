@@ -32,7 +32,7 @@
 <body>
 <div class="wrap">
     <div>
-        <h1>🔵 Kultivo en bleu : 6 propositions</h1>
+        <h1>🔵 Kultivo en bleu</h1>
         <p class="lead">Pour chaque bleu : le <b>logo recoloré</b> (le fond et le K prennent la couleur, le cerveau rose ne change pas) et, à côté, <b>ton vrai jeu</b> en bac à sable (une copie de ta partie). Touche un logo pour voir le jeu dans cette couleur.</p>
     </div>
     <div class="layout">
@@ -43,6 +43,9 @@
 <script>
 const PALS = [
     { id: '', main: '#58cc02', name: 'Actuel', desc: 'Le vert de Duolingo, pour comparer', light: '#5fd40a', deep: '#46a302' },
+    { id: 'azur2', main: '#2a9bf4', name: 'Azur lumineux', desc: 'Un cran plus clair et plus vif', light: '#4fb2ff', deep: '#1873c4' },
+    { id: 'azur3', main: '#33a3ff', name: 'Azur éclatant', desc: 'Encore plus clair, très « pop »', light: '#5cbcff', deep: '#1a7ad6' },
+    { id: 'azur4', main: '#3d8bff', name: 'Bleu électrique', desc: 'Vif, un peu plus bleu que l’azur', light: '#64a5ff', deep: '#2266d6' },
     { id: 'azur', main: '#1f8ce6', name: 'Azur', desc: 'Bleu lumineux et franc, très lisible', light: '#3aa0f0', deep: '#1567b0' },
     { id: 'cobalt', main: '#0b62c4', name: 'Cobalt', desc: 'Bleu soutenu, sérieux sans être triste', light: '#1c7ad9', deep: '#084a94' },
     { id: 'klein', main: '#2b3fd1', name: 'Bleu Klein', desc: 'Outremer intense, clin d’œil à Yves Klein', light: '#4256e0', deep: '#1d2c99' },
@@ -70,7 +73,7 @@ fetch('icons/logo.svg').then(r => r.text()).then(t => {
         b.addEventListener('click', () => pick(p));
         box.append(b);
     });
-    pick(PALS[1]);
+    pick(PALS.find(p => p.id === 'azur2'));
 });
 </script>
 </body>
