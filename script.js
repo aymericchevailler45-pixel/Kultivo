@@ -22,6 +22,7 @@ const STORAGE_KEY = BAC ? 'kultivo_bac' : 'cultureG_v2';
 const PAL_ELEC = document.documentElement.classList.contains('pal-elec');
 const LOGO_SRC = PAL_ELEC ? 'icons/logo-bleu.svg' : 'icons/logo.svg';
 const BRAND = PAL_ELEC ? '#3d8bff' : '#58cc02';
+if (PAL_ELEC) { const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = '#3d8bff'; }   // barre de l'adresse en bleu
 // Palettes d'essai (11/11, apercu-palettes.html) : ?bac=1&pal=N recolore le bac à sable (couleur principale à la place du vert
 // de Duolingo, or et bleu un peu décalés). Rien dans le vrai jeu tant qu'aucune n'est choisie.
 const TRY_PALETTES = {

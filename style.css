@@ -1573,7 +1573,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 }
 .end-stat-value { font-size: 1.6rem; font-weight: 900; line-height: 1.1; }
 .tone-gold   { --tone: var(--gold);   --tone-ink: var(--on-gold); }
-.tone-green  { --tone: var(--green);  --tone-ink: var(--on-green); }
+.tone-green  { --tone: var(--ok);     --tone-ink: var(--on-ok, var(--on-green)); }   /* 11/11 : « réussite » (précision…) = couleur de réussite */
 .tone-blue   { --tone: var(--blue);   --tone-ink: #ffffff; }
 .tone-violet { --tone: var(--violet); --tone-ink: #ffffff; }
 @keyframes statIn { to { opacity: 1; transform: none; } }
