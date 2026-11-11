@@ -43,7 +43,10 @@
 <script>
 const PALS = [
     { id: '', main: '#58cc02', name: 'Actuel', desc: 'Le vert de Duolingo, pour comparer', light: '#5fd40a', deep: '#46a302' },
-    { id: 'azur3ok', main: '#33a3ff', name: 'Éclatant + vert ✓', desc: 'Azur éclatant, et un vert émeraude pour les bonnes réponses', light: '#5cbcff', deep: '#1a7ad6' },
+    { id: 'azur3pomme', main: '#33a3ff', ok: '#4fc72c', name: 'Éclatant + vert pomme ✓', desc: 'Presque le vert d’avant, un peu moins jaune', light: '#5cbcff', deep: '#1a7ad6' },
+    { id: 'azur3frais', main: '#33a3ff', ok: '#2ec457', name: 'Éclatant + vert frais ✓', desc: 'Lumineux, entre le pomme et l’émeraude', light: '#5cbcff', deep: '#1a7ad6' },
+    { id: 'azur3menthe', main: '#33a3ff', ok: '#22c98a', name: 'Éclatant + menthe vif ✓', desc: 'Clair et pétillant, un peu plus bleuté', light: '#5cbcff', deep: '#1a7ad6' },
+    { id: 'azur3ok', main: '#33a3ff', ok: '#1fb86b', name: 'Éclatant + vert ✓', desc: 'Azur éclatant, et un vert émeraude pour les bonnes réponses', light: '#5cbcff', deep: '#1a7ad6' },
     { id: 'azur2', main: '#2a9bf4', name: 'Azur lumineux', desc: 'Un cran plus clair et plus vif', light: '#4fb2ff', deep: '#1873c4' },
     { id: 'azur3', main: '#33a3ff', name: 'Azur éclatant', desc: 'Encore plus clair, très « pop »', light: '#5cbcff', deep: '#1a7ad6' },
     { id: 'azur4', main: '#3d8bff', name: 'Bleu électrique', desc: 'Vif, un peu plus bleu que l’azur', light: '#64a5ff', deep: '#2266d6' },
@@ -70,11 +73,11 @@ fetch('icons/logo.svg').then(r => r.text()).then(t => {
     PALS.forEach(p => {
         const b = document.createElement('button');
         b.type = 'button'; b.className = 'pal'; b.dataset.id = p.id;
-        b.innerHTML = `<span class="logo">${logoFor(p)}</span><b>${p.name}</b><small>${p.desc}</small><span class="btnp" style="background:${p.main}; box-shadow: 0 3px 0 ${p.deep}">Bouton</span>`;
+        b.innerHTML = `<span class="logo">${logoFor(p)}</span><b>${p.name}</b><small>${p.desc}</small><span class="btnp" style="background:${p.main}; box-shadow: 0 3px 0 ${p.deep}">Bouton</span>${p.ok ? `<span class="btnp" style="background:${p.ok}">✓ Bonne réponse</span>` : ''}`;
         b.addEventListener('click', () => pick(p));
         box.append(b);
     });
-    pick(PALS.find(p => p.id === 'azur3ok'));
+    pick(PALS.find(p => p.id === 'azur3pomme'));
 });
 </script>
 </body>

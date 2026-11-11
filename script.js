@@ -31,6 +31,13 @@ const TRY_PALETTES = {
     // Azur éclatant + VERT DE RÉUSSITE (11/11) : le bleu pour l'identité, un vert émeraude (pas celui de Duolingo) pour les bonnes réponses
     azur3ok:   { '--green': '#33a3ff', '--green-deep': '#1a7ad6', '--green-tint': '#ddf0ff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(51, 163, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88',
                  '--ok': '#1fb86b', '--ok-deep': '#148a4f', '--ok-tint': '#d6f5e3', '--ok-ink': '#0b6236', '--on-ok': '#ffffff' },
+    // 11/11 : verts de réussite plus lumineux (« l'émeraude fait un peu moins beau que le vert d'avant »)
+    azur3pomme: { '--green': '#33a3ff', '--green-deep': '#1a7ad6', '--green-tint': '#ddf0ff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(51, 163, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88',
+                 '--ok': '#4fc72c', '--ok-deep': '#3a9a1f', '--ok-tint': '#dcf6d2', '--ok-ink': '#2a6b14', '--on-ok': '#ffffff' },
+    azur3frais: { '--green': '#33a3ff', '--green-deep': '#1a7ad6', '--green-tint': '#ddf0ff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(51, 163, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88',
+                 '--ok': '#2ec457', '--ok-deep': '#22974a', '--ok-tint': '#d5f6df', '--ok-ink': '#146a33', '--on-ok': '#ffffff' },
+    azur3menthe: { '--green': '#33a3ff', '--green-deep': '#1a7ad6', '--green-tint': '#ddf0ff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(51, 163, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88',
+                 '--ok': '#22c98a', '--ok-deep': '#179a69', '--ok-tint': '#d2f7e8', '--ok-ink': '#0d6b48', '--on-ok': '#ffffff' },
     azur2:     { '--green': '#2a9bf4', '--green-deep': '#1873c4', '--green-tint': '#dcefff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(42, 155, 244, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88' },
     azur3:     { '--green': '#33a3ff', '--green-deep': '#1a7ad6', '--green-tint': '#ddf0ff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(51, 163, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88' },
     azur4:     { '--green': '#3d8bff', '--green-deep': '#2266d6', '--green-tint': '#dfeaff', '--green-ink': '#174a9e', '--on-green': '#ffffff', '--glow': 'rgba(61, 139, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88' },
