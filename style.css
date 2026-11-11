@@ -3904,3 +3904,29 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 
 /* 11/11 : petit espace entre la rangée de badges et la description (une règle plus forte remettait la marge à 0) */
 section.bdf p.bdf-detail { margin-top: 10px; }
+
+/* ===== Nouvelles couleurs (11/11, choix de l'utilisateur) : BLEU ÉLECTRIQUE + vert pomme pour la réussite + paires turquoise.
+   Pour l'instant SEULEMENT dans le bac à sable (classe .pal-elec posée par index.html). Pour les passer à tout le monde :
+   recopier ces valeurs dans :root (et le mode sombre), puis retirer la condition du bac à sable. ===== */
+:root.pal-elec {
+    --green: #3d8bff; --green-deep: #2266d6; --green-tint: #dfeaff; --green-ink: #174a9e; --on-green: #ffffff;
+    --glow: rgba(61, 139, 255, 0.10);
+    --gold: #ffbe2e; --gold-deep: #d99a0b;
+    --blue: #3d8bff;
+    --pairs: #12b3a8; --pairs-deep: #0c857c; --pairs-ink: #0b5f56;
+    --ok: #4fc72c; --ok-deep: #3a9a1f; --ok-tint: #dcf6d2; --ok-ink: #2a6b14; --on-ok: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+    :root.pal-elec:not([data-theme="light"]) {
+        --green-tint: #1a2d52; --green-ink: #9cc2ff; --glow: rgba(61, 139, 255, 0.16);
+        --ok-tint: #1e3a17; --ok-ink: #a6ea6a; --pairs-ink: #7fe3da;
+    }
+}
+:root.pal-elec[data-theme="dark"] {
+    --green-tint: #1a2d52; --green-ink: #9cc2ff; --glow: rgba(61, 139, 255, 0.16);
+    --ok-tint: #1e3a17; --ok-ink: #a6ea6a; --pairs-ink: #7fe3da;
+}
+.pal-elec .title-anim { background: linear-gradient(170deg, #3d8bff, #1c5bd6); }
+.pal-elec .title-continue { color: #1c5bd6; }
+.pal-elec .coll-back { background: #2266d6; box-shadow: 0 3px 0 #153f8f; }
+.pal-elec .fb-sticker.is-flash { background: #12b3a8; box-shadow: 0 3px 0 #0c857c; }

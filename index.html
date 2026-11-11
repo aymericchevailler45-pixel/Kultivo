@@ -6,6 +6,8 @@
     <title>Kultivo</title>
     <!-- Mode clair / sombre choisi dans le Profil (2026-10-30) : posé tout de suite, sinon un éclair de l’autre couleur -->
     <script>try { var t = localStorage.getItem('kultivo_theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}</script>
+    <!-- 11/11 : nouvelles couleurs (Bleu électrique) essayées d'abord dans le bac à sable (?bac=1, sans autre ?pal=) -->
+    <script>try { var q = location.search; if (/[?&]bac=1/.test(q) && !/[?&]pal=(?!elec\b)/.test(q)) document.documentElement.classList.add('pal-elec'); } catch (e) {}</script>
     <!-- Application installable (PWA) -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#58cc02">
@@ -22,6 +24,8 @@
 .splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
     padding: 20px; text-align: center; color: #fff; overflow: hidden; background: linear-gradient(170deg, #5fd40a, #46a302); }
 .splash.is-out { animation: splashOut .35s ease forwards; pointer-events: none; }
+.pal-elec .splash { background: linear-gradient(170deg, #64a5ff, #2266d6); }
+.pal-elec .splash-logo, .pal-elec .brand-logo { content: url(icons/logo-bleu.svg); }
 @keyframes splashOut { to { opacity: 0; transform: scale(1.04); } }
 .splash-ico { position: absolute; font-size: 1.7rem; opacity: .18; animation: splashDrift 3s ease-in-out infinite alternate; }
 @keyframes splashDrift { from { transform: translateY(0) rotate(-8deg); } to { transform: translateY(-14px) rotate(8deg); } }
@@ -68,12 +72,12 @@
             setTimeout(function () { var x = document.getElementById('splash'); if (x) x.remove(); }, 8000);
         })();
     </script>
-    <script src="kulti.js?v=20261111r"></script>
+    <script src="kulti.js?v=20261111s"></script>
     <script>document.getElementById('splashRider').append(kultiEl('content', 'kulti-blink'));</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261111r">
+    <link rel="stylesheet" href="style.css?v=20261111s">
 
     <!-- BARRE DU HAUT (visible hors leçon) -->
     <header class="topbar" id="topbar">
@@ -649,33 +653,33 @@
     <div class="toasts" id="toasts" aria-live="polite"></div>
 
     <!-- L'ordre compte : les questions d'abord, puis la logique -->
-    <script src="questions.js?v=20261111r"></script>
-    <script src="pairs.js?v=20261111r"></script>
-    <script src="order.js?v=20261111r"></script>
-    <script src="facts.js?v=20261111r"></script>
-    <script src="entrainement/banque.js?v=20261111r"></script>
-    <script src="entrainement/histoire.js?v=20261111r"></script>
-    <script src="entrainement/sciences.js?v=20261111r"></script>
-    <script src="entrainement/geographie.js?v=20261111r"></script>
-    <script src="entrainement/technologie.js?v=20261111r"></script>
-    <script src="entrainement/musique.js?v=20261111r"></script>
-    <script src="entrainement/litterature.js?v=20261111r"></script>
-    <script src="entrainement/jeux.js?v=20261111r"></script>
-    <script src="entrainement/cinema.js?v=20261111r"></script>
-    <script src="entrainement/gastronomie.js?v=20261111r"></script>
-    <script src="entrainement/sport.js?v=20261111r"></script>
-    <script src="entrainement/arts.js?v=20261111r"></script>
-    <script src="entrainement/langue-francaise.js?v=20261111r"></script>
-    <script src="entrainement/mythologie.js?v=20261111r"></script>
-    <script src="entrainement/drapeaux.js?v=20261111r"></script>
-    <script src="entrainement/monuments.js?v=20261111r"></script>
-    <script src="cards.js?v=20261111r"></script>
-    <script src="cosmetiques.js?v=20261111r"></script>
-    <script src="levels.js?v=20261111r"></script>
-    <script src="vendor/supabase.min.js?v=20261111r"></script>
-    <script src="evenements/halloween.js?v=20261111r"></script>
-    <script src="evenements/maghreb.js?v=20261111r"></script>
-    <script src="kulti-defis.js?v=20261111r"></script>
-    <script src="script.js?v=20261111r"></script>
+    <script src="questions.js?v=20261111s"></script>
+    <script src="pairs.js?v=20261111s"></script>
+    <script src="order.js?v=20261111s"></script>
+    <script src="facts.js?v=20261111s"></script>
+    <script src="entrainement/banque.js?v=20261111s"></script>
+    <script src="entrainement/histoire.js?v=20261111s"></script>
+    <script src="entrainement/sciences.js?v=20261111s"></script>
+    <script src="entrainement/geographie.js?v=20261111s"></script>
+    <script src="entrainement/technologie.js?v=20261111s"></script>
+    <script src="entrainement/musique.js?v=20261111s"></script>
+    <script src="entrainement/litterature.js?v=20261111s"></script>
+    <script src="entrainement/jeux.js?v=20261111s"></script>
+    <script src="entrainement/cinema.js?v=20261111s"></script>
+    <script src="entrainement/gastronomie.js?v=20261111s"></script>
+    <script src="entrainement/sport.js?v=20261111s"></script>
+    <script src="entrainement/arts.js?v=20261111s"></script>
+    <script src="entrainement/langue-francaise.js?v=20261111s"></script>
+    <script src="entrainement/mythologie.js?v=20261111s"></script>
+    <script src="entrainement/drapeaux.js?v=20261111s"></script>
+    <script src="entrainement/monuments.js?v=20261111s"></script>
+    <script src="cards.js?v=20261111s"></script>
+    <script src="cosmetiques.js?v=20261111s"></script>
+    <script src="levels.js?v=20261111s"></script>
+    <script src="vendor/supabase.min.js?v=20261111s"></script>
+    <script src="evenements/halloween.js?v=20261111s"></script>
+    <script src="evenements/maghreb.js?v=20261111s"></script>
+    <script src="kulti-defis.js?v=20261111s"></script>
+    <script src="script.js?v=20261111s"></script>
 </body>
 </html>

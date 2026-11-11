@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v113';
+const CACHE = 'kultivo-v114';
 const FILES = [
     './',
     './index.html',
@@ -78,6 +78,7 @@ const FILES = [
     './icons/apple-touch-icon.png',
     './icons/favicon.png',
     './icons/logo.svg',
+    './icons/logo-bleu.svg',
     // photos des monuments (Wikimedia Commons)
     './monuments/brandebourg.jpg',
     './monuments/kremlin.jpg',

@@ -315,8 +315,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   française de culture G, mascotte koala bleu) → bleus « électriques » (elec #3d8bff, elecClair, elecVif, bleuet) + vert pomme ✓ ;
   CHOIX DE L'UTILISATEUR (11/11) : BLEU ÉLECTRIQUE #3d8bff + VERT POMME #4fc72c pour la réussite ; niveaux de PAIRES en TURQUOISE
   #12b3a8 (`--pairs`, `--pairs-deep`, `--pairs-ink`, séparés de `--blue`) ; doré, rose, violet, rouge gardés. Essai : ?bac=1&pal=elec.
-  RESTE À FAIRE : l'appliquer à tout le jeu (valeurs par défaut + mode sombre, couleurs écrites en dur, logo, icônes, écran de
-  chargement, manifest, images de partage, confettis). couleur de RÉUSSITE séparée
+  FAIT DANS LE BAC À SABLE (11/11) : classe `pal-elec` posée dès le <head> (index.html) quand ?bac=1 sans autre ?pal ; valeurs
+  claires + sombres dans style.css (bloc « Nouvelles couleurs » en fin de fichier) ; logo icons/logo-bleu.svg (CSS `content:` pour
+  l'écran de chargement et l'en-tête, `LOGO_SRC` en JS) ; `PAL_ELEC`, `BRAND` dans script.js (récaps, confettis, drapeau du sommet).
+  POUR TOUT LE MONDE : recopier le bloc dans :root / mode sombre, poser la classe toujours (ou retirer les conditions), + icônes PNG
+  (icon-192, 512, favicon, apple-touch : rendu Edge + Python), manifest theme_color / background_color, meta theme-color. couleur de RÉUSSITE séparée
   (`--ok`, `--ok-deep`, `--ok-tint`, `--ok-ink`, `.btn-ok` : bandeau de bonne réponse, champ, paires, frises, ✓) = le vert pour l'instant ;
   essai « azur3ok » = azur + vert émeraude #1fb86b pour les bonnes réponses. EN ATTENTE du choix. Au passage il faudra :
   remplacer les #ffc800 / #58cc02 écrits en dur (css ~23, js ~10), le logo (fond vert), l'écran de chargement, manifest

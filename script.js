@@ -18,6 +18,10 @@ const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs
 // RIEN envoyé en ligne (sauvegarde, classement, duels, statistiques). Pour essayer avant les autres.
 const BAC = (() => { try { return new URLSearchParams(location.search).get('bac') === '1'; } catch (err) { return false; } })();
 const STORAGE_KEY = BAC ? 'kultivo_bac' : 'cultureG_v2';
+// 11/11 : nouvelles couleurs (Bleu électrique) — classe posée par index.html dans le bac à sable ; logo bleu qui va avec
+const PAL_ELEC = document.documentElement.classList.contains('pal-elec');
+const LOGO_SRC = PAL_ELEC ? 'icons/logo-bleu.svg' : 'icons/logo.svg';
+const BRAND = PAL_ELEC ? '#3d8bff' : '#58cc02';
 // Palettes d'essai (11/11, apercu-palettes.html) : ?bac=1&pal=N recolore le bac à sable (couleur principale à la place du vert
 // de Duolingo, or et bleu un peu décalés). Rien dans le vrai jeu tant qu'aucune n'est choisie.
 const TRY_PALETTES = {
@@ -57,7 +61,8 @@ const TRY_PALETTES = {
     corail:    { '--green': '#f2674e', '--green-deep': '#c24a35', '--green-tint': '#fde3dc', '--green-ink': '#8a3221', '--on-green': '#ffffff', '--glow': 'rgba(242, 103, 78, 0.10)', '--gold': '#ffbf2e', '--gold-deep': '#d99a0b', '--blue': '#1f9bd6' }
 };
 (() => { try {
-    const pal = BAC && TRY_PALETTES[new URLSearchParams(location.search).get('pal')];
+    const name = new URLSearchParams(location.search).get('pal');
+    const pal = BAC && name !== 'elec' && TRY_PALETTES[name];
     if (pal) Object.entries(pal).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
 } catch (err) { /* rien */ } })();
 // Remise à zéro de TOUS les joueurs (2026-10-20, demande de l'utilisateur avant les tests depuis zéro) : une sauvegarde
@@ -3793,9 +3798,9 @@ function recapSlidesFor(m) {
     const r = monthRecap(m);
     const fmt = n => n.toLocaleString('fr-FR');
     const slides = [{ bg: 'linear-gradient(160deg,#8b5cf6,#ec4899)', face: 'clin', h: `Ton mois ${monthOf(m)}`, p: 'On fait le bilan ? 👀' }];
-    if (r.answers > 0) slides.push({ bg: 'linear-gradient(160deg,#1cb0f6,#3b6cf6)', big: fmt(r.answers), h: r.answers > 1 ? 'questions répondues' : 'question répondue',
+    if (r.answers > 0) slides.push({ bg: PAL_ELEC ? 'linear-gradient(160deg,#12b3a8,#0c857c)' : 'linear-gradient(160deg,#1cb0f6,#3b6cf6)', big: fmt(r.answers), h: r.answers > 1 ? 'questions répondues' : 'question répondue',
         p: `dont ${fmt(r.right)} justes (${Math.round(r.right / r.answers * 100)} %)` });
-    if (r.xp > 0) slides.push({ bg: 'linear-gradient(160deg,#58cc02,#2f8f00)', big: fmt(r.xp), h: 'XP gagnés',
+    if (r.xp > 0) slides.push({ bg: PAL_ELEC ? 'linear-gradient(160deg,#3d8bff,#1c5bd6)' : 'linear-gradient(160deg,#58cc02,#2f8f00)', big: fmt(r.xp), h: 'XP gagnés',
         p: r.best ? `Ton meilleur jour : le ${Number(r.best[0].slice(8, 10))} ${monthName(m)}, ${fmt(r.best[1])} XP` : '' });
     if (r.theme) {
         const icon = (THEME_DECOR.find(t => t.theme === r.theme[0]) || {}).icon || '⭐';
@@ -4030,7 +4035,7 @@ async function drawRecapImage(m) {
     g.fill(new Path2D(K_PATH));
     g.restore();
     // logo + nom du jeu
-    try { const logo = await loadImg('icons/logo.svg'); g.drawImage(logo, W / 2 - 230, 110, 96, 96); } catch (err) { /* sans logo */ }
+    try { const logo = await loadImg(LOGO_SRC); g.drawImage(logo, W / 2 - 230, 110, 96, 96); } catch (err) { /* sans logo */ }
     g.fillStyle = '#fff';
     g.textAlign = 'left';
     g.font = font(900, 72);
@@ -4374,7 +4379,7 @@ function showSummitAnim() {
         <path class="summit-trail" d="${pathD}" fill="none" stroke="#ffd54a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
         <g class="summit-lamps"></g>
         <g class="summit-flag"><line x1="150" y1="48" x2="150" y2="4" stroke="#f4f4f4" stroke-width="3" stroke-linecap="round"/>
-        <g class="summit-cloth"><path d="M151 5 L194 14 L151 25 Z" fill="#58cc02"/><g transform="translate(161 9) scale(.065)"><path d="${K_PATH}" fill="#fff"/></g></g></g></svg>`);
+        <g class="summit-cloth"><path d="M151 5 L194 14 L151 25 Z" fill="${BRAND}"/><g transform="translate(161 9) scale(.065)"><path d="${K_PATH}" fill="#fff"/></g></g></g></svg>`);
     const climber = el('div', 'summit-climber');
     climber.append(kultiEl('content', 'kulti-blink'));
     const crownS = el('img', 'summit-crown-s');
@@ -4530,7 +4535,7 @@ function showCollectionAnim(theme, onDone) {
         slot.style.setProperty('--d', `${at(i)}s`);
         const back = el('div', 'coll-back');
         const logo = el('img');
-        logo.src = 'icons/logo.svg';
+        logo.src = LOGO_SRC;
         logo.alt = '';
         back.append(logo);
         const front = el('div', 'coll-front');
@@ -4604,7 +4609,7 @@ function cardFlip(card, big, shiny = false) {
     const inner = el('div', 'flip-inner');
     const back = el('div', 'flip-back');
     const logo = el('img');
-    logo.src = 'icons/logo.svg';
+    logo.src = LOGO_SRC;
     logo.alt = '';
     const word = el('span', 'flip-word');   // dos « signé » (2026-10-28, apercu-k.html version B)
     word.textContent = 'KULTIVO';
@@ -11336,7 +11341,7 @@ function launchConfetti(palette) {
     canvas.height = H * ratio;
     ctx.scale(ratio, ratio);
 
-    const colors = palette || ['#58cc02', '#ffc800', '#8b5cf6', '#1899d6', '#ff9600', '#e5484d'];
+    const colors = palette || [BRAND, '#ffc800', '#8b5cf6', PAL_ELEC ? '#12b3a8' : '#1899d6', '#ff9600', '#e5484d'];
     const bits = Array.from({ length: 140 }, () => ({
         x: W / 2 + (Math.random() - 0.5) * W * 0.3,
         y: H * 0.35,
