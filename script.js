@@ -1802,6 +1802,22 @@ const encKnown = q => (state.data.stats[q.id]?.right || 0) > 0;
 const encIcon = theme => (THEME_DECOR.find(t => t.theme === theme) || {}).icon || '📘';
 const encNorm = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 const encWhen = q => { const s = state.data.stats[q.id] || {}; return s.first || (s.last ? dayKey(new Date(s.last)) : ''); };
+/** 12/11 : un tap sur « savoirs », « maîtrisés » ou « réussite » réexplique ce que c'est. */
+function encExplain(kind) {
+    const T = {
+        known: ['📚 Les savoirs', 'Un savoir, c’est une question que tu as réussie au moins une fois (parcours, entraînement, défis…).\n\nUne fois dans ton encyclopédie, il y reste pour toujours, même si tu te trompes plus tard.\n\nLes questions vues mais encore jamais réussies n’y sont pas : réussis-les pour les ajouter !'],
+        mastered: ['✨ Les savoirs maîtrisés', 'Une question est maîtrisée quand tu l’as réussie 2 fois d’affilée, à des jours différents.\n\nUne question maîtrisée le reste pour toujours. Les maîtrisées comptent aussi pour les médailles de l’entraînement.'],
+        rate: ['🎯 La réussite', 'C’est la part de bonnes réponses sur toutes tes réponses aux questions de ce thème, depuis le début.\n\nExemple : 78 % = 78 bonnes réponses sur 100.']
+    };
+    const [title, text] = T[kind];
+    askConfirm({ title, text, yes: 'Compris', no: null });
+}
+function encTip(node, kind) {
+    node.classList.add('enc-tip');
+    node.setAttribute('role', 'button');
+    node.tabIndex = 0;
+    node.addEventListener('click', e => { e.stopPropagation(); encExplain(kind); });
+}
 function encBooks() {
     const map = {};
     encAll().forEach(q => {
@@ -1846,6 +1862,8 @@ function renderEncyclopedia(box) {
     const mchip = el('span', 'enc-mchip');
     mchip.textContent = `✨ ${fmtNum(mastered)} maîtrisé${mastered > 1 ? 's' : ''}`;
     head.append(big, mchip);
+    encTip(big, 'known');
+    encTip(mchip, 'mastered');
     const bar = el('div', 'enc-bar');
     const fill = el('i');
     fill.style.width = `${total ? Math.max(known ? 1 : 0, Math.round(known / total * 100)) : 0}%`;
@@ -1915,10 +1933,11 @@ function openEncBook(theme, keep = false) {
     fill.style.width = `${Math.round(book.known / book.total * 100)}%`;
     bar.append(fill);
     const tiles = el('div', 'enc-tiles');
-    [[fmtNum(book.known), `savoir${book.known > 1 ? 's' : ''} sur ${fmtNum(book.total)}`, ''],
-     [`✨ ${book.mastered}`, `maîtrisé${book.mastered > 1 ? 's' : ''}`, 'is-gold'],
-     [book.tries ? `${Math.round(book.right / book.tries * 100)} %` : '–', 'de réussite', 'is-ok']].forEach(([v, l, cls]) => {
+    [[fmtNum(book.known), `savoir${book.known > 1 ? 's' : ''} sur ${fmtNum(book.total)}`, '', 'known'],
+     [`✨ ${book.mastered}`, `maîtrisé${book.mastered > 1 ? 's' : ''}`, 'is-gold', 'mastered'],
+     [book.tries ? `${Math.round(book.right / book.tries * 100)} %` : '–', 'de réussite', 'is-ok', 'rate']].forEach(([v, l, cls, kind]) => {
         const d = el('div', cls);
+        encTip(d, kind);
         const b = el('b');
         b.textContent = v;
         const s = el('span');
@@ -2066,7 +2085,9 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     const d1 = el('span', 'enc-chip is-ok');
     d1.textContent = s.first ? `✓ Découvert le ${encDate(s.first)}` : '✓ Découvert';
     meta.append(d1);
+    encTip(d1, 'known');
     const d2 = el('span', `enc-chip ${isMastered(q.id) ? 'is-gold' : 'is-grey'}`);
+    encTip(d2, 'mastered');
     d2.textContent = isMastered(q.id) ? '✨ Maîtrisé' : '✨ Pas encore maîtrisé';
     meta.append(d2);
     fiche.append(meta);
