@@ -11915,6 +11915,9 @@ function initBac() {
         const more = await askConfirm({ title: '🧪 Bac à sable', text: 'Une copie de ta partie : tout ce que tu fais ici reste ici. Rien n’est envoyé en ligne, ton vrai jeu ne change pas.',
             yes: '+1 000 🪙 pour tester', no: 'Plus d’options' });
         if (more) { state.data.coins += 1000; saveData(); renderHeader(); if (!$('shopScreen').hidden) renderShop(); return; }
+        // 11/11 : en 2e, pour la trouver facilement (demande de l'utilisateur)
+        const anim = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir l’animation du jour de série (avec ta série actuelle) ?', yes: 'Voir l’animation', no: 'Plus d’options' });
+        if (anim) { showStreakAnim(Math.max(2, state.data.streak || 1)); return; }
         const place = await askConfirm({ title: '🧪 Bac à sable', text: 'Refaire le test de placement (7 étapes, jusqu’au niveau 141) ? Ta copie ne recule pas : tu verras seulement le niveau obtenu.', yes: 'Faire le test', no: 'Plus d’options' });
         if (place) { showScreen('map'); openPlacementModal(); return; }
         const tips = await askConfirm({ title: '🧪 Bac à sable', text: 'Revoir les bulles d’explication (Halloween, Défis, Profil, Classement) ?', yes: 'Revoir les bulles', no: 'Plus d’options' });
@@ -11926,14 +11929,10 @@ function initBac() {
             showToast('Bulles remises : va dans Défis pour les voir.');
             return;
         }
-        const anim = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir l’animation du jour de série (avec ta série actuelle) ?', yes: 'Voir l’animation', no: 'Plus d’options' });
-        if (anim) { showStreakAnim(state.data.streak || 1); return; }
         const more2 = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir les autres petites fêtes ?', yes: 'Récap du mois en cours', no: 'Plus d’options' });
         if (more2) { recapSlides = []; openRecap(monthKeyOf(todayKey())); return; }
         const more3 = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le gel de série puis le nouveau titre ?', yes: 'Gel + titre', no: 'Plus d’options' });
         if (more3) { celebrate(() => showFreezeAnim(state.data.streak || 1)); const t = titleFor(state.data.xp); celebrate(() => showTitleAnim({ from: 'Curieux', to: t.current.name, next: t.next })); return; }
-        const streakA = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir l’animation du jour de série ?', yes: 'Voir l’animation', no: 'Plus d’options' });
-        if (streakA) { celebrate(() => showStreakAnim(Math.max(2, state.data.streak || 12))); return; }
         const summit = await askConfirm({ title: '🧪 Bac à sable', text: `Voir la fête du sommet (niveau ${MAX_LEVEL} réussi) ?`, yes: 'Voir la fête', no: 'Plus d’options' });
         if (summit) { celebrate(() => showSummitAnim()); return; }
         const rp = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir le récap du parcours (avec les chiffres de cette partie) ?', yes: 'Voir le récap', no: 'Plus d’options' });
