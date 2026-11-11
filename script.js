@@ -2367,17 +2367,22 @@ function endEvent() {
 // 30 🪙 par mission réussie, et un coffre de 3 cartes (dont une rare) quand les 3 sont récupérées.
 
 const MISSION_COINS = 30;
+// 11/11 (demande de l'utilisateur, « un peu faciles ») : objectifs relevés (`goal2`) et 40 🪙 par mission, à partir du lundi 16/11
+// (la semaine en cours garde ses objectifs). Sprint : 12 → 8 (personne n'a jamais dépassé 11).
+const MISSIONS_V2_FROM = '2026-11-16';
+const missionsV2 = () => weekStart() >= MISSIONS_V2_FROM;
+const missionCoins = () => (missionsV2() ? 40 : MISSION_COINS);
 const MISSION_POOL = [
-    { id: 'levels',   icon: '🗺️', goal: 5,  text: n => `Réussis ${n} niveaux du parcours` },
-    { id: 'flawless', icon: '✨', goal: 2,  text: n => `Réussis ${n} niveaux sans faute` },
+    { id: 'levels',   icon: '🗺️', goal: 5,  goal2: 8,  text: n => `Réussis ${n} niveaux du parcours` },
+    { id: 'flawless', icon: '✨', goal: 2,  goal2: 3,  text: n => `Réussis ${n} niveaux sans faute` },
     { id: 'order',    icon: '⏳', goal: 2,  text: n => `Réussis ${n} niveaux de frises` },
     { id: 'pairs',    icon: '🔗', goal: 2,  text: n => `Réussis ${n} niveaux de paires` },
-    { id: 'daily',    icon: '📅', goal: 4,  text: n => `Joue ${n} défis du jour` },
-    { id: 'correct',  icon: '✅', goal: 60, text: n => `Donne ${n} bonnes réponses` },
-    { id: 'theme',    icon: '🎓', goal: 12, text: (n, theme) => `Donne ${n} bonnes réponses en ${theme}` },
-    { id: 'training', icon: '🎯', goal: 3,  text: n => `Termine ${n} entraînements` },
-    { id: 'reviews',  icon: '🔁', goal: 3,  text: n => `Termine ${n} révisions` },
-    { id: 'sprint',   icon: '⚡', goal: 12, text: n => `Fais ${n} bonnes réponses en un seul sprint`, max: true },
+    { id: 'daily',    icon: '📅', goal: 4,  goal2: 5,  text: n => `Joue ${n} défis du jour` },
+    { id: 'correct',  icon: '✅', goal: 60, goal2: 100, text: n => `Donne ${n} bonnes réponses` },
+    { id: 'theme',    icon: '🎓', goal: 12, goal2: 20, text: (n, theme) => `Donne ${n} bonnes réponses en ${theme}` },
+    { id: 'training', icon: '🎯', goal: 3,  goal2: 5,  text: n => `Termine ${n} entraînements` },
+    { id: 'reviews',  icon: '🔁', goal: 3,  goal2: 4,  text: n => `Termine ${n} révisions` },
+    { id: 'sprint',   icon: '⚡', goal: 12, goal2: 8, text: n => `Fais ${n} bonnes réponses en un seul sprint`, max: true },
     { id: 'days',     icon: '🔥', goal: 5,  text: n => `Joue ${n} jours différents cette semaine` }
 ];
 
@@ -2389,7 +2394,7 @@ function weekMissions() {
     const picked = seededShuffle(MISSION_POOL, `missions-${week}`).slice(0, 3);
     const themes = THEME_DECOR.map(t => t.theme).filter(t => t !== 'Drapeaux' && t !== 'Monuments');
     const theme = seededShuffle(themes, `missions-theme-${week}`)[0];
-    return picked.map(m => ({ ...m, theme: m.id === 'theme' ? theme : null,
+    return picked.map(m => ({ ...m, goal: missionsV2() && m.goal2 ? m.goal2 : m.goal, theme: m.id === 'theme' ? theme : null,
         icon: m.id === 'theme' ? (THEME_DECOR.find(t => t.theme === theme) || {}).icon || m.icon : m.icon }));
 }
 
@@ -2481,15 +2486,15 @@ function openMissionsModal() {
         if (p >= m.goal) {
             if (md.claimed[m.id]) {
                 const ok = el('p', 'mission-claimed');
-                ok.textContent = `✓ +${MISSION_COINS} 🪙 récupérées`;
+                ok.textContent = `✓ +${missionCoins()} 🪙 récupérées`;
                 item.append(ok);
             } else {
                 const btn = el('button', 'btn btn-green btn-small');
                 btn.type = 'button';
-                btn.textContent = `🎁 Récupérer +${MISSION_COINS} 🪙`;
+                btn.textContent = `🎁 Récupérer +${missionCoins()} 🪙`;
                 btn.addEventListener('click', () => {
                     md.claimed[m.id] = true;
-                    state.data.coins += MISSION_COINS;
+                    state.data.coins += missionCoins();
                     saveData();
                     renderHeader();
                     renderMissionsRow();
@@ -9033,8 +9038,8 @@ function renderTraining() {
             const errors = bank.filter(q => missCount(q.id) > 0).length;
             if (errors) {
                 const rev = el('span', 'train-errors');
-                rev.textContent = `↻ ${errors} à revoir`;
-                rev.title = 'Questions ratées : elles reviennent dans tes prochaines sessions';
+                rev.textContent = `🔁 ${errors} ${errors > 1 ? 'ratées' : 'ratée'} · reviennent ici`;   // 11/11 : pas dans « ↻ à revoir » du parcours
+                rev.title = 'Questions ratées : elles reviennent dans tes prochaines sessions de ce thème';
                 foot.append(rev);
             }
             foot.addEventListener('click', e => { e.stopPropagation(); openMedalsSheet(theme, icon); });
