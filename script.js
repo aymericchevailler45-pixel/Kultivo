@@ -1489,7 +1489,25 @@ function showStreakAnim(streak) {
     btn.classList.add('is-wait');   // 11/11 : on ne peut pas passer l'animation
     btn.disabled = true;
     ov._ready = false;
-    ov.append(digits, label, capLine, week, btn);
+    let top = digits, kult = null;
+    if (PAL_ELEC) {   // 11/11 (bac à sable) : le chiffre (qui défile toujours) dans une grande flamme, Kulti sous la semaine
+        top = el('div', 'streak-flame');
+        const fl = el('img');
+        fl.src = 'emoji/1f525.svg';
+        fl.alt = '';
+        top.append(fl, digits);
+        const keys = ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((_, i) => shiftDays(weekStart(), i));
+        const idx = keys.indexOf(todayKey());
+        const full = keys.slice(0, idx).every(k => state.data.activeDays[k] !== undefined || state.data.frozenDays[k]);
+        const left = 6 - idx;
+        kult = el('div', 'streak-kulti');
+        const face = el('div', 'streak-kulti-face');
+        face.append(kultiEl('fier', 'kulti-blink'));
+        const bub = el('div', 'streak-bubble');
+        bub.textContent = full && left > 0 ? `Encore ${plural(left, 'jour', 'jours')} pour une semaine parfaite !` : full ? 'Semaine parfaite ! Bravo !' : 'Bravo ! Reviens demain pour la garder.';
+        kult.append(face, bub);
+    }
+    ov.append(...[top, label, capLine, week, kult, btn].filter(Boolean));
     ov.classList.remove('is-on', 'is-closing');
     ov.hidden = false;
     requestAnimationFrame(() => ov.classList.add('is-on'));
@@ -1504,6 +1522,7 @@ function showStreakAnim(streak) {
         // À l'arrêt, toujours pile sur la série (même si l'animation a pris du retard)
         setTimeout(() => { roll.getAnimations().forEach(a => a.cancel()); roll.style.transform = end(); digits.classList.add('is-stopped'); }, spin),
         setTimeout(() => { label.classList.add('is-on'); capLine.classList.add('is-on'); }, spin + 150),
+        setTimeout(() => { const k = ov.querySelector('.streak-kulti'); if (k) k.classList.add('is-on'); }, spin + 900),
         setTimeout(() => { if (cap) launchConfetti(); }, spin + 200),
         setTimeout(() => week.classList.add('is-on'), spin + 450),
         setTimeout(() => { const t = week.querySelector('.is-today'); if (t) t.classList.add('is-lit'); }, spin + 950),
@@ -3304,6 +3323,7 @@ function renderMap() {
     placeMapKulti();
     if (focusNode) focusNode.scrollIntoView({ block: 'center' });
     mapFocusLevel = 0;
+    if (PAL_ELEC) requestAnimationFrame(drawMapTrail);
     if (kultiHop) startKultiHop();
     setTimeout(updateToCurrentBtn, 50);
     if (!state.data.tipChest && readyChests().length) maybeShowChestTip();
@@ -4632,6 +4652,53 @@ function cardRevealFx(rarity) {
 function shinyFx() {
     launchConfetti(['#ffffff', '#ffd6f5', '#bdefff', '#fff3b0', '#e0c3ff']);
     playSound('win');
+}
+
+/** 11/11 (bac à sable) : Kulti avance sur la barre de progression de la leçon, jusqu'au drapeau. */
+function placeProgressRider(pct) {
+    const bar = $('progress');
+    let rider = bar.querySelector('.progress-rider');
+    if (!rider) {
+        rider = el('span', 'progress-rider');
+        rider.append(kultiEl('content', 'kulti-blink'));
+        const flag = el('span', 'progress-flag');
+        flag.textContent = '🏁';
+        bar.append(rider, flag);
+    }
+    rider.style.left = `${pct}%`;
+}
+
+/* 11/11 (bac à sable) : pointillés entre les niveaux du parcours (dorés sur la partie faite). Recalculés après chaque dessin. */
+function drawMapTrail() {
+    const list = $('mapPath');
+    if (!list || $('mapScreen').hidden) return;
+    list.querySelector('.map-trail')?.remove();
+    const base = list.getBoundingClientRect();
+    if (!base.height) return;
+    const pts = [];
+    [...list.children].forEach(li => {
+        const node = li.querySelector('.node');
+        const box = (node || li).getBoundingClientRect();
+        const outer = li.getBoundingClientRect();
+        const cx = box.left + box.width / 2 - base.left;
+        pts.push({ cx, top: box.top - base.top, bottom: outer.bottom - base.top, n: Number(li.dataset.level) || 0 });
+    });
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'map-trail');
+    svg.setAttribute('width', base.width);
+    svg.setAttribute('height', base.height);
+    let lastLevel = 0;
+    for (let i = 1; i < pts.length; i++) {   // l'élément i est AU-DESSUS de i − 1 (liste à l'envers)
+        const a = pts[i - 1], b = pts[i];
+        if (a.n) lastLevel = a.n;
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', a.cx); line.setAttribute('y1', a.top - 4);
+        line.setAttribute('x2', b.cx); line.setAttribute('y2', b.bottom + 4);
+        line.setAttribute('class', lastLevel && state.data.done[lastLevel] ? 'is-done' : '');
+        svg.append(line);
+    }
+    list.prepend(svg);
 }
 
 /** Une seule carte en grand : charge, puis se retourne. */
@@ -6608,6 +6675,7 @@ function updateProgress() {
     }
     $('progressBar').style.width = `${pct}%`;
     $('progress').setAttribute('aria-valuenow', String(pct));
+    if (PAL_ELEC) placeProgressRider(pct);
 }
 
 function showCard() {
@@ -6808,6 +6876,11 @@ function showFeedback(verdict, skipped) {
                               'Pas tout à fait';
     $('feedbackAnswer').textContent = `Réponse : ${q.a[0]}`;
     $('explanationText').textContent = q.exp;
+    if (PAL_ELEC) {   // 11/11 (bac à sable) : carte flottante avec Kulti qui réagit, dans la ligne du titre (pas plus haut)
+        const face = el('span', 'fb-kulti');
+        face.append(kultiEl(ok ? 'content' : 'triste', 'kulti-blink'));
+        $('feedbackTitle').prepend(face);
+    }
 
     // Niveau ou défi : on annonce le cœur perdu dès le bandeau rouge (il part au clic sur « Continuer »)
     const losesHeart = !ok && (state.mode === 'level' || state.mode === 'challenge');
@@ -11524,6 +11597,7 @@ function bindEvents() {
     $('dropChip').addEventListener('click', openDropsModal);
     $('eventBanner').addEventListener('click', () => { showScreen('challenges'); setChallengesTab('event'); });
     window.addEventListener('resize', updateEventBanner);
+    window.addEventListener('resize', () => { if (PAL_ELEC) drawMapTrail(); });   // pointillés du parcours (bac à sable)
     $('missionsRow').addEventListener('click', openMissionsModal);
     $('closeMissionsBtn').addEventListener('click', () => { $('missionsModal').hidden = true; });
     for (const [btnId, word] of [['tfTrue', 'Vrai'], ['tfFalse', 'Faux']]) {
