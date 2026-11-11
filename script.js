@@ -1052,7 +1052,13 @@ function wipeBeforeReset() {
 
 function loadData() {
     if (BAC) {   // 1re ouverture du bac à sable : on copie la vraie partie
-        try { if (!localStorage.getItem(STORAGE_KEY) && localStorage.getItem('cultureG_v2')) localStorage.setItem(STORAGE_KEY, localStorage.getItem('cultureG_v2')); } catch (err) { /* tant pis */ }
+        // 12/11 : on recopie AUSSI quand la vraie partie a plus d'XP que la copie (une vieille copie vide restait pour toujours : « je repars du niveau 1 »)
+        try {
+            const real = localStorage.getItem('cultureG_v2');
+            const copy = localStorage.getItem(STORAGE_KEY);
+            const xpOf = raw => { try { return Number(JSON.parse(raw).xp) || 0; } catch (e) { return 0; } };
+            if (real && (!copy || xpOf(real) > xpOf(copy))) localStorage.setItem(STORAGE_KEY, real);
+        } catch (err) { /* tant pis */ }
     } else wipeBeforeReset();
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -12345,7 +12351,9 @@ function initBac() {
     pill.textContent = '🧪';
     pill.setAttribute('aria-label', 'Bac à sable');
     pill.addEventListener('click', async () => {
-        const more = await askConfirm({ title: '🧪 Bac à sable', text: 'Une copie de ta partie : tout ce que tu fais ici reste ici. Rien n’est envoyé en ligne, ton vrai jeu ne change pas.',
+        let realLv = 0;
+        try { realLv = JSON.parse(localStorage.getItem('cultureG_v2') || 'null')?.unlocked || 0; } catch (e) { /* illisible */ }
+        const more = await askConfirm({ title: '🧪 Bac à sable', text: `Une copie de ta partie : tout ce que tu fais ici reste ici. Rien n’est envoyé en ligne, ton vrai jeu ne change pas. ${realLv ? `Copie : niveau ${Math.min(state.data.unlocked, MAX_LEVEL)} (vraie partie : niveau ${Math.min(realLv, MAX_LEVEL)}).` : 'Ta vraie partie n’est pas sur ce navigateur : ouvre le bac à sable depuis l’appli (5 taps sur le logo).'}`,
             yes: '+1 000 🪙 pour tester', no: 'Plus d’options' });
         if (more) { state.data.coins += 1000; saveData(); renderHeader(); if (!$('shopScreen').hidden) renderShop(); return; }
         // 11/11 : en 2e, pour la trouver facilement (demande de l'utilisateur)
