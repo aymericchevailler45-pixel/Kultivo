@@ -5786,7 +5786,7 @@ function renderShopV2() {
             openCardBoxes([{ size: SHOP_CHEST.size, rare: true }], '🎁 Coffre de cartes');
             renderHeader();
             renderShop();
-        })], { text: `🃏 ${owned} / ${CARDS.length} cartes` }));
+        })], { text: `🃏 ${owned} / ${CARDS.length}` }));
     grid.append(chestCard);
 
     // 3) Objets utiles

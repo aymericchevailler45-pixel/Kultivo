@@ -3875,7 +3875,7 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 @media (prefers-reduced-motion: reduce) { .shiny-stage .kcard, .shiny-halo, .shiny-flash, .sh-spark { animation: none !important; } .sh-spark { display: none; } }
 
 /* Boutique : ce qu'on possède en pastille sous le nom (11/11) */
-.shop-line .sl-text .sl-chip { display: inline-block; margin: 3px 0 4px; padding: 2px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 900;
+.shop-line .sl-text .sl-chip { display: inline-block; white-space: nowrap; margin: 3px 0 4px; padding: 2px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 900;
     background: color-mix(in srgb, var(--violet) 16%, var(--surface)); color: var(--violet-ink, var(--violet)); }
 .shop-line .sl-text .sl-chip.is-zero { background: var(--bg); color: var(--muted); }
 
@@ -3889,6 +3889,7 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 .ask-tile.is-bad b { color: var(--red-ink); }
 .ask-tile.is-warn b { color: #d97706; }
 .btn-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+#hintBtn { justify-content: center; gap: 0; }   /* 11/11 : le 💡 de la leçon reste centré */
 .btn-hint .hint-name { min-width: 0; }
 .hint-tag { flex: none; padding: 3px 9px; border-radius: 999px; font-size: 0.82rem; font-weight: 900; white-space: nowrap; }
 .hint-tag.is-stock { background: color-mix(in srgb, var(--green) 22%, var(--surface)); color: var(--green-ink); }
