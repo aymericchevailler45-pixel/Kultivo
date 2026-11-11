@@ -28,6 +28,9 @@ const TRY_PALETTES = {
     // 2e série (11/11, « un bleu, mais pas encore fan ») : 5 bleus
     azur:      { '--green': '#1f8ce6', '--green-deep': '#1567b0', '--green-tint': '#dbeefd', '--green-ink': '#0f4f8a', '--on-green': '#ffffff', '--glow': 'rgba(31, 140, 230, 0.10)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88' },
     // 3e série (11/11, « l'azur, mais plus lumineux ») : 3 azurs plus clairs et plus vifs (toujours plus bleus que le #1cb0f6 de Duolingo)
+    // Azur éclatant + VERT DE RÉUSSITE (11/11) : le bleu pour l'identité, un vert émeraude (pas celui de Duolingo) pour les bonnes réponses
+    azur3ok:   { '--green': '#33a3ff', '--green-deep': '#1a7ad6', '--green-tint': '#ddf0ff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(51, 163, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88',
+                 '--ok': '#1fb86b', '--ok-deep': '#148a4f', '--ok-tint': '#d6f5e3', '--ok-ink': '#0b6236', '--on-ok': '#ffffff' },
     azur2:     { '--green': '#2a9bf4', '--green-deep': '#1873c4', '--green-tint': '#dcefff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(42, 155, 244, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88' },
     azur3:     { '--green': '#33a3ff', '--green-deep': '#1a7ad6', '--green-tint': '#ddf0ff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(51, 163, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88' },
     azur4:     { '--green': '#3d8bff', '--green-deep': '#2266d6', '--green-tint': '#dfeaff', '--green-ink': '#174a9e', '--on-green': '#ffffff', '--glow': 'rgba(61, 139, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88' },
@@ -6796,7 +6799,8 @@ function showFeedback(verdict, skipped) {
     }
 
     const cont = $('continueBtn');
-    cont.classList.toggle('btn-green', ok);
+    cont.classList.remove('btn-green');
+    cont.classList.toggle('btn-ok', ok);   // 11/11 : couleur de réussite (séparée de la couleur principale)
     cont.classList.toggle('btn-red', !ok);
 
     // Défi du jour et sprint : pas de « J'avais juste », pour que les scores restent comparables

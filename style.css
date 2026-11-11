@@ -19,6 +19,11 @@
     --green-tint: #dcf5c4;
     --green-ink: #2a6200;
     --on-green: #11330a;
+    /* 11/11 : couleur de RÉUSSITE (bonne réponse, ✓), séparée de la couleur principale ; pour l'instant = le vert */
+    --ok: var(--green);
+    --ok-deep: var(--green-deep);
+    --ok-tint: var(--green-tint);
+    --ok-ink: var(--green-ink);
 
     --red: #e5484d;
     --red-deep: #b93338;
@@ -642,7 +647,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 }
 .answer-input::placeholder { color: var(--muted); font-weight: 500; }
 .answer-input:focus { outline: none; border-color: var(--blue); }
-.answer-input.is-ok    { border-color: var(--green); background: var(--green-tint); color: var(--green-ink); }
+.answer-input.is-ok    { border-color: var(--ok); background: var(--ok-tint); color: var(--ok-ink); }
 .answer-input.is-wrong { border-color: var(--red);   background: var(--red-tint);   color: var(--red-ink); }
 .answer-input.shake    { animation: shake 0.3s; }
 
@@ -710,7 +715,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 }
 .pair-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
 .pair-btn.is-selected { border-color: var(--blue); background: rgba(24, 153, 214, 0.12); box-shadow: 0 4px 0 var(--blue); }
-.pair-btn.is-ok       { border-color: var(--green); background: var(--green-tint); color: var(--green-ink); box-shadow: 0 4px 0 var(--green); }
+.pair-btn.is-ok       { border-color: var(--ok); background: var(--ok-tint); color: var(--ok-ink); box-shadow: 0 4px 0 var(--ok); }
 .pair-btn.is-wrong    { border-color: var(--red); background: var(--red-tint); color: var(--red-ink); box-shadow: 0 4px 0 var(--red); animation: shake 0.3s; }
 .pair-btn.is-matched  { opacity: 0.3; box-shadow: none; cursor: default; }
 
@@ -774,9 +779,9 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .order-answer { flex: 1; display: flex; flex-direction: column; padding: 8px 12px; border: 2px solid var(--tone, var(--line)); border-radius: 14px; background: var(--surface); }
 .order-value { color: var(--muted); font-size: 0.9rem; font-weight: 800; }
 .order-yours { color: var(--red-ink); font-size: 0.85rem; font-weight: 700; }
-.order-slot.is-ok    { --tone: var(--green); }
+.order-slot.is-ok    { --tone: var(--ok); }
 .order-slot.is-wrong { --tone: var(--red); }
-.order-slot.is-ok .order-num    { background: var(--green); }
+.order-slot.is-ok .order-num    { background: var(--ok); }
 .order-slot.is-wrong .order-num { background: var(--red); }
 
 /* Niveau Ordre sur la carte : losange rose */
@@ -860,6 +865,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .btn:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 
 .btn-green  { --btn: var(--green);  --btn-deep: var(--green-deep);  --btn-ink: var(--on-green); }
+.btn-ok     { --btn: var(--ok);     --btn-deep: var(--ok-deep);     --btn-ink: var(--on-ok, var(--on-green)); }   /* « Continuer » après une bonne réponse */
 .btn-red    { --btn: var(--red);    --btn-deep: var(--red-deep);    --btn-ink: #ffffff; }
 .btn-violet { --btn: var(--violet); --btn-deep: var(--violet-deep); --btn-ink: #ffffff; }
 
@@ -894,7 +900,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
     visibility: visible;
     transition: transform 0.22s ease, visibility 0s;
 }
-.feedback.is-ok    { background: var(--green-tint); color: var(--green-ink); border-color: var(--green); }
+.feedback.is-ok    { background: var(--ok-tint); color: var(--ok-ink); border-color: var(--ok); }
 .feedback.is-wrong { background: var(--red-tint);   color: var(--red-ink);   border-color: var(--red); }
 
 .feedback-inner {
@@ -2369,7 +2375,7 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 .review-note { margin: 0 0 12px; font-size: 0.85rem; }
 .review-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; }
 .review-item { padding: 10px 12px; border: 2px solid var(--line); border-left-width: 6px; border-radius: 12px; }
-.review-item.is-ok { border-left-color: var(--green, #58cc02); }
+.review-item.is-ok { border-left-color: var(--ok); }
 .review-item.is-ko { border-left-color: var(--red); }
 .review-q { font-size: 0.9rem; font-weight: 800; color: var(--ink); }
 .review-media { display: flex; gap: 4px; margin-top: 6px; }
@@ -3875,7 +3881,7 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 .ask-tile { flex: 1 1 0; min-width: 84px; max-width: 130px; padding: 8px 6px; border-radius: 14px; background: var(--bg); text-align: center; }
 .ask-tile b { display: block; font-size: 1.35rem; font-weight: 900; line-height: 1.1; color: var(--ink); white-space: nowrap; }
 .ask-tile span { display: block; margin-top: 2px; font-size: 0.75rem; font-weight: 800; color: var(--muted); line-height: 1.2; }
-.ask-tile.is-good b { color: var(--green-ink); }
+.ask-tile.is-good b { color: var(--ok-ink); }
 .ask-tile.is-bad b { color: var(--red-ink); }
 .ask-tile.is-warn b { color: #d97706; }
 .btn-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
