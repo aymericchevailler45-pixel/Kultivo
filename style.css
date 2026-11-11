@@ -3978,3 +3978,5 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .streak-kulti-face { width: 48px; height: 48px; flex: none; }
 .streak-bubble { max-width: 200px; padding: 8px 12px; border-radius: 14px; background: #fff; color: var(--ink); font-size: 0.86rem; font-weight: 800; text-align: left; }
 .pal-elec .streak-continue { --btn: #ff9600; --btn-deep: #c46a00; --btn-ink: #ffffff; }
+/* 11/11 : quête entre duo — le partenaire en orange (toi = bleu principal ; avant, deux bleus impossibles à distinguer) */
+.pal-elec .quest-bar .is-mate, .pal-elec .quest-legend .is-mate::before, .pal-elec .quest-row-bar .is-mate { background: #ff9600; }

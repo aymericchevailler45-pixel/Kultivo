@@ -324,6 +324,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   seulement des pointillés entre les niveaux ; 3 Kulti sur la barre (croix remise comme avant), 3 cœurs alignés gardés, pas plus haut ; 4 oui ;
   5 oui en GARDANT la roulette des chiffres. FAIT dans le bac à sable (bloc « Style à nous » en fin de style.css, `.fb-kulti`,
   `placeProgressRider`, `drawMapTrail`, `.streak-flame`, `.streak-kulti`).
+  Quête entre duo : partenaire en ORANGE #ff9600 dans le bac à sable (toi = bleu principal).
   POUR TOUT LE MONDE : recopier le bloc dans :root / mode sombre, poser la classe toujours (ou retirer les conditions), + icônes PNG
   (icon-192, 512, favicon, apple-touch : rendu Edge + Python), manifest theme_color / background_color, meta theme-color. couleur de RÉUSSITE séparée
   (`--ok`, `--ok-deep`, `--ok-tint`, `--ok-ink`, `.btn-ok` : bandeau de bonne réponse, champ, paires, frises, ✓) = le vert pour l'instant ;
