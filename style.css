@@ -46,6 +46,10 @@
 
     --orange: #ff9600;
     --blue: #1899d6;
+    /* 11/11 : couleur des niveaux de PAIRES, séparée du bleu (pour la future couleur principale bleue) ; pour l'instant = le bleu */
+    --pairs: var(--blue);
+    --pairs-deep: #10709f;
+    --pairs-ink: var(--blue-ink);
 
     --locked: #dde3ec;
     --locked-deep: #c3ccda;
@@ -795,14 +799,14 @@ body.keyboard-open #skipBtn { box-shadow: 0 3px 0 var(--line); }
 
 /* Niveau Paires sur la carte : carré arrondi, bleu (les défis sont de grands ronds violets) */
 .node.is-pairs { border-radius: 26px; }
-.node.is-pairs.is-current { background: var(--blue); color: #ffffff; --deep: #10709f; }
-.node.is-pairs.is-current::after { border-color: var(--blue); border-radius: 32px; }
-.stop.is-pairs-stop .stop-name { color: var(--blue-ink); }
+.node.is-pairs.is-current { background: var(--pairs); color: #ffffff; --deep: var(--pairs-deep); }
+.node.is-pairs.is-current::after { border-color: var(--pairs); border-radius: 32px; }
+.stop.is-pairs-stop .stop-name { color: var(--pairs-ink); }
 
 /* Verrouillés : on garde la forme et l'icône (grisée), avec un liseré de leur couleur */
 .node.is-locked .node-icon { filter: grayscale(1); opacity: 0.55; }
 .node.is-challenge.is-locked { box-shadow: 0 6px 0 var(--deep), inset 0 0 0 4px var(--violet); }
-.node.is-pairs.is-locked     { box-shadow: 0 6px 0 var(--deep), inset 0 0 0 4px var(--blue); }
+.node.is-pairs.is-locked     { box-shadow: 0 6px 0 var(--deep), inset 0 0 0 4px var(--pairs); }
 .node.is-challenge.is-locked, .node.is-pairs.is-locked { font-size: 2rem; }
 @keyframes shake {
     0%, 100% { transform: translateX(0); }

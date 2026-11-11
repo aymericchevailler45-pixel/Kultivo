@@ -312,7 +312,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   le bleu #1cb0f6 sont EXACTEMENT ceux de Duolingo → à changer avant le Play Store. Aperçu apercu-palettes.html : le bac à sable
   recoloré par ?bac=1&pal=… (`TRY_PALETTES` : emeraude, royal, lagon, indigo, corail). L'utilisateur veut un BLEU : 2e page apercu-bleus.html
   (azur, cobalt, klein, royal, nuit, petrole, avec le LOGO recoloré : fond dégradé + K de la couleur). Préféré d'abord : AZUR ÉCLATANT (#33a3ff), ÉCARTÉ : presque le bleu de SAPIO (#00a4ff, appli
-  française de culture G, mascotte koala bleu) → bleus « électriques » (elec #3d8bff, elecClair, elecVif, bleuet) + vert pomme ✓ ; couleur de RÉUSSITE séparée
+  française de culture G, mascotte koala bleu) → bleus « électriques » (elec #3d8bff, elecClair, elecVif, bleuet) + vert pomme ✓ ;
+  CHOIX DE L'UTILISATEUR (11/11) : BLEU ÉLECTRIQUE #3d8bff + VERT POMME #4fc72c pour la réussite ; niveaux de PAIRES en TURQUOISE
+  #12b3a8 (`--pairs`, `--pairs-deep`, `--pairs-ink`, séparés de `--blue`) ; doré, rose, violet, rouge gardés. Essai : ?bac=1&pal=elec.
+  RESTE À FAIRE : l'appliquer à tout le jeu (valeurs par défaut + mode sombre, couleurs écrites en dur, logo, icônes, écran de
+  chargement, manifest, images de partage, confettis). couleur de RÉUSSITE séparée
   (`--ok`, `--ok-deep`, `--ok-tint`, `--ok-ink`, `.btn-ok` : bandeau de bonne réponse, champ, paires, frises, ✓) = le vert pour l'instant ;
   essai « azur3ok » = azur + vert émeraude #1fb86b pour les bonnes réponses. EN ATTENTE du choix. Au passage il faudra :
   remplacer les #ffc800 / #58cc02 écrits en dur (css ~23, js ~10), le logo (fond vert), l'écran de chargement, manifest

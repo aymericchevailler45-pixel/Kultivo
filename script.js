@@ -39,7 +39,7 @@ const TRY_PALETTES = {
     azur3menthe: { '--green': '#33a3ff', '--green-deep': '#1a7ad6', '--green-tint': '#ddf0ff', '--green-ink': '#0f5596', '--on-green': '#ffffff', '--glow': 'rgba(51, 163, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88',
                  '--ok': '#22c98a', '--ok-deep': '#179a69', '--ok-tint': '#d2f7e8', '--ok-ink': '#0d6b48', '--on-ok': '#ffffff' },
     // 11/11 : l'Azur éclatant est presque le bleu de SAPIO (#00a4ff, concurrent direct) → bleus « électriques », plus profonds, + vert pomme ✓
-    elec:      { '--green': '#3d8bff', '--green-deep': '#2266d6', '--green-tint': '#dfeaff', '--green-ink': '#174a9e', '--on-green': '#ffffff', '--glow': 'rgba(61, 139, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88',
+    elec:      { '--green': '#3d8bff', '--green-deep': '#2266d6', '--green-tint': '#dfeaff', '--green-ink': '#174a9e', '--on-green': '#ffffff', '--glow': 'rgba(61, 139, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#3d8bff', '--pairs': '#12b3a8', '--pairs-deep': '#0c857c', '--pairs-ink': '#0b5f56',
                  '--ok': '#4fc72c', '--ok-deep': '#3a9a1f', '--ok-tint': '#dcf6d2', '--ok-ink': '#2a6b14', '--on-ok': '#ffffff' },
     elecClair: { '--green': '#4a95ff', '--green-deep': '#2a6fdc', '--green-tint': '#e1edff', '--green-ink': '#1a4f9e', '--on-green': '#ffffff', '--glow': 'rgba(74, 149, 255, 0.12)', '--gold': '#ffbe2e', '--gold-deep': '#d99a0b', '--blue': '#0b5f88',
                  '--ok': '#4fc72c', '--ok-deep': '#3a9a1f', '--ok-tint': '#dcf6d2', '--ok-ink': '#2a6b14', '--on-ok': '#ffffff' },
