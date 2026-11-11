@@ -308,6 +308,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   série en danger / protégée et avant un palier d'entraînement (palier x / 10, réussies x / y) ; indices pendant une question =
   pastille « 🎒 2 · gratuit » (verte) ou « 45 🪙 » (dorée) ; cœur de secours = pastilles. ÉCRAN DE FIN en pastilles (pièces dorées,
   chaque ligne dans sa pastille) : dans le VRAI JEU depuis le 11/11 (validé après essai au bac à sable). Fenêtres : 18 px au-dessus et au-dessous des cases (`#askInfo`).
+- BADGES revus le 11/11 (75 badges, 16 familles, UN compteur par famille ; badge à compteur propre = 5e élément de la ligne) :
+  parcours + 150 / 200 / 250 ; bonnes réponses + 25 000 ; défi du jour + 100 (et 10/10 dedans) ; SPRINT 8 / 10 / 12 (ids sprint10/20/30
+  gardés) ; entraînement + « tous en or » (`goldAll`) ; « Spécialiste » caché sauf pour qui l'a (`hidden`) ; Ligue et Duels séparés,
+  + 100 duels ; Collection (+ thème brillant dedans) ; Révisions + 50 / 100 ; Boutique 1 / 10 / 25 / 50 achats (le coffre compte
+  maintenant) ; Avatar : 1 / 5 collections complètes (`avCollections`). En attente : badges de paliers d'entraînement (5, 10…).
 - FÊTE DU SOMMET (10/11, choix C sur apercu-sommet.html) : DERNIER niveau réussi pour la 1re fois (`summitDone`, posé dans la fin
   de niveau, même s'il reste des niveaux facultatifs derrière : PAS de mention des facultatifs, demande de l'utilisateur) →
   `showSummitAnim` (file `celebrate`) : Kulti grimpe le zigzag (caméra qui monte, 24 lampes, compteur 1 → 300), zoom au sommet,

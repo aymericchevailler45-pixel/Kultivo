@@ -1702,6 +1702,7 @@ function badgeStats() {
         dailyDone: daily.length,
         dailyPerfect: daily.some(r => r.score >= DAILY_SIZE),
         bestSprint: d.best.sprint,
+        avCollections: typeof AV_COLLECTIONS === 'undefined' ? 0 : AV_COLLECTIONS.filter(c => c.items.every(id => d.av?.owned?.[id])).length,   // 11/11
         goalDays: Object.keys(d.goalDays).length,
         xp: d.xp,
         purchases: d.totals.purchases,
@@ -1748,8 +1749,8 @@ const BADGES = [
     { id: 'daily',     icon: '📅', name: 'Rendez-vous du jour', desc: 'Terminer un défi du jour',              test: s => s.dailyDone >= 1 },
     { id: 'daily7',    icon: '🗓️', name: 'Fidèle du jour',      desc: 'Terminer 7 défis du jour',              test: s => s.dailyDone >= 7 },
     { id: 'daily10',   icon: '🎯', name: 'Dix sur dix',         desc: '10/10 au défi du jour',                 test: s => s.dailyPerfect },
-    { id: 'sprint10',  icon: '⚡', name: 'Éclair',              desc: '10 bonnes réponses en un sprint',       test: s => s.bestSprint >= 10 },
-    { id: 'sprint20',  icon: '🌩️', name: 'Foudre',              desc: '20 bonnes réponses en un sprint',       test: s => s.bestSprint >= 20 },
+    { id: 'sprint10',  icon: '⚡', name: 'Éclair',              desc: '8 bonnes réponses en un sprint',       test: s => s.bestSprint >= 8 },
+    { id: 'sprint20',  icon: '🌩️', name: 'Foudre',              desc: '10 bonnes réponses en un sprint',       test: s => s.bestSprint >= 10 },
     
     // Engagement sur l'objectif quotidien
     { id: 'goal',      icon: '⭐', name: 'Objectif atteint',    desc: 'Atteindre l’objectif du jour',          test: s => s.goalDays >= 1 },
@@ -1768,7 +1769,7 @@ const BADGES = [
     { id: 'xp5000',    icon: '🔥', name: '5 000 XP',            desc: 'Cumuler 5 000 XP',                      test: s => s.xp >= 5000 },
 
     // Maîtrise Globale
-    { id: 'specialist',icon: '🎓', name: 'Spécialiste',         desc: 'Maîtriser toutes les questions d’un thème', test: s => s.themeMastered },
+    { id: 'specialist', hidden: true, icon: '🎓', name: 'Spécialiste',         desc: 'Maîtriser toutes les questions d’un thème', test: s => s.themeMastered },
     { id: 'complete',  icon: '🗺️', name: 'Parcours complet',    desc: 'Terminer tous les niveaux',             test: s => s.mapComplete },
 
     // Ligue des amis
@@ -1800,24 +1801,42 @@ const BADGES_NEW = [
     { id: 'flawless25', icon: '🎯', name: 'Précision suisse',     desc: 'Terminer 25 leçons sans erreur',         test: s => s.flawless >= 25 },
     { id: 'flawless100', icon: '🏹', name: 'Sans bavure',         desc: 'Terminer 100 leçons sans erreur',        test: s => s.flawless >= 100 },
     { id: 'daily30',  icon: '📌', name: 'Abonné du jour',         desc: 'Terminer 30 défis du jour',              test: s => s.dailyDone >= 30 },
-    { id: 'sprint30', icon: '💨', name: 'Supersonique',           desc: '30 bonnes réponses en un sprint',        test: s => s.bestSprint >= 30 },
+    { id: 'sprint30', icon: '💨', name: 'Supersonique',           desc: '12 bonnes réponses en un sprint',        test: s => s.bestSprint >= 12 },
     { id: 'medal1',   icon: '🥉', name: 'Première médaille',      desc: 'Gagner une médaille d’entraînement',     test: s => s.medals >= 1 },
     { id: 'gold1',    icon: '🥇', name: 'Médaille d’or',          desc: 'Gagner une médaille d’or (toutes les questions d’un thème maîtrisées)', test: s => s.golds >= 1 },
     { id: 'gold5',    icon: '🏆', name: 'Pluie d’or',             desc: 'Médaille d’or dans 5 thèmes',            test: s => s.golds >= 5 },
     { id: 'duel1',    icon: '⚔️', name: 'Premier duel',           desc: 'Gagner un duel',                         test: s => s.duelsWon >= 1 },
     { id: 'duel10',   icon: '🤺', name: 'Duelliste',              desc: 'Gagner 10 duels',                        test: s => s.duelsWon >= 10 },
     { id: 'duel50',   icon: '🛡️', name: 'Invaincu… ou presque',   desc: 'Gagner 50 duels',                        test: s => s.duelsWon >= 50 },
-    { id: 'revisions25', icon: '🧹', name: 'Rien ne m’échappe',   desc: 'Terminer 25 sessions de révision',       test: s => s.reviews >= 25 }
+    { id: 'revisions25', icon: '🧹', name: 'Rien ne m’échappe',   desc: 'Terminer 25 sessions de révision',       test: s => s.reviews >= 25 },
+    // 11/11 (revue des badges avec l'utilisateur)
+    { id: 'lv150',      icon: '🧗', name: 'Alpiniste',             desc: 'Terminer 150 niveaux du parcours',       test: s => s.levelsDone >= 150 },
+    { id: 'lv200',      icon: '🌄', name: 'Baroudeur',             desc: 'Terminer 200 niveaux du parcours',       test: s => s.levelsDone >= 200 },
+    { id: 'lv250',      icon: '🦅', name: 'Conquérant',            desc: 'Terminer 250 niveaux du parcours',       test: s => s.levelsDone >= 250 },
+    { id: 'right25000', icon: '🏛️', name: 'Panthéon du savoir',    desc: '25 000 bonnes réponses du premier coup', test: s => s.right >= 25000 },
+    { id: 'daily100',   icon: '📰', name: 'Incontournable',        desc: 'Terminer 100 défis du jour',             test: s => s.dailyDone >= 100 },
+    { id: 'goldAll',    icon: '👑', name: 'Roi de l’entraînement', desc: 'Médaille d’or dans tous les thèmes',     test: s => s.golds >= TRAIN_THEMES_COUNT() },
+    { id: 'duel100',    icon: '🏰', name: 'Seigneur des duels',    desc: 'Gagner 100 duels',                       test: s => s.duelsWon >= 100 },
+    { id: 'revisions50', icon: '🔍', name: 'Œil de lynx',          desc: 'Terminer 50 sessions de révision',       test: s => s.reviews >= 50 },
+    { id: 'revisions100', icon: '🧠', name: 'Mémoire d’acier',     desc: 'Terminer 100 sessions de révision',      test: s => s.reviews >= 100 },
+    { id: 'shop10',     icon: '🛍️', name: 'Bon client',            desc: 'Faire 10 achats à la boutique',          test: s => s.purchases >= 10 },
+    { id: 'shop25',     icon: '💳', name: 'Habitué de la boutique', desc: 'Faire 25 achats à la boutique',         test: s => s.purchases >= 25 },
+    { id: 'shop50',     icon: '🏬', name: 'Client fidèle',         desc: 'Faire 50 achats à la boutique',          test: s => s.purchases >= 50 },
+    { id: 'avColl1',    icon: '🎨', name: 'Bien assorti',          desc: 'Avoir une collection d’avatar complète (cadre, fond et emoji)', test: s => s.avCollections >= 1 },
+    { id: 'avColl5',    icon: '🖼️', name: 'Garde-robe de star',    desc: 'Avoir 5 collections d’avatar complètes', test: s => s.avCollections >= 5 }
 ];
+const TRAIN_THEMES_COUNT = () => THEME_DECOR.filter(({ theme }) => trainingBank(theme).length).length;
 const activeBadges = () => (BADGES_V2 ? BADGES.concat(BADGES_NEW) : BADGES);
 /* Familles : [icône, nom, unité de la phrase « Prochain », [[id, objectif court, valeur visée, valeur du joueur]]], du plus facile au plus dur. */
 const BADGE_FAMS = [
+    // 11/11 : une famille = un seul compteur (avant : « Défis et modes », « Ligue et duels »… mélangeaient, on ne voyait pas ses duels)
     ['🗺️', 'Parcours', 'niveaux', [['first', '1 niveau', 1, s => s.levelsDone], ['challenge', '1 défi', 1, s => s.challengesDone],
         ['lv25', '25 niveaux', 25, s => s.levelsDone], ['lv50', '50 niveaux', 50, s => s.levelsDone], ['lv100', '100 niveaux', 100, s => s.levelsDone],
-        ['complete', 'tous', 1, s => +s.mapComplete]]],
+        ['lv150', '150 niveaux', 150, s => s.levelsDone], ['lv200', '200 niveaux', 200, s => s.levelsDone], ['lv250', '250 niveaux', 250, s => s.levelsDone],
+        ['complete', 'le dernier', 1, s => +s.mapComplete]]],
     ['🧠', 'Bonnes réponses', 'bonnes réponses du 1er coup', [['right25', '25', 25, s => s.right], ['right100', '100', 100, s => s.right],
         ['right500', '500', 500, s => s.right], ['right1000', '1 000', 1000, s => s.right], ['right2500', '2 500', 2500, s => s.right],
-        ['right5000', '5 000', 5000, s => s.right], ['right10000', '10 000', 10000, s => s.right]]],
+        ['right5000', '5 000', 5000, s => s.right], ['right10000', '10 000', 10000, s => s.right], ['right25000', '25 000', 25000, s => s.right]]],
     ['🔥', 'Série', 'jours de série', [['streak7', '7 jours', 7, s => s.bestStreak], ['streak30', '30 jours', 30, s => s.bestStreak],
         ['streak90', '90 jours', 90, s => s.bestStreak], ['streak180', '180 jours', 180, s => s.bestStreak], ['streak365', '365 jours', 365, s => s.bestStreak]]],
     ['⭐', 'Objectif du jour', 'jours avec l’objectif atteint', [['goal', '1 jour', 1, s => s.goalDays], ['goal7', '7 jours', 7, s => s.goalDays],
@@ -1827,18 +1846,23 @@ const BADGE_FAMS = [
         ['xp50000', '50 000 XP', 50000, s => s.xp], ['xp100000', '100 000 XP', 100000, s => s.xp]]],
     ['✨', 'Sans faute', 'leçons sans erreur', [['flawless', '1 leçon', 1, s => s.flawless], ['flawless5', '5 leçons', 5, s => s.flawless],
         ['flawless25', '25 leçons', 25, s => s.flawless], ['flawless100', '100 leçons', 100, s => s.flawless]]],
-    ['⚡', 'Défis et modes', '', [['daily', '1 défi du jour', 1, s => s.dailyDone], ['daily7', '7 défis du jour', 7, s => s.dailyDone],
-        ['daily30', '30 défis du jour', 30, s => s.dailyDone], ['daily10', '10/10', 1, s => +s.dailyPerfect], ['sprint10', 'sprint : 10', 10, s => s.bestSprint],
-        ['sprint20', 'sprint : 20', 20, s => s.bestSprint], ['sprint30', 'sprint : 30', 30, s => s.bestSprint]]],
-    ['🎯', 'Entraînement', '', [['medal1', '1 médaille', 1, s => s.medals], ['gold1', '1 or', 1, s => s.golds], ['gold5', '5 thèmes en or', 5, s => s.golds],
-        ['specialist', '1 thème', 1, s => +s.themeMastered]]],
-    ['🥇', 'Ligue et duels', '', [['league1', '1 semaine 1er', 1, s => s.leagueWins], ['league5', '5 semaines', 5, s => s.leagueWins],
-        ['league10', '10 semaines', 10, s => s.leagueWins], ['duel1', '1 duel gagné', 1, s => s.duelsWon], ['duel10', '10 duels', 10, s => s.duelsWon],
-        ['duel50', '50 duels', 50, s => s.duelsWon]]],
-    ['🃏', 'Collection', '', [['collect1', '1 thème', 1, s => s.themesComplete], ['shinyTheme', '1 thème brillant', 1, s => +s.shinyTheme],
-        ['collect5', '5 thèmes', 5, s => s.themesComplete], ['collectAll', 'toutes', 15, s => s.themesComplete]]],
-    ['🔁', 'Révisions et boutique', '', [['shop', '1 achat', 1, s => s.purchases], ['revisions', '1 révision', 1, s => s.reviews],
-        ['revisions5', '5 révisions', 5, s => s.reviews], ['revisions25', '25 révisions', 25, s => s.reviews]]],
+    ['📅', 'Défi du jour', 'défis du jour', [['daily', '1 défi', 1, s => s.dailyDone], ['daily7', '7 défis', 7, s => s.dailyDone],
+        ['daily30', '30 défis', 30, s => s.dailyDone], ['daily100', '100 défis', 100, s => s.dailyDone], ['daily10', '10/10', 1, s => +s.dailyPerfect, '']]],
+    ['⚡', 'Sprint', 'bonnes réponses en un sprint', [['sprint10', '8', 8, s => s.bestSprint], ['sprint20', '10', 10, s => s.bestSprint],
+        ['sprint30', '12', 12, s => s.bestSprint]]],
+    ['🥇', 'Entraînement', 'thèmes', [['medal1', '1 médaille', 1, s => s.medals], ['gold1', '1 or', 1, s => s.golds], ['gold5', '5 thèmes en or', 5, s => s.golds],
+        ['goldAll', 'tous en or', 15, s => s.golds], ['specialist', '1 thème', 1, s => +s.themeMastered]]],
+    ['🏆', 'Ligue des amis', 'semaines à la 1re place', [['league1', '1 semaine', 1, s => s.leagueWins], ['league5', '5 semaines', 5, s => s.leagueWins],
+        ['league10', '10 semaines', 10, s => s.leagueWins]]],
+    ['⚔️', 'Duels', 'duels gagnés', [['duel1', '1 duel', 1, s => s.duelsWon], ['duel10', '10 duels', 10, s => s.duelsWon],
+        ['duel50', '50 duels', 50, s => s.duelsWon], ['duel100', '100 duels', 100, s => s.duelsWon]]],
+    ['🃏', 'Collection', 'thèmes complets', [['collect1', '1 thème', 1, s => s.themesComplete], ['collect5', '5 thèmes', 5, s => s.themesComplete],
+        ['collectAll', 'toutes', 15, s => s.themesComplete], ['shinyTheme', '1 thème brillant', 1, s => +s.shinyTheme, '']]],
+    ['🔁', 'Révisions', 'révisions terminées', [['revisions', '1', 1, s => s.reviews], ['revisions5', '5', 5, s => s.reviews],
+        ['revisions25', '25', 25, s => s.reviews], ['revisions50', '50', 50, s => s.reviews], ['revisions100', '100', 100, s => s.reviews]]],
+    ['🛒', 'Boutique', 'achats', [['shop', '1 achat', 1, s => s.purchases], ['shop10', '10 achats', 10, s => s.purchases],
+        ['shop25', '25 achats', 25, s => s.purchases], ['shop50', '50 achats', 50, s => s.purchases]]],
+    ['🎨', 'Avatar', 'collections complètes', [['avColl1', '1 collection', 1, s => s.avCollections], ['avColl5', '5 collections', 5, s => s.avCollections]]],
     ['🎉', 'Événements', '', [['ev-halloween-2026', 'événement fini', 1, s => +s.eventsWon.includes('halloween-2026')],
         ['ev-maghreb-2026', 'événement fini', 1, s => +s.eventsWon.includes('maghreb-2026')]]]
 ];
@@ -1866,8 +1890,9 @@ function renderBadgesV2(grid) {
     grid.className = 'badge-fams';
     let got = 0, all = 0, toClaim = 0, firstClaim = null;
     BADGE_FAMS.forEach(([icon, name, unit, rows]) => {
-        const list = rows.map(([id, goal, target, val]) => ({ b: byId[id], goal, target, val: val(s) })).filter(x => x.b)
-            .filter(x => !x.b.event || data.badges[x.b.id] || currentEvent()?.id === x.b.event);
+        const list = rows.map(([id, goal, target, val, own]) => ({ b: byId[id], goal, target, val: val(s), unit: own })).filter(x => x.b)
+            .filter(x => !x.b.event || data.badges[x.b.id] || currentEvent()?.id === x.b.event)
+            .filter(x => !x.b.hidden || data.badges[x.b.id]);   // ancien badge retiré : visible seulement pour qui l'a
         if (!list.length) return;
         list.forEach(x => { x.has = !!data.badges[x.b.id]; x.claim = x.has && !data.claimedBadges[x.b.id]; });
         const done = list.filter(x => x.has).length;
@@ -1886,7 +1911,8 @@ function renderBadgesV2(grid) {
         const next = list[nextI];
         if (next) {
             const line = el('p', 'bdf-next');
-            line.textContent = `Prochain : ${next.b.icon} ${next.b.name} · ${nf(Math.min(next.val, next.target))} / ${nf(next.target)}${unit ? ` ${unit}` : ''}`;
+            const u = next.unit ?? unit;   // 11/11 : un badge peut avoir son propre compteur (10/10, thème brillant)
+            line.textContent = `Prochain : ${next.b.icon} ${next.b.name} · ${nf(Math.min(next.val, next.target))} / ${nf(next.target)}${u ? ` ${u}` : ''}`;
             const bar = el('i');
             bar.style.setProperty('--p', `${Math.min(100, (next.val / next.target) * 100)}%`);
             line.append(bar);
@@ -5641,6 +5667,7 @@ function renderShopV2() {
             if (!(await askBuy('Coffre de cartes', SHOP_CHEST.price, `${SHOP_CHEST.size} cartes, dont au moins une rare.`))) return;
             if (state.data.coins < SHOP_CHEST.price) return;
             state.data.coins -= SHOP_CHEST.price;
+            state.data.totals.purchases = (state.data.totals.purchases || 0) + 1;   // 11/11 : compte pour les badges « Boutique »
             openCardBoxes([{ size: SHOP_CHEST.size, rare: true }], '🎁 Coffre de cartes');
             renderHeader();
             renderShop();
