@@ -10640,7 +10640,7 @@ function renderLeague() {
             const pos = el('span', 'league-pos');
             pos.textContent = String(k + 1);
             const name = el('span', 'league-name');
-            name.textContent = r.me ? `${r.pseudo} (toi)` : r.pseudo;
+            name.textContent = r.me ? 'Toi' : r.pseudo;
             const bar = el('span', 'league-bar');
             const fill = el('i');
             fill.style.width = `${Math.round((r.xp / leader) * 100)}%`;
