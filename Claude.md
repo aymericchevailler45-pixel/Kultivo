@@ -309,6 +309,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   les expressions et « Que veut dire / signifie » (dropLeadingVerb) ; mot court avec une lettre doublée = petite faute (« Ecco ») ;
   REFUSÉ exprès : « mail » pour courriel. Questions corrigées : Poirot (« Agatha Christie a-t-elle créé »), Angola (les deux outils
   obligatoires), Autriche (« rouge vif… trois bandes égales », la Lettonie), régions : « chef-lieu » au lieu de « capitale ».
+  11/11 : SINGULIER / PLURIEL = juste partout (`samePlural` : s ou x en plus, mots ≥ 3 lettres, NOMS COMMUNS seulement — sinon
+  « Dantès » passait pour Dante) ; acceptés « Louvre » (Abu Dhabi), « Shi Huang(di) ».
   2e lot (10/11) : acceptés sd, aspirateur, contrôle alt suppr, faire la liaison, « vient le beau temps » ; « Brady » pour Brody
   GARDÉ REFUSÉ (Tom Brady est une autre réponse du jeu, règle Tibre / Tigre).
   ATTENTION : `_brouillons-paliers/` n'est plus tenu à jour (les vraies questions sont dans entrainement/).

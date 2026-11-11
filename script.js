@@ -639,6 +639,10 @@ const sameWord = (x, y) => x === y || [x, y].some((u, i) => { const v = i ? x : 
 // Faux amis : un « e » ou un « s » en plus, mais un tout autre mot
 const FALSE_FRIENDS = new Set(['rein|reine', 'reins|reine', 'rose|rosee', 'cour|course', 'mer|mere', 'pain|paine', 'port|porte', 'vers|verse', 'bal|bale', 'fil|file', 'mur|mure', 'sol|sole', 'tour|tours', 'android|androide', 'cross|crosse']);
 const falseFriends = (a, b) => FALSE_FRIENDS.has(`${a}|${b}`) || FALSE_FRIENDS.has(`${b}|${a}`);
+/** 11/11 (signalement « peaux » pour « peau ») : même réponse au singulier ou au pluriel (s / x en plus sur des mots d'au moins
+    3 lettres, pas de chiffres, pas de faux amis) = juste, sans remarque. */
+const pluralWord = (x, y) => x === y || (!/\d/.test(x + y) && [x, y].some((u, i) => { const v = i ? x : y; return v.length >= 3 && (u === v + 's' || u === v + 'x'); }));
+const samePlural = (a, b) => { const p = a.split(' '), q = b.split(' '); return a !== b && p.length === q.length && p.every((w, i) => pluralWord(w, q[i]) && !falseFriends(w, q[i])); };
 const sameStem = (a, b) => { const p = a.split(' '), q = b.split(' '); return p.length === q.length && p.every((w, i) => sameWord(w, q[i]) && !falseFriends(w, q[i])); };
 const ORDER_MATTERS = /rébus|titre|film|roman|livre|œuvre|oeuvre|chanson|album|pièce|tableau|fable|conte|série|opéra|jeu vidéo|bande dessinée|BD/i;
 /* Question sur une PERSONNE (2026-11-09) : le nom de famille seul est accepté (« Van Gogh », « Hepburn »), jamais le prénom seul. */
@@ -709,7 +713,7 @@ function judgeV2(input, rawAnswers, question = '') {
     for (const raw of rawAnswers) {
         const ans = keep(raw);
         if (!ans) continue;
-        answers.push([ans, full(raw)]);
+        answers.push([ans, full(raw), false, isCommonRaw(String(raw)) || /^\p{Ll}/u.test(String(raw).trim())]);   // 4e : nom commun (pluriel toléré)
         const short = answerWithoutGeneric(ans);
         if (short && short.length >= 3 && !short.split(' ').every(w => questionWords.has(w))) answers.push([short, short, true]);
         if (!expression && looksLikeName(raw)) {   // nom avant le prénom : « Sartre Jean-Paul », « Khan Kubilaï »
@@ -726,7 +730,7 @@ function judgeV2(input, rawAnswers, question = '') {
     // compléter : la tournure exacte est demandée, c'est faux. Formes raccourcies par le jeu (nom seul, « Orsay ») : libres.
     let slip = false;
     const proverb = /complète le proverbe/i.test(question);
-    for (const [ans, ansFull, loose] of answers) {
+    for (const [ans, ansFull, loose, common] of answers) {
         if (/^\d+(\.\d+)?$/.test(ans)) {   // nombre (date, distance…) : exact uniquement
             if (numbersTyped.length && numbersTyped.every(n => n === ans)) return 'exact';   // « 4x100 » n'est pas « 100 »
             continue;
@@ -737,6 +741,7 @@ function judgeV2(input, rawAnswers, question = '') {
             slip = true;
             continue;
         }
+        if (common && samePlural(typed, ans) && knownAnswers().get(typed) !== 'proper') return 'exact';   // « peaux » = « peau » (11/11) ; jamais un nom propre
         const numbersAns = ans.match(/\d+(?:\.\d+)?/g) || [];
         const sameNumbers = numbersAns.join(' ') === (typed.match(/\d+(?:\.\d+)?/g) || []).join(' ');
         if (sameNumbers && answerClose(typed, ans)) typo = true;
