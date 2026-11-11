@@ -3870,7 +3870,7 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 .shop-line .sl-text .sl-chip.is-zero { background: var(--bg); color: var(--muted); }
 
 /* 11/11 : infos essentielles bien visibles */
-#askInfo { margin: 6px 0 4px; }
+#askInfo { margin: 12px 0 18px; }   /* 6 px du titre + 12 = 18 px au-dessus, 18 px dessous : comme entre le texte et les boutons (11/11) */
 .ask-info { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 .ask-tile { flex: 1 1 0; min-width: 84px; max-width: 130px; padding: 8px 6px; border-radius: 14px; background: var(--bg); text-align: center; }
 .ask-tile b { display: block; font-size: 1.35rem; font-weight: 900; line-height: 1.1; color: var(--ink); white-space: nowrap; }

@@ -7043,14 +7043,15 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     state.missionsJustDone = [];
     // Série d'amis : une petite ligne, seulement s'il y a peu d'autres lignes (et retirée si l'écran devait défiler)
     const fsLine = missions.length + (extra ? 1 : 0) <= 1 ? friendStreakLine() : '';
-    $('endExtra').textContent = [extra, ...missions, fsLine].filter(Boolean).join('\n');
-    if (BAC) {   // 11/11 : essai dans le bac à sable : pièces gagnées en pastille dorée, chaque ligne dans sa pastille
-        const lines = [extra, ...missions, fsLine].filter(Boolean).flatMap(t => t.split('\n'));
+    // 11/11 (essayé dans le bac à sable, validé) : pièces gagnées en pastille dorée, chaque ligne dans sa pastille
+    const chipLines = list => {
+        const lines = list.filter(Boolean).flatMap(t => t.split('\n'));
         $('endExtra').replaceChildren(...lines.map(t => { const c = el('span', `end-chip${/^\+\d+ 🪙$/.test(t) ? ' is-coins' : ''}`); c.textContent = t; return c; }));
-        $('endExtra').classList.add('is-chips');
-    } else $('endExtra').classList.remove('is-chips');
+    };
+    $('endExtra').classList.add('is-chips');
+    chipLines([extra, ...missions, fsLine]);
     if (fsLine) requestAnimationFrame(() => {
-        if (document.documentElement.scrollHeight > window.innerHeight + 2) $('endExtra').textContent = [extra, ...missions].filter(Boolean).join('\n');
+        if (document.documentElement.scrollHeight > window.innerHeight + 2) chipLines([extra, ...missions]);
     });
     $('endPrimary').textContent = primary;
     $('endPrimary').className = `btn ${primaryClass || (secondary ? 'btn-red' : 'btn-green')}`;
