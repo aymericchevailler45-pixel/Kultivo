@@ -4082,7 +4082,9 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 /* 12/11 : chiffres de l'encyclopédie touchables (explication) */
 .enc-tip { cursor: pointer; }
 .enc-tip:active { transform: translateY(1px); opacity: 0.8; }
-.enc-mchip.enc-tip::after, .enc-tiles .enc-tip span::after { content: " ⓘ"; opacity: 0.6; }
+.enc-mchip.enc-tip::after { content: " ⓘ"; opacity: 0.6; }
+.enc-tiles .enc-tip { position: relative; }
+.enc-tiles .enc-tip::after { content: "ⓘ"; position: absolute; top: 3px; right: 6px; color: var(--muted); font-size: 0.7rem; opacity: 0.7; }
 /* 12/11 : livres en teinte douce (les blocs de couleur vive tranchaient avec le reste du jeu) */
 .enc-emo { line-height: 1; }
 .enc-book { color: var(--ink); border: 2px solid color-mix(in srgb, var(--c) 30%, var(--line));
@@ -4100,3 +4102,27 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-book-n i { display: block; margin-top: -1px; color: var(--muted); font-size: 0.72rem; font-style: normal; font-weight: 800; }
 :root[data-theme="dark"] .enc-book > b { color: color-mix(in srgb, var(--c) 45%, var(--ink)); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .enc-book > b { color: color-mix(in srgb, var(--c) 45%, var(--ink)); } }
+/* 12/11 (suite) */
+.enc-book-head { display: flex; align-items: center; gap: 7px; min-height: 36px; margin-bottom: 4px; }
+.enc-book-head .enc-book-ic { flex: none; margin-bottom: 0; width: 32px; height: 32px; }
+.enc-book-head .enc-book-ic .enc-emo { font-size: 1.2rem; }
+.enc-book-head > b { min-width: 0; font-size: 0.86rem; font-weight: 900; line-height: 1.1; margin: 0; color: color-mix(in srgb, var(--c) 70%, var(--ink)); }
+:root[data-theme="dark"] .enc-book-head > b { color: color-mix(in srgb, var(--c) 45%, var(--ink)); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .enc-book-head > b { color: color-mix(in srgb, var(--c) 45%, var(--ink)); } }
+.enc-filters { padding-bottom: 8px; margin-bottom: 6px; }
+.enc-row-tx small { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.25; }
+.enc-fiche { height: min(58vh, 480px); overflow-y: auto; overscroll-behavior: contain; }
+.enc-alabel { display: block; margin: 12px 2px 0; font-style: normal; font-size: 0.68rem; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.enc-alabel + h3 { margin-top: 2px; }
+.enc-fiche.is-from-right { animation: encFromRight 0.22s ease-out; }
+.enc-fiche.is-from-left { animation: encFromLeft 0.22s ease-out; }
+@keyframes encFromRight { from { transform: translateX(40px); opacity: 0; } }
+@keyframes encFromLeft { from { transform: translateX(-40px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .enc-fiche.is-from-right, .enc-fiche.is-from-left { animation: none; } }
+.enc-book { padding: 10px 8px 10px 14px; }
+.enc-book-head { gap: 5px; min-height: 34px; }
+.enc-book-head .enc-book-ic { width: auto; height: auto; background: none; border-radius: 0; }
+.enc-book-head .enc-book-ic .enc-emo { font-size: 1.3rem; }
+.enc-book-head > b { font-size: 0.82rem; }
+.enc-book-head > b { font-size: 0.79rem; }
+.enc-book.is-full::after { top: auto; bottom: 8px; right: 8px; }

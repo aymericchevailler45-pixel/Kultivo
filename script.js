@@ -1804,7 +1804,7 @@ const encWhen = q => { const s = state.data.stats[q.id] || {}; return s.first ||
 /** 12/11 : un tap sur « savoirs », « maîtrisés » ou « réussite » réexplique ce que c'est. */
 function encExplain(kind) {
     const T = {
-        known: ['📚 Les questions sues', 'Une question sue (un savoir), c’est une question que tu as réussie au moins une fois (parcours, entraînement, défis…).\n\nUne fois dans ton encyclopédie, il y reste pour toujours, même si tu te trompes plus tard.\n\nLes questions vues mais encore jamais réussies n’y sont pas : réussis-les pour les ajouter !'],
+        known: ['📚 Les questions sues', 'Une question sue, c’est une question que tu as réussie au moins une fois (parcours, entraînement, défis…).\n\nUne fois dans ton encyclopédie, il y reste pour toujours, même si tu te trompes plus tard.\n\nLes questions vues mais encore jamais réussies n’y sont pas : réussis-les pour les ajouter !'],
         mastered: ['✨ Les questions maîtrisées', 'Une question est maîtrisée quand tu l’as réussie 2 fois d’affilée, à des jours différents.\n\nUne question maîtrisée le reste pour toujours. Les maîtrisées comptent aussi pour les médailles de l’entraînement.'],
         rate: ['🎯 La réussite', 'C’est la part de bonnes réponses sur toutes tes réponses aux questions de ce thème, depuis le début.\n\nExemple : 78 % = 78 bonnes réponses sur 100.']
     };
@@ -1856,7 +1856,7 @@ function renderEncyclopedia(box) {
     const num = el('b');
     num.textContent = fmtNum(known);
     const lab = el('span');
-    lab.textContent = `savoir${known > 1 ? 's' : ''} dans ton encyclopédie`;
+    lab.textContent = `question${known > 1 ? 's' : ''} sue${known > 1 ? 's' : ''} dans ton encyclopédie`;
     big.append(num, lab);
     const mchip = el('span', 'enc-mchip');
     mchip.textContent = `✨ ${fmtNum(mastered)} maîtrisé${mastered > 1 ? 's' : ''}`;
@@ -1868,12 +1868,12 @@ function renderEncyclopedia(box) {
     fill.style.width = `${total ? Math.max(known ? 1 : 0, Math.round(known / total * 100)) : 0}%`;
     bar.append(fill);
     const sub = el('p', 'enc-sub');
-    sub.textContent = `${fmtNum(known)} question${known > 1 ? 's' : ''} sue${known > 1 ? 's' : ''} sur ${fmtNum(total)}${week ? ` · +${fmtNum(week)} cette semaine` : ''}`;
+    sub.textContent = `sur ${fmtNum(total)} questions en tout${week ? ` · +${fmtNum(week)} cette semaine` : ''}`;
     box.append(head, bar, sub);
 
     if (recent.length) {
         const t = el('p', 'enc-sec');
-        t.textContent = 'Derniers savoirs';
+        t.textContent = 'Ajoutées récemment';
         const row = el('div', 'enc-recent');
         recent.slice(0, 3).forEach(q => {
             const b = el('button', 'enc-mini');
@@ -1912,7 +1912,9 @@ function renderEncyclopedia(box) {
         const mf = el('i');
         mf.style.width = `${Math.round(b.known / b.total * 100)}%`;
         mini.append(mf);
-        btn.append(ic, nm, cnt, mini, m, r);   // la barre sous « x / y savoirs », pas sous le % de réussite
+        const hd = el('span', 'enc-book-head');   // 12/11 : icône à côté du nom (hauteur identique pour tous les livres)
+        hd.append(ic, nm);
+        btn.append(hd, cnt, mini, m, r);   // la barre sous « x / y savoirs », pas sous le % de réussite
         btn.addEventListener('click', () => openEncBook(b.theme));
         grid.append(btn);
     });
@@ -1947,7 +1949,7 @@ function openEncBook(theme, keep = false) {
     });
     const search = el('input', 'enc-search');
     search.type = 'search';
-    search.placeholder = '🔍 Chercher un savoir…';
+    search.placeholder = '🔍 Chercher une question…';
     search.value = encState.search;
     const filters = el('div', 'enc-filters');
     const list = el('div', 'enc-list');
@@ -1970,7 +1972,7 @@ function openEncBook(theme, keep = false) {
         items.slice(0, 400).forEach(q => list.append(encRow(q, items)));
         if (!items.length) {
             const p = el('p', 'muted enc-empty');
-            p.textContent = known.length ? 'Aucun savoir ne correspond.' : 'Pas encore de savoir dans ce livre : joue des questions de ce thème pour le remplir !';
+            p.textContent = known.length ? 'Aucune question ne correspond.' : 'Aucune question sue dans ce livre pour l’instant : joue des questions de ce thème pour le remplir !';
             list.append(p);
         }
         const left = all.length - known.length;
@@ -1980,7 +1982,7 @@ function openEncBook(theme, keep = false) {
             ic.textContent = '?';
             const tx = el('span', 'enc-row-tx');
             const b = el('b');
-            b.textContent = `${fmtNum(left)} savoir${left > 1 ? 's' : ''} à découvrir`;
+            b.textContent = `${fmtNum(left)} question${left > 1 ? 's' : ''} à découvrir`;
             const s = el('small');
             s.textContent = `Joue en ${theme} pour les trouver`;
             tx.append(b, s);
@@ -2023,9 +2025,9 @@ function openEncList(ids) {
     const body = $('friendBody');
     body.replaceChildren();
     const h = el('h2', 'review-title');
-    h.textContent = `📚 ${plural(qs.length, 'nouveau savoir', 'nouveaux savoirs')} !`;
+    h.textContent = `📚 ${plural(qs.length, 'nouvelle question sue', 'nouvelles questions sues')} !`;
     const p = el('p', 'muted review-note');
-    p.textContent = 'Ils sont rangés dans ton encyclopédie (Profil → 📚 Savoirs).';
+    p.textContent = 'Elles sont rangées dans ton encyclopédie (Profil → 📚 Savoirs).';
     const list = el('div', 'enc-list');
     qs.forEach(q => list.append(encRow(q, qs, true)));
     body.append(h, p, list);
@@ -2050,17 +2052,13 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     const idx = list.indexOf(q);
     const back = el('button', 'duel-back');
     back.type = 'button';
-    back.textContent = backTheme ? `← ${backTheme}` : fromEnd ? '← Nouveaux savoirs' : '← Retour';
+    back.textContent = backTheme ? `← ${backTheme}` : fromEnd ? '← Nouvelles questions sues' : '← Retour';
     back.addEventListener('click', () => { if (backTheme) openEncBook(backTheme, true); else if (fromEnd) openEncList(list.map(x => x.id)); else $('friendModal').hidden = true; });
     const fiche = el('div', 'enc-fiche');
     fiche.style.setProperty('--c', ENC_COLORS[q.theme] || '#3d8bff');
     const chip = el('span', 'enc-chip');
     chip.append(encIconEl(q.theme), document.createTextNode(` ${q.theme}`));
-    const title = el('h3');
-    title.textContent = q.a[0];
-    fiche.append(chip, title);
-    const others = encOthers(q);
-    if (others.length) { const o = el('p', 'enc-also'); o.textContent = `aussi : ${others.join(', ')}`; fiche.append(o); }
+    fiche.append(chip);
     const media = q.rebus ? (() => { const d = el('div', 'enc-rebus'); d.append(...q.rebus.map(emojiImg)); return d; })() : encMedia(q, false);
     if (media) {
         const w = el('div', `enc-media${q.flag ? ' is-flag' : ''}`);
@@ -2073,6 +2071,14 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     ql.textContent = 'La question';
     qq.append(ql, document.createTextNode(q.q));
     fiche.append(qq);
+    // 12/11 : la réponse APRÈS la question (« 10 » seul ne voulait rien dire)
+    const al = el('em', 'enc-alabel');
+    al.textContent = 'La réponse';
+    const title = el('h3');
+    title.textContent = q.a[0];
+    fiche.append(al, title);
+    const others = encOthers(q);
+    if (others.length) { const o = el('p', 'enc-also'); o.textContent = `aussi : ${others.join(', ')}`; fiche.append(o); }
     if (q.exp) {
         const sv = el('div', 'enc-sv');
         const sl = el('em');
@@ -2137,6 +2143,20 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     pos.textContent = idx >= 0 ? `${idx + 1} / ${list.length}` : '';
     nav.append(mk('‹ Précédent', idx - 1), pos, mk('Suivant ›', idx + 1));
     body.append(back, fiche, nav);
+    // 12/11 : balayer de droite à gauche = question suivante (et l'inverse)
+    let sx = null, sy = 0;
+    fiche.addEventListener('touchstart', e => { if (e.target.closest('input')) { sx = null; return; } sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    fiche.addEventListener('touchend', e => {
+        if (sx === null) return;
+        const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        sx = null;
+        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        const j = idx + (dx < 0 ? 1 : -1);
+        if (j < 0 || j >= list.length) return;
+        openEncFiche(list[j], list, backTheme, fromEnd);
+        const f2 = $('friendBody').querySelector('.enc-fiche');
+        if (f2) f2.classList.add(dx < 0 ? 'is-from-right' : 'is-from-left');
+    }, { passive: true });
     $('friendModal').hidden = false;
     $('friendModal').querySelector('.modal-content').scrollTop = 0;
 }
@@ -7646,7 +7666,7 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     if (found.length) {   // 12/11 (bac à sable) : « 📚 +5 savoirs », un tap montre les nouvelles fiches
         const c = el('button', 'end-chip is-enc');
         c.type = 'button';
-        c.textContent = `📚 +${plural(found.length, 'savoir', 'savoirs')} pour ton encyclopédie ›`;
+        c.textContent = `📚 +${plural(found.length, 'question sue', 'questions sues')} dans ton encyclopédie ›`;
         c.addEventListener('click', () => openEncList(found));
         $('endExtra').prepend(c);
     }
