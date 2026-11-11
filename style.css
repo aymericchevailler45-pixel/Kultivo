@@ -3829,3 +3829,35 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 /* Jour de série : « Continuer » n'apparaît qu'à la fin de l'animation (11/11) */
 .streak-continue.is-wait { opacity: 0; pointer-events: none; }
 .streak-continue { transition: opacity 0.4s; }
+
+/* Carte qui devient brillante (11/11, choix A) : fusion des 3 exemplaires. Sélecteurs « .shiny-stage .kcard… » : sinon l'apparition
+   des grandes cartes (.kcard.is-big { animation: cardReveal }) passe devant. */
+.shiny-stage { position: relative; display: grid; place-items: center; }
+.shiny-stage > .kcard { grid-area: 1 / 1; }
+.shiny-stage .kcard.sh-ghost { opacity: 0.9; }
+.shiny-stage .kcard.sh-in-l { animation: shInL 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.shiny-stage .kcard.sh-in-r { animation: shInR 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.1s both; }
+.shiny-stage .kcard.sh-in-c { animation: shInC 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.2s both; }
+@keyframes shInL { from { transform: translateX(-120px) rotate(-14deg); opacity: 0; } to { transform: translateX(-36px) rotate(-8deg); opacity: 1; } }
+@keyframes shInR { from { transform: translateX(120px) rotate(14deg); opacity: 0; } to { transform: translateX(36px) rotate(8deg); opacity: 1; } }
+@keyframes shInC { from { transform: translateY(60px); opacity: 0; } to { transform: none; opacity: 1; } }
+.shiny-stage .kcard.sh-merge-l { animation: shMergeL 0.55s ease-in forwards; }
+.shiny-stage .kcard.sh-merge-r { animation: shMergeR 0.55s ease-in forwards; }
+@keyframes shMergeL { from { transform: translateX(-36px) rotate(-8deg); } to { transform: none; opacity: 0; } }
+@keyframes shMergeR { from { transform: translateX(36px) rotate(8deg); } to { transform: none; opacity: 0; } }
+.shiny-stage .kcard.sh-shake { animation: shShake 0.5s linear; }
+@keyframes shShake { 0%, 100% { transform: none; } 20% { transform: rotate(-4deg) scale(1.03); } 40% { transform: rotate(4deg) scale(1.05); } 60% { transform: rotate(-3deg) scale(1.06); } 80% { transform: rotate(3deg) scale(1.07); } }
+.shiny-stage .kcard.sh-pop { animation: shPop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1); }
+@keyframes shPop { from { transform: scale(0.8); } to { transform: scale(1); } }
+.shiny-halo { grid-area: 1 / 1; align-self: stretch; justify-self: stretch; margin: -24px; border-radius: 30px; opacity: 0; pointer-events: none;
+    background: conic-gradient(from 0deg, #ff7ad9, #ffd54a, #6ee7b7, #3ec9ff, #8b5cf6, #ff7ad9); filter: blur(18px); }
+.shiny-halo.is-on { animation: shHalo 1.2s ease-out forwards, shSpin 4s linear infinite; }
+@keyframes shHalo { to { opacity: 0.7; } }
+@keyframes shSpin { to { transform: rotate(360deg); } }
+.shiny-flash { grid-area: 1 / 1; width: 260px; height: 260px; border-radius: 50%; opacity: 0; pointer-events: none; z-index: 3;
+    background: radial-gradient(circle, #fff 0 30%, rgba(255, 255, 255, 0) 70%); }
+.shiny-flash.is-on { animation: shFlash 0.6s ease-out; }
+@keyframes shFlash { 0% { opacity: 1; transform: scale(0.4); } 100% { opacity: 0; transform: scale(1.4); } }
+.sh-spark { grid-area: 1 / 1; z-index: 4; font-style: normal; font-size: 1.3rem; pointer-events: none; animation: shSparkOut 0.9s ease-out forwards; }
+@keyframes shSparkOut { 0% { opacity: 1; transform: translate(0, 0) scale(0.4); } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1.2); } }
+@media (prefers-reduced-motion: reduce) { .shiny-stage .kcard, .shiny-halo, .shiny-flash, .sh-spark { animation: none !important; } .sh-spark { display: none; } }

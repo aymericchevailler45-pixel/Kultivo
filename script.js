@@ -4768,35 +4768,70 @@ function openBadgeView(badge, onBack = null) {
 }
 
 /** 3e exemplaire : la carte se charge (elle tremble et brille), puis prend son apparence brillante. */
+/* Carte qui devient brillante (11/11, choix A sur apercu-brillante.html, sans la pastille « Brillante ») : les 3 exemplaires
+   arrivent en éventail, se rejoignent au centre, la carte tremble, éclair blanc, elle ressort brillante avec un halo
+   arc-en-ciel et des ✨. Un tap (ou le bouton) : directement la fin. */
 function revealShiny(card) {
     state.chest = null;
     chestBack = null;
     $('chestTitle').textContent = '✨ 3 exemplaires !';
     const stage = $('chestStage');
-    const face = cardFace(card, true, false);
-    face.classList.add('is-awakening');
-    stage.replaceChildren(face);
+    const box = el('div', 'shiny-stage');
+    const halo = el('div', 'shiny-halo');
+    const flash = el('div', 'shiny-flash');
+    const left = cardFace(card, true, false), right = cardFace(card, true, false), mid = cardFace(card, true, false);
+    left.classList.add('sh-ghost', 'sh-in-l');
+    right.classList.add('sh-ghost', 'sh-in-r');
+    mid.classList.add('sh-in-c');
+    box.append(halo, left, right, mid, flash);
+    stage.replaceChildren(box);
     $('chestNote').textContent = 'Ta carte se transforme…';
     $('chestBtn').textContent = 'Super !';
     $('closeChestBtn').hidden = false;   // vue d'une carte / d'un badge : ✕ visible
     $('chestModal').hidden = false;
+    const sfx = fn => { if (state.data.sound) try { fn(); } catch (err) { /* pas de son */ } };
+    sfx(() => [0, 0.1, 0.2].forEach((d, i) => { synthNoise(d, 0.35, 0.15, 500, 0.7, 3000); synthTone(660 + i * 220, d + 0.3, 0.2, 'triangle', 0.07); }));
+    const timers = [];
+    timers.push(setTimeout(() => {
+        left.classList.replace('sh-in-l', 'sh-merge-l');
+        right.classList.replace('sh-in-r', 'sh-merge-r');
+        sfx(() => synthNoise(0, 0.5, 0.15, 500, 0.7, 3000));
+    }, 1100));
+    timers.push(setTimeout(() => {
+        left.remove(); right.remove();
+        mid.classList.replace('sh-in-c', 'sh-shake');
+        sfx(() => { for (let i = 0; i < 6; i++) synthTone(300 + i * 60, i * 0.08, 0.06, 'square', 0.03); });
+    }, 1650));
     let done = false;
     const finish = () => {
         if (done) return;
         done = true;
-        clearTimeout(timer);
+        timers.forEach(clearTimeout);
         state.chest = null;   // le prochain tap sur le bouton ferme la fenêtre
         state.data.shinyCards[card.id] = Date.now();
         saveData();
-        stage.replaceChildren(cardFace(card, true, true));
+        const shiny = cardFace(card, true, true);
+        shiny.classList.add('sh-pop');
+        box.replaceChildren(halo, shiny, flash);
+        flash.classList.add('is-on');
+        halo.classList.add('is-on');
+        for (let i = 0; i < 12; i++) {   // ✨ qui jaillissent
+            const sp = el('i', 'sh-spark');
+            sp.textContent = i % 3 ? '✨' : '⭐';
+            const a = (i / 12) * Math.PI * 2;
+            sp.style.setProperty('--x', `${Math.cos(a) * 140}px`);
+            sp.style.setProperty('--y', `${Math.sin(a) * 170}px`);
+            box.append(sp);
+        }
+        sfx(() => { synthNoise(0, 0.4, 0.25, 2500, 0.7, 6000); [1568, 1976, 2349, 3136, 3951].forEach((f, i) => synthTone(f, i * 0.06, 0.9, 'sine', 0.06)); });
         shinyFx();
         $('chestNote').textContent = '✨ Ta carte est maintenant brillante !';
         renderCollection();
         updateNavNotifications();
         checkBadges();   // « Tout brille » ?
     };
-    const timer = setTimeout(finish, 1400);
-    face.addEventListener('click', finish);
+    timers.push(setTimeout(finish, 2200));
+    box.addEventListener('click', finish);
     state.chest = { results: [], step: 0, finish };   // un tap sur le bouton pendant l'animation la termine
 }
 

@@ -299,6 +299,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - 11/11 : MISSIONS plus dures à partir du lundi 16/11 (`MISSIONS_V2_FROM`, `goal2`) : niveaux 8, sans faute 3, défis du jour 5,
   bonnes réponses 100, thème 20, entraînements 5, révisions 4, SPRINT 8 (au lieu de 12 : personne n'a dépassé 11), frises / paires 2,
   jours 5 ; 40 🪙 par mission (`missionCoins`). Entraînement : « ↻ x à revoir » → « 🔁 x ratées à refaire » (choix A, sur une ligne).
+- 11/11 : CARTE BRILLANTE = choix A (apercu-brillante.html) SANS la pastille « Brillante » (cachait la description) : `revealShiny`
+  (3 exemplaires en éventail → fusion → tremblement → éclair → carte brillante, halo arc-en-ciel, ✨, sons ; `.shiny-stage`).
 - FÊTE DU SOMMET (10/11, choix C sur apercu-sommet.html) : DERNIER niveau réussi pour la 1re fois (`summitDone`, posé dans la fin
   de niveau, même s'il reste des niveaux facultatifs derrière : PAS de mention des facultatifs, demande de l'utilisateur) →
   `showSummitAnim` (file `celebrate`) : Kulti grimpe le zigzag (caméra qui monte, 24 lampes, compteur 1 → 300), zoom au sommet,
