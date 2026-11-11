@@ -318,6 +318,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   FAIT DANS LE BAC À SABLE (11/11) : classe `pal-elec` posée dès le <head> (index.html) quand ?bac=1 sans autre ?pal ; valeurs
   claires + sombres dans style.css (bloc « Nouvelles couleurs » en fin de fichier) ; logo icons/logo-bleu.svg (CSS `content:` pour
   l'écran de chargement et l'en-tête, `LOGO_SRC` en JS) ; `PAL_ELEC`, `BRAND` dans script.js (récaps, confettis, drapeau du sommet).
+  Ressemblances visuelles restantes avec Duolingo (11/11) : aperçu apercu-style.html (bandeau de correction en carte flottante
+  avec Kulti, parcours en « galets » reliés par un chemin en pointillés, en-tête de leçon avec Kulti sur la barre, boutons pilule
+  à ombre fine, jour de série dans une flamme sur fond bleu) — EN ATTENTE de l'avis.
   POUR TOUT LE MONDE : recopier le bloc dans :root / mode sombre, poser la classe toujours (ou retirer les conditions), + icônes PNG
   (icon-192, 512, favicon, apple-touch : rendu Edge + Python), manifest theme_color / background_color, meta theme-color. couleur de RÉUSSITE séparée
   (`--ok`, `--ok-deep`, `--ok-tint`, `--ok-ink`, `.btn-ok` : bandeau de bonne réponse, champ, paires, frises, ✓) = le vert pour l'instant ;
