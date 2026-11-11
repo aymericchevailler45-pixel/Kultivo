@@ -1141,6 +1141,10 @@ function recordResult(id, ok) {
     entry.streak = ok ? (keepStreak ? entry.streak : (entry.streak || 0) + 1) : 0;   // réussites d'affilée
     if (entry.streak >= 2) entry.mastered = true;   // maîtrisée pour de bon (compteurs et médailles ne reculent plus)
     entry.tries = (entry.tries || 0) + 1;
+    if (ok && !entry.right) {   // 12/11 : 1re réussite = un nouveau savoir pour l'Encyclopédie (date gardée pour « Récents »)
+        entry.first = todayKey();
+        if (encQuestion(id)) (state.newSavoirs || (state.newSavoirs = [])).push(id);
+    }
     if (ok) { entry.right = (entry.right || 0) + 1; entry.okDay = todayKey(); }
     entry.last = Date.now();
     state.data.stats[id] = entry;
@@ -1758,6 +1762,353 @@ function profileThemeStats() {
         if (isMastered(q.id)) t.mastered++;
     });
     return Object.values(map).sort((a, b) => byThemeName(a.theme, b.theme));
+}
+
+/* ---------- Encyclopédie des savoirs (12/11, aperçu apercu-encyclopedie.html, BAC À SABLE d'abord) ----------
+   Un savoir = une question du parcours ou de l'entraînement réussie au moins une fois (stats[id].right). On ne le perd jamais.
+   ✨ maîtrisé = même règle que l'entraînement (isMastered). Les savoirs pas encore trouvés restent cachés (seulement un nombre).
+   Profil → onglet « 📚 Savoirs » (à la place de « Thèmes ») ; livre = un thème ; fiche = réponse, question, explication, image ;
+   « Me la reposer » = petite question dans la fiche, pour le plaisir (rien n'est enregistré). Pas de « à revoir » (choix 12/11). */
+const ENC_ON = BAC;
+const ENC_COLORS = { 'Arts': '#d9468f', 'Cinéma': '#e5484d', 'Drapeaux': '#c2410c', 'Gastronomie': '#d97706', 'Géographie': '#16a34a', 'Histoire': '#a16207',
+    'Jeux': '#7c3aed', 'Langue française': '#2563eb', 'Littérature': '#0f766e', 'Monuments': '#475569', 'Musique': '#db2777', 'Mythologie': '#4338ca',
+    'Sciences': '#0891b2', 'Sport': '#15803d', 'Technologie': '#3d8bff' };
+let encCache = null, encCount = -1;
+function encAll() {
+    const n = QUESTIONS.length + (typeof TRAINING_QUESTIONS === 'undefined' ? 0 : TRAINING_QUESTIONS.length);
+    if (!encCache || encCount !== n) {   // recalcul si une banque arrive plus tard
+        encCache = new Map();
+        QUESTIONS.concat(typeof TRAINING_QUESTIONS === 'undefined' ? [] : TRAINING_QUESTIONS).forEach(q => encCache.set(q.id, q));
+        encCount = n;
+    }
+    return encCache;
+}
+/** Icône d'un thème en image Twemoji, ou en texte si l'image manque (🗣️). */
+function encIconEl(theme) {
+    const e = encIcon(theme);
+    const img = emojiImg(e);
+    img.onerror = () => img.replaceWith(document.createTextNode(e));
+    return img;
+}
+const encQuestion = id => encAll().get(id);
+const encKnown = q => (state.data.stats[q.id]?.right || 0) > 0;
+const encIcon = theme => (THEME_DECOR.find(t => t.theme === theme) || {}).icon || '📘';
+const encNorm = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const encWhen = q => { const s = state.data.stats[q.id] || {}; return s.first || (s.last ? dayKey(new Date(s.last)) : ''); };
+function encBooks() {
+    const map = {};
+    encAll().forEach(q => {
+        const b = map[q.theme] || (map[q.theme] = { theme: q.theme, total: 0, known: 0, mastered: 0, tries: 0, right: 0 });
+        b.total++;
+        const s = state.data.stats[q.id];
+        if (!s) return;
+        b.tries += s.tries || 0;
+        b.right += s.right || 0;
+        if ((s.right || 0) > 0) b.known++;
+        if (isMastered(q.id)) b.mastered++;
+    });
+    return Object.values(map).sort((a, b) => byThemeName(a.theme, b.theme));
+}
+function renderEncyclopedia(box) {
+    const card = box.closest('.card');
+    const h2 = card?.querySelector('h2');
+    if (h2) h2.textContent = '📚 Mon encyclopédie';
+    const tab = document.querySelector('.profile-tab[data-tab="themes"]');
+    if (tab) tab.textContent = '📚 Savoirs';
+    const books = encBooks();
+    const known = books.reduce((n, b) => n + b.known, 0), total = books.reduce((n, b) => n + b.total, 0);
+    const mastered = books.reduce((n, b) => n + b.mastered, 0);
+    const weekAgo = dayKey(new Date(Date.now() - 6 * 86400000));
+    let week = 0;
+    const recent = [];
+    encAll().forEach(q => {
+        if (!encKnown(q)) return;
+        const f = state.data.stats[q.id].first;
+        if (f && f >= weekAgo) week++;
+        recent.push(q);
+    });
+    recent.sort((a, b) => (state.data.stats[b.id].first || '').localeCompare(state.data.stats[a.id].first || '') || (state.data.stats[b.id].last || 0) - (state.data.stats[a.id].last || 0));
+
+    const head = el('div', 'enc-head');
+    const big = el('div', 'enc-big');
+    const num = el('b');
+    num.textContent = fmtNum(known);
+    const lab = el('span');
+    lab.textContent = `savoir${known > 1 ? 's' : ''} dans ton encyclopédie`;
+    big.append(num, lab);
+    const mchip = el('span', 'enc-mchip');
+    mchip.textContent = `✨ ${fmtNum(mastered)} maîtrisé${mastered > 1 ? 's' : ''}`;
+    head.append(big, mchip);
+    const bar = el('div', 'enc-bar');
+    const fill = el('i');
+    fill.style.width = `${total ? Math.max(known ? 1 : 0, Math.round(known / total * 100)) : 0}%`;
+    bar.append(fill);
+    const sub = el('p', 'enc-sub');
+    sub.textContent = `${fmtNum(known)} sur ${fmtNum(total)}${week ? ` · +${fmtNum(week)} cette semaine` : ''}`;
+    box.append(head, bar, sub);
+
+    if (recent.length) {
+        const t = el('p', 'enc-sec');
+        t.textContent = 'Derniers savoirs';
+        const row = el('div', 'enc-recent');
+        recent.slice(0, 3).forEach(q => {
+            const b = el('button', 'enc-mini');
+            b.type = 'button';
+            const em = el('small');
+            em.textContent = `${encIcon(q.theme)} ${q.theme}`;
+            const nm = el('b');
+            nm.textContent = q.a[0];
+            b.append(em, nm);
+            b.addEventListener('click', () => openEncFiche(q, recent.slice(0, 3), null));
+            row.append(b);
+        });
+        box.append(t, row);
+    }
+    const t2 = el('p', 'enc-sec');
+    t2.textContent = 'Mes livres';
+    const grid = el('div', 'enc-books');
+    books.forEach(b => {
+        const btn = el('button', `enc-book${b.known >= b.total ? ' is-full' : ''}`);
+        btn.type = 'button';
+        btn.style.setProperty('--c', ENC_COLORS[b.theme] || '#3d8bff');
+        const ic = el('span', 'enc-book-ic');
+        ic.append(encIconEl(b.theme));
+        const nm = el('b');
+        nm.textContent = b.theme;
+        const cnt = el('span', 'enc-book-n');
+        cnt.textContent = `${fmtNum(b.known)} / ${fmtNum(b.total)}`;
+        const m = el('small');
+        m.textContent = `✨ ${b.mastered} maîtrisé${b.mastered > 1 ? 's' : ''}`;
+        const r = el('small');
+        r.textContent = b.tries ? `🎯 ${Math.round(b.right / b.tries * 100)} % de réussite` : '🎯 pas encore joué';
+        const mini = el('span', 'enc-book-bar');
+        const mf = el('i');
+        mf.style.width = `${Math.round(b.known / b.total * 100)}%`;
+        mini.append(mf);
+        btn.append(ic, nm, cnt, m, r, mini);
+        btn.addEventListener('click', () => openEncBook(b.theme));
+        grid.append(btn);
+    });
+    box.append(t2, grid);
+}
+
+let encState = { theme: '', filter: 'all', search: '' };
+function openEncBook(theme, keep = false) {
+    if (!keep) encState = { theme, filter: 'all', search: '' };
+    const book = encBooks().find(b => b.theme === theme);
+    const body = $('friendBody');
+    body.replaceChildren();
+    const h = el('h2', 'review-title enc-title');
+    h.append(encIconEl(theme), document.createTextNode(` ${theme}`));
+    const bar = el('div', 'enc-bar');
+    bar.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
+    const fill = el('i');
+    fill.style.width = `${Math.round(book.known / book.total * 100)}%`;
+    bar.append(fill);
+    const tiles = el('div', 'enc-tiles');
+    [[fmtNum(book.known), `découvert${book.known > 1 ? 's' : ''} sur ${fmtNum(book.total)}`, ''],
+     [`✨ ${book.mastered}`, `maîtrisé${book.mastered > 1 ? 's' : ''}`, 'is-gold'],
+     [book.tries ? `${Math.round(book.right / book.tries * 100)} %` : '–', 'de réussite', 'is-ok']].forEach(([v, l, cls]) => {
+        const d = el('div', cls);
+        const b = el('b');
+        b.textContent = v;
+        const s = el('span');
+        s.textContent = l;
+        d.append(b, s);
+        tiles.append(d);
+    });
+    const search = el('input', 'enc-search');
+    search.type = 'search';
+    search.placeholder = '🔍 Chercher un savoir…';
+    search.value = encState.search;
+    const filters = el('div', 'enc-filters');
+    const list = el('div', 'enc-list');
+    const all = [...encAll().values()].filter(q => q.theme === theme);
+    const known = all.filter(encKnown);
+    const draw = () => {
+        filters.replaceChildren();
+        [['all', `Tous · ${known.length}`], ['mastered', `✨ Maîtrisés · ${book.mastered}`], ['recent', '🕒 Récents']].forEach(([k, label]) => {
+            const f = el('button', `enc-filter${encState.filter === k ? ' is-on' : ''}`);
+            f.type = 'button';
+            f.textContent = label;
+            f.addEventListener('click', () => { encState.filter = k; draw(); });
+            filters.append(f);
+        });
+        const qs = encNorm(encState.search.trim());
+        let items = known.filter(q => (encState.filter !== 'mastered' || isMastered(q.id)) && (!qs || encNorm(q.a.join(' ') + ' ' + q.q).includes(qs)));
+        if (encState.filter === 'recent') items.sort((a, b) => encWhen(b).localeCompare(encWhen(a)) || (state.data.stats[b.id].last || 0) - (state.data.stats[a.id].last || 0));
+        else items.sort((a, b) => encNorm(a.a[0].replace(/^(le |la |les |l'|l’)/i, '')).localeCompare(encNorm(b.a[0].replace(/^(le |la |les |l'|l’)/i, '')), 'fr'));
+        list.replaceChildren();
+        items.slice(0, 400).forEach(q => list.append(encRow(q, items)));
+        if (!items.length) {
+            const p = el('p', 'muted enc-empty');
+            p.textContent = known.length ? 'Aucun savoir ne correspond.' : 'Pas encore de savoir dans ce livre : joue des questions de ce thème pour le remplir !';
+            list.append(p);
+        }
+        const left = all.length - known.length;
+        if (left > 0 && !qs && encState.filter === 'all') {
+            const lk = el('div', 'enc-row is-locked');
+            const ic = el('span', 'enc-row-ic');
+            ic.textContent = '?';
+            const tx = el('span', 'enc-row-tx');
+            const b = el('b');
+            b.textContent = `${fmtNum(left)} savoir${left > 1 ? 's' : ''} à découvrir`;
+            const s = el('small');
+            s.textContent = `Joue en ${theme} pour les trouver`;
+            tx.append(b, s);
+            lk.append(ic, tx);
+            list.append(lk);
+        }
+    };
+    search.addEventListener('input', () => { encState.search = search.value; draw(); });
+    body.append(h, bar, tiles, search, filters, list);
+    draw();
+    $('friendModal').hidden = false;
+    if (!keep) $('friendModal').querySelector('.modal-content').scrollTop = 0;
+}
+function encMedia(q, small) {
+    if (q.flag) return flagImg(q.flag);
+    if (q.photo) { const img = el('img'); img.src = q.photo; img.alt = ''; img.loading = 'lazy'; return img; }
+    if (q.rebus) return small ? emojiImg(q.rebus[0]) : null;
+    return null;
+}
+function encRow(q, list, fromEnd = false) {
+    const row = el('button', 'enc-row');
+    row.type = 'button';
+    const ic = el('span', 'enc-row-ic');
+    const m = encMedia(q, true);
+    if (m) ic.append(m); else ic.append(encIconEl(q.theme));
+    const tx = el('span', 'enc-row-tx');
+    const b = el('b');
+    b.textContent = q.a[0];
+    const s = el('small');
+    s.textContent = q.q;
+    tx.append(b, s);
+    row.append(ic, tx);
+    if (isMastered(q.id)) { const st = el('span', 'enc-row-st'); st.textContent = '✨'; row.append(st); }
+    row.addEventListener('click', () => openEncFiche(q, list, fromEnd ? null : q.theme, fromEnd));
+    return row;
+}
+/** Liste des savoirs trouvés pendant une partie (pastille de l'écran de fin). */
+function openEncList(ids) {
+    const qs = ids.map(encQuestion).filter(Boolean);
+    const body = $('friendBody');
+    body.replaceChildren();
+    const h = el('h2', 'review-title');
+    h.textContent = `📚 ${plural(qs.length, 'nouveau savoir', 'nouveaux savoirs')} !`;
+    const p = el('p', 'muted review-note');
+    p.textContent = 'Ils sont rangés dans ton encyclopédie (Profil → 📚 Savoirs).';
+    const list = el('div', 'enc-list');
+    qs.forEach(q => list.append(encRow(q, qs, true)));
+    body.append(h, p, list);
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
+}
+function encOthers(q) {
+    const main = encNorm(q.a[0]);
+    if (/^[\d\s.,]+$/.test(main)) return [];   // nombre : « aussi : vingt-sept » n'apporte rien
+    const seen = new Set([main]);
+    return q.a.slice(1).filter(x => {
+        const n = encNorm(x);
+        if (seen.has(n) || main.includes(n) || /^\d+$/.test(x)) return false;
+        seen.add(n);
+        return true;
+    }).slice(0, 3);
+}
+const encDate = key => { if (!key) return ''; const [y, m, d] = key.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); };
+function openEncFiche(q, list, backTheme, fromEnd = false) {
+    const body = $('friendBody');
+    body.replaceChildren();
+    const idx = list.indexOf(q);
+    const back = el('button', 'duel-back');
+    back.type = 'button';
+    back.textContent = backTheme ? `← ${backTheme}` : fromEnd ? '← Nouveaux savoirs' : '← Retour';
+    back.addEventListener('click', () => { if (backTheme) openEncBook(backTheme, true); else if (fromEnd) openEncList(list.map(x => x.id)); else $('friendModal').hidden = true; });
+    const fiche = el('div', 'enc-fiche');
+    fiche.style.setProperty('--c', ENC_COLORS[q.theme] || '#3d8bff');
+    const chip = el('span', 'enc-chip');
+    chip.append(encIconEl(q.theme), document.createTextNode(` ${q.theme}`));
+    const title = el('h3');
+    title.textContent = q.a[0];
+    fiche.append(chip, title);
+    const others = encOthers(q);
+    if (others.length) { const o = el('p', 'enc-also'); o.textContent = `aussi : ${others.join(', ')}`; fiche.append(o); }
+    const media = q.rebus ? (() => { const d = el('div', 'enc-rebus'); d.append(...q.rebus.map(emojiImg)); return d; })() : encMedia(q, false);
+    if (media) {
+        const w = el('div', `enc-media${q.flag ? ' is-flag' : ''}`);
+        w.append(media);
+        if (q.credit) { const c = el('small'); c.textContent = q.credit; w.append(c); }
+        fiche.append(w);
+    }
+    const qq = el('div', 'enc-q');
+    const ql = el('em');
+    ql.textContent = 'La question';
+    qq.append(ql, document.createTextNode(q.q));
+    fiche.append(qq);
+    if (q.exp) {
+        const sv = el('div', 'enc-sv');
+        const sl = el('em');
+        sl.textContent = '💡 Le savais-tu ?';
+        sv.append(sl, document.createTextNode(q.exp));
+        fiche.append(sv);
+    }
+    const meta = el('div', 'enc-meta');
+    const s = state.data.stats[q.id] || {};
+    const d1 = el('span', 'enc-chip is-ok');
+    d1.textContent = s.first ? `✓ Découvert le ${encDate(s.first)}` : '✓ Découvert';
+    meta.append(d1);
+    const d2 = el('span', `enc-chip ${isMastered(q.id) ? 'is-gold' : 'is-grey'}`);
+    d2.textContent = isMastered(q.id) ? '✨ Maîtrisé' : '✨ Pas encore maîtrisé';
+    meta.append(d2);
+    fiche.append(meta);
+    // « Me la reposer » : la réponse se cache, on la tape, on vérifie (rien n'est enregistré)
+    const quiz = el('div', 'enc-quiz');
+    const ask = el('button', 'btn btn-green btn-full');
+    ask.type = 'button';
+    ask.textContent = '🔁 Me la reposer';
+    ask.addEventListener('click', () => {
+        fiche.classList.add('is-quiz');
+        quiz.replaceChildren();
+        const inp = el('input', 'enc-input');
+        inp.type = 'text';
+        inp.placeholder = 'Ta réponse';
+        inp.autocomplete = 'off';
+        const ok = el('button', 'btn btn-green btn-full');
+        ok.type = 'button';
+        ok.textContent = 'Vérifier';
+        const res = el('p', 'enc-res');
+        const check = () => {
+            if (!inp.value.trim()) { shake(inp); return; }
+            const v = judge(inp.value, q.a, q.q);
+            res.textContent = v === 'wrong' ? `❌ Pas tout à fait : c’était « ${q.a[0]} ».` : v === 'typo' ? '✅ Juste (attention à l’orthographe) !' : '✅ Bravo, tu la sais toujours !';
+            res.className = `enc-res ${v === 'wrong' ? 'is-ko' : 'is-ok'}`;
+            playSound(v === 'wrong' ? 'bad' : 'good');
+            fiche.classList.remove('is-quiz');
+            inp.readOnly = true;
+            ok.hidden = true;
+        };
+        ok.addEventListener('click', check);
+        inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+        quiz.append(inp, ok, res);
+        inp.focus();
+    });
+    quiz.append(ask);
+    fiche.append(quiz);
+    const nav = el('div', 'enc-nav');
+    const mk = (txt, j) => {
+        const b = el('button', 'enc-navbtn');
+        b.type = 'button';
+        b.textContent = txt;
+        b.disabled = j < 0 || j >= list.length;
+        b.addEventListener('click', () => openEncFiche(list[j], list, backTheme, fromEnd));
+        return b;
+    };
+    const pos = el('span');
+    pos.textContent = idx >= 0 ? `${idx + 1} / ${list.length}` : '';
+    nav.append(mk('‹ Précédent', idx - 1), pos, mk('Suivant ›', idx + 1));
+    body.append(back, fiche, nav);
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
 }
 
 function badgeStats() {
@@ -5301,7 +5652,8 @@ function renderProfile() {
     // Réussite par thème
     const bars = $('themeBars');
     bars.replaceChildren();
-    profileThemeStats().forEach(t => {
+    if (ENC_ON) renderEncyclopedia(bars);   // 12/11 (bac à sable) : l'onglet Thèmes devient l'Encyclopédie des savoirs
+    else profileThemeStats().forEach(t => {
         const row = el('div', 'theme-row');
         const head = el('div', 'theme-head');
         const name = el('span');
@@ -6157,6 +6509,7 @@ function startSession(requestedMode, level = 0) {
     state.replay = ['level', 'pairs', 'order', 'challenge'].includes(mode) && !!state.data.done[level];
     state.replayCounts = !state.replay || replayCountsForMissions(level);
     state.replayLevel = level;
+    state.newSavoirs = [];   // 12/11 : savoirs trouvés pendant cette partie (pastille de l'écran de fin)
     if (mode === 'kulti') state.kultiKind = kultiToday().kind;
     const pairsMode = mode === 'pairs' || (mode === 'kulti' && state.kultiKind === 'paires');
     const orderMode = mode === 'order' || (mode === 'kulti' && state.kultiKind === 'frise');
@@ -6891,7 +7244,6 @@ function kultiFeedbackLine(verdict, skipped) {
     const q = state.current.q;
     if (verdict === 'exact') {
         if (state.fbCombo) return { text: KULTI_COMBO[state.fbCombo] || 'Incroyable !', face: 'fier' };
-        if (state.fbFlash && Math.random() < 0.5) return { text: 'Quelle vitesse !', face: 'surpris' };
         const s = state.data.stats[q.id];
         if (state.fbClean && s && (s.tries || 0) > (s.right || 0) && Math.random() < 0.6) return { text: 'Tu la tiens enfin !', face: 'fier' };
         if (state.fbClean && (q.d || 0) >= 4 && Math.random() < 0.6) return { text: 'Pas facile, bravo !', face: 'surpris' };
@@ -7260,6 +7612,14 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     };
     $('endExtra').classList.add('is-chips');
     chipLines([extra, ...missions, fsLine]);
+    const found = ENC_ON ? [...new Set(state.newSavoirs || [])] : [];
+    if (found.length) {   // 12/11 (bac à sable) : « 📚 +5 savoirs », un tap montre les nouvelles fiches
+        const c = el('button', 'end-chip is-enc');
+        c.type = 'button';
+        c.textContent = `📚 +${plural(found.length, 'savoir', 'savoirs')} pour ton encyclopédie ›`;
+        c.addEventListener('click', () => openEncList(found));
+        $('endExtra').prepend(c);
+    }
     if (fsLine) requestAnimationFrame(() => {
         if (document.documentElement.scrollHeight > window.innerHeight + 2) chipLines([extra, ...missions]);
     });
