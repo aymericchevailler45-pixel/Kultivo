@@ -947,6 +947,12 @@ function normalizeData(data) {
     const lastDone = doneLevels.length ? Math.max(...doneLevels) : 0;
     data.unlocked = Math.max(1, data.unlocked || 1, Math.min(lastDone + 1, MAX_LEVEL));
     data.unlocked = Math.min(data.unlocked, MAX_LEVEL);
+    // 11/11 : badge « Parcours complet » donné à tort (dernier niveau d'un parcours plus court, avant les niveaux ajoutés) :
+    // retiré UNE fois à ceux qui n'ont pas fini le dernier niveau d'aujourd'hui (personne ne l'a fini). Les pièces déjà reçues restent.
+    if (!data.completeFix) {
+        if (data.badges.complete && !data.done[MAX_LEVEL]) { delete data.badges.complete; delete data.claimedBadges.complete; }
+        data.completeFix = true;
+    }
     return data;
 }
 
