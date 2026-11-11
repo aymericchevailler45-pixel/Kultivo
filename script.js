@@ -2046,6 +2046,26 @@ function encOthers(q) {
     }).slice(0, 3);
 }
 const encDate = key => { if (!key) return ''; const [y, m, d] = key.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); };
+/** 12/11 : la fiche prend toute la hauteur (comme un livre) ; clavier ouvert = la fenêtre se cale au-dessus. */
+function encFitKeyboard() {
+    const mc = $('friendModal').querySelector('.modal-content');
+    const vv = window.visualViewport;
+    if (!mc.classList.contains('is-enc-fiche') || !vv) { mc.style.height = ''; mc.style.alignSelf = ''; $('friendModal').style.paddingTop = ''; return; }
+    const kb = window.innerHeight - vv.height > 150;
+    mc.style.height = kb ? `${Math.round(vv.height - 24)}px` : '';
+    mc.style.alignSelf = kb ? 'flex-start' : '';
+    $('friendModal').style.paddingTop = kb ? `${Math.round(vv.offsetTop + 12)}px` : '';
+}
+(() => {
+    const fb = document.getElementById('friendBody');
+    if (!fb) return;
+    new MutationObserver(() => {
+        const mc = fb.closest('.modal-content');
+        mc.classList.toggle('is-enc-fiche', !!fb.querySelector(':scope > .enc-fiche'));
+        encFitKeyboard();
+    }).observe(fb, { childList: true });
+    window.visualViewport?.addEventListener('resize', encFitKeyboard);
+})();
 function openEncFiche(q, list, backTheme, fromEnd = false) {
     const body = $('friendBody');
     body.replaceChildren();
@@ -2102,6 +2122,7 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     const ask = el('button', 'btn btn-green btn-full');
     ask.type = 'button';
     ask.textContent = '🔁 Me la reposer';
+    const showEnd = () => setTimeout(() => { fiche.scrollTop = fiche.scrollHeight; }, 0);
     ask.addEventListener('click', () => {
         fiche.classList.add('is-quiz');
         quiz.replaceChildren();
@@ -2121,12 +2142,22 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
             playSound(v === 'wrong' ? 'bad' : 'good');
             fiche.classList.remove('is-quiz');
             inp.readOnly = true;
+            inp.blur();   // le clavier se ferme : on voit la réponse
             ok.hidden = true;
+            showEnd();
+            // 12/11 : le résultat ne reste pas : après 2,5 s, on revient au bouton « Me la reposer »
+            setTimeout(() => {
+                if (!fiche.isConnected) return;
+                quiz.classList.add('is-fading');
+                setTimeout(() => { if (!fiche.isConnected) return; quiz.classList.remove('is-fading'); quiz.replaceChildren(ask); }, 300);
+            }, 2500);
         };
         ok.addEventListener('click', check);
         inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
         quiz.append(inp, ok, res);
         inp.focus();
+        // le clavier s'ouvre : la fiche remonte pour garder « Vérifier » visible
+        [80, 350, 700].forEach(ms => setTimeout(() => { encFitKeyboard(); showEnd(); }, ms));
     });
     quiz.append(ask);
     fiche.append(quiz);
