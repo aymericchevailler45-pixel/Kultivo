@@ -9038,7 +9038,7 @@ function renderTraining() {
             const errors = bank.filter(q => missCount(q.id) > 0).length;
             if (errors) {
                 const rev = el('span', 'train-errors');
-                rev.textContent = `🔁 ${errors} ${errors > 1 ? 'ratées' : 'ratée'} · reviennent ici`;   // 11/11 : pas dans « ↻ à revoir » du parcours
+                rev.textContent = `🔁 ${errors} ${errors > 1 ? 'ratées' : 'ratée'} à refaire`;   // 11/11 : pas dans « ↻ à revoir » du parcours
                 rev.title = 'Questions ratées : elles reviennent dans tes prochaines sessions de ce thème';
                 foot.append(rev);
             }
