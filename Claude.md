@@ -304,6 +304,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   ~2,2 s, IMPOSSIBLE à sauter (bouton, ✕ et retour bloqués jusqu’à la fin).
 - 11/11 : INFOS ESSENTIELLES BIEN VISIBLES (demande) : boutique = pastille sous le nom (« 🎒 3 en stock », « 💧 3 / 5 », « 🃏 x / 180
   cartes », `.sl-chip`, grise si 0) ; fenêtre des gouttes = encadré « 3 / 3 gouttes bonus encore possibles aujourd'hui ».
+  Suite (11/11, « fais tout ») : `askConfirm({ info })` = cases de chiffres (`infoTiles`, `.ask-tile`, tons good / bad / warn) pour la
+  série en danger / protégée et avant un palier d'entraînement (palier x / 10, réussies x / y) ; indices pendant une question =
+  pastille « 🎒 2 · gratuit » (verte) ou « 45 🪙 » (dorée) ; cœur de secours = pastilles. ÉCRAN DE FIN en pastilles (pièces dorées,
+  chaque ligne dans sa pastille) : BAC À SABLE SEULEMENT, l'utilisateur doit dire s'il le veut dans le vrai jeu.
 - FÊTE DU SOMMET (10/11, choix C sur apercu-sommet.html) : DERNIER niveau réussi pour la 1re fois (`summitDone`, posé dans la fin
   de niveau, même s'il reste des niveaux facultatifs derrière : PAS de mention des facultatifs, demande de l'utilisateur) →
   `showSummitAnim` (file `celebrate`) : Kulti grimpe le zigzag (caméra qui monte, 24 lampes, compteur 1 → 300), zoom au sommet,

@@ -1491,8 +1491,9 @@ async function checkStreakDanger(demo = null) {
         await askConfirm({
             art: kultiEl('content', 'kulti-blink kulti-float'),
             title: '🧊 Ta série est protégée',
-            text: `Tu as manqué ${plural(missed, 'jour', 'jours')}. ${plural(missed, 'gel de série sera utilisé', 'gels de série seront utilisés')} quand tu finiras une leçon : ta série de ${days} continue !
-Il te restera ${plural(data.inv.freeze - missed, 'gel', 'gels')}.`,
+            info: [{ big: String(missed), label: missed > 1 ? 'jours manqués' : 'jour manqué', tone: 'warn' }, { big: `🧊 ${missed}`, label: missed > 1 ? 'gels utilisés' : 'gel utilisé' },
+                { big: `🧊 ${data.inv.freeze - missed}`, label: 'il te restera', tone: 'good' }],
+            text: `Ils seront utilisés quand tu finiras une leçon : ta série de ${days} continue !`,
             yes: 'Super !',
             no: null
         });
@@ -1504,7 +1505,9 @@ Il te restera ${plural(data.inv.freeze - missed, 'gel', 'gels')}.`,
     const ok = await askConfirm({
         art: kultiEl('inquiet', 'kulti-blink kulti-float'),
         title: '🔥 Ta série est en danger !',
-        text: `Tu as manqué ${plural(missed, 'jour', 'jours')}. Il te manque ${plural(need, 'gel', 'gels')} de série pour sauver ta série de ${days}.\n`
+        info: [{ big: String(missed), label: missed > 1 ? 'jours manqués' : 'jour manqué', tone: 'warn' }, { big: `🧊 ${data.inv.freeze}`, label: 'gels en stock' },
+            { big: `🧊 ${need}`, label: need > 1 ? 'gels manquants' : 'gel manquant', tone: 'bad' }],
+        text: `Pour sauver ta série de ${days}.\n`
             + (enough ? `Tu as ${data.coins} 🪙 : il t’en restera ${data.coins - price}. Termine ensuite une leçon pour la garder.`
                       : `Il faut ${price} 🪙, tu en as ${data.coins}. Gagne des pièces en jouant, puis achète un gel à la boutique avant ta prochaine leçon.`),
         yes: enough ? `Acheter · ${price} 🪙` : 'Compris',
@@ -5374,9 +5377,11 @@ function renderHintOptions() {
         const used = state.hintUsed.has(id) || HINT_LEVEL[id] <= best;   // déjà visible dans la grille
         const btn = el('button', 'btn btn-hint');
         btn.type = 'button';
-        btn.textContent = used ? `${item.icon} ${item.short} (déjà visible)`
-            : owned > 0 ? `${item.icon} ${item.short} (en stock : ${owned})`
-            : `${item.icon} ${item.short} · ${item.spot || item.price} 🪙`;
+        const name = el('span', 'hint-name');
+        name.textContent = `${item.icon} ${item.short}`;
+        const tag = el('span', `hint-tag ${used ? 'is-used' : owned > 0 ? 'is-stock' : 'is-price'}`);   // 11/11 : stock ou prix, bien visible
+        tag.textContent = used ? 'déjà visible' : owned > 0 ? `🎒 ${owned} · gratuit` : `${item.spot || item.price} 🪙`;
+        btn.append(name, tag);
         btn.disabled = used || (owned === 0 && state.data.coins < (item.spot || item.price));
         btn.addEventListener('click', () => useHint(id));
         box.append(btn);
@@ -6909,12 +6914,13 @@ function showRescueOption() {
     const btn = $('endRescue');
     state.canRescue = inv.heart > 0 || coins >= price;
     const info = $('endRescueInfo');
+    const chips = list => { info.replaceChildren(...list.map(([t, cls]) => { const c = el('span', `rescue-chip ${cls || ''}`); c.textContent = t; return c; })); };   // 11/11
     if (inv.heart > 0) {
         btn.textContent = '💖 Continuer avec un cœur de secours';
-        info.textContent = `Gratuit : tu en as ${inv.heart} en stock.`;
+        chips([[`🎒 ${inv.heart} en stock`, 'is-good'], ['gratuit']]);
     } else if (coins >= price) {
         btn.textContent = `💖 Continuer · −${price} 🪙`;
-        info.textContent = `Tu as ${coins} 🪙 · il t’en restera ${coins - price}.`;
+        chips([[`Tu as ${coins} 🪙`], [`il t’en restera ${coins - price} 🪙`, 'is-warn']]);
     } else {
         $('endText').textContent += `\n💡 Un cœur de secours coûte ${price} 🪙 pour continuer : tu en as ${coins}, il t’en manque ${price - coins}.`;
     }
@@ -7038,6 +7044,11 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     // Série d'amis : une petite ligne, seulement s'il y a peu d'autres lignes (et retirée si l'écran devait défiler)
     const fsLine = missions.length + (extra ? 1 : 0) <= 1 ? friendStreakLine() : '';
     $('endExtra').textContent = [extra, ...missions, fsLine].filter(Boolean).join('\n');
+    if (BAC) {   // 11/11 : essai dans le bac à sable : pièces gagnées en pastille dorée, chaque ligne dans sa pastille
+        const lines = [extra, ...missions, fsLine].filter(Boolean).flatMap(t => t.split('\n'));
+        $('endExtra').replaceChildren(...lines.map(t => { const c = el('span', `end-chip${/^\+\d+ 🪙$/.test(t) ? ' is-coins' : ''}`); c.textContent = t; return c; }));
+        $('endExtra').classList.add('is-chips');
+    } else $('endExtra').classList.remove('is-chips');
     if (fsLine) requestAnimationFrame(() => {
         if (document.documentElement.scrollHeight > window.innerHeight + 2) $('endExtra').textContent = [extra, ...missions].filter(Boolean).join('\n');
     });
@@ -8507,10 +8518,28 @@ async function cloudLogout() {
 
 /** Question oui / non dans une fenêtre du jeu (au lieu de confirm(), moche et qui affiche l'adresse du site).
     Renvoie une promesse : true = oui. `danger` : bouton rouge (retirer, effacer…). */
-function askConfirm({ title, text = '', yes = 'Oui', no = 'Annuler', danger = false, art = null }) {
+/** 11/11 : chiffres importants en cases bien visibles ([{ big, label, tone }], tone : 'good' / 'bad' / 'warn'). */
+function infoTiles(list) {
+    const row = el('div', 'ask-info');
+    list.filter(Boolean).forEach(({ big, label, tone }) => {
+        const c = el('div', `ask-tile${tone ? ` is-${tone}` : ''}`);
+        const b = el('b');
+        b.textContent = big;
+        const l = el('span');
+        l.textContent = label;
+        c.append(b, l);
+        row.append(c);
+    });
+    return row;
+}
+function askConfirm({ title, text = '', yes = 'Oui', no = 'Annuler', danger = false, art = null, info = null }) {
     const nbsp = t => t.replace(/ ([?!:»])/g, ' $1');   // « ? » jamais seul en début de ligne
     $('askArt').replaceChildren(...(art ? [art] : []));
     $('askArt').hidden = !art;
+    let box = $('askInfo');
+    if (!box) { box = el('div'); box.id = 'askInfo'; $('askText').before(box); }
+    box.replaceChildren(...(info ? [infoTiles(info)] : []));
+    box.hidden = !info;
     $('askTitle').textContent = nbsp(title);
     $('askText').textContent = nbsp(text);
     $('askText').hidden = !text;
@@ -8825,7 +8854,11 @@ async function confirmTraining(theme, icon) {
     if (pr.blockedToday) lines.push('✅ Palier du jour déjà réussi : tu peux continuer pour t’entraîner (ça compte pour tes médailles).');
     const bonus = dropBonusText();
     if (bonus) lines.push(bonus);
-    const ok = await askConfirm({ title: `${icon} ${theme}`, text: lines.join('\n'), yes: pr.blockedToday ? 'Continuer quand même' : 'Commencer', no: 'Plus tard' });
+    // 11/11 : le palier et ce qu'il reste à réussir en cases bien visibles
+    const info = [{ big: `${pr.tier} / ${TRAIN_TIERS}`, label: TRAIN_TIER_NAMES[pr.tier - 1] },
+        pr.won || pr.ready ? { big: '✅', label: 'palier réussi', tone: 'good' }
+            : { big: `${Math.min(pr.right, pr.needRight)} / ${pr.needRight}`, label: `réussies · encore ${pr.needRight - pr.right}`, tone: 'warn' }];
+    const ok = await askConfirm({ title: `${icon} ${theme}`, info, text: lines.slice(1).filter(l => !l.startsWith('Pour réussir ce palier')).join('\n'), yes: pr.blockedToday ? 'Continuer quand même' : 'Commencer', no: 'Plus tard' });
     if (ok) startTraining(theme);
 }
 

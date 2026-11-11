@@ -3868,3 +3868,26 @@ body.deco-baby .decor-badge.baby-pink { background: #ffe4f1; box-shadow: 0 10px 
 .shop-line .sl-text .sl-chip { display: inline-block; margin: 3px 0 4px; padding: 2px 9px; border-radius: 999px; font-size: 0.8rem; font-weight: 900;
     background: color-mix(in srgb, var(--violet) 16%, var(--surface)); color: var(--violet-ink, var(--violet)); }
 .shop-line .sl-text .sl-chip.is-zero { background: var(--bg); color: var(--muted); }
+
+/* 11/11 : infos essentielles bien visibles */
+#askInfo { margin: 6px 0 4px; }
+.ask-info { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.ask-tile { flex: 1 1 0; min-width: 84px; max-width: 130px; padding: 8px 6px; border-radius: 14px; background: var(--bg); text-align: center; }
+.ask-tile b { display: block; font-size: 1.35rem; font-weight: 900; line-height: 1.1; color: var(--ink); white-space: nowrap; }
+.ask-tile span { display: block; margin-top: 2px; font-size: 0.75rem; font-weight: 800; color: var(--muted); line-height: 1.2; }
+.ask-tile.is-good b { color: var(--green-ink); }
+.ask-tile.is-bad b { color: var(--red-ink); }
+.ask-tile.is-warn b { color: #d97706; }
+.btn-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.btn-hint .hint-name { min-width: 0; }
+.hint-tag { flex: none; padding: 3px 9px; border-radius: 999px; font-size: 0.82rem; font-weight: 900; white-space: nowrap; }
+.hint-tag.is-stock { background: color-mix(in srgb, var(--green) 22%, var(--surface)); color: var(--green-ink); }
+.hint-tag.is-price { background: color-mix(in srgb, #ffc800 30%, var(--surface)); color: #8a5a00; }
+.hint-tag.is-used { background: var(--bg); color: var(--muted); }
+.end-rescue-info { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
+.rescue-chip { padding: 4px 10px; border-radius: 999px; background: var(--bg); font-size: 0.85rem; font-weight: 900; color: var(--ink); }
+.rescue-chip.is-good { background: color-mix(in srgb, var(--green) 22%, var(--surface)); color: var(--green-ink); }
+.rescue-chip.is-warn { background: color-mix(in srgb, #ffc800 30%, var(--surface)); color: #8a5a00; }
+.end-extra.is-chips { display: flex; flex-direction: column; align-items: center; gap: 6px; white-space: normal; }
+.end-chip { padding: 5px 12px; border-radius: 14px; background: var(--bg); font-size: 0.88rem; font-weight: 800; color: var(--ink); text-align: center; }
+.end-chip.is-coins { background: color-mix(in srgb, #ffc800 30%, var(--surface)); color: #8a5a00; font-size: 1.05rem; font-weight: 900; border-radius: 999px; }
