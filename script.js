@@ -2152,10 +2152,10 @@ function openEncBook(theme, keep = false) {
         });
         const special = theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
             : theme === 'Mythologie' ? ['🌳', 'L’arbre des dieux', 'Grèce, Égypte et Nordique', () => openEncGods()]
-            : theme === 'Gastronomie' ? ['🧀', 'Ma France gourmande', 'les régions de France et les cuisines du monde', () => openEncFrance()]
+            : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
         const parts = [quick];
-        if (special) {   // 12/11 : frise (Histoire) ou carte du monde (Géographie, Drapeaux, Monuments)
+        (special ? (Array.isArray(special[0]) ? special : [special]) : []).forEach(special => {   // frise, arbre, cartes… (13/11 : plusieurs possibles)
             const b = el('button', 'enc-special');
             b.type = 'button';
             b.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
@@ -2172,7 +2172,7 @@ function openEncBook(theme, keep = false) {
             b.append(e, t, ar);
             b.addEventListener('click', special[3]);
             parts.push(b);
-        }
+        });
         zone.append(...parts, sec, list);
     };
     search.addEventListener('input', () => { encState.search = search.value; draw(); });
@@ -2507,6 +2507,7 @@ async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
     const by = kind === 'cuisine' ? (() => {   // cuisines du monde : les plats étrangers sur leur pays
         const o = {}, all = encAll();
         Object.entries(window.ENC_CUISINE || {}).forEach(([id, ccs]) => { const q = all.get(Number(id)); if (q) ccs.forEach(cc => (o[cc] = o[cc] || []).push(q)); });
+        o.FR = Object.keys(window.ENC_REGION || {}).map(id => all.get(Number(id))).filter(Boolean);   // la France = ses régions
         return o;
     })() : encCountryData();
     const st = cc => { const qs = by[cc] || []; const k = qs.filter(encKnown).length; return { qs, k, n: qs.length }; };
@@ -2684,6 +2685,7 @@ async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
         });
         const t = best ? null : document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.enc-cty');
         const cc = best || t?.dataset?.cc;
+        if (cc === 'FR' && kind === 'cuisine') { openEncFrance(); return; }   // la France a sa propre carte
         if (cc && by[cc]) show(cc);
     });
     svg.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; moved = false; });

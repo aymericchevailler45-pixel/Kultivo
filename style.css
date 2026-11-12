@@ -4408,3 +4408,7 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 :root[data-theme="dark"] .enc-reg { stroke: #1d2a3f; }
 :root[data-theme="dark"] .enc-reg.l0 { fill: #3a465e; }
 .enc-fr-legend i.enc-fr-l0 { background: #dfe3ea; } .enc-fr-legend i.enc-fr-l1 { background: #f7d98a; } .enc-fr-legend i.enc-fr-l2 { background: #f2b94a; } .enc-fr-legend i.enc-fr-l3 { background: #d98b12; }
+
+/* 13/11 : un peu d'air entre le titre et les onglets France / Monde */
+.enc-title + .enc-god-tabs { margin-top: 10px; }
+.enc-mappage .enc-god-tabs { flex: none; margin-bottom: 10px; }
