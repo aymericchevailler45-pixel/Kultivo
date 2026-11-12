@@ -4312,3 +4312,11 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .pal-elec .flip:not(.rarity-common) .flip-back { box-shadow: 0 3px 0 #123f99, 0 0 10px 2px var(--r); }
 .pal-elec .flip.is-charging .flip-back { box-shadow: 0 4px 0 #123f99, 0 0 30px 8px var(--r); }
 .pal-elec .coll-back { background: #1c5bd6; box-shadow: 0 3px 0 #123f99; }
+
+/* 12/11 : carte brillante, les 3 exemplaires bien visibles avant la fusion (éventail plus large, cartes un peu plus petites) */
+.shiny-stage { transition: transform 0.5s ease-in; }
+.shiny-stage.is-fan { transform: scale(0.6); }
+@keyframes shInL { from { transform: translateX(-150px) rotate(-16deg); opacity: 0; } to { transform: translateX(-74px) rotate(-9deg); opacity: 1; } }
+@keyframes shInR { from { transform: translateX(150px) rotate(16deg); opacity: 0; } to { transform: translateX(74px) rotate(9deg); opacity: 1; } }
+@keyframes shMergeL { from { transform: translateX(-74px) rotate(-9deg); } to { transform: none; opacity: 0; } }
+@keyframes shMergeR { from { transform: translateX(74px) rotate(9deg); } to { transform: none; opacity: 0; } }

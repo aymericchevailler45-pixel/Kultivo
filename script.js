@@ -5962,7 +5962,7 @@ function revealShiny(card) {
     chestBack = null;
     $('chestTitle').textContent = '✨ 3 exemplaires !';
     const stage = $('chestStage');
-    const box = el('div', 'shiny-stage');
+    const box = el('div', 'shiny-stage is-fan');   // 12/11 : éventail plus petit et plus large, les 3 cartes se voient en entier
     const halo = el('div', 'shiny-halo');
     const flash = el('div', 'shiny-flash');
     const left = cardFace(card, true, false), right = cardFace(card, true, false), mid = cardFace(card, true, false);
@@ -5980,6 +5980,7 @@ function revealShiny(card) {
     sfx(() => [0, 0.1, 0.2].forEach((d, i) => { synthNoise(d, 0.35, 0.15, 500, 0.7, 3000); synthTone(660 + i * 220, d + 0.3, 0.2, 'triangle', 0.07); }));
     const timers = [];
     timers.push(setTimeout(() => {
+        box.classList.remove('is-fan');
         left.classList.replace('sh-in-l', 'sh-merge-l');
         right.classList.replace('sh-in-r', 'sh-merge-r');
         sfx(() => synthNoise(0, 0.5, 0.15, 500, 0.7, 3000));
