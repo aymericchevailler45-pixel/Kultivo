@@ -2152,7 +2152,7 @@ function openEncBook(theme, keep = false) {
         });
         const special = theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
             : theme === 'Mythologie' ? ['🌳', 'L’arbre des dieux', 'Grèce, Égypte et Nordique', () => openEncGods()]
-            : theme === 'Gastronomie' ? ['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()]
+            : theme === 'Gastronomie' ? ['🧀', 'Ma France gourmande', 'les régions de France et les cuisines du monde', () => openEncFrance()]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
         const parts = [quick];
         if (special) {   // 12/11 : frise (Histoire) ou carte du monde (Géographie, Drapeaux, Monuments)
@@ -2487,18 +2487,35 @@ function encCountryLabel(q) {
     if (/^Quel pays a pour capitale/i.test(q.q)) return [q.q.replace(/^Quel pays a pour capitale\s*/i, 'Capitale : ').replace(/\s*\?$/, ''), q.a[0]];
     return [q.q.replace(/\s*\?$/, ''), q.a[0]];
 }
-async function openEncMap(fromTheme, keepCc = null) {
+/** 13/11 : onglets France / Monde de la Gastronomie. */
+function encGastroTabs(active) {
+    const tabs = el('div', 'enc-god-tabs');
+    [['france', '🥖 France', () => openEncFrance()], ['monde', '🌍 Monde', () => openEncMap('Gastronomie', null, 'cuisine')]].forEach(([k, l, fn]) => {
+        const b = el('button', `enc-god-tab${k === active ? ' is-on' : ''}`);
+        b.type = 'button';
+        b.style.setProperty('--c', '#ca8a04');
+        b.textContent = l;
+        if (k !== active) b.addEventListener('click', fn);
+        tabs.append(b);
+    });
+    return tabs;
+}
+async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
     const body = $('friendBody');
-    try { await encLoad('carte-monde.js'); } catch (e) { showToast('📶 Carte indisponible hors connexion pour l’instant'); return; }
+    try { await encLoad('carte-monde.js'); if (kind === 'cuisine') await encLoad('carte-france.js'); } catch (e) { showToast('📶 Carte indisponible hors connexion pour l’instant'); return; }
     const M = window.WORLD_MAP;
-    const by = encCountryData();
+    const by = kind === 'cuisine' ? (() => {   // cuisines du monde : les plats étrangers sur leur pays
+        const o = {}, all = encAll();
+        Object.entries(window.ENC_CUISINE || {}).forEach(([id, ccs]) => { const q = all.get(Number(id)); if (q) ccs.forEach(cc => (o[cc] = o[cc] || []).push(q)); });
+        return o;
+    })() : encCountryData();
     const st = cc => { const qs = by[cc] || []; const k = qs.filter(encKnown).length; return { qs, k, n: qs.length }; };
     const codes = Object.keys(by);
     const found = codes.filter(cc => st(cc).k > 0).length, full = codes.filter(cc => { const s = st(cc); return s.k === s.n; }).length;
     body.replaceChildren();
     const page = el('div', 'enc-full enc-mappage');   // 12/11 : la carte prend toute la page (comme une fiche)
     const h = el('h2', 'review-title enc-title is-sm');
-    h.textContent = '🗺️ Ma carte du monde';
+    h.textContent = kind === 'cuisine' ? '🍜 Ma cuisine du monde' : '🗺️ Ma carte du monde';
     const tiles = el('div', 'enc-tiles enc-map-tiles');
     [[`${found} / ${codes.length}`, 'pays découverts'], [`✨ ${full}`, 'pays complets']].forEach(([v, l]) => {
         const d = el('div');
@@ -2596,7 +2613,7 @@ async function openEncMap(fromTheme, keepCc = null) {
         card.append(hd);
         // 12/11 : on commence par le thème du livre ouvert (drapeaux dans Drapeaux, monuments dans Monuments…)
         const known = s.qs.filter(encKnown).sort((a, b) => order.indexOf(a.theme) - order.indexOf(b.theme));
-        const ret = { label: '← Ma carte', fn: () => openEncMap(fromTheme, cc) };
+        const ret = { label: '← Ma carte', fn: () => openEncMap(fromTheme, cc, kind) };
         let lastTheme = '';
         const many = new Set(known.map(q => q.theme)).size > 1;
         known.forEach(q => {
@@ -2671,7 +2688,7 @@ async function openEncMap(fromTheme, keepCc = null) {
     });
     svg.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; moved = false; });
     svg.addEventListener('wheel', e => { e.preventDefault(); v.s *= e.deltaY < 0 ? 1.2 : 1 / 1.2; apply(); }, { passive: false });
-    page.append(h, tiles, wrap, panel);
+    page.append(h, ...(kind === 'cuisine' ? [encGastroTabs('monde')] : []), tiles, wrap, panel);
     body.append(encBackBtn(fromTheme ? `← ${fromTheme}` : '← Retour', () => { encMapView = null; if (fromTheme) openEncBook(fromTheme, true); else $('friendModal').hidden = true; }), page);
     $('friendModal').hidden = false;
     requestAnimationFrame(() => { apply(); if (keepCc && by[keepCc]) show(keepCc); });
@@ -2929,7 +2946,7 @@ async function openEncFrance(keepCode = null) {
         page.classList.add('has-sel');
     };
     svg.addEventListener('click', e => { const p = e.target.closest('.enc-reg'); if (p) show(p.dataset.code); });
-    page.append(h, cnt, wrap, legend, credit, panel);
+    page.append(h, encGastroTabs('france'), cnt, wrap, legend, credit, panel);
     const body = $('friendBody');
     body.replaceChildren(encBackBtn('← Gastronomie', () => openEncBook('Gastronomie', true)), page);
     $('friendModal').hidden = false;
