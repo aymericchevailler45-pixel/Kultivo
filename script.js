@@ -1775,7 +1775,7 @@ function profileThemeStats() {
    ✨ maîtrisé = même règle que l'entraînement (isMastered). Les savoirs pas encore trouvés restent cachés (seulement un nombre).
    Profil → onglet « 📚 Savoirs » (à la place de « Thèmes ») ; livre = un thème ; fiche = réponse, question, explication, image ;
    « Me la reposer » = petite question dans la fiche, pour le plaisir (rien n'est enregistré). Pas de « à revoir » (choix 12/11). */
-const ENC_ON = BAC;
+const ENC_ON = true;   // 12/11 : encyclopédie des savoirs, EN LIGNE POUR TOUS depuis le 12/11 (avant : bac à sable seulement)
 // 12/11 : 15 couleurs bien distinctes (Cinéma et Drapeaux se ressemblaient), l'icône est posée sur un rond blanc
 const ENC_COLORS = { 'Arts': '#c026d3', 'Cinéma': '#dc2626', 'Drapeaux': '#ea580c', 'Gastronomie': '#ca8a04', 'Géographie': '#15803d', 'Histoire': '#92400e',
     'Jeux': '#7c3aed', 'Langue française': '#2563eb', 'Littérature': '#0f766e', 'Monuments': '#78716c', 'Musique': '#db2777', 'Mythologie': '#1e3a8a',
@@ -14901,12 +14901,12 @@ function initBac() {
 
 /* « Quoi de neuf ? » (2026-11-09 : 10 paliers d'entraînement, texte validé par l'utilisateur, sans la ligne sur la correction).
    NOTES_DAY = date de la dernière annonce (indépendante de PATCH_DAY, qui active encore la mise à jour du 26/10). */
-const NOTES_DAY = '2026-11-09';
+const NOTES_DAY = '2026-11-12';   // 12/11 : l'encyclopédie des savoirs pour tous
 const PATCH_NOTES = [
-    ['🎯', 'L’entraînement passe à 10 paliers', 'Près de 1 900 nouvelles questions : la plupart des thèmes ont maintenant 300 questions. Nouveaux paliers : Curieux, Amateur, Averti, Érudit et Virtuose. Le dernier, Maître, donne la carte Maître.'],
-    ['🔄', 'Ta progression est gardée', 'Ton palier est converti : le palier 3 sur 5 devient le palier 6 sur 10. Les nouvelles questions des paliers déjà validés arrivent petit à petit dans tes sessions.'],
-    ['🏅', 'Médailles recalculées', 'Elles comptent maintenant sur toutes les questions du thème. Si ton or est redevenu bronze ou argent, à toi de le reconquérir ! Tes badges, eux, restent.'],
-    ['🃏', 'Les cartes', '1 carte par palier réussi, et 2 aux paliers 5 et 10.']
+    ['📚', 'Ton encyclopédie des savoirs', 'Dans ton Profil, onglet Thèmes : chaque question que tu as réussie devient une fiche, rangée par thème et par chapitre. Elle y reste pour toujours.'],
+    ['🗺️', 'Un décor pour chaque thème', 'Carte du monde, frise de l’Histoire, arbre des dieux, corps humain, bibliothèque, musée, vinyles, salle des trophées… Touche un livre pour l’ouvrir.'],
+    ['🔁', 'Réviser sans risque', 'Dans un chapitre, retourne les cartes de ce que tu sais. Tes erreurs ne comptent pas.'],
+    ['✨', 'À toi de tout compléter', 'Les cases « ? » attendent d’être découvertes. Un chapitre complet reçoit son tampon, une étagère ou une salle pleine se pare d’or.']
 ];
 function maybeShowPatchNotes() {
     const d = state.data;
