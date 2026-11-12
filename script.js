@@ -2155,6 +2155,8 @@ function openEncBook(theme, keep = false) {
             : theme === 'Sciences' ? [['🫀', 'Mon corps humain', 'les organes que tu connais', () => openEncSpots('sci', 'corps')], ['🪐', 'Mon système solaire', 'les planètes, les étoiles et l’espace', () => openEncSpots('sci', 'espace')]]
             : theme === 'Langue française' ? ['📖', 'Mon dictionnaire', 'tes mots et expressions de A à Z', () => openEncDico()]
             : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
+            : theme === 'Drapeaux' ? [['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()], ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)]]
+            : theme === 'Monuments' ? [['💌', 'Mes cartes postales', 'un album des monuments du monde', () => openEncPostcards()], ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)]]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
         const parts = [quick];
         (special ? (Array.isArray(special[0]) ? special : [special]) : []).forEach(special => {   // frise, arbre, cartes… (13/11 : plusieurs possibles)
@@ -2701,6 +2703,11 @@ async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
         const cc = best || t?.dataset?.cc;
         if (cc === 'FR' && kind === 'cuisine') { openEncFrance(); return; }   // la France a sa propre carte
         if (cc && by[cc]) show(cc);
+        else if (sel) {   // 13/11 : tap dans la mer (ou un pays sans question) = on referme
+            (shapes[sel] || []).forEach(p => p.classList.remove('is-sel'));
+            sel = null;
+            panel.replaceChildren(hint);
+        }
     });
     svg.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; moved = false; });
     svg.addEventListener('wheel', e => { e.preventDefault(); v.s *= e.deltaY < 0 ? 1.2 : 1 / 1.2; apply(); }, { passive: false });
@@ -2822,7 +2829,19 @@ async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
     tree.append(svg);
     const panel = el('div', 'enc-map-panel enc-god-panel');
     const btns = {};
+    let spotBefore = null;   // 13/11 : position du dessin avant la 1re sélection (rendue quand on referme)
+    const clearSel = () => {
+        if (!page.classList.contains('has-sel')) return;
+        Object.values(btns).forEach(b => b.classList.remove('is-sel'));
+        lines.forEach(l => l.el.classList.remove('is-hl'));
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+        const top = spotBefore || 0;
+        spotBefore = null;
+        requestAnimationFrame(() => { scroller.scrollTop = top; });
+    };
     const show = n => {
+        if (spotBefore === null) spotBefore = scroller.scrollTop;
         Object.values(btns).forEach(b => b.classList.remove('is-sel'));
         // 12/11 : la branche du dieu touché s'allume (ses ancêtres jusqu'en haut, et ses enfants)
         const up = new Set([n.id]);
@@ -2890,6 +2909,7 @@ async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
         tree.append(b);
     });
     scroller.append(tree);
+    encTapOff(tree, '.enc-god', clearSel);
     let romanBtn = null;
     if (P.roman) {
         const sw = el('button', `enc-god-roman${encGodsRoman ? ' is-on' : ''}`);
@@ -3016,6 +3036,13 @@ async function openEncFrance(keepCode = null) {
         page.classList.add('has-sel');
     };
     svg.addEventListener('click', e => { const p = e.target.closest('.enc-reg'); if (p) show(p.dataset.code); });
+    encTapOff(wrap, '.enc-reg', () => {   // 13/11 : tap à côté = carte entière
+        if (!sel) return;
+        shapes[sel]?.classList.remove('is-sel');
+        sel = null;
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+    });
     page.append(h, encGastroTabs('france'), cnt, wrap, legend, credit, panel);
     encSwipe(page, () => openEncMap('Gastronomie', null, 'cuisine'), null);
     const body = $('friendBody');
@@ -3111,10 +3138,258 @@ function openEncDico(keepL = null) {
         grid.append(c);
     });
     wrap.append(grid);
+    encTapOff(wrap, '.enc-letter', () => {   // 13/11 : tap à côté = toutes les lettres
+        Object.values(cells).forEach(c => c.classList.remove('is-sel'));
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+    });
     page.append(h, cnt, wrap, panel);
     $('friendBody').replaceChildren(encBackBtn('← Langue française', () => openEncBook('Langue française', true)), page);
     $('friendModal').hidden = false;
     if (keepL && by[keepL]) show(keepL);
+}
+
+/* 13/11 : Drapeaux = « mur de drapeaux » rangés par continent ; Monuments = « album de cartes postales ». */
+const ENC_CONTS = [['eu', '🏰 Europe'], ['af', '🦁 Afrique'], ['as', '🐉 Asie'], ['an', '🗽 Amérique du Nord et centrale'], ['sa', '🦜 Amérique du Sud'], ['oc', '🦘 Océanie']];
+let encRegionNames = null;
+function encCountryName(cc) {
+    const n = window.WORLD_MAP?.names?.[cc];
+    if (n) return n;
+    try { encRegionNames = encRegionNames || new Intl.DisplayNames(['fr'], { type: 'region' }); return encRegionNames.of(cc); } catch (e) { return cc; }
+}
+/** Questions d'un thème rangées par pays (les questions sans pays vont dans « other »). extra = pays ajoutés à la main. */
+function encByCountry(theme, extra = {}) {
+    const by = {};
+    encChapters(theme).flatMap(c => c.qs).forEach(q => {
+        const ccs = window.ENC_COUNTRY?.[q.id] || extra[q.id] || [];
+        (ccs.length ? ccs.slice(0, 1) : ['other']).forEach(cc => (by[cc] = by[cc] || []).push(q));
+    });
+    return by;
+}
+/** Un tap à côté (sur le fond du dessin) referme la fiche du bas et rend tout le dessin. */
+function encTapOff(zone, itemSel, clear) {
+    zone.addEventListener('click', e => { if (!e.target.closest(itemSel)) clear(); });
+}
+function encQRows(card, qs, ret, labelOf) {
+    const known = qs.filter(encKnown);
+    known.forEach(q => {
+        const row = el('button', 'enc-crow');
+        row.type = 'button';
+        const [label, val] = labelOf(q);
+        const l = el('span');
+        l.textContent = label;
+        const b = el('b');
+        b.textContent = val;
+        row.append(l, b);
+        row.addEventListener('click', () => openEncFiche(q, known, ret));
+        card.append(row);
+    });
+    if (qs.length > known.length) {
+        const lk = el('button', 'enc-crow is-lock');
+        lk.type = 'button';
+        const l = el('span');
+        const m = qs.length - known.length;
+        l.textContent = `❓ ${m} question${m > 1 ? 's' : ''} à découvrir`;
+        lk.append(l);
+        lk.addEventListener('click', encLockedTip);
+        card.append(lk);
+    }
+}
+function encMapLink(theme) {
+    const b = el('button', 'enc-god-roman enc-maplink');
+    b.type = 'button';
+    b.textContent = '🗺️ Voir sur la carte du monde';
+    b.addEventListener('click', () => openEncMap(theme));
+    return b;
+}
+
+async function openEncFlags(keepCc = null, keepScroll = null) {
+    try { await encLoad('carte-monde.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const by = encByCountry('Drapeaux');
+    const st = cc => { const qs = by[cc] || []; const k = qs.filter(encKnown).length; return { qs, k, n: qs.length }; };
+    const ccs = Object.keys(by).filter(cc => cc !== 'other');
+    const found = ccs.filter(cc => st(cc).k).length;
+    const page = el('div', 'enc-full enc-godpage enc-flagpage');
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = '🏳️ Mon mur de drapeaux';
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${found} / ${ccs.length} pays découverts`;
+    const scroller = el('div', 'enc-god-scroll enc-flag-wall');
+    const panel = el('div', 'enc-map-panel enc-god-panel');
+    const tiles = {};
+    let sel = null, before = 0;
+    const clear = () => {
+        if (!sel) return;
+        tiles[sel]?.classList.remove('is-sel');
+        sel = null;
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+        requestAnimationFrame(() => { scroller.scrollTop = before; });
+    };
+    const show = cc => {
+        if (!sel) before = scroller.scrollTop;
+        tiles[sel]?.classList.remove('is-sel');
+        sel = cc;
+        tiles[cc]?.classList.add('is-sel');
+        const s = st(cc);
+        panel.replaceChildren();
+        const card = el('div', 'enc-cpanel');
+        const hd = el('div', 'enc-map-head');
+        if (cc !== 'other') {
+            const fl = el('img', 'enc-map-flag');
+            fl.src = `flags/${cc.toLowerCase()}.svg`;
+            fl.alt = '';
+            fl.onerror = () => fl.remove();
+            if (s.k) hd.append(fl);
+        }
+        const nm = el('b');
+        nm.textContent = cc === 'other' ? '🏁 Les autres drapeaux' : s.k ? encCountryName(cc) : '❓ Drapeau à découvrir';
+        const ct = el('span');
+        ct.textContent = `· ${s.k} / ${s.n} ${s.n > 1 ? 'questions sues' : 'question sue'}`;
+        hd.append(nm, ct);
+        card.append(hd);
+        encQRows(card, s.qs, { label: '← Mon mur de drapeaux', fn: () => openEncFlags(cc, before) },
+            q => q.flag ? ['🏳️ Son drapeau', '✓ reconnu'] : [q.q.replace(/\s*\?$/, ''), q.a[0]]);
+        panel.append(card);
+        panel.scrollTop = 0;
+        page.classList.add('has-sel');
+        requestAnimationFrame(() => tiles[cc]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+    };
+    const cont = window.WORLD_CONT || {};
+    ENC_CONTS.forEach(([k, label]) => {
+        const list = ccs.filter(cc => cont[cc] === k).sort((a, b) => encCountryName(a).localeCompare(encCountryName(b), 'fr'));
+        if (!list.length) return;
+        const hk = list.filter(cc => st(cc).k).length;
+        const t = el('p', 'enc-wall-h');
+        t.textContent = `${label} · ${hk} / ${list.length}`;
+        const grid = el('div', 'enc-flag-grid');
+        list.forEach(cc => {
+            const s = st(cc);
+            const b = el('button', `enc-flag${s.k ? ' is-known' : ''}${s.k && s.k >= s.n ? ' is-full' : ''}`);
+            b.type = 'button';
+            const fr = el('span', 'enc-flag-img');
+            const img = el('img');
+            img.src = `flags/${cc.toLowerCase()}.svg`;
+            img.alt = '';
+            img.loading = 'lazy';
+            img.draggable = false;
+            fr.append(img);
+            if (!s.k) { const q = el('i'); q.textContent = '?'; fr.append(q); }
+            const n = el('span', 'enc-flag-n');
+            n.textContent = s.k ? encCountryName(cc) : '???';
+            b.append(fr, n);
+            b.addEventListener('click', () => show(cc));
+            tiles[cc] = b;
+            grid.append(b);
+        });
+        scroller.append(t, grid);
+    });
+    if (by.other) {
+        const s = st('other');
+        const t = el('p', 'enc-wall-h');
+        t.textContent = `🏁 Les autres drapeaux · ${s.k} / ${s.n}`;
+        const b = el('button', 'enc-flag-other');
+        b.type = 'button';
+        b.textContent = 'Pavillons, Europe, JO, plage, Formule 1… ›';
+        b.addEventListener('click', () => show('other'));
+        tiles.other = b;
+        scroller.append(t, b);
+    }
+    encTapOff(scroller, '.enc-flag, .enc-flag-other', clear);
+    page.append(h, cnt, encMapLink('Drapeaux'), scroller, panel);
+    $('friendBody').replaceChildren(encBackBtn('← Drapeaux', () => openEncBook('Drapeaux', true)), page);
+    $('friendModal').hidden = false;
+    if (keepCc && by[keepCc]) { show(keepCc); before = keepScroll || 0; }
+}
+
+/* Cartes postales des monuments : une carte par question ; sue = la photo (ou un dessin) et le nom ; à découvrir = le dos de la carte. */
+const ENC_POST_CC = { 2303: ['CN'], 4088: ['TR'], 4193: ['GB'], 4330: ['AE'], 4774: ['DK'], 24002: ['EG'], 24005: ['CN'], 24006: ['IN'], 24008: ['PE'],
+    24010: ['BR'], 24011: ['IT'], 24024: ['KH'], 24025: ['MX'], 24028: ['JO'], 24041: ['US'], 24049: ['ZW'], 24050: ['ML'], 24052: ['GB'], 24053: ['AU'],
+    24059: ['DE'], 24062: ['ES'], 24068: ['AU'], 24088: ['CL'], 24106: ['ID'], 24108: ['IR'], 24109: ['SY'], 24126: ['MM'], 24132: ['MA'], 24139: ['ET'],
+    24140: ['TN'], 24232: ['CH'] };
+function encPostTitle(q) {
+    const m = q.q.match(/^Dans quel(?:le)? (?:pays|ville|région|île) (?:se trouvent?|se dresse|s[’']élève|est situé[e]?)\s+(.+?)\s*\?$/i);
+    if (m) { const t = m[1].split(/,\s/)[0]; return t.charAt(0).toUpperCase() + t.slice(1); }
+    if (/^\d/.test(q.a[0])) return q.q.replace(/\s*\?$/, '');
+    return q.a[0];
+}
+const encPostIsFact = q => !q.photo && (/^\d/.test(q.a[0]) || /^(En quelle|Combien|Qui |Quel (architecte|roi|empereur|pharaon|sculpteur|ingénieur|peintre|président)|Quelle (reine|hauteur|couleur))/i.test(q.q));
+async function openEncPostcards(keepScroll = null) {
+    try { await encLoad('carte-monde.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const by = encByCountry('Monuments', ENC_POST_CC);
+    const allQs = Object.values(by).flat();
+    const kn = allQs.filter(encKnown).length;
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = '💌 Mes cartes postales';
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${kn} / ${allQs.length} cartes postales`;
+    const cont = window.WORLD_CONT || {};
+    const parts = [];
+    let page = null;
+    const ret = () => ({ label: '← Mes cartes postales', fn: () => openEncPostcards(page ? page.scrollTop : 0) });
+    const section = (label, qs) => {
+        const known = qs.filter(encKnown);
+        const t = el('p', 'enc-wall-h');
+        t.textContent = `${label} · ${known.length} / ${qs.length}`;
+        const grid = el('div', 'enc-post-grid');
+        qs.forEach(q => {
+            const cc = (window.ENC_COUNTRY?.[q.id] || ENC_POST_CC[q.id] || [])[0];
+            const k = encKnown(q);
+            const b = el('button', `enc-post${k ? ' is-known' : ' is-back'}${k && q.photo ? ' has-photo' : ''}`);
+            b.type = 'button';
+            if (k && q.photo) {
+                const img = el('img', 'enc-post-ph');
+                img.src = q.photo;
+                img.alt = '';
+                img.loading = 'lazy';
+                img.draggable = false;
+                b.append(img);
+            } else if (k && encPostIsFact(q)) {   // date, mesure, architecte… : une carte écrite au dos
+                b.classList.add('is-written');
+                const w = el('span', 'enc-post-txt');
+                w.textContent = q.q;
+                const ans = el('b', 'enc-post-ans');
+                ans.textContent = q.a[0];
+                b.append(w, ans);
+            } else if (k) {
+                const e = el('span', 'enc-post-emo');
+                e.textContent = cc ? '🏛️' : '📐';
+                b.append(e);
+            } else {
+                const e = el('span', 'enc-post-q');
+                e.textContent = '?';
+                b.append(e, el('span', 'enc-post-lines'));
+            }
+            if (cc) {
+                const sp = el('span', 'enc-post-stamp');
+                const fl = el('img');
+                fl.src = `flags/${cc.toLowerCase()}.svg`;
+                fl.alt = '';
+                fl.loading = 'lazy';
+                fl.onerror = () => sp.remove();
+                sp.append(fl);
+                b.append(sp);
+            }
+            if (k && !b.classList.contains('is-written')) {
+                const c = el('span', 'enc-post-cap');
+                c.textContent = encPostTitle(q);
+                b.append(c);
+            }
+            if (k) b.addEventListener('click', () => openEncFiche(q, known, ret()));
+            else b.addEventListener('click', encLockedTip);
+            grid.append(b);
+        });
+        parts.push(t, grid);
+    };
+    ENC_CONTS.forEach(([k, label]) => {
+        const ccs = Object.keys(by).filter(cc => cont[cc] === k).sort((a, b) => encCountryName(a).localeCompare(encCountryName(b), 'fr'));
+        const qs = ccs.flatMap(cc => by[cc].slice().sort((a, b) => encKnown(b) - encKnown(a)));
+        if (qs.length) section(label, qs);
+    });
+    if (by.other) section('📐 Le vocabulaire des monuments', by.other.slice().sort((a, b) => encKnown(b) - encKnown(a)));
+    page = encPage(encBackBtn('← Monuments', () => openEncBook('Monuments', true)), h, cnt, encMapLink('Monuments'), ...parts);
+    page.classList.add('enc-postpage');
+    if (keepScroll) requestAnimationFrame(() => { page.scrollTop = keepScroll; });
 }
 
 function encMedia(q, small) {

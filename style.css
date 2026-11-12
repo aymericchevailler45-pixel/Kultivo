@@ -4451,3 +4451,49 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-letter.is-sel { border-color: #1b2745; box-shadow: 0 0 0 2px #1b2745 inset; }
 .enc-dico-big { font-family: Georgia, 'Times New Roman', serif; font-size: 1.6rem !important; color: #2563eb; }
 .enc-dicopage.has-sel .enc-god-scroll { flex: 0 0 34%; }
+
+/* 13/11 : mur de drapeaux (Drapeaux) et cartes postales (Monuments) */
+.enc-maplink { margin: 0 auto 8px; }
+.enc-wall-h { margin: 14px 2px 6px; font-weight: 900; font-size: 0.86rem; color: var(--ink); text-align: left; }
+.enc-wall-h:first-child { margin-top: 2px; }
+.enc-flag-wall { padding: 4px 4px 12px; }
+.enc-flag-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 6px; }
+.enc-flag { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
+.enc-flag-img { position: relative; width: 100%; aspect-ratio: 3 / 2; border-radius: 6px; overflow: hidden; background: var(--line); box-shadow: 0 0 0 1px var(--line); display: grid; place-items: center; }
+.enc-flag-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.enc-flag:not(.is-known) .enc-flag-img img { filter: grayscale(1) contrast(0.35) brightness(1.45); opacity: 0.55; }
+.enc-flag-img i { position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-weight: 900; font-size: 1.15rem; color: #8a94a6; }
+.enc-flag-n { width: 100%; font-size: 0.62rem; font-weight: 800; line-height: 1.15; color: var(--ink); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.enc-flag:not(.is-known) .enc-flag-n { color: var(--muted); }
+.enc-flag.is-full .enc-flag-img { box-shadow: 0 0 0 2px #f3b400; }
+.enc-flag.is-sel .enc-flag-img { box-shadow: 0 0 0 3px #ea580c; }
+.enc-flag-other { width: 100%; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; background: var(--surface); font: inherit; font-weight: 800; color: var(--ink); text-align: left; cursor: pointer; }
+.enc-flag-other.is-sel { border-color: #ea580c; }
+.enc-flagpage.has-sel .enc-god-scroll { flex: 0 0 40%; }
+.enc-post-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.enc-post { position: relative; aspect-ratio: 3 / 2; padding: 0; border: 0; border-radius: 8px; overflow: hidden; font: inherit; cursor: pointer; background: #fbf6ea; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16); text-align: left; transform: rotate(-0.6deg); }
+.enc-post:nth-child(even) { transform: rotate(0.7deg); }
+.enc-post-ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.enc-post.is-known:not(.has-photo) { background: linear-gradient(160deg, #f4ede0, #e3d6bf); }
+.enc-post-emo { position: absolute; left: 0; right: 0; top: 16%; text-align: center; font-size: 1.9rem; }
+.enc-post-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 7px 5px; font-size: 0.7rem; font-weight: 900; line-height: 1.15; color: #3b2f1e; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.enc-post.has-photo .enc-post-cap { color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, 0.72)); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); }
+.enc-post-stamp { position: absolute; top: 5px; right: 5px; width: 28px; height: 22px; padding: 2px; background: #fff; border: 1px dashed #c9b99a; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+.enc-post-stamp img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.enc-post.is-back .enc-post-stamp img { filter: grayscale(1); opacity: 0.6; }
+.enc-post.is-back::before { content: ""; position: absolute; top: 12%; bottom: 12%; left: 50%; border-left: 1px solid #d8ccb3; }
+.enc-post-q { position: absolute; left: 0; width: 50%; top: 50%; transform: translateY(-50%); text-align: center; font-family: Georgia, 'Times New Roman', serif; font-size: 1.7rem; font-weight: 700; color: #c9b99a; }
+.enc-post-lines { position: absolute; left: 57%; right: 9%; top: 46%; height: 34%; background: repeating-linear-gradient(transparent 0 9px, #d8ccb3 9px 10px); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .enc-post.is-back { background: #2c2a26; } :root:not([data-theme="light"]) .enc-post.is-known:not(.has-photo) { background: linear-gradient(160deg, #3a342a, #2c2820); } :root:not([data-theme="light"]) .enc-post.is-known:not(.has-photo) .enc-post-cap { color: #f2e6cf; } }
+:root[data-theme="dark"] .enc-post.is-back { background: #2c2a26; }
+:root[data-theme="dark"] .enc-post.is-known:not(.has-photo) { background: linear-gradient(160deg, #3a342a, #2c2820); }
+:root[data-theme="dark"] .enc-post.is-known:not(.has-photo) .enc-post-cap { color: #f2e6cf; }
+
+.enc-post.is-written { background: #fbf6ea; }
+.enc-post.is-written::before { content: ""; position: absolute; top: 12%; bottom: 12%; left: 56%; border-left: 1px solid #d8ccb3; }
+.enc-post-txt { position: absolute; left: 8px; top: 9px; width: calc(56% - 14px); font-family: 'Segoe Print', 'Bradley Hand', cursive; font-size: 0.6rem; line-height: 1.25; color: #6b5a3e; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.enc-post-ans { position: absolute; left: calc(56% + 8px); right: 8px; top: 38%; font-family: 'Segoe Print', 'Bradley Hand', cursive; font-size: 0.82rem; line-height: 1.15; color: #1d4ed8; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .enc-post.is-written { background: #2c2a26; } :root:not([data-theme="light"]) .enc-post-txt { color: #cbbd9f; } :root:not([data-theme="light"]) .enc-post-ans { color: #8fb4ff; } }
+:root[data-theme="dark"] .enc-post.is-written { background: #2c2a26; }
+:root[data-theme="dark"] .enc-post-txt { color: #cbbd9f; }
+:root[data-theme="dark"] .enc-post-ans { color: #8fb4ff; }
