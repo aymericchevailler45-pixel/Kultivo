@@ -2104,6 +2104,7 @@ function openEncBook(theme, keep = false) {
             list.append(row);
         });
         const special = theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
+            : theme === 'Mythologie' ? ['🌳', 'L’arbre des dieux', 'Grèce, Égypte et Nordique', () => openEncGods()]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
         const parts = [quick];
         if (special) {   // 12/11 : frise (Histoire) ou carte du monde (Géographie, Drapeaux, Monuments)
@@ -2627,6 +2628,130 @@ async function openEncMap(fromTheme, keepCc = null) {
     $('friendModal').hidden = false;
     requestAnimationFrame(() => { apply(); if (keepCc && by[keepCc]) show(keepCc); });
     if (window.ResizeObserver) new ResizeObserver(() => { if (svg.isConnected) apply(); }).observe(svg);
+}
+
+/* 12/11 : l'arbre des dieux (Mythologie). Un dieu se dévoile quand une de ses questions est sue ; tap = ses questions en bas. */
+let encGodsTab = 'grece';
+async function openEncGods(tab = encGodsTab, keepId = null) {
+    try { await encLoad('arbre-dieux.js'); } catch (e) { showToast('📶 Arbre indisponible hors connexion pour l’instant'); return; }
+    encGodsTab = tab;
+    const P = window.ENC_GODS[tab];
+    const all = encAll();
+    const st = n => { const qs = n.q.map(id => all.get(id)).filter(Boolean); const k = qs.filter(encKnown).length; return { qs, k, n: qs.length }; };
+    const nodes = P.nodes.map(n => ({ ...n, s: st(n) }));
+    const found = nodes.filter(n => n.s.k > 0).length;
+    const page = el('div', 'enc-full enc-godpage');
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = '🌳 L’arbre des dieux';
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${found} / ${nodes.length} découverts`;
+    const tabs = el('div', 'enc-god-tabs');
+    Object.entries(window.ENC_GODS).forEach(([k, v]) => {
+        const b = el('button', `enc-god-tab${k === tab ? ' is-on' : ''}`);
+        b.type = 'button';
+        b.style.setProperty('--c', v.color);
+        b.textContent = v.label;
+        b.addEventListener('click', () => openEncGods(k));
+        tabs.append(b);
+    });
+    const scroller = el('div', 'enc-god-scroll');
+    const tree = el('div', 'enc-tree');
+    tree.style.height = `${P.h}px`;
+    tree.style.setProperty('--c', P.color);
+    P.tiers.forEach(([t, y]) => { const d = el('span', 'enc-tree-tier'); d.style.top = `${y}px`; d.textContent = t; tree.append(d); });
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', `0 0 100 ${P.h}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+    // un seul trait par enfant : depuis son parent, ou depuis le milieu du couple (sinon l'arbre devient illisible)
+    nodes.forEach(n => {
+        const ps = (n.parents || []).map(pid => byId[pid]).filter(Boolean);
+        if (!ps.length) return;
+        const ax = ps.reduce((t, a) => t + a.x, 0) / ps.length, ay = Math.max(...ps.map(a => a.y)) + 34;   // sous les noms
+        const p = document.createElementNS(ns, 'path');
+        const my = (ay + n.y - 20) / 2;
+        p.setAttribute('d', `M${ax} ${ay} C ${ax} ${my}, ${n.x} ${my}, ${n.x} ${n.y - 20}`);
+        p.setAttribute('class', `enc-tree-line${ps.every(a => a.s.k) && n.s.k ? ' is-on' : ''}`);
+        p.setAttribute('vector-effect', 'non-scaling-stroke');
+        svg.append(p);
+        if (ps.length === 2) {   // petit trait horizontal entre les deux parents (le couple)
+            const c = document.createElementNS(ns, 'path');
+            const [a1, a2] = ps;
+            c.setAttribute('d', `M${a1.x} ${a1.y + 30} L ${a1.x} ${ay} L ${a2.x} ${ay} L ${a2.x} ${a2.y + 30}`);
+            c.setAttribute('class', `enc-tree-line is-couple${a1.s.k && a2.s.k ? ' is-on' : ''}`);
+            c.setAttribute('vector-effect', 'non-scaling-stroke');
+            svg.append(c);
+        }
+    });
+    tree.append(svg);
+    const panel = el('div', 'enc-map-panel enc-god-panel');
+    const hint = el('p', 'muted enc-map-hint');
+    hint.textContent = '👆 Touche un dieu pour voir ce que tu sais de lui.';
+    panel.append(hint);
+    const btns = {};
+    const show = n => {
+        Object.values(btns).forEach(b => b.classList.remove('is-sel'));
+        btns[n.id]?.classList.add('is-sel');
+        panel.replaceChildren();
+        const card = el('div', 'enc-cpanel');
+        card.style.borderColor = `color-mix(in srgb, ${P.color} 30%, var(--line))`;
+        const hd = el('div', 'enc-map-head');
+        const nm = el('b');
+        const known = n.s.qs.filter(encKnown);
+        nm.textContent = known.length ? `${n.emo} ${n.name}${n.alt ? ` · ${n.alt}` : ''}` : '❓ Dieu à découvrir';
+        const ct = el('span');
+        ct.textContent = `· ${n.s.k} / ${n.s.n} ${n.s.n > 1 ? 'questions sues' : 'question sue'}`;
+        hd.append(nm, ct);
+        card.append(hd);
+        if (known.length && n.desc) { const d = el('p', 'enc-god-desc'); d.textContent = n.desc; card.append(d); }
+        const ret = { label: '← L’arbre des dieux', fn: () => openEncGods(tab, n.id) };
+        known.forEach(q => {
+            const row = el('button', 'enc-crow');
+            row.type = 'button';
+            const l = el('span');
+            l.textContent = q.q.replace(/\s*\?$/, '');
+            const b = el('b');
+            b.textContent = q.a[0];
+            row.append(l, b);
+            row.addEventListener('click', () => openEncFiche(q, known, ret));
+            card.append(row);
+        });
+        if (n.s.n > n.s.k) {
+            const lk = el('button', 'enc-crow is-lock');
+            lk.type = 'button';
+            const l = el('span');
+            l.textContent = `❓ ${n.s.n - n.s.k} question${n.s.n - n.s.k > 1 ? 's' : ''} à découvrir`;
+            lk.append(l);
+            lk.addEventListener('click', encLockedTip);
+            card.append(lk);
+        }
+        panel.append(card);
+        panel.scrollTop = 0;
+    };
+    nodes.forEach(n => {
+        const b = el('button', `enc-god${n.s.k ? ' is-known' : ''}${n.s.n && n.s.k >= n.s.n ? ' is-full' : ''}`);
+        b.type = 'button';
+        b.style.left = `${n.x}%`;
+        b.style.top = `${n.y}px`;
+        const i = el('i');
+        i.textContent = n.s.k ? n.emo : '?';
+        const t = el('span');
+        t.textContent = n.s.k ? n.name : '???';
+        b.append(i, t);
+        b.addEventListener('click', () => show(n));
+        btns[n.id] = b;
+        tree.append(b);
+    });
+    scroller.append(tree);
+    page.append(h, cnt, tabs, scroller, panel);
+    const body = $('friendBody');
+    body.replaceChildren(encBackBtn('← Mythologie', () => openEncBook('Mythologie', true)), page);
+    $('friendModal').hidden = false;
+    if (keepId && byId[keepId]) {
+        show(byId[keepId]);
+        requestAnimationFrame(() => { scroller.scrollTop = Math.max(0, byId[keepId].y - 120); });
+    }
 }
 
 function encMedia(q, small) {
