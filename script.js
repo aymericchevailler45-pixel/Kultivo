@@ -2494,7 +2494,7 @@ async function openEncMap(fromTheme, keepCc = null) {
     const show = cc => {
         if (sel) (shapes[sel] || []).forEach(p => p.classList.remove('is-sel'));
         sel = cc;
-        (shapes[cc] || []).forEach(p => { p.classList.add('is-sel'); p.parentNode.append(p); });
+        (shapes[cc] || []).forEach(p => { p.classList.add('is-sel'); if (p.tagName === 'circle') dots.append(p); else g.insertBefore(p, dots); });   // les petits pays restent toujours par-dessus
         const s = st(cc);
         panel.replaceChildren();
         const card = el('div', 'enc-cpanel');
@@ -2547,7 +2547,7 @@ async function openEncMap(fromTheme, keepCc = null) {
     // gestes : tap = pays, glisser = déplacer, deux doigts = zoomer
     const pts = new Map();
     let moved = false, pinch = null;
-    svg.addEventListener('pointerdown', e => { svg.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); moved = pts.size > 1; if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), s: v.s }; } });
+    svg.addEventListener('pointerdown', e => { try { svg.setPointerCapture(e.pointerId); } catch (err) { /* pointeur déjà relâché */ } pts.set(e.pointerId, [e.clientX, e.clientY]); moved = pts.size > 1; if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), s: v.s }; } });
     svg.addEventListener('pointermove', e => {
         if (!pts.has(e.pointerId)) return;
         const [px, py] = pts.get(e.pointerId);
@@ -2572,8 +2572,17 @@ async function openEncMap(fromTheme, keepCc = null) {
         pts.delete(e.pointerId);
         if (pts.size < 2) pinch = null;
         if (!was || moved || pts.size) { if (!pts.size) moved = false; return; }
-        const t = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.enc-cty');
-        if (t && t.dataset.cc && by[t.dataset.cc]) show(t.dataset.cc);
+        // 12/11 : un petit pays (point) se touche à 22 px près, avant le grand pays en dessous
+        let best = null, bd = 22;
+        dots.querySelectorAll('circle').forEach(c => {
+            if (!by[c.dataset.cc]) return;
+            const r = c.getBoundingClientRect();
+            const d = Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY);
+            if (d < bd) { bd = d; best = c.dataset.cc; }
+        });
+        const t = best ? null : document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.enc-cty');
+        const cc = best || t?.dataset?.cc;
+        if (cc && by[cc]) show(cc);
     });
     svg.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; moved = false; });
     svg.addEventListener('wheel', e => { e.preventDefault(); v.s *= e.deltaY < 0 ? 1.2 : 1 / 1.2; apply(); }, { passive: false });
