@@ -353,6 +353,10 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - 13/11 (v=20261113i, bac à sable) : LITTÉRATURE = « 📚 Ma bibliothèque » (`openEncLibrary`, `bibliotheque.js` = `ENC_SHELVES` + `ENC_BOOKS`
   id -> [titre, auteur, étagère] : 304 livres sur 7 étagères qui défilent de côté, tranches ~30 px au titre vertical, « ? » gris si pas su,
   liseré doré si tout est su ; 29 questions sans œuvre dans « 📜 Le reste » ; générée par scratchpad make_lib.py + lib_map.txt).
+- 13/11 (v=20261113j) : drapeaux du mur étirés via <svg><image preserveAspectRatio="none"> (object-fit ne marche pas sur un SVG) ;
+  Paris = `encIsParis` (question / réponse, pas l'explication) ; couvertures `ENC_POST_COVERS` ; souvenirs : PAYS = silhouette (drapeau si
+  trop petit, ex. Vatican), VILLE = « Bons baisers de… » sur rayons de soleil (pas de silhouette) ; bibliothèque : plus de lueur dorée,
+  titre entre les filets, `text-orientation: sideways` (apostrophe).
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées

@@ -3291,12 +3291,27 @@ async function openEncFlags(keepCc = null, keepScroll = null) {
             const b = el('button', `enc-flag${s.k ? ' is-known' : ''}${s.k && s.k >= s.n ? ' is-full' : ''}${ENC_FLAG_ODD.has(cc) ? ' is-odd' : ''}`);
             b.type = 'button';
             const fr = el('span', 'enc-flag-img');
-            const img = el('img');
-            img.src = `flags/${cc.toLowerCase()}.svg`;
-            img.alt = '';
-            img.loading = 'lazy';
-            img.draggable = false;
-            fr.append(img);
+            if (ENC_FLAG_ODD.has(cc)) {
+                const img = el('img');
+                img.src = `flags/${cc.toLowerCase()}.svg`;
+                img.alt = '';
+                img.loading = 'lazy';
+                img.draggable = false;
+                fr.append(img);
+            } else {   // 13/11 : tous les drapeaux à la même taille (étirés juste ce qu'il faut)
+                const ns = 'http://www.w3.org/2000/svg';
+                const sv = document.createElementNS(ns, 'svg');
+                sv.setAttribute('viewBox', '0 0 30 20');
+                sv.setAttribute('preserveAspectRatio', 'none');
+                sv.setAttribute('class', 'enc-flag-sv');
+                const im = document.createElementNS(ns, 'image');
+                im.setAttribute('href', `flags/${cc.toLowerCase()}.svg`);
+                im.setAttribute('width', '30');
+                im.setAttribute('height', '20');
+                im.setAttribute('preserveAspectRatio', 'none');
+                sv.append(im);
+                fr.append(sv);
+            }
             if (!s.k) { const q = el('i'); q.textContent = '?'; fr.append(q); }
             const n = el('span', 'enc-flag-n');
             n.textContent = s.k ? encCountryName(cc) : '???';
@@ -3341,6 +3356,13 @@ function encPostTitle(q) {
 const encPostIsFact = q => !q.photo && !window.ENC_POST_PH?.[q.id] && (/^\d/.test(q.a[0]) || /^(En quelle|Combien|Qui |Quel (architecte|roi|empereur|pharaon|sculpteur|ingénieur|peintre|président)|Quelle (reine|hauteur|couleur))/i.test(q.q));
 /** Photo d'une carte postale : celle de la question, sinon celle trouvée pour l'album (cartes-postales.js). */
 const encPostPhoto = q => q.photo || window.ENC_POST_PH?.[q.id]?.[0] || null;
+function encIsParis(q) {
+    if (/Versailles|Trianon|Hameau de la Reine|Fontainebleau|Chantilly|Saint-Denis|Vaux/i.test(`${q.q} ${q.a[0]}`)) return false;
+    return /Paris|parisien|Montmartre|Champs-Élysées|île de la Cité/i.test(`${q.q} ${q.a.join(' ')}`)
+        || /tour Eiffel|Louvre|Arc de triomphe|Sacré-Cœur|Notre-Dame de Paris|Panthéon de Paris|Invalides|Concorde|Opéra Garnier|Moulin-Rouge|Centre Pompidou|Sainte-Chapelle/i.test(q.a[0])
+        || /(^|[.,;] )(À|à) Paris\b|^Paris\b/.test(q.exp || '');
+}
+const ENC_POST_COVERS = { paris: [2300], fr: [2311, 2333, 2318, 2331] };   // couvertures qui « disent » l'album
 const ENC_POST_ALBUMS = [['paris', '🗼', 'Paris'], ['fr', '🥖', 'France'], ['eu', '🏰', 'Europe'], ['as', '🐉', 'Asie'], ['am', '🗽', 'Amériques'], ['afoc', '🦁', 'Afrique et Océanie'], ['other', '📐', 'Le vocabulaire des monuments']];
 function encPostAlbums() {
     const by = encByCountry('Monuments', ENC_POST_CC);
@@ -3348,13 +3370,13 @@ function encPostAlbums() {
     const albums = Object.fromEntries(ENC_POST_ALBUMS.map(([k]) => [k, []]));
     Object.entries(by).forEach(([cc, qs]) => qs.forEach(q => {
         const c = cont[cc];
-        const k = cc === 'other' ? 'other' : cc === 'FR' ? (/Paris|parisien|Montmartre|tour Eiffel|Louvre|Champs-Élysées|Notre-Dame de Paris/i.test(`${q.q} ${q.a.join(' ')} ${q.exp || ''}`) && !/Versailles|Trianon|Fontainebleau|Chantilly|Saint-Denis|Vaux/i.test(`${q.q} ${q.a[0]}`) ? 'paris' : 'fr')
+        const k = cc === 'other' ? 'other' : cc === 'FR' ? (encIsParis(q) ? 'paris' : 'fr')
             : c === 'eu' ? 'eu' : c === 'as' ? 'as' : c === 'an' || c === 'sa' ? 'am' : 'afoc';
         albums[k].push({ q, cc });
     }));
     return albums;
 }
-const encPostSouvenir = q => !q.photo && /^Dans quel(?:le)? (pays|ville|capitale|État)\b/i.test(q.q);
+const encPostSouvenir = q => q.photo ? null : /^Dans quel (pays|État) /i.test(q.q) && !/Dakota/i.test(q.a[0]) ? 'country' : /^Dans quel(?:le)? (ville|capitale|État)\b/i.test(q.q) ? 'city' : null;
 /** Silhouette d'un pays (carte du monde), cadrée sur sa plus grande terre. */
 function encCountrySil(cc) {
     const d = window.WORLD_MAP?.countries?.find(c => c[0] === cc)?.[1];
@@ -3386,14 +3408,17 @@ function encPostCard(q, cc, known, ret) {
     const b = el('button', `enc-post${k ? ' is-known' : ' is-back'}${ph ? ' has-photo' : ''}`);
     b.type = 'button';
     if (souv) {
-        b.classList.add('is-souvenir', 'is-written');
-        b.style.setProperty('--h', String([...(cc || 'xx')].reduce((t, c) => t * 31 + c.charCodeAt(0), 7) % 360));
-        const sil = cc && encCountrySil(cc);
-        if (sil) b.append(sil);
+        b.classList.add('is-souvenir', 'is-written', `is-${souv}`);
+        b.style.setProperty('--h', String([...(q.a[0] + (cc || ''))].reduce((t, c) => (t * 31 + c.charCodeAt(0)) % 9973, 7) % 360));
+        if (souv === 'country') {
+            const sil = cc && encCountrySil(cc);
+            if (sil) b.append(sil);
+            else if (cc) { const f = el('img', 'enc-souv-flag'); f.src = `flags/${cc.toLowerCase()}.svg`; f.alt = ''; b.append(f); }
+        } else b.append(el('span', 'enc-souv-sun'));
         const t1 = el('span', 'enc-souv-t');
-        t1.textContent = 'Souvenir de…';
+        t1.textContent = souv === 'city' ? 'Bons baisers de…' : 'Souvenir de…';
         const t2 = el('b', 'enc-souv-n');
-        t2.textContent = q.a[0];
+        t2.textContent = souv === 'city' ? q.a[0].replace(/^(L[ea] |L[’'])/, '') : q.a[0];
         b.append(t1, t2);
     } else if (ph) {
         const bg = el('img', 'enc-post-bg');
@@ -3464,7 +3489,7 @@ async function openEncPostcards() {
         b.type = 'button';
         const cover = el('span', 'enc-album-cover');
         const withPh = list.filter(x => encKnown(x.q) && encPostPhoto(x.q));
-        const coverQ = withPh.find(x => !encPostSouvenir(x.q)) || withPh[0];
+        const coverQ = (ENC_POST_COVERS[key] || []).map(id => withPh.find(x => x.q.id === id)).find(Boolean) || withPh.find(x => !encPostSouvenir(x.q)) || withPh[0];
         if (coverQ) {
             const src = encPostPhoto(coverQ.q);
             const bg = el('img', 'enc-post-bg');
