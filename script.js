@@ -2364,10 +2364,26 @@ async function openEncFrise(keep = false) {
         const c = el('button', 'enc-tl-chip');
         c.type = 'button';
         c.textContent = `${emo} ${name}`;
-        c.addEventListener('click', () => { mc.scrollTo({ top: eraNodes[e].offsetTop - 60, behavior: 'smooth' }); });
+        c.addEventListener('click', () => { mc.scrollTo({ top: mc.scrollTop + eraNodes[e].getBoundingClientRect().top - chips.getBoundingClientRect().bottom - 8, behavior: 'smooth' }); });
         chips.append(c);
     });
     body.append(encBackBtn('← Histoire', () => openEncBook('Histoire', true)), h, sub, chips, tl);
+    // 12/11 : la barre des périodes reste en haut ; la période qu'on regarde s'allume
+    const chipEls = [...chips.children];
+    const eraIdx = Object.keys(eraNodes).map(Number);
+    const onScroll = () => {
+        if (!chips.isConnected) { mc.removeEventListener('scroll', onScroll); return; }
+        const lim = chips.getBoundingClientRect().bottom + 12;
+        let cur = eraIdx[0];
+        eraIdx.forEach(e => { if (eraNodes[e].getBoundingClientRect().top <= lim) cur = e; });
+        chipEls.forEach((c, j) => {
+            const on = eraIdx[j] === cur;
+            if (on && !c.classList.contains('is-on')) chips.scrollTo({ left: c.offsetLeft - 8, behavior: 'smooth' });
+            c.classList.toggle('is-on', on);
+        });
+    };
+    mc.addEventListener('scroll', onScroll, { passive: true });
+    requestAnimationFrame(onScroll);
     $('friendModal').hidden = false;
     mc.scrollTop = keep ? encState.friseScroll || 0 : 0;
 }
@@ -2382,9 +2398,16 @@ function encCountryData() {
     return by;
 }
 let encMapView = null;
+/** Ligne courte d'une question dans la fiche d'un pays (« Capitale · Rome », « Drapeau · ✓ su »…). */
+function encCountryLabel(q) {
+    if (q.flag) return ['Drapeau', '✓ su'];
+    if (/^Quelle est la (capitale|préfecture)|chef-lieu|a pour capitale/i.test(q.q) && !/^Quel pays/i.test(q.q)) return ['Capitale', q.a[0]];
+    if (q.photo && /^Quel est ce monument/i.test(q.q)) return ['Monument en photo', q.a[0]];
+    if (/^Quel pays a pour capitale/i.test(q.q)) return [q.q.replace(/^Quel pays a pour capitale\s*/i, 'Capitale : ').replace(/\s*\?$/, ''), q.a[0]];
+    return [q.q.replace(/\s*\?$/, ''), q.a[0]];
+}
 async function openEncMap(fromTheme, keepCc = null) {
     const body = $('friendBody');
-    const mc = $('friendModal').querySelector('.modal-content');
     try { await encLoad('carte-monde.js'); } catch (e) { showToast('📶 Carte indisponible hors connexion pour l’instant'); return; }
     const M = window.WORLD_MAP;
     const by = encCountryData();
@@ -2392,9 +2415,9 @@ async function openEncMap(fromTheme, keepCc = null) {
     const codes = Object.keys(by);
     const found = codes.filter(cc => st(cc).k > 0).length, full = codes.filter(cc => { const s = st(cc); return s.k === s.n; }).length;
     body.replaceChildren();
-    const h = el('h2', 'review-title enc-title');
+    const page = el('div', 'enc-full enc-mappage');   // 12/11 : la carte prend toute la page (comme une fiche)
+    const h = el('h2', 'review-title enc-title is-sm');
     h.textContent = '🗺️ Ma carte du monde';
-    h.classList.add('is-sm');
     const tiles = el('div', 'enc-tiles enc-map-tiles');
     [[`${found} / ${codes.length}`, 'pays découverts'], [`✨ ${full}`, 'pays complets']].forEach(([v, l]) => {
         const d = el('div');
@@ -2440,41 +2463,45 @@ async function openEncMap(fromTheme, keepCc = null) {
     zout.type = 'button';
     zout.textContent = '−';
     zoom.append(zin, zout);
-    wrap.append(svg, zoom);
     const legend = el('div', 'enc-map-legend');
-    [['is-full', 'tout su'], ['is-part', 'en partie'], ['is-todo', 'à découvrir'], ['is-none', 'rien pour l’instant']].forEach(([cls, l]) => {
+    [['is-full', 'tout su'], ['is-part', 'en partie'], ['is-todo', 'à découvrir']].forEach(([cls, l]) => {
         const s = el('span');
         s.append(el('i', cls), document.createTextNode(l));
         legend.append(s);
     });
+    wrap.append(svg, zoom, legend);
     const panel = el('div', 'enc-map-panel');
     const hint = el('p', 'muted enc-map-hint');
-    hint.textContent = '👆 Touche un pays pour voir ce que tu sais de lui. Deux doigts ou + / − pour zoomer.';
+    hint.textContent = '👆 Touche un pays pour voir ce que tu sais de lui. Glisse pour te déplacer, deux doigts ou + / − pour zoomer.';
     panel.append(hint);
-    // vue (zoom / déplacement) : viewBox autour d'un centre
-    const v = encMapView || (encMapView = { s: 1, cx: M.w / 2, cy: M.h / 2 });
-    const clamp = () => {
-        v.s = Math.max(1, Math.min(12, v.s));
-        const hw = M.w / v.s / 2, hh = M.h / v.s / 2;
-        v.cx = Math.max(hw, Math.min(M.w - hw, v.cx));
-        v.cy = Math.max(hh, Math.min(M.h - hh, v.cy));
-    };
+    // vue : le cadre a la forme de la zone d'affichage (la carte remplit toute la hauteur)
+    const v = encMapView || (encMapView = { s: 0, cx: M.w * 0.52, cy: M.h * 0.42 });
+    let ratio = M.h / M.w;
+    const sMin = () => 1;
     const apply = () => {
-        clamp();
-        svg.setAttribute('viewBox', `${v.cx - M.w / v.s / 2} ${v.cy - M.h / v.s / 2} ${M.w / v.s} ${M.h / v.s}`);
+        const r = svg.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) ratio = r.height / r.width;
+        if (!v.s) { if (!(r.width > 0 && r.height > 0)) return; v.s = Math.max(1, Math.min(1.6, M.w * ratio / M.h)); }   // 1re ouverture : carte agrandie (Europe / Afrique au centre)
+        v.s = Math.max(sMin(), Math.min(14, v.s));
+        const vw = M.w / v.s, vh = vw * ratio;
+        v.cx = vw >= M.w ? M.w / 2 : Math.max(vw / 2, Math.min(M.w - vw / 2, v.cx));
+        v.cy = vh >= M.h ? M.h / 2 : Math.max(vh / 2, Math.min(M.h - vh / 2, v.cy));
+        svg.setAttribute('viewBox', `${v.cx - vw / 2} ${v.cy - vh / 2} ${vw} ${vh}`);
         svg.style.setProperty('--sw', String(0.6 / v.s));
-        dots.querySelectorAll('circle').forEach(c => c.setAttribute('r', String(Math.max(2.2, 7 / Math.sqrt(v.s)) / Math.sqrt(v.s))));
+        const rad = String(Math.max(2.2, 7 / Math.sqrt(v.s)) / Math.sqrt(v.s));
+        dots.querySelectorAll('circle').forEach(c => c.setAttribute('r', rad));
     };
-    apply();
     zin.addEventListener('click', () => { v.s *= 1.8; apply(); });
     zout.addEventListener('click', () => { v.s /= 1.8; apply(); });
     let sel = null;
+    const order = fromTheme ? [fromTheme, ...ENC_MAP_THEMES.filter(t => t !== fromTheme)] : ENC_MAP_THEMES;
     const show = cc => {
         if (sel) (shapes[sel] || []).forEach(p => p.classList.remove('is-sel'));
         sel = cc;
         (shapes[cc] || []).forEach(p => { p.classList.add('is-sel'); p.parentNode.append(p); });
         const s = st(cc);
         panel.replaceChildren();
+        const card = el('div', 'enc-cpanel');
         const hd = el('div', 'enc-map-head');
         const fl = el('img', 'enc-map-flag');
         fl.src = `flags/${cc.toLowerCase()}.svg`;
@@ -2483,31 +2510,47 @@ async function openEncMap(fromTheme, keepCc = null) {
         const nm = el('b');
         nm.textContent = M.names[cc] || cc;
         const ct = el('span');
-        ct.textContent = s.n ? `${s.k} / ${s.n} ${s.n > 1 ? 'questions sues' : 'question sue'}` : 'aucune question pour l’instant';
+        ct.textContent = `· ${s.k} / ${s.n} ${s.n > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(fl, nm, ct);
-        panel.append(hd);
-        const known = s.qs.filter(encKnown);
-        const list = el('div', 'enc-list');
-        known.forEach(q => list.append(encRow(q, known, { label: '← Ma carte', fn: () => openEncMap(fromTheme, cc) })));
-        if (s.n > s.k) {
-            const lk = el('button', 'enc-row is-locked is-slot');
-            lk.type = 'button';
-            const ic = el('span', 'enc-row-ic');
-            ic.textContent = '?';
-            const tx = el('span', 'enc-row-tx');
+        card.append(hd);
+        // 12/11 : on commence par le thème du livre ouvert (drapeaux dans Drapeaux, monuments dans Monuments…)
+        const known = s.qs.filter(encKnown).sort((a, b) => order.indexOf(a.theme) - order.indexOf(b.theme));
+        const ret = { label: '← Ma carte', fn: () => openEncMap(fromTheme, cc) };
+        let lastTheme = '';
+        const many = new Set(known.map(q => q.theme)).size > 1;
+        known.forEach(q => {
+            if (many && q.theme !== lastTheme) {
+                lastTheme = q.theme;
+                const t = el('p', 'enc-crow-th');
+                t.textContent = `${encIcon(q.theme)} ${q.theme}`;
+                card.append(t);
+            }
+            const [label, val] = encCountryLabel(q);
+            const row = el('button', 'enc-crow');
+            row.type = 'button';
+            const l = el('span');
+            l.textContent = label;
             const b = el('b');
-            b.textContent = `${s.n - s.k} question${s.n - s.k > 1 ? 's' : ''} à découvrir`;
-            tx.append(b);
-            lk.append(ic, tx);
+            b.textContent = val;
+            row.append(l, b);
+            row.addEventListener('click', () => openEncFiche(q, known, ret));
+            card.append(row);
+        });
+        if (s.n > s.k) {
+            const lk = el('button', 'enc-crow is-lock');
+            lk.type = 'button';
+            const l = el('span');
+            l.textContent = `❓ ${s.n - s.k} question${s.n - s.k > 1 ? 's' : ''} à découvrir`;
+            lk.append(l);
             lk.addEventListener('click', encLockedTip);
-            list.append(lk);
+            card.append(lk);
         }
-        panel.append(list);
+        panel.append(card);
+        panel.scrollTop = 0;
     };
     // gestes : tap = pays, glisser = déplacer, deux doigts = zoomer
     const pts = new Map();
     let moved = false, pinch = null;
-    const toMap = (x, y) => { const r = svg.getBoundingClientRect(); return [v.cx + (x - r.left - r.width / 2) / r.width * M.w / v.s, v.cy + (y - r.top - r.height / 2) / r.height * M.h / v.s]; };
     svg.addEventListener('pointerdown', e => { svg.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); moved = pts.size > 1; if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), s: v.s }; } });
     svg.addEventListener('pointermove', e => {
         if (!pts.has(e.pointerId)) return;
@@ -2522,28 +2565,27 @@ async function openEncMap(fromTheme, keepCc = null) {
         if (Math.abs(e.clientX - px) + Math.abs(e.clientY - py) < 4 && !moved) return;
         moved = true;
         const r = svg.getBoundingClientRect();
-        v.cx -= (e.clientX - px) / r.width * M.w / v.s;
-        v.cy -= (e.clientY - py) / r.height * M.h / v.s;
+        const vw = M.w / v.s;
+        v.cx -= (e.clientX - px) / r.width * vw;
+        v.cy -= (e.clientY - py) / r.height * vw * ratio;
         pts.set(e.pointerId, [e.clientX, e.clientY]);
         apply();
     });
-    const up = e => {
+    svg.addEventListener('pointerup', e => {
         const was = pts.has(e.pointerId);
         pts.delete(e.pointerId);
         if (pts.size < 2) pinch = null;
         if (!was || moved || pts.size) { if (!pts.size) moved = false; return; }
         const t = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.enc-cty');
         if (t && t.dataset.cc && by[t.dataset.cc]) show(t.dataset.cc);
-        void toMap;
-    };
-    svg.addEventListener('pointerup', up);
+    });
     svg.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; moved = false; });
     svg.addEventListener('wheel', e => { e.preventDefault(); v.s *= e.deltaY < 0 ? 1.2 : 1 / 1.2; apply(); }, { passive: false });
-    const backLabel = fromTheme ? `← ${fromTheme}` : '← Retour';
-    body.append(encBackBtn(backLabel, () => { encMapView = null; if (fromTheme) openEncBook(fromTheme, true); else $('friendModal').hidden = true; }), h, tiles, wrap, legend, panel);
-    if (keepCc && by[keepCc]) show(keepCc);
+    page.append(h, tiles, wrap, panel);
+    body.append(encBackBtn(fromTheme ? `← ${fromTheme}` : '← Retour', () => { encMapView = null; if (fromTheme) openEncBook(fromTheme, true); else $('friendModal').hidden = true; }), page);
     $('friendModal').hidden = false;
-    if (!keepCc) mc.scrollTop = 0;
+    requestAnimationFrame(() => { apply(); if (keepCc && by[keepCc]) show(keepCc); });
+    if (window.ResizeObserver) new ResizeObserver(() => { if (svg.isConnected) apply(); }).observe(svg);
 }
 
 function encMedia(q, small) {
@@ -2613,7 +2655,7 @@ function encFitKeyboard() {
     if (!fb) return;
     new MutationObserver(() => {
         const mc = fb.closest('.modal-content');
-        mc.classList.toggle('is-enc-fiche', !!fb.querySelector(':scope > .enc-fiche'));
+        mc.classList.toggle('is-enc-fiche', !!fb.querySelector(':scope > .enc-fiche, :scope > .enc-full'));
         encFitKeyboard();
     }).observe(fb, { childList: true });
     window.visualViewport?.addEventListener('resize', encFitKeyboard);
