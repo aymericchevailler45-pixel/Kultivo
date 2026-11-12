@@ -2719,9 +2719,6 @@ async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
     });
     tree.append(svg);
     const panel = el('div', 'enc-map-panel enc-god-panel');
-    const hint = el('p', 'muted enc-map-hint');
-    hint.textContent = '👆 Touche un dieu pour voir ce que tu sais de lui.';
-    panel.append(hint);
     const btns = {};
     const show = n => {
         Object.values(btns).forEach(b => b.classList.remove('is-sel'));
@@ -2768,6 +2765,9 @@ async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
         }
         panel.append(card);
         panel.scrollTop = 0;
+        // 12/11 : l'arbre se resserre en haut, le dieu touché remonte en haut de l'arbre, sa fiche s'affiche en entier dessous
+        page.classList.add('has-sel');
+        requestAnimationFrame(() => scroller.scrollTo({ top: Math.max(0, n.y - 56), behavior: 'smooth' }));
     };
     nodes.forEach(n => {
         const b = el('button', `enc-god${n.s.k ? ' is-known' : ''}${n.s.n && n.s.k >= n.s.n ? ' is-full' : ''}`);

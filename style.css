@@ -4377,3 +4377,8 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-zoom.is-open .enc-zoom-page:last-of-type { transform: none; }
 .enc-god-roman { flex: none; margin: -2px 0 8px; padding: 6px 10px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-size: 0.76rem; font-weight: 900; cursor: pointer; }
 .enc-god-roman.is-on { border-color: #1e3a8a; background: color-mix(in srgb, #1e3a8a 10%, var(--surface)); }
+
+/* 12/11 : dieu touché = l'arbre remonte en haut (bande de 40 %) et sa fiche occupe le reste */
+.enc-godpage .enc-god-panel { display: none; }
+.enc-godpage.has-sel .enc-god-scroll { flex: 0 0 40%; min-height: 0; }
+.enc-godpage.has-sel .enc-god-panel { display: block; flex: 1 1 auto; max-height: none; min-height: 0; }
