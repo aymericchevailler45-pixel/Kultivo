@@ -4289,13 +4289,13 @@ async function openEncMuseum(keepKey = null) {
             const w = it.row === 'scu' ? 70 : 66 + hs % 30, hh = it.row === 'scu' ? 92 : 62 + (hs >>> 6) % 40;
             fr.style.width = `${w}px`;
             fr.style.height = `${hh}px`;
-            const paint = it.row !== 'scu' && window.ENC_MUS_PAINT?.[it.title];
+            const paint = window.ENC_MUS_PAINT?.[it.title];
             if (known && paint) {   // 13/11 : œuvre célèbre dessinée à la main (version simplifiée reconnaissable)
                 const ns = 'http://www.w3.org/2000/svg';
                 const svg = document.createElementNS(ns, 'svg');
                 svg.setAttribute('viewBox', '0 0 100 100');
                 svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-                svg.setAttribute('class', 'enc-mus-svg');
+                svg.setAttribute('class', `enc-mus-svg${it.row === 'scu' ? ' is-statue' : ''}`);
                 svg.innerHTML = paint;
                 fr.append(svg);
             } else if (known) {

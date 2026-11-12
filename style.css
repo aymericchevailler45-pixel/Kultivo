@@ -4860,3 +4860,5 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-more p { margin: 0; font-size: 0.8rem; line-height: 1.35; color: var(--muted); font-style: italic; }
 /* 13/11 : plaques des coupes toutes de la même taille (la taille ne veut rien dire, seule la coupe grandit) */
 .enc-tro-plate { box-sizing: border-box; width: 94%; height: calc(2.3em + 4px); font-size: 0.58rem; }
+/* 13/11 : sculptures dessinées, posées au-dessus du socle doré */
+.enc-mus-item.is-scu .enc-mus-svg.is-statue { position: absolute; left: 4px; right: 4px; top: 0; width: calc(100% - 8px); height: calc(100% - 26px); border-radius: 8px 8px 0 0; }
