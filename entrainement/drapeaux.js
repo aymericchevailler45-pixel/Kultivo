@@ -19,7 +19,7 @@ TRAINING_QUESTIONS.push(
     { id: 23014, theme: "Drapeaux", d: 2.4, q: "Quelle nation a une croix blanche en diagonale sur fond bleu ?", a: ["L’Écosse", "Écosse", "Ecosse"], exp: "La croix de saint André, son saint patron." },
     { id: 23015, theme: "Drapeaux", d: 2.4, flag: "🇨🇺", q: "À quel pays appartient ce drapeau ?", a: ["Cuba"], exp: "Une étoile blanche sur un triangle rouge, avec cinq bandes." },
     { id: 23016, theme: "Drapeaux", d: 2.6, q: "Quel monument figure au centre du drapeau du Cambodge ?", a: ["Angkor Vat", "Angkor", "Angkor Wat", "Le temple d’Angkor"], exp: "Un des rares drapeaux à représenter un bâtiment." },
-    { id: 23017, theme: "Drapeaux", d: 2.6, q: "Quelle figure orne le drapeau de la Corse ?", a: ["Une tête de Maure", "Tête de Maure", "La tête de Maure"], exp: "Un bandeau blanc sur le front, adopté par Pascal Paoli." },
+    { id: 23017, theme: "Drapeaux", d: 2.6, q: "Quelle figure orne le drapeau de la Corse ?", a: ["Une tête de Maure", "Tête de Maure", "La tête de Maure", "Un Maure", "Maure"], exp: "Un bandeau blanc sur le front, adopté par Pascal Paoli." },
     { id: 23018, theme: "Drapeaux", d: 2.6, q: "Quel pays a un drapeau vert avec une inscription et un sabre blancs ?", a: ["L’Arabie saoudite", "Arabie saoudite", "Arabie Saoudite"], exp: "L’inscription est la profession de foi de l’islam." },
     { id: 23019, theme: "Drapeaux", d: 2.6, flag: "🇪🇬", q: "À quel pays appartient ce drapeau ?", a: ["L’Égypte", "Égypte", "Egypte"], exp: "Un aigle doré, l’aigle de Saladin, au centre." },
     { id: 23020, theme: "Drapeaux", d: 2.8, q: "Quel pays des Balkans a un aigle noir à deux têtes sur fond rouge ?", a: ["L’Albanie", "Albanie"], exp: "Un symbole hérité de l’Empire byzantin." },
@@ -58,7 +58,7 @@ TRAINING_QUESTIONS.push(
     { id: 23047, theme: "Drapeaux", d: 4.0, flag: "🇧🇴", q: "À quel pays appartient ce drapeau ?", a: ["La Bolivie", "Bolivie"], exp: "Rouge, jaune, vert : à ne pas confondre avec le Ghana ou le Mali." },
     { id: 23048, theme: "Drapeaux", d: 4.4, q: "Quel pays d’Amérique centrale a cinq volcans dans l’emblème de son drapeau ?", a: ["Le Nicaragua", "Nicaragua"], exp: "Ils représentent les cinq pays de l’ancienne Fédération d’Amérique centrale." },
     { id: 23049, theme: "Drapeaux", d: 4.4, q: "Quel royaume, aujourd’hui la Thaïlande, avait un éléphant blanc sur son drapeau jusqu’en 1917 ?", a: ["Le Siam", "Siam"], exp: "L’éléphant blanc était un animal sacré, symbole du roi." },
-    { id: 23050, theme: "Drapeaux", d: 4.6, q: "Quel pays des Antilles a un perroquet sur son drapeau ?", a: ["La Dominique", "Dominique"], exp: "Le sisérou, un amazone qui ne vit que sur cette île." }
+    { id: 23050, theme: "Drapeaux", d: 4.6, q: "Quel pays des Antilles a un perroquet sur son drapeau ?", a: ["La Dominique", "Dominique"], exp: "Le sisérou, une amazone (un perroquet) qui ne vit que sur cette île." }
 );
 
 /* Lots 2 et 3 (2026-10-18) : questions modernes et classiques */

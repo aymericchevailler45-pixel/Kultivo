@@ -172,7 +172,7 @@ TRAINING_QUESTIONS.push(
     { id: 14151, theme: "Musique", d: 1.0, q: "Quelle chanson enfantine demande à un moine « Dormez-vous ? » ?", a: ["Frère Jacques"], exp: "Chantée en canon dans le monde entier." },
     { id: 14152, theme: "Musique", d: 1.0, q: "Quel chant de Noël anglais parle de clochettes sur un traîneau ?", a: ["Jingle Bells"], exp: "Écrit vers 1857 par l’Américain James Lord Pierpont." },
     { id: 14153, theme: "Musique", d: 1.1, q: "Quel chant de Noël français commence par « Quand tu descendras du ciel » ?", a: ["Petit Papa Noël"], exp: "Chanté par Tino Rossi en 1946, record de ventes en France." },
-    { id: 14154, theme: "Musique", d: 1.1, q: "Quel chant de Noël allemand s’appelle « Stille Nacht » en VO ?", a: ["Douce nuit", "Douce nuit, sainte nuit"], exp: "Créé en Autriche en 1818." },
+    { id: 14154, theme: "Musique", d: 1.1, q: "Quel chant de Noël allemand s’appelle « Stille Nacht » en VO ?", a: ["Douce nuit", "Douce nuit, sainte nuit", "Sainte nuit", "Stille Nacht"], exp: "Créé en Autriche en 1818." },
     { id: 14155, theme: "Musique", d: 1.2, q: "Quel chant de Noël fait l’éloge du « roi des forêts » ?", a: ["Mon beau sapin"], exp: "Adapté de l’allemand « O Tannenbaum »." },
     { id: 14156, theme: "Musique", d: 1.6, q: "Quel instrument africain en forme de calice se joue à mains nues ?", a: ["Le djembé", "Djembé", "Djembe"], exp: "Originaire d’Afrique de l’Ouest." },
     { id: 14157, theme: "Musique", d: 1.2, q: "Quelles petites coquilles en bois claque-t-on dans la main en dansant le flamenco ?", a: ["Les castagnettes", "Castagnettes"], exp: "On les tient par une cordelette autour du pouce." },

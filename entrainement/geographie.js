@@ -119,7 +119,7 @@ TRAINING_QUESTIONS.push(
     { id: 12102, theme: "Géographie", d: 1.6, q: "Quel fleuve traverse Rome ?", a: ["Le Tibre", "Tibre", "Tevere"], exp: "Selon la légende, Romulus et Rémus y furent abandonnés." },
     { id: 12103, theme: "Géographie", d: 1.2, q: "Quelle ville du Brésil est célèbre pour son carnaval et sa plage de Copacabana ?", a: ["Rio de Janeiro", "Rio"], exp: "Dominée par le Pain de Sucre et le Christ Rédempteur." },
     { id: 12104, theme: "Géographie", d: 1.3, q: "Quelle ville américaine du désert du Nevada est célèbre pour ses casinos ?", a: ["Las Vegas", "Vegas"], exp: "Surnommée « Sin City »." },
-    { id: 12105, theme: "Géographie", d: 1.4, q: "Quelle grande chaîne de montagnes abrite l’Everest ?", a: ["L’Himalaya", "Himalaya"], exp: "Elle compte les 10 plus hauts sommets du monde." },
+    { id: 12105, theme: "Géographie", d: 1.4, q: "Quelle grande chaîne de montagnes abrite l’Everest ?", a: ["L’Himalaya", "Himalaya"], exp: "Elle compte la plupart des plus hauts sommets du monde ; le K2, lui, est dans le Karakoram voisin." },
     { id: 12106, theme: "Géographie", d: 1.4, q: "Quel est le plus long fleuve des États-Unis, qui finit à La Nouvelle-Orléans ?", a: ["Le Mississippi", "Mississippi", "Missouri"], exp: "Avec le Missouri, il dépasse 6 000 km." },
     { id: 12107, theme: "Géographie", d: 1.5, q: "Quelle est la monnaie du Royaume-Uni ?", a: ["La livre sterling", "Livre sterling", "Livre", "Pound"], exp: "Le Royaume-Uni n’a jamais adopté l’euro." },
     { id: 12108, theme: "Géographie", d: 1.6, q: "Quelle montagne enneigée et sacrée est le symbole du Japon ?", a: ["Le mont Fuji", "Fuji", "Mont Fuji", "Fujiyama", "Fuji-san"], exp: "Un volcan de 3 776 m, encore actif." },

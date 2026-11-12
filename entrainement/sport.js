@@ -46,7 +46,7 @@ TRAINING_QUESTIONS.push(
     { id: 19037, theme: "Sport", d: 3.0, q: "Quelle nageuse française a été championne olympique du 400 m en 2004 ?", a: ["Laure Manaudou", "Manaudou"], exp: "À Athènes, à seulement 17 ans." },
     { id: 19038, theme: "Sport", d: 3.0, q: "Quel joueur français a remporté Roland-Garros en 1983 ?", a: ["Yannick Noah", "Noah"], exp: "Le dernier Français à l’avoir gagné chez les hommes." },
     { id: 19039, theme: "Sport", d: 3.0, q: "Combien de mètres mesure un bassin olympique ?", a: ["50", "Cinquante"], exp: "Avec dix couloirs, dont huit utilisés en finale." },
-    { id: 19040, theme: "Sport", d: 3.0, q: "Comment s’appelait le stade du FC Barcelone, le plus grand d’Europe ?", a: ["Le Camp Nou", "Camp Nou", "Nou Camp"], exp: "Près de 100 000 places." },
+    { id: 19040, theme: "Sport", d: 3.0, q: "Comment s’appelle le stade du FC Barcelone, le plus grand d’Europe ?", a: ["Le Camp Nou", "Camp Nou", "Nou Camp"], exp: "Près de 100 000 places." },
 
     // Palier 5
     { id: 19041, theme: "Sport", d: 3.2, q: "Quelle compétition de voile, créée en 1851, est le plus vieux trophée sportif international ?", a: ["La Coupe de l’America", "America’s Cup", "America's Cup", "Coupe de l'America"], exp: "Du nom de la goélette « America », sa première gagnante." },
@@ -149,7 +149,7 @@ TRAINING_QUESTIONS.push(
     { id: 19132, theme: "Sport", d: 3.0, q: "Quelle ville a accueilli les JO d’été de 2021, reportés d’un an à cause du Covid ?", a: ["Tokyo"], exp: "Ils s’appelaient pourtant toujours « Tokyo 2020 »." },
     { id: 19133, theme: "Sport", d: 3.0, q: "Quel sport de combat coréen, fait de coups de pied, est olympique depuis 2000 ?", a: ["Le taekwondo", "Taekwondo", "Taekwando"], exp: "Son nom veut dire « la voie du pied et du poing »." },
     { id: 19134, theme: "Sport", d: 3.1, q: "Quelle sprinteuse jamaïcaine a été cinq fois championne du monde du 100 m ?", a: ["Shelly-Ann Fraser-Pryce", "Fraser-Pryce", "Fraser Pryce"], exp: "Surnommée « Pocket Rocket », la fusée de poche." },
-    { id: 19135, theme: "Sport", d: 3.2, q: "Quel est le surnom du stade du Liverpool FC, et de son célèbre virage ?", a: ["Anfield", "The Kop", "Kop"], exp: "« You’ll Never Walk Alone » y résonne avant chaque match." },
+    { id: 19135, theme: "Sport", d: 3.2, q: "Dans quel stade joue le Liverpool FC, avec sa célèbre tribune du Kop ?", a: ["Anfield", "Le stade d’Anfield", "Anfield Road"], exp: "« You’ll Never Walk Alone » y résonne avant chaque match." },
     { id: 19136, theme: "Sport", d: 3.2, q: "Quel ultra-traileur espagnol a battu de nombreux records d’ascension en montagne ?", a: ["Kilian Jornet", "Jornet"], exp: "Il a gravi l’Everest deux fois en une semaine sans oxygène." },
     { id: 19137, theme: "Sport", d: 3.3, q: "Quel gardien soviétique est le seul gardien à avoir reçu le Ballon d’or ?", a: ["Lev Yachine", "Yachine", "Lev Yashin", "Yashin"], exp: "En 1963 ; on l’appelait « l’araignée noire »." },
     { id: 19138, theme: "Sport", d: 3.4, q: "Quel volleyeur français, star des titres olympiques de 2021 et 2024, porte le prénom de Magic Johnson ?", a: ["Earvin N’Gapeth", "N’Gapeth", "Ngapeth", "Earvin Ngapeth"], exp: "Ses gestes spectaculaires font le tour des réseaux." },
@@ -258,7 +258,7 @@ TRAINING_QUESTIONS.push(
     { id: 19239, theme: "Sport", d: 3.0, q: "Dans quelle course américaine le vainqueur boit-il traditionnellement une bouteille de lait ?", a: ["Les 500 miles d’Indianapolis", "Indianapolis", "Indy 500", "500 miles d’Indianapolis"], exp: "Une tradition née en 1936." },
     { id: 19240, theme: "Sport", d: 2.6, q: "Quel pilote français, quatre fois champion du monde de F1, était surnommé « le Professeur » ?", a: ["Alain Prost", "Prost"], exp: "Grand rival d’Ayrton Senna." },
     { id: 19241, theme: "Sport", d: 2.1, q: "Comment appelle-t-on la première place sur la grille de départ en F1 ?", a: ["La pole position", "Pole position", "Pole"], exp: "Elle revient au plus rapide des qualifications." },
-    { id: 19242, theme: "Sport", d: 3.2, q: "Quel pilote de Gap a été huit fois champion du monde des rallyes entre 2013 et 2021 ?", a: ["Sébastien Ogier", "Ogier"], exp: "Successeur de Sébastien Loeb (9 titres)." },
+    { id: 19242, theme: "Sport", d: 3.2, q: "Quel pilote de Gap a égalé en 2025 le record de neuf titres de champion du monde des rallyes ?", a: ["Sébastien Ogier", "Ogier"], exp: "Huit titres de 2013 à 2021, puis un neuvième en 2025 : autant que Sébastien Loeb." },
     { id: 19243, theme: "Sport", d: 2.8, q: "Quelle est la catégorie reine des championnats de vitesse moto ?", a: ["Le MotoGP", "MotoGP", "Moto GP"], exp: "Valentino Rossi y a gagné 7 titres." },
     { id: 19244, theme: "Sport", d: 1.8, q: "Comment appelle-t-on l’ensemble des sports pratiqués à cheval ?", a: ["L’équitation", "Équitation", "Equitation"], exp: "Seul sport olympique où hommes et femmes concourent ensemble." },
     { id: 19245, theme: "Sport", d: 2.7, q: "Quelle discipline équestre est une sorte de « danse » du cheval, notée par des juges ?", a: ["Le dressage", "Dressage"], exp: "On l’appelle parfois le « ballet équestre »." },
