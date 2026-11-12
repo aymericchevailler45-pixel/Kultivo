@@ -2160,6 +2160,8 @@ function openEncBook(theme, keep = false) {
             : theme === 'Jeux' ? ['🕹️', 'Ma salle d’arcade', 'cartouches, bornes, consoles et jeux de société', () => openEncArcade()]
             : theme === 'Sport' ? ['🏆', 'Ma salle des trophées', 'tes médailles, du bronze à l’or', () => openEncTrophies()]
             : theme === 'Technologie' ? ['⚙️', 'La frise des inventions', 'de l’imprimerie à l’IA', () => openEncTechFrise()]
+            : theme === 'Arts' ? ['🖼️', 'Mon musée', 'tes œuvres accrochées salle par salle', () => openEncMuseum()]
+            : theme === 'Cinéma' ? ['🎬', 'Mes affiches', 'films, séries, stars et réalisateurs', () => openEncPosters()]
             : theme === 'Drapeaux' ? ['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()]
             : theme === 'Monuments' ? ['💌', 'Mes cartes postales', 'des albums de monuments à compléter', () => openEncPostcards()]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
@@ -4090,6 +4092,252 @@ async function openEncTechFrise(keep = false) {
     mc.addEventListener('scroll', onScroll, { passive: true });
     requestAnimationFrame(onScroll);
     mc.scrollTop = keep ? encState.techFriseScroll || 0 : 0;
+}
+
+/* 13/11 : écran commun « une rangée par salle, qui défile de côté » (musée des Arts, affiches du Cinéma).
+   o = { cls, title, unit, back, theme, rows: [[clé, emoji, nom, objets]], rest, restLabel, restName, restDesc, retLabel, reopen(clé),
+         unknown, head(objet) -> titre, desc(objet) -> texte, label(q) -> [question, réponse], make(objet, su) -> contenu du bouton, itemCls(objet) } */
+function encHash(s) { let h = 7; for (const c of String(s)) h = (h * 31 + c.codePointAt(0)) >>> 0; return h; }
+function encRowsScreen(o, keepKey = null) {
+    const items = o.rows.flatMap(r => r[3]);
+    items.forEach(it => { it.k = it.qs.filter(encKnown).length; });
+    const byKey = Object.fromEntries(items.map(it => [it.key, it]));
+    const found = items.filter(it => it.k).length;
+    const page = el('div', `enc-full enc-godpage enc-rowspage ${o.cls}`);
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = o.title;
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${found} / ${items.length} ${o.unit}`;
+    const scroller = el('div', 'enc-god-scroll enc-rows-wall');
+    const panel = el('div', 'enc-map-panel enc-god-panel');
+    const btns = {};
+    let sel = null, before = 0;
+    const clear = () => {
+        if (!sel) return;
+        btns[sel]?.classList.remove('is-sel');
+        sel = null;
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+        const top = before;
+        requestAnimationFrame(() => { scroller.scrollTop = top; });
+    };
+    const rest = o.rest || [];
+    const show = (key, instant = false) => {
+        if (sel === key) { clear(); return; }
+        if (!sel) before = scroller.scrollTop;
+        btns[sel]?.classList.remove('is-sel');
+        sel = key;
+        btns[key]?.classList.add('is-sel');
+        const it = key === 'rest' ? { qs: rest, k: rest.filter(encKnown).length } : byKey[key];
+        panel.replaceChildren();
+        const card = el('div', 'enc-cpanel');
+        const hd = el('div', 'enc-map-head');
+        const nm = el('b');
+        nm.textContent = key === 'rest' ? o.restName : it.k ? o.head(it) : `❓ ${typeof o.unknown === 'function' ? o.unknown(it) : o.unknown}`;
+        const ct = el('span');
+        ct.textContent = `· ${it.k} / ${it.qs.length} ${it.qs.length > 1 ? 'questions sues' : 'question sue'}`;
+        hd.append(nm, ct);
+        encPanelX(hd, clear);
+        card.append(hd);
+        const dtxt = key === 'rest' ? o.restDesc : it.k ? o.desc?.(it) : '';
+        if (dtxt) { const d = el('p', 'enc-god-desc'); d.textContent = dtxt; card.append(d); }
+        encQRows(card, it.qs, { label: o.retLabel, fn: () => o.reopen(key) }, o.label || (q => [q.q.replace(/\s*\?$/, ''), q.a[0]]));
+        panel.append(card);
+        panel.scrollTop = 0;
+        page.classList.add('has-sel');
+        requestAnimationFrame(() => btns[key]?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: instant ? 'auto' : 'smooth' }));
+    };
+    o.rows.forEach(([rk, emo, name, list]) => {
+        if (!list.length) return;
+        // ce qu'on sait d'abord (par ordre alphabétique), puis les « ? » à découvrir
+        const sorted = list.slice().sort((a, b) => (b.k > 0) - (a.k > 0) || a.title.localeCompare(b.title, 'fr'));
+        const t = el('p', 'enc-wall-h enc-rows-h');
+        const tn = el('span');
+        tn.textContent = `${emo} ${name}`;
+        const tc = el('b');
+        tc.textContent = `${list.filter(x => x.k).length} / ${list.length}`;
+        t.append(tn, tc);
+        const row = el('div', `enc-rows-row is-${rk}`);
+        sorted.forEach(it => {
+            const known = it.k > 0;
+            const b = el('button', `enc-rows-item ${o.itemCls(it)}${known ? ' is-known' : ''}`);
+            b.type = 'button';
+            b.append(...[].concat(o.make(it, known)));
+            if (it.qs.length > 1) { const n = el('i', 'enc-rows-n'); n.textContent = it.qs.length; b.append(n); }
+            b.addEventListener('click', () => show(it.key));
+            btns[it.key] = b;
+            row.append(b);
+        });
+        scroller.append(t, row);
+    });
+    if (rest.length) {
+        const rb = el('button', 'enc-flag-other enc-rows-rest');
+        rb.type = 'button';
+        rb.textContent = `${o.restLabel} · ${rest.filter(encKnown).length} / ${rest.length} ›`;
+        rb.addEventListener('click', () => show('rest'));
+        btns.rest = rb;
+        scroller.append(rb);
+    }
+    encTapOff(scroller, '.enc-rows-item, .enc-rows-rest', clear);
+    page.append(h, cnt, scroller, panel);
+    $('friendBody').replaceChildren(encBackBtn(o.back.label, o.back.fn), page);
+    $('friendModal').hidden = false;
+    if (keepKey && (byKey[keepKey] || keepKey === 'rest')) show(keepKey, true);
+}
+/** Regroupe les questions d'un thème selon une table id -> [clé, rangée, …] ; les questions absentes vont dans « le reste ». */
+function encRowsGroup(theme, table, rowsDef, extra) {
+    const groups = {}, rest = [];
+    encChapters(theme).flatMap(c => c.qs).forEach(q => {
+        const v = table[q.id];
+        if (!v) { rest.push(q); return; }
+        const key = `${v[1]}|${v[0]}`;
+        const g = groups[key] || (groups[key] = { key, title: v[0], row: v[1], qs: [], ...extra(v) });
+        g.qs.push(q);
+    });
+    const list = Object.values(groups);
+    return { rows: rowsDef.map(([rk, emo, name]) => [rk, emo, name, list.filter(g => g.row === rk)]), rest };
+}
+
+/* ---------- 🖼️ Mon musée (Arts) : un tableau « caricature » dessiné par œuvre ou artiste, dans un cadre doré ---------- */
+const ENC_MUS_PAL = {
+    anc: [['#3b2a1a', '#6b4a2a', '#b98a4a'], ['#2e2a22', '#5a4630', '#c9a36a'], ['#2d3a2e', '#4e5a3a', '#a89a5a'], ['#3a2420', '#6e3a2a', '#c08a5a']],
+    xix: [['#bfe3f2', '#f7e7a8', '#9fd18b'], ['#f6d6c9', '#c9e4f0', '#f2e08a'], ['#d9ecc5', '#f4c9d6', '#a9cdeb'], ['#fde3b5', '#b9dcd0', '#e8b4c8']],
+    mod: [['#f4f1ea', '#e63946', '#1d4ed8'], ['#fdf6e3', '#f4b400', '#111827'], ['#eef2f7', '#e11d48', '#16a34a'], ['#fff7ed', '#7c3aed', '#f97316']],
+    scu: [['#e7e2d8', '#cfc6b6', '#a89f8f']],
+    arc: [['#1e3a8a', '#2b4fae', '#dbe7ff']],
+    mus: [['#f3eee4', '#d9cfbd', '#8a7a62']],
+    sce: [['#1f1f1f', '#444', '#e5e5e5']]
+};
+/** Petit tableau SVG déterministe selon la salle (ancien sombre, impressionniste à touches, moderne géométrique…). */
+function encMusArt(it) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('class', 'enc-mus-svg');
+    const add = (tag, at) => { const e = document.createElementNS(ns, tag); Object.entries(at).forEach(([k, v]) => e.setAttribute(k, v)); svg.append(e); return e; };
+    let h = encHash(it.key);
+    const rnd = () => { h = (h * 1103515245 + 12345) >>> 0; return (h >>> 8) / 16777216; };
+    const pals = ENC_MUS_PAL[it.row] || ENC_MUS_PAL.mod;
+    const [c0, c1, c2] = pals[encHash(it.title) % pals.length];
+    add('rect', { x: 0, y: 0, width: 100, height: 100, fill: c0 });
+    if (it.row === 'anc') {   // fond sombre, sol, halo doré
+        add('rect', { x: 0, y: 62 + rnd() * 14, width: 100, height: 40, fill: c1 });
+        add('circle', { cx: 30 + rnd() * 40, cy: 30 + rnd() * 10, r: 26, fill: c2, opacity: 0.35 });
+    } else if (it.row === 'xix') {   // touches de couleur, ciel et herbe
+        add('rect', { x: 0, y: 58, width: 100, height: 42, fill: c2 });
+        for (let i = 0; i < 34; i++) add('ellipse', { cx: rnd() * 100, cy: rnd() * 100, rx: 3 + rnd() * 4, ry: 2 + rnd() * 2, fill: [c1, c2, '#fff', '#f2b5a0', '#8fb8de'][i % 5], opacity: 0.75 });
+    } else if (it.row === 'mod') {   // formes franches
+        for (let i = 0; i < 5; i++) {
+            const c = [c1, c2, '#111827', c1, '#f4b400'][i];
+            if (rnd() < 0.5) add('rect', { x: rnd() * 70, y: rnd() * 70, width: 18 + rnd() * 40, height: 14 + rnd() * 40, fill: c, opacity: 0.9 });
+            else add('circle', { cx: rnd() * 100, cy: rnd() * 100, r: 8 + rnd() * 18, fill: c, opacity: 0.85 });
+        }
+    } else if (it.row === 'arc') {   // plan d'architecte
+        for (let i = 10; i < 100; i += 10) { add('line', { x1: i, y1: 0, x2: i, y2: 100, stroke: c1, 'stroke-width': 1 }); add('line', { x1: 0, y1: i, x2: 100, y2: i, stroke: c1, 'stroke-width': 1 }); }
+        add('rect', { x: 18, y: 30 + rnd() * 10, width: 64, height: 54, fill: 'none', stroke: c2, 'stroke-width': 2.2 });
+    } else if (it.row === 'mus') {   // façade de musée
+        add('polygon', { points: '10,40 50,16 90,40', fill: c1 });
+        for (let x = 16; x < 88; x += 14) add('rect', { x, y: 42, width: 7, height: 42, fill: '#fff', opacity: 0.9 });
+        add('rect', { x: 8, y: 84, width: 84, height: 7, fill: c2 });
+    } else if (it.row === 'sce') {   // projecteur sur scène
+        add('polygon', { points: '50,0 20,100 80,100', fill: '#fff', opacity: 0.12 });
+        add('ellipse', { cx: 50, cy: 88, rx: 32, ry: 7, fill: '#fff', opacity: 0.18 });
+    }
+    return svg;
+}
+async function openEncMuseum(keepKey = null) {
+    try { await encLoad('musee.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const M = window.ENC_MUSEUM || { rooms: [], q: {} };
+    const { rows, rest } = encRowsGroup('Arts', M.q, M.rooms, v => ({ emo: v[2], person: v[3] }));
+    encRowsScreen({
+        cls: 'enc-muspage', title: '🖼️ Mon musée', unit: 'œuvres et artistes découverts', unknown: it => it.row === 'scu' ? 'Sculpture à découvrir' : it.row === 'mus' ? 'Musée à découvrir' : 'Œuvre à découvrir',
+        back: { label: '← Arts', fn: () => openEncBook('Arts', true) }, rows, rest,
+        restLabel: '🎨 L’atelier : techniques, couleurs et vocabulaire', restName: '🎨 L’atelier', restDesc: 'Les techniques, les couleurs et le vocabulaire des artistes.',
+        retLabel: '← Mon musée', reopen: k => openEncMuseum(k),
+        head: it => `${it.emo || '🖼️'} ${it.title}`,
+        desc: it => {
+            if (!it.person) return '';
+            const works = [...new Set(it.qs.filter(encKnown).flatMap(q => [...q.q.matchAll(/«\s*([^»]+?)\s*»/g)].map(m => m[1])))];
+            return works.length ? `Au musée : ${works.map(w => `« ${w} »`).join(', ')}` : '';
+        },
+        itemCls: it => `enc-mus-item is-${it.row}`,
+        make: (it, known) => {
+            const hs = encHash(it.key);
+            const fr = el('span', 'enc-mus-frame');
+            const w = it.row === 'scu' ? 70 : 66 + hs % 30, hh = it.row === 'scu' ? 92 : 62 + (hs >>> 6) % 40;
+            fr.style.width = `${w}px`;
+            fr.style.height = `${hh}px`;
+            if (known) {
+                if (it.row !== 'scu') fr.append(encMusArt(it));
+                const e = el('span', 'enc-mus-emo');
+                e.textContent = it.emo || '🖼️';
+                fr.append(e);
+            } else {
+                const q = el('span', 'enc-mus-q');
+                q.textContent = '?';
+                fr.append(q);
+            }
+            const pl = el('span', 'enc-mus-plaque');
+            pl.textContent = known ? it.title : '???';
+            pl.style.width = `${Math.max(w, 72)}px`;
+            return [fr, pl];
+        }
+    }, keepKey);
+}
+
+/* 13/11 : « 🎬 Mes affiches de cinéma » (Cinéma). Une affiche dessinée par film / série / saga (plusieurs questions possibles),
+   une étoile du « Walk of Fame » par star, une chaise de tournage par réalisateur. Pas su = affiche grise « ? ». Utilise encRowsScreen (enc_musee.js). */
+const ENC_POS_HUES = { fr: [210, 350], cl: [35, 20], sf: [230, 270], dr: [0, 330], co: [320, 20], sa: [260, 200], an: [190, 140], se: [280, 170] };
+async function openEncPosters(keepKey = null) {
+    try { await encLoad('affiches.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const P = window.ENC_POSTERS || { rows: [], q: {} };
+    const { rows, rest } = encRowsGroup('Cinéma', P.q, P.rows, v => ({ emo: v[2], year: v[3] }));
+    encRowsScreen({
+        cls: 'enc-pospage', title: '🎬 Mes affiches de cinéma', unit: 'affiches découvertes', unknown: it => it.row === 'st' ? 'Star à découvrir' : it.row === 're' ? 'Réalisateur à découvrir' : 'Affiche à découvrir',
+        back: { label: '← Cinéma', fn: () => openEncBook('Cinéma', true) }, rows, rest,
+        restLabel: '🎟️ Les coulisses : festivals, prix et métiers', restName: '🎟️ Les coulisses', restDesc: 'Festivals, récompenses, inventeurs et métiers du cinéma.',
+        retLabel: '← Mes affiches', reopen: k => openEncPosters(k),
+        head: it => it.row === 'st' ? `⭐ ${it.title}` : it.row === 're' ? `🎬 ${it.title}` : `${it.emo || '🎬'} ${it.title}${it.year ? ` · ${it.year}` : ''}`,
+        desc: it => {
+            if (it.row !== 'st' && it.row !== 're') return '';
+            const films = [...new Set(it.qs.filter(encKnown).flatMap(q => [...q.q.matchAll(/«\s*([^»]+?)\s*»/g)].map(m => m[1])))];
+            return films.length ? `${it.row === 're' ? 'Ses films' : 'À l’affiche de'} : ${films.map(f => `« ${f} »`).join(', ')}` : '';
+        },
+        itemCls: it => `enc-pos-item is-${it.row}`,
+        make: (it, known) => {
+            if (it.row === 'st' || it.row === 're') {   // étoile du Walk of Fame / chaise de réalisateur
+                const c = el('span', 'enc-pos-star');
+                const ic = el('span', 'enc-pos-star-ic');
+                ic.textContent = known ? (it.row === 'st' ? '★' : '🎬') : '?';
+                const n = el('span', 'enc-pos-star-n');
+                n.textContent = known ? it.title : '???';
+                c.append(ic, n);
+                return c;
+            }
+            const p = el('span', 'enc-pos-poster');
+            if (known) {
+                const [h1, h2] = ENC_POS_HUES[it.row] || [210, 260];
+                const hs = encHash(it.key);
+                p.style.setProperty('--h1', String((h1 + hs % 40) % 360));
+                p.style.setProperty('--h2', String((h2 + (hs >>> 5) % 40) % 360));
+                const e = el('span', 'enc-pos-emo');
+                e.textContent = it.emo || '🎬';
+                const t = el('span', `enc-pos-t${it.title.length > 22 ? ' is-long' : it.title.length > 12 ? ' is-mid' : ''}`);
+                t.textContent = it.title;
+                const y = el('span', 'enc-pos-y');
+                y.textContent = it.year ? String(it.year) : '';
+                p.append(e, t, y);
+            } else {
+                const q = el('span', 'enc-pos-q');
+                q.textContent = '?';
+                const s = el('span', 'enc-pos-soon');
+                s.textContent = 'Bientôt à l’affiche';
+                p.append(q, s);
+            }
+            return p;
+        }
+    }, keepKey);
 }
 
 function encMedia(q, small) {

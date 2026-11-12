@@ -357,6 +357,16 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Paris = `encIsParis` (question / réponse, pas l'explication) ; couvertures `ENC_POST_COVERS` ; souvenirs : PAYS = silhouette (drapeau si
   trop petit, ex. Vatican), VILLE = « Bons baisers de… » sur rayons de soleil (pas de silhouette) ; bibliothèque : plus de lueur dorée,
   titre entre les filets, `text-orientation: sideways` (apostrophe).
+- 13/11 (v=20261113o, bac à sable) : TOUS LES LIVRES ONT LEUR ÉCRAN. Musique = « 💿 Mes vinyles » (`openEncVinyls`, vinyles.js, 268 vinyles,
+  6 bacs ; écran commun `encObjScreen`) ; Jeux = « 🕹️ Ma salle d'arcade » (`openEncArcade`, arcade.js, 253 objets, 6 rangées) ; Sport =
+  « 🏆 Ma salle des trophées » (`openEncTrophies` / `openEncTrophyCase`, trophees.js : vitrines par chapitre, « Autres sports » découpé ;
+  médaille 1 bonne réponse = bronze, 2 = argent, 3+ = or, podium en haut, « monte ! » gardé dans localStorage kultivo_trophies) ;
+  Technologie = « ⚙️ La frise des inventions » (`openEncTechFrise`, frise-techno.js `ENC_TECH_YEARS`, 298/401 datées, relues le 13/11,
+  9 époques, reste « hors frise ») ; Arts = « 🖼️ Mon musée » (`openEncMuseum`, musee.js, 263 œuvres / artistes, 7 salles + « L'atelier » ;
+  écran commun `encRowsScreen`) ; Cinéma = « 🎬 Mes affiches » (`openEncPosters`, affiches.js, 341 affiches, 10 rangées dont stars et
+  réalisateurs + « Les coulisses »). Tous dessinés en CSS/SVG (aucune vraie image). Fiche du bas : hauteur = son contenu (le dessin garde
+  au moins sa part). Générateurs dans le scratchpad (make_vinarc.py, make_tro.py, make_frisetech.py, museeA_make.py, afficheC_make.py) ;
+  intégration : scratchpad integrate.py.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
