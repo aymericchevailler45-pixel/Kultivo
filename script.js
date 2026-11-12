@@ -1817,6 +1817,35 @@ function encTip(node, kind) {
     node.tabIndex = 0;
     node.addEventListener('click', e => { e.stopPropagation(); encExplain(kind); });
 }
+/** 12/11 : le livre touché grandit jusqu'à remplir l'écran pendant que sa couverture s'ouvre (~0,4 s, un tap l'achève). */
+function encOpenAnim(from, color, icon, then) {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { then(); return; }
+    const r = from.getBoundingClientRect();
+    const nav = document.querySelector('.nav');
+    const navH = window.innerWidth <= 900 && nav ? nav.offsetHeight : 0;
+    const z = el('div', 'enc-zoom');
+    z.style.setProperty('--c', color);
+    const cover = el('div', 'enc-zoom-cover');
+    cover.textContent = icon;
+    z.append(cover);
+    Object.assign(z.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+    document.body.append(z);
+    let done = false;
+    const finish = () => {
+        if (done) return;
+        done = true;
+        then();
+        z.classList.add('is-out');
+        setTimeout(() => z.remove(), 180);
+    };
+    z.addEventListener('pointerdown', finish);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        z.classList.add('is-open');
+        const w = window.innerWidth > 900 ? Math.min(560, window.innerWidth) : window.innerWidth;
+        Object.assign(z.style, { left: `${(window.innerWidth - w) / 2}px`, top: '0px', width: `${w}px`, height: `${window.innerHeight - navH}px` });
+    }));
+    setTimeout(finish, 400);
+}
 function encBooks() {
     const map = {};
     encAll().forEach(q => {
@@ -1915,7 +1944,7 @@ function renderEncyclopedia(box) {
         const hd = el('span', 'enc-book-head');   // 12/11 : icône à côté du nom (hauteur identique pour tous les livres)
         hd.append(ic, nm);
         btn.append(hd, cnt, mini, m, r);   // la barre sous « x / y savoirs », pas sous le % de réussite
-        btn.addEventListener('click', () => openEncBook(b.theme));
+        btn.addEventListener('click', () => encOpenAnim(btn, ENC_COLORS[b.theme] || '#3d8bff', encIcon(b.theme), () => openEncBook(b.theme)));
         grid.append(btn);
     });
     box.append(t2, grid);
@@ -2669,9 +2698,19 @@ function encFitKeyboard() {
         const mc = fb.closest('.modal-content');
         mc.classList.toggle('is-enc-fiche', !!fb.querySelector(':scope > .enc-fiche, :scope > .enc-full'));
         mc.classList.toggle('is-enc-noback', !fb.querySelector(':scope > .duel-back'));
+        const full = mc.classList.contains('is-enc-fiche');
+        const ov = $('friendModal');
+        ov.classList.toggle('is-enc-full', full);
+        const nav = document.querySelector('.nav');
+        ov.style.bottom = full && window.innerWidth <= 900 && nav ? `${nav.offsetHeight}px` : '';
         encFitKeyboard();
     }).observe(fb, { childList: true });
     window.visualViewport?.addEventListener('resize', encFitKeyboard);
+    // un onglet du bas touché pendant l'encyclopédie : on la referme et on y va
+    document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => {
+        const ov = $('friendModal');
+        if (!ov.hidden && ov.classList.contains('is-enc-full')) ov.hidden = true;
+    }, true));
 })();
 /** 12/11 : une phrase de Kulti sur ta façon d'avoir appris cette question (essais, réussites, maîtrise). */
 function encKultiLine(q) {
@@ -13138,7 +13177,7 @@ function closeTopOverlay() {
     if (open('patchModal')) { closePatchNotes(); return true; }
     if (open('avatarModal')) { closeAvatarModal(); return true; }
     if (open('titlesModal')) { $('titlesModal').hidden = true; return true; }
-    if (open('friendModal')) { $('friendModal').hidden = true; return true; }
+    if (open('friendModal')) { const bk = $('friendModal').classList.contains('is-enc-full') && $('friendBody').querySelector(':scope > .duel-back'); if (bk) bk.click(); else $('friendModal').hidden = true; return true; }
     if (open('authModal')) { closeAuthModal(); return true; }
     if (open('accountModal')) { $('accountModal').hidden = true; return true; }
     if (open('reportModal')) { $('reportModal').hidden = true; return true; }

@@ -4320,3 +4320,17 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 @keyframes shInR { from { transform: translateX(150px) rotate(16deg); opacity: 0; } to { transform: translateX(74px) rotate(9deg); opacity: 1; } }
 @keyframes shMergeL { from { transform: translateX(-74px) rotate(-9deg); } to { transform: none; opacity: 0; } }
 @keyframes shMergeR { from { transform: translateX(74px) rotate(9deg); } to { transform: none; opacity: 0; } }
+
+/* 12/11 : l'encyclopédie en vraie page plein écran (la barre du bas reste visible) + animation d'ouverture du livre */
+#friendModal.is-enc-full { padding: 0; background: var(--surface); backdrop-filter: none; align-items: stretch; }
+#friendModal.is-enc-full .modal-content.is-enc-fiche { width: 100%; max-width: 560px; height: 100%; max-height: none; margin: 0 auto; border-radius: 0; box-shadow: none; animation: none; padding-left: 20px; padding-right: 20px; }
+#friendModal.is-enc-full .enc-scroll { margin: 0 -20px; padding: 0 20px 16px; }
+#friendModal.is-enc-full .enc-tl-head .enc-tl-eras { margin: 0 -20px; padding: 4px 20px 10px; }
+@media (min-width: 901px) { #friendModal.is-enc-full { background: rgba(27, 39, 69, 0.45); } #friendModal.is-enc-full .modal-content.is-enc-fiche { box-shadow: 0 0 40px rgba(0, 0, 0, 0.25); } }
+.enc-zoom { position: fixed; z-index: 60; border-radius: 14px; overflow: hidden; perspective: 900px; background: color-mix(in srgb, var(--c) 10%, var(--surface));
+    transition: left 0.36s cubic-bezier(0.3, 0.7, 0.2, 1), top 0.36s cubic-bezier(0.3, 0.7, 0.2, 1), width 0.36s cubic-bezier(0.3, 0.7, 0.2, 1), height 0.36s cubic-bezier(0.3, 0.7, 0.2, 1), border-radius 0.36s, opacity 0.16s; }
+.enc-zoom.is-open { border-radius: 0; }
+.enc-zoom-cover { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.6rem; background: var(--c); box-shadow: inset 10px 0 0 rgba(0, 0, 0, 0.18);
+    transform-origin: left center; transition: transform 0.34s ease-in 0.05s; backface-visibility: hidden; }
+.enc-zoom.is-open .enc-zoom-cover { transform: rotateY(-105deg); }
+.enc-zoom.is-out { opacity: 0; }
