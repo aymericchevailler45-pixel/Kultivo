@@ -2155,6 +2155,7 @@ function openEncBook(theme, keep = false) {
             : theme === 'Sciences' ? [['🫀', 'Mon corps humain', 'les organes que tu connais', () => openEncSpots('sci', 'corps')], ['🪐', 'Mon système solaire', 'les planètes, les étoiles et l’espace', () => openEncSpots('sci', 'espace')]]
             : theme === 'Langue française' ? ['📖', 'Mon dictionnaire', 'tes mots et expressions de A à Z', () => openEncDico()]
             : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
+            : theme === 'Littérature' ? ['📚', 'Ma bibliothèque', 'tes livres rangés sur les étagères', () => openEncLibrary()]
             : theme === 'Drapeaux' ? ['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()]
             : theme === 'Monuments' ? ['💌', 'Mes cartes postales', 'des albums de monuments à compléter', () => openEncPostcards()]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
@@ -3528,6 +3529,112 @@ async function openEncPostAlbum(key, keepScroll = null) {
     page.classList.add('enc-postpage');
     if (keepScroll) requestAnimationFrame(() => { page.scrollTop = keepScroll; });
 }
+/* 13/11 : « 📚 Ma bibliothèque » (Littérature). Une tranche par œuvre (plusieurs questions possibles), rangée sur son étagère ;
+   livre su = en couleur avec son titre, pas encore su = tranche grise « ? ». Tap = ses questions en bas. */
+const ENC_LIB_COLORS = ['#8b2e2e', '#1f4e79', '#2f6b3a', '#6b3f8f', '#9a5b13', '#245e66', '#7a2948', '#3b4a6b', '#5c6b1f', '#a23b1f', '#2d5a8c', '#6e4b2a'];
+function encLibHash(s) { let h = 7; for (const c of s) h = (h * 31 + c.codePointAt(0)) >>> 0; return h; }
+async function openEncLibrary(keepKey = null) {
+    try { await encLoad('bibliotheque.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const B = window.ENC_BOOKS || {};
+    const all = encChapters('Littérature').flatMap(c => c.qs);
+    const books = {};   // clé = étagère + titre
+    const rest = [];
+    all.forEach(q => {
+        const b = B[q.id];
+        if (!b) { rest.push(q); return; }
+        const key = `${b[2]}|${b[0]}`;
+        (books[key] = books[key] || { key, title: b[0], author: b[1], shelf: b[2], qs: [] }).qs.push(q);
+    });
+    Object.values(books).forEach(b => { b.k = b.qs.filter(encKnown).length; });
+    const list = Object.values(books);
+    const found = list.filter(b => b.k).length;
+    const page = el('div', 'enc-full enc-godpage enc-libpage');
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = '📚 Ma bibliothèque';
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${found} / ${list.length} livres découverts`;
+    const scroller = el('div', 'enc-god-scroll enc-lib-wall');
+    const panel = el('div', 'enc-map-panel enc-god-panel');
+    const btns = {};
+    let sel = null, before = 0;
+    const clear = () => {
+        if (!sel) return;
+        btns[sel]?.classList.remove('is-sel');
+        sel = null;
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+        const top = before;
+        requestAnimationFrame(() => { scroller.scrollTop = top; });
+    };
+    const show = key => {
+        if (sel === key) { clear(); return; }
+        if (!sel) before = scroller.scrollTop;
+        btns[sel]?.classList.remove('is-sel');
+        sel = key;
+        btns[key]?.classList.add('is-sel');
+        const b = key === 'rest' ? { title: 'Le reste', author: '', qs: rest, k: rest.filter(encKnown).length } : books[key];
+        panel.replaceChildren();
+        const card = el('div', 'enc-cpanel');
+        const hd = el('div', 'enc-map-head');
+        const nm = el('b');
+        nm.textContent = key === 'rest' ? '📜 Le reste de la bibliothèque' : b.k ? `📖 ${b.title}` : '❓ Livre à découvrir';
+        const ct = el('span');
+        ct.textContent = `· ${b.k} / ${b.qs.length} ${b.qs.length > 1 ? 'questions sues' : 'question sue'}`;
+        hd.append(nm, ct);
+        encPanelX(hd, clear);
+        card.append(hd);
+        if (b.k && b.author) { const d = el('p', 'enc-god-desc'); d.textContent = `de ${b.author}`; card.append(d); }
+        if (key === 'rest') { const d = el('p', 'enc-god-desc'); d.textContent = 'Les questions sans livre précis : prix, vocabulaire, auteurs…'; card.append(d); }
+        encQRows(card, b.qs, { label: '← Ma bibliothèque', fn: () => openEncLibrary(key) }, q => [q.q.replace(/\s*\?$/, ''), q.a[0]]);
+        panel.append(card);
+        panel.scrollTop = 0;
+        page.classList.add('has-sel');
+        requestAnimationFrame(() => btns[key]?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }));
+    };
+    (window.ENC_SHELVES || []).forEach(([sk, emo, name]) => {
+        // les livres sus d'abord (rangés par auteur), puis les tranches « ? » à découvrir
+        const bs = list.filter(b => b.shelf === sk).sort((a, c) => (c.k > 0) - (a.k > 0) || (a.author || a.title).localeCompare(c.author || c.title, 'fr') || a.title.localeCompare(c.title, 'fr'));
+        if (!bs.length) return;
+        const t = el('p', 'enc-wall-h enc-lib-h');
+        const tn = el('span');
+        tn.textContent = `${emo} ${name}`;
+        const tc = el('b');
+        tc.textContent = `${bs.filter(b => b.k).length} / ${bs.length}`;
+        t.append(tn, tc);
+        const row = el('div', 'enc-lib-shelf');
+        bs.forEach(b => {
+            const hs = encLibHash(b.title);
+            const known = b.k > 0;
+            const bt = el('button', `enc-lib-book${known ? ' is-known' : ''}${known && b.k >= b.qs.length ? ' is-full' : ''}`);
+            bt.type = 'button';
+            bt.style.height = `${108 + hs % 46}px`;
+            bt.style.width = `${28 + (hs >>> 5) % 9}px`;
+            if (known) bt.style.setProperty('--bk', ENC_LIB_COLORS[(hs >>> 3) % ENC_LIB_COLORS.length]);
+            const sp = el('span', `enc-lib-title${known && b.title.length > 18 ? ' is-long' : ''}`);
+            sp.textContent = known ? b.title : '?';
+            bt.append(sp);
+            if (b.qs.length > 1) { const n = el('i', 'enc-lib-n'); n.textContent = b.qs.length; bt.append(n); }
+            bt.addEventListener('click', () => show(b.key));
+            btns[b.key] = bt;
+            row.append(bt);
+        });
+        scroller.append(t, row);
+    });
+    if (rest.length) {
+        const rb = el('button', 'enc-flag-other enc-lib-rest');
+        rb.type = 'button';
+        rb.textContent = `📜 Le reste : prix, vocabulaire, auteurs… · ${rest.filter(encKnown).length} / ${rest.length} ›`;
+        rb.addEventListener('click', () => show('rest'));
+        btns.rest = rb;
+        scroller.append(rb);
+    }
+    encTapOff(scroller, '.enc-lib-book, .enc-lib-rest', clear);
+    page.append(h, cnt, scroller, panel);
+    $('friendBody').replaceChildren(encBackBtn('← Littérature', () => openEncBook('Littérature', true)), page);
+    $('friendModal').hidden = false;
+    if (keepKey && (books[keepKey] || keepKey === 'rest')) show(keepKey);
+}
+
 function encMedia(q, small) {
     if (q.flag) return flagImg(q.flag);
     if (!q.photo && window.ENC_POST_PH?.[q.id]?.[0]) { const img = el('img'); img.src = window.ENC_POST_PH[q.id][0]; img.alt = ''; img.loading = 'lazy'; return img; }   // photo de l'album des cartes postales
