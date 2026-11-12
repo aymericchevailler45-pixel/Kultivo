@@ -367,6 +367,9 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   réalisateurs + « Les coulisses »). Tous dessinés en CSS/SVG (aucune vraie image). Fiche du bas : hauteur = son contenu (le dessin garde
   au moins sa part). Générateurs dans le scratchpad (make_vinarc.py, make_tro.py, make_frisetech.py, museeA_make.py, afficheC_make.py) ;
   intégration : scratchpad integrate.py.
+- 13/11 : BUG fête du sommet : à la fin d'un niveau, une variable locale `celebrate` (confettis) cachait la fonction `celebrate` → plantage,
+  personne n'a jamais vu la fête en vrai. Variable renommée `confettiOn` ; rattrapage `summitCatchUp` à l'ouverture (done[MAX_LEVEL] sans
+  `summitSeen` → fête, attend qu'aucune fenêtre / leçon ne soit ouverte) ; `summitSeen` posé quand la fête est lancée.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées

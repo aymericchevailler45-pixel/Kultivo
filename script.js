@@ -7157,6 +7157,17 @@ function synthNoise(start, dur, vol = 0.2, freq = 1200, q = 0.7, sweep) {
     src.start(t);
     src.stop(t + dur);
 }
+/** 13/11 : le dernier niveau est fait mais la fête n'a jamais été vue (bug du nom « celebrate ») : on la montre à l'ouverture. */
+function summitCatchUp(tries = 0) {
+    const d = state.data;
+    if (!d.done[MAX_LEVEL] || d.summitSeen) return;
+    const busy = $('studyScreen')?.hidden === false || $('onboardScreen')?.hidden === false || [...document.querySelectorAll('.modal-overlay')].some(m => !m.hidden) || celebrating;
+    if (busy) { if (tries < 40) setTimeout(() => summitCatchUp(tries + 1), 3000); return; }
+    if (!d.summitDone) d.summitDone = todayKey();
+    d.summitSeen = true;
+    saveData();
+    celebrate(() => showSummitAnim());
+}
 function showSummitAnim() {
     const ov = celebrationLayer('summitAnim', 'summit-anim');
     let muted = !state.data.sound;
@@ -10099,19 +10110,19 @@ function endSession(win) {
 
     $('progressBar').style.width = '100%';
     if (mode !== 'kulti') bumpStreak();   // le défi de Kulti (1 à 5 questions) ne compte pas pour la série
-    let celebrate = mode !== 'review';   // confettis (pas pour une simple révision)
+    let confettiOn = mode !== 'review';   // confettis (pas pour une simple révision)
 
     if (mode === 'training') {
-        celebrate = false;
+        confettiOn = false;
         endTraining();
     } else if (mode === 'event') {
-        celebrate = false;
+        confettiOn = false;
         endEvent();
     } else if (mode === 'duel') {
-        celebrate = false;
+        confettiOn = false;
         endDuel();
     } else if (mode === 'kulti') {
-        celebrate = false;
+        confettiOn = false;
         endKulti();
     } else if (mode === 'review') {
         state.data.totals.reviews++;
@@ -10153,7 +10164,7 @@ function endSession(win) {
     } else if (mode === 'placement') {
         const start = state.placeStep * PLACEMENT_STEP_LEVELS + 1;
         applyPlacement(start);
-        celebrate = start > 1;
+        confettiOn = start > 1;
         setEnd({
             emoji: start > 1 ? '🧭' : '🌱',
             title: 'Test terminé',
@@ -10166,7 +10177,7 @@ function endSession(win) {
     } else if (mode === 'sprint') {
         const record = state.correct > state.data.best.sprint;
         if (record) state.data.best.sprint = state.correct;
-        celebrate = record;
+        confettiOn = record;
         state.data.best.lastSprint = state.correct;
         state.data.best.lastSprintRecord = record;
         missionEvent('sprint', state.correct);
@@ -10212,7 +10223,7 @@ function endSession(win) {
         // 10/11 : DERNIER niveau réussi pour la 1re fois = fête du sommet (même si des niveaux facultatifs restent derrière)
         const summitNow = state.level === MAX_LEVEL && !state.data.summitDone;
         state.data.done[state.level] = true;
-        if (summitNow) state.data.summitDone = todayKey();
+        if (summitNow) { state.data.summitDone = todayKey(); state.data.summitSeen = true; }
         const unlockedBefore = state.data.unlocked;
         state.data.unlocked = Math.max(state.data.unlocked, Math.min(state.level + 1, MAX_LEVEL));
         if (state.data.unlocked > unlockedBefore) kultiHop = state.data.unlocked;   // Kulti ira ouvrir ce niveau sur le parcours
@@ -10235,7 +10246,7 @@ function endSession(win) {
     }
 
     playSound('win');
-    if (celebrate) launchConfetti();
+    if (confettiOn) launchConfetti();
     saveData();
     renderHeader();
     checkBadges();
@@ -14969,6 +14980,7 @@ function init() {
         if (demo === 'gel') setTimeout(() => checkStreakDanger({ streak: 12, missed: 2, freeze: 1, coins: Math.max(state.data.coins, 250) }), 1500);
         else if (demo === 'gel-ok') setTimeout(() => checkStreakDanger({ streak: 12, missed: 1, freeze: 2 }), 1500);
         else setTimeout(checkStreakDanger, 1500);   // série en danger après un jour manqué ?
+        setTimeout(summitCatchUp, 2600);   // 13/11 : fête du sommet jamais vue (elle plantait à la fin du niveau 300)
     }
     hideSplash();
 }
