@@ -294,6 +294,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `ENC_COUNTRY` id -> pays (826 / 930 questions, scratchpad tag_auto.py + tag_fix.py ; mur des Lamentations et dôme du Rocher sans pays exprès) ;
   tap = questions du pays, zoom + / − et deux doigts). Les deux fichiers sont chargés à la 1re ouverture (`encLoad`). Autres thèmes : plus tard (idées : frise
   pour Cinéma / Musique / Sport / Techno / Jeux, carte de France pour la Gastronomie, arbre des dieux pour la Mythologie, corps humain / système solaire).
+- 12/11 (suite 3, v=20261112p, EN LIGNE pour tous) : CINÉMA, 20 SÉRIES ajoutées (entrainement/cinema.js, ids 17301-17320 : Breaking Bad, Game of Thrones,
+  Dr House, Lost, The Office, HIMYM, Prison Break, Plus belle la vie, Caméra Café, HPI, Dexter, Mad Men, Grey's Anatomy, Big Bang Theory, Narcos,
+  Downton Abbey, Bridgerton, Sex and the City, Black Mirror, Desperate Housewives) à la place de 20 films d'auteur très pointus (17246, 17248, 17251,
+  17254-17261, 17263-17265, 17267-17270, 17272, 17273 : paliers 9-10, ouverts le 09/11). Les paliers sont triés par difficulté (`trainingBank`) : les
+  séries se répartissent selon leur d (2,3-3,6). Encyclopédie (bac à sable) : pages plein écran qui défilent dedans (`encPage`, ← et ✕ fixes),
+  en-tête de la frise fixe (`.enc-tl-head`), carte moins zoomée à l'ouverture (1,15), zoom jusqu'à ×80, points des petits pays toujours au-dessus et
+  touchables à 22 px près.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
