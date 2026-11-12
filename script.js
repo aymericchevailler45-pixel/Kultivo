@@ -2158,6 +2158,8 @@ function openEncBook(theme, keep = false) {
             : theme === 'Littérature' ? ['📚', 'Ma bibliothèque', 'tes livres rangés sur les étagères', () => openEncLibrary()]
             : theme === 'Musique' ? ['💿', 'Mes vinyles', 'tes artistes rangés dans les bacs', () => openEncVinyls()]
             : theme === 'Jeux' ? ['🕹️', 'Ma salle d’arcade', 'cartouches, bornes, consoles et jeux de société', () => openEncArcade()]
+            : theme === 'Sport' ? ['🏆', 'Ma salle des trophées', 'tes médailles, du bronze à l’or', () => openEncTrophies()]
+            : theme === 'Technologie' ? ['⚙️', 'La frise des inventions', 'de l’imprimerie à l’IA', () => openEncTechFrise()]
             : theme === 'Drapeaux' ? ['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()]
             : theme === 'Monuments' ? ['💌', 'Mes cartes postales', 'des albums de monuments à compléter', () => openEncPostcards()]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
@@ -3830,6 +3832,264 @@ async function openEncArcade(keep = null) {
             return b;
         }
     });
+}
+
+/* 13/11 : « 🏆 Ma salle des trophées » (Sport). Une vitrine par chapitre ; chaque question sue = une médaille gravée.
+   Bronze = 1 bonne réponse, argent = 2, or = 3 ou plus. Une médaille qui a monté depuis la dernière visite brille (souvenir sur l'appareil). */
+const ENC_TRO_TIERS = [null, ['bronze', '🥉', 'Bronze'], ['silver', '🥈', 'Argent'], ['gold', '🥇', 'Or']];
+const encTroTier = q => { const r = state.data.stats[q.id]?.right || 0; return r >= 3 ? 3 : r; };
+function encTroSeen(write = null) {   // dernières médailles vues (pour faire briller celles qui montent)
+    try {
+        if (write) { localStorage.setItem('kultivo_trophies', JSON.stringify(write)); return write; }
+        return JSON.parse(localStorage.getItem('kultivo_trophies') || 'null');
+    } catch (e) { return null; }
+}
+function encTroCounts(qs) {
+    const c = [0, 0, 0, 0];
+    qs.forEach(q => { c[encTroTier(q)]++; });
+    return c;
+}
+/** Une médaille dessinée (ruban + disque) ; tier 0 = socle vide. */
+function encTroMedal(tier, emo) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 60 70');
+    svg.setAttribute('class', 'enc-tro-svg');
+    if (!tier) {
+        svg.innerHTML = '<circle cx="30" cy="40" r="19" class="enc-tro-empty"/><text x="30" y="47" text-anchor="middle" class="enc-tro-q">?</text>';
+        return svg;
+    }
+    const col = { 1: ['#f0b27a', '#b4692e', '#7a4317'], 2: ['#f4f6f8', '#b9c1c9', '#7d8791'], 3: ['#ffe58a', '#f3b400', '#a67400'] }[tier];
+    const id = `trog${tier}`;
+    svg.innerHTML = `<defs><radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${col[0]}"/><stop offset="0.6" stop-color="${col[1]}"/><stop offset="1" stop-color="${col[2]}"/></radialGradient></defs>
+      <path d="M17 0 L27 24 L33 24 L23 0 Z" fill="#2563eb"/><path d="M43 0 L33 24 L27 24 L37 0 Z" fill="#e5484d"/>
+      <circle cx="30" cy="42" r="19" fill="url(#${id})" stroke="${col[2]}" stroke-width="1.5"/>
+      <circle cx="30" cy="42" r="14" fill="none" stroke="${col[0]}" stroke-width="1" opacity="0.8"/>
+      <text x="30" y="48.5" text-anchor="middle" font-size="16">${emo}</text>`;
+    return svg;
+}
+async function openEncTrophies() {
+    try { await encLoad('trophees.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const chs = encChapters('Sport').filter(c => c.qs.length);
+    const all = chs.flatMap(c => c.qs);
+    const tot = encTroCounts(all);
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = '🏆 Ma salle des trophées';
+    const sub = el('p', 'enc-chap-sub');
+    sub.textContent = `${fmtNum(all.length - tot[0])} / ${fmtNum(all.length)} médailles gagnées`;
+    // podium : argent · or · bronze
+    const pod = el('div', 'enc-tro-podium');
+    [[2, 'is-2'], [3, 'is-3'], [1, 'is-1']].forEach(([t, cls]) => {
+        const col = el('div', `enc-tro-step ${cls}`);
+        const m = el('span', 'enc-tro-pm');
+        m.append(encTroMedal(t, ''));
+        const n = el('b');
+        n.textContent = fmtNum(tot[t]);
+        const l = el('small');
+        l.textContent = ENC_TRO_TIERS[t][2];
+        const st = el('span', 'enc-tro-block');
+        st.append(n, l);
+        col.append(m, st);
+        pod.append(col);
+    });
+    const rule = el('p', 'enc-tro-rule');
+    rule.textContent = 'Bonnes réponses : 1 = 🥉 · 2 = 🥈 · 3 = 🥇';
+    const grid = el('div', 'enc-tro-cases');
+    chs.forEach(c => {
+        const k = encTroCounts(c.qs);
+        const won = c.qs.length - k[0];
+        const b = el('button', `enc-tro-case${won >= c.qs.length ? ' is-full' : ''}`);
+        b.type = 'button';
+        const e = el('span', 'enc-tro-case-e');
+        e.textContent = c.emo;
+        const t = el('span', 'enc-tro-case-t');
+        const tb = el('b');
+        tb.textContent = c.name;
+        const ts = el('small');
+        ts.textContent = `🥇 ${k[3]} · 🥈 ${k[2]} · 🥉 ${k[1]}`;
+        const bar = el('span', 'enc-ch-bar');
+        const bi = el('i');
+        bi.style.width = `${Math.round(won / c.qs.length * 100)}%`;
+        bar.append(bi);
+        const n = el('span', 'enc-tro-case-n');
+        n.textContent = `${won} / ${c.qs.length}`;
+        t.append(tb, ts, bar);
+        b.append(e, t, n);
+        b.addEventListener('click', () => openEncTrophyCase(c.i));
+        grid.append(b);
+    });
+    const page = encPage(encBackBtn('← Sport', () => openEncBook('Sport', true)), h, sub, pod, rule, grid);
+    page.classList.add('enc-tropage');
+}
+/** Une vitrine : les médailles d'un chapitre (« Autres sports » découpé en petites vitrines). */
+async function openEncTrophyCase(ci, keepScroll = null) {
+    try { await encLoad('trophees.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const c = encChapters('Sport')[ci];
+    if (!c) return;
+    const k = encTroCounts(c.qs);
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = `${c.emo} ${c.name}`;
+    const sub = el('p', 'enc-chap-sub');
+    sub.textContent = `🥇 ${k[3]} · 🥈 ${k[2]} · 🥉 ${k[1]} · ${c.qs.length - k[0]} / ${c.qs.length} médailles`;
+    const seen = encTroSeen();
+    const next = Object.assign({}, seen || {});
+    let page = null;
+    const ret = { label: `← ${c.name}`, fn: () => openEncTrophyCase(ci, page ? page.scrollTop : 0) };
+    const groups = [];
+    const G = window.ENC_TRO_GROUPS || [];
+    const sub2 = window.ENC_TRO_SUB || {};
+    if (c.qs.some(q => sub2[q.id] !== undefined)) {
+        G.forEach(([emo, name], gi) => { const qs = c.qs.filter(q => sub2[q.id] === gi); if (qs.length) groups.push([`${emo} ${name}`, qs, emo]); });
+        const rest = c.qs.filter(q => sub2[q.id] === undefined);
+        if (rest.length) groups.push(['🏋️ Divers', rest, '🏋️']);
+    } else groups.push([null, c.qs, c.emo]);
+    const parts = [];
+    groups.forEach(([label, qs, gEmo]) => {
+        const sorted = qs.slice().sort((a, b) => encTroTier(b) - encTroTier(a));
+        const known = sorted.filter(encKnown);
+        if (label) {
+            const t = el('p', 'enc-wall-h');
+            t.textContent = `${label} · ${known.length} / ${qs.length}`;
+            parts.push(t);
+        }
+        const cab = el('div', 'enc-tro-cab');
+        sorted.forEach(q => {
+            const tier = encTroTier(q);
+            const up = seen && tier > (seen[q.id] || 0);
+            if (tier) next[q.id] = tier;
+            const b = el('button', `enc-tro-item${tier ? ` is-${ENC_TRO_TIERS[tier][0]}` : ' is-empty'}${up ? ' is-up' : ''}`);
+            b.type = 'button';
+            b.append(encTroMedal(tier, gEmo));
+            const pl = el('span', 'enc-tro-plate');
+            pl.textContent = tier ? q.a[0] : '???';
+            b.append(pl);
+            if (up) { const s = el('span', 'enc-tro-new'); s.textContent = (seen[q.id] || 0) ? '⬆ monte !' : 'nouvelle !'; b.append(s); }
+            if (tier) b.addEventListener('click', () => openEncFiche(q, known, ret));
+            else b.addEventListener('click', encLockedTip);
+            cab.append(b);
+        });
+        parts.push(cab);
+    });
+    encTroSeen(next);
+    page = encPage(encBackBtn('← Mes trophées', () => openEncTrophies()), h, sub, ...parts);
+    page.classList.add('enc-tropage');
+    if (keepScroll) requestAnimationFrame(() => { page.scrollTop = keepScroll; });
+}
+
+/* 13/11 : « ⚙️ La frise des inventions » (Technologie) : même frise que l'Histoire, avec les grandes époques de la technique. */
+const ENC_TECH_ERAS = [[-1e9, '🧮', 'Avant l’imprimerie'], [1450, '📜', 'Imprimerie et savants'], [1769, '🚂', 'Révolution industrielle'],
+    [1879, '💡', 'Électricité et moteurs'], [1940, '📺', 'L’âge électronique'], [1975, '💻', 'Ordinateurs personnels'],
+    [1991, '🌐', 'Internet'], [2007, '📱', 'Smartphones'], [2020, '🤖', 'Intelligence artificielle']];
+const encTechYear = q => { const v = window.ENC_TECH_YEARS?.[q.id]; return v === undefined ? null : Array.isArray(v) ? { y: v[0], approx: true } : { y: v, approx: false }; };
+const encTechEra = y => { let e = 0; ENC_TECH_ERAS.forEach((x, j) => { if (y >= x[0]) e = j; }); return e; };
+async function openEncTechFrise(keep = false) {
+    try { await encLoad('frise-techno.js'); } catch (e) { showToast('📶 Frise indisponible hors connexion pour l’instant'); return; }
+    const qsAll = encChapters('Technologie').flatMap(c => c.qs);
+    const all = qsAll.map(q => ({ q, t: encTechYear(q) })).filter(x => x.t).sort((a, b) => a.t.y - b.t.y);
+    const undated = qsAll.filter(q => !encTechYear(q));
+    const known = all.filter(x => encKnown(x.q));
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = '⚙️ La frise des inventions';
+    const sub = el('p', 'enc-chap-sub');
+    sub.textContent = `${fmtNum(known.length)} placée${known.length > 1 ? 's' : ''} · ${fmtNum(all.length - known.length)} à découvrir`;
+    const chips = el('div', 'enc-tl-eras');
+    const tl = el('div', 'enc-tl enc-tf');
+    tl.style.setProperty('--c', ENC_COLORS['Technologie']);
+    const eraNodes = {};
+    const list = known.map(x => x.q);
+    let mc = null;
+    const ret = { label: '← La frise des inventions', fn: () => openEncTechFrise(true) };
+    let era = -1, hole = null;
+    all.forEach(({ q, t }) => {
+        const e = encTechEra(t.y);
+        if (e !== era) {
+            era = e;
+            hole = null;
+            const lab = el('div', 'enc-tl-era');
+            lab.textContent = `${ENC_TECH_ERAS[e][1]} ${ENC_TECH_ERAS[e][2]}`;
+            tl.append(lab);
+            eraNodes[e] = lab;
+        }
+        if (!encKnown(q)) {   // à découvrir : les cases qui se suivent sont regroupées
+            if (hole) { hole.n++; hole.txt.textContent = `❓ ${hole.n} inventions à découvrir`; return; }
+            const row = el('button', 'enc-tl-ev is-lock');
+            row.type = 'button';
+            const txt = el('span', 'enc-tl-box');
+            txt.textContent = '❓ 1 invention à découvrir';
+            row.append(encYearLabel(t.y, t.approx), el('i', 'enc-tl-dot'), txt);
+            row.addEventListener('click', encLockedTip);
+            hole = { n: 1, txt };
+            tl.append(row);
+            return;
+        }
+        hole = null;
+        const row = el('button', 'enc-tl-ev');
+        row.type = 'button';
+        const box = el('span', 'enc-tl-box');
+        const b = el('b');
+        b.textContent = q.a[0];
+        const s = el('small');
+        s.textContent = q.q;
+        box.append(b, s);
+        row.append(encYearLabel(t.y, t.approx), el('i', 'enc-tl-dot'), box);
+        row.addEventListener('click', () => { encState.techFriseScroll = mc.scrollTop; openEncFiche(q, list, ret); });
+        tl.append(row);
+    });
+    // les questions sans date (vocabulaire, objets de tous les jours…) : à part, sous la frise
+    const offT = el('p', 'enc-wall-h enc-tf-off');
+    const offKnown = undated.filter(encKnown);
+    offT.textContent = `🗂️ Hors frise (sans date précise) · ${offKnown.length} / ${undated.length}`;
+    const off = el('div', 'enc-tf-offlist');
+    offKnown.forEach(q => {
+        const r = encRow(q, offKnown, { label: '← La frise des inventions', fn: () => openEncTechFrise(true) });
+        r.addEventListener('click', () => { encState.techFriseScroll = mc.scrollTop; }, true);
+        off.append(r);
+    });
+    if (undated.length > offKnown.length) {
+        const lk = el('button', 'enc-crow is-lock');
+        lk.type = 'button';
+        const l = el('span');
+        const m = undated.length - offKnown.length;
+        l.textContent = `❓ ${m} question${m > 1 ? 's' : ''} à découvrir`;
+        lk.append(l);
+        lk.addEventListener('click', encLockedTip);
+        off.append(lk);
+    }
+    ENC_TECH_ERAS.forEach(([, emo, name], e) => {
+        if (!eraNodes[e]) return;
+        const c = el('button', 'enc-tl-chip');
+        c.type = 'button';
+        c.textContent = `${emo} ${name}`;
+        c.addEventListener('click', () => { mc.scrollTo({ top: mc.scrollTop + eraNodes[e].getBoundingClientRect().top - chips.getBoundingClientRect().bottom - 8, behavior: 'smooth' }); });
+        chips.append(c);
+    });
+    const offChip = el('button', 'enc-tl-chip');
+    offChip.type = 'button';
+    offChip.textContent = '🗂️ Hors frise';
+    offChip.addEventListener('click', () => { mc.scrollTo({ top: mc.scrollTop + offT.getBoundingClientRect().top - chips.getBoundingClientRect().bottom - 8, behavior: 'smooth' }); });
+    chips.append(offChip);
+    mc = encPage(encBackBtn('← Technologie', () => openEncBook('Technologie', true)), tl, offT, off);
+    const fixed = el('div', 'enc-tl-head');   // titre + époques restent en haut, seule la frise défile
+    fixed.style.setProperty('--c', ENC_COLORS['Technologie']);
+    fixed.append(h, sub, chips);
+    mc.before(fixed);
+    const chipEls = [...chips.children];
+    const eraIdx = Object.keys(eraNodes).map(Number);
+    const onScroll = () => {
+        if (!chips.isConnected) { mc.removeEventListener('scroll', onScroll); return; }
+        const lim = chips.getBoundingClientRect().bottom + 12;
+        let cur = 0;
+        eraIdx.forEach((e, j) => { if (eraNodes[e].getBoundingClientRect().top <= lim) cur = j; });
+        if (offT.getBoundingClientRect().top <= lim) cur = chipEls.length - 1;
+        chipEls.forEach((c, j) => {
+            const on = j === cur;
+            if (on && !c.classList.contains('is-on')) chips.scrollTo({ left: c.offsetLeft - 8, behavior: 'smooth' });
+            c.classList.toggle('is-on', on);
+        });
+    };
+    mc.addEventListener('scroll', onScroll, { passive: true });
+    requestAnimationFrame(onScroll);
+    mc.scrollTop = keep ? encState.techFriseScroll || 0 : 0;
 }
 
 function encMedia(q, small) {

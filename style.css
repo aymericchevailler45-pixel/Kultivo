@@ -4701,3 +4701,56 @@ section.bdf p.bdf-detail { margin-top: 10px; }
   :root:not([data-theme="light"]) .enc-arc.is-off { opacity: 0.8; }
 }
 :root[data-theme="dark"] .enc-arc.is-off { opacity: 0.8; }
+
+/* 13/11 : trotf */
+/* 13/11 : salle des trophées (Sport) */
+.enc-tropage { --c: #65a30d; }
+.enc-tro-podium { display: grid; grid-template-columns: repeat(3, 1fr); align-items: end; gap: 6px; margin: 10px 8px 4px; }
+.enc-tro-step { display: flex; flex-direction: column; align-items: center; }
+.enc-tro-pm { width: 46px; height: 54px; }
+.enc-tro-pm .enc-tro-svg { width: 100%; height: 100%; }
+.enc-tro-block { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px 10px 4px 4px; color: #fff; padding: 4px 0; }
+.enc-tro-block b { font-size: 1.15rem; font-weight: 900; line-height: 1.1; }
+.enc-tro-block small { font-size: 0.66rem; font-weight: 800; opacity: 0.9; }
+.enc-tro-step.is-3 .enc-tro-block { height: 74px; background: linear-gradient(#f7c948, #d99a00); }
+.enc-tro-step.is-2 .enc-tro-block { height: 56px; background: linear-gradient(#b8c2cc, #8a96a3); }
+.enc-tro-step.is-1 .enc-tro-block { height: 42px; background: linear-gradient(#d68a4c, #a9602a); }
+.enc-tropage .enc-tro-rule { margin: 8px 4px 14px; line-height: 1.3; color: var(--muted); font-size: 0.72rem; font-weight: 700; text-align: center; }
+.enc-tro-cases { display: flex; flex-direction: column; gap: 8px; }
+.enc-tro-case { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); font: inherit; color: var(--ink); text-align: left; cursor: pointer; }
+.enc-tro-case.is-full { border-color: #f3b400; }
+.enc-tro-case-e { font-size: 1.6rem; flex: none; }
+.enc-tro-case-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.enc-tro-case-t b { font-size: 0.86rem; font-weight: 900; }
+.enc-tro-case-t small { color: var(--muted); font-size: 0.7rem; font-weight: 800; }
+.enc-tro-case-t .enc-ch-bar { display: block; width: 100%; margin-top: 3px; }
+.enc-tro-case-n { flex: none; color: var(--muted); font-size: 0.72rem; font-weight: 900; }
+/* la vitrine : fond vitré, étagères en bois sous chaque rangée */
+.enc-tropage .enc-wall-h { margin: 24px 2px 10px; }
+.enc-tro-cab { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 6px; padding: 10px 8px 0; border-radius: 12px; background: linear-gradient(160deg, rgba(170, 210, 235, 0.35), rgba(255, 255, 255, 0.6) 45%, rgba(170, 210, 235, 0.3)); box-shadow: inset 0 0 0 2px rgba(120, 160, 190, 0.35); margin-top: 8px; }
+.enc-tro-item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 2px 12px; border: 0; background: none; font: inherit; cursor: pointer; min-width: 0; }
+.enc-tro-item::after { content: ""; position: absolute; left: -6px; right: -6px; bottom: 2px; height: 7px; border-radius: 2px; background: linear-gradient(#a06a3a, #7a4c24); box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2); }
+.enc-tro-item .enc-tro-svg { width: 52px; height: 60px; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)); }
+.enc-tro-plate { max-width: 100%; padding: 2px 6px; border-radius: 3px; background: linear-gradient(#e9d9a8, #c9b27a); color: #3b2f12; font-size: 0.58rem; font-weight: 900; line-height: 1.15; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); margin-bottom: 4px; }
+.enc-tro-item.is-empty .enc-tro-plate { background: rgba(0, 0, 0, 0.06); color: var(--muted); box-shadow: none; }
+.enc-tro-empty { fill: none; stroke: #b9c2cc; stroke-width: 2; stroke-dasharray: 4 3; }
+.enc-tro-q { font: 900 18px Nunito, sans-serif; fill: #b9c2cc; }
+.enc-tro-item.is-gold .enc-tro-svg { filter: drop-shadow(0 0 4px rgba(243, 180, 0, 0.55)) drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)); }
+.enc-tro-new { position: absolute; top: 0; right: 0; padding: 1px 5px; border-radius: 99px; background: #e5484d; color: #fff; font-size: 0.5rem; font-weight: 900; }
+.enc-tro-item.is-up .enc-tro-svg { animation: encTroUp 1.2s ease-out 0.3s both; }
+@keyframes encTroUp { 0% { transform: scale(0.6) rotate(-20deg); } 55% { transform: scale(1.18) rotate(8deg); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .enc-tro-item.is-up .enc-tro-svg { animation: none; } }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .enc-tro-cab { background: linear-gradient(160deg, rgba(60, 90, 110, 0.35), rgba(30, 36, 44, 0.6) 45%, rgba(60, 90, 110, 0.3)); box-shadow: inset 0 0 0 2px rgba(120, 160, 190, 0.25); }
+  :root:not([data-theme="light"]) .enc-tro-item.is-empty .enc-tro-plate { background: rgba(255, 255, 255, 0.07); }
+  :root:not([data-theme="light"]) .enc-tro-empty { stroke: #56606b; }
+  :root:not([data-theme="light"]) .enc-tro-q { fill: #56606b; }
+}
+:root[data-theme="dark"] .enc-tro-cab { background: linear-gradient(160deg, rgba(60, 90, 110, 0.35), rgba(30, 36, 44, 0.6) 45%, rgba(60, 90, 110, 0.3)); box-shadow: inset 0 0 0 2px rgba(120, 160, 190, 0.25); }
+:root[data-theme="dark"] .enc-tro-item.is-empty .enc-tro-plate { background: rgba(255, 255, 255, 0.07); }
+:root[data-theme="dark"] .enc-tro-empty { stroke: #56606b; }
+:root[data-theme="dark"] .enc-tro-q { fill: #56606b; }
+
+/* 13/11 : frise des inventions (Technologie) : reprend la frise de l'Histoire (.enc-tl…) */
+.enc-tf-off { margin: 26px 2px 10px; }
+.enc-tf-offlist { display: flex; flex-direction: column; gap: 6px; padding-bottom: 16px; }
