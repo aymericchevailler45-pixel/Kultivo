@@ -311,6 +311,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   tranches, tranches ~30 px, étagère qui défile), musée et affiches de cinéma en CARICATURES dessinées (pas de vraies images : droits / crédits),
   vinyles (titre + artiste sur la pochette), trophées à enrichir (médailles par question, plaque, fête bronze → or, podium), arcade, frise Techno.
   Ordre conseillé : plein écran → arbre des dieux → carte de France → le reste.
+- 12/11 (suite 5, v=20261112w, bac à sable) : ENCYCLOPÉDIE EN PLEIN ÉCRAN (`#friendModal.is-enc-full`, posé par le MutationObserver quand la page est
+  une page de l'encyclopédie ; la barre du bas reste visible et un onglet touché la referme ; touche retour du téléphone = « ← » de la page) ;
+  animation du livre qui s'ouvre (`encOpenAnim`, ~0,4 s, tap = fin, rien si mouvement réduit ; pas d'animation au retour). ARBRE DES DIEUX
+  (`openEncGods`, `arbre-dieux.js` = `ENC_GODS` : grece / egypte / nordique, nœuds {id, name, alt, emo, x %, y px, parents, q, desc}, 115 questions) :
+  un dieu se dévoile dès qu'une de ses questions est sue, un seul trait par enfant (depuis le milieu du couple), tap = ses questions en bas.
+  Prochain : carte de France de la Gastronomie (13 régions toujours dessinées), puis les autres écrans.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
