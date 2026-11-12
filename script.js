@@ -2158,7 +2158,7 @@ function openEncBook(theme, keep = false) {
             : theme === 'Littérature' ? ['📚', 'Ma bibliothèque', 'tes livres rangés sur les étagères', () => openEncLibrary()]
             : theme === 'Musique' ? ['💿', 'Mes vinyles', 'tes artistes rangés dans les bacs', () => openEncVinyls()]
             : theme === 'Jeux' ? ['🕹️', 'Ma salle d’arcade', 'cartouches, bornes, consoles et jeux de société', () => openEncArcade()]
-            : theme === 'Sport' ? ['🏆', 'Ma salle des trophées', 'tes médailles, du bronze à l’or', () => openEncTrophies()]
+            : theme === 'Sport' ? ['🏆', 'Ma salle des trophées', 'tes coupes, qui grandissent à chaque bonne réponse', () => openEncTrophies()]
             : theme === 'Technologie' ? ['⚙️', 'La frise des inventions', 'de l’imprimerie à l’IA', () => openEncTechFrise()]
             : theme === 'Arts' ? ['🖼️', 'Mon musée', 'tes œuvres accrochées salle par salle', () => openEncMuseum()]
             : theme === 'Cinéma' ? ['🎬', 'Mes affiches', 'films, séries, stars et réalisateurs', () => openEncPosters()]
@@ -3800,6 +3800,7 @@ async function openEncVinyls(keep = null) {
    Utilise encObjScreen / ENC_OBJ_COLORS (enc_vinyles.js), à insérer avant. */
 async function openEncArcade(keep = null) {
     try { await encLoad('arcade.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const arcPos = {}, arcRows = (window.ENC_ARC_ROWS || []).map(r => r[0]);   // 13/11 : couleurs selon la place dans la rangée → deux voisins n'ont jamais la même
     encObjScreen({
         theme: 'Jeux', cls: 'enc-arcpage', title: '🕹️ Ma salle d’arcade', countWord: 'jeux découverts', emo: '🎮', unknown: 'Jeu à découvrir',
         data: window.ENC_ARC || {}, read: d => [d[0], '', d[1]], rows: window.ENC_ARC_ROWS || [],
@@ -3808,8 +3809,9 @@ async function openEncArcade(keep = null) {
         make: (it, known, row) => {
             const kind = { ni: 'cart', jv: 'cab', co: 'cons', so: 'box', ec: 'board', jo: 'toy' }[row] || 'box';
             const b = el('button', `enc-arc is-${kind}`);
-            b.style.setProperty('--c1', known ? ENC_OBJ_COLORS[it.h % ENC_OBJ_COLORS.length] : '#a8a29a');
-            b.style.setProperty('--c2', known ? ENC_OBJ_COLORS[(it.h >>> 4) % ENC_OBJ_COLORS.length] : '#8d877f');
+            const i = (arcPos[row] = (arcPos[row] ?? -1) + 1) + Math.max(0, arcRows.indexOf(row)) * 5, seq = [0, 1, 3, 4, 6, 5, 8, 7, 2, 10, 9, 11];   // rouge, bleu, or, violet, vert, orange…
+            b.style.setProperty('--c1', known ? ENC_OBJ_COLORS[seq[i % 12]] : '#a8a29a');
+            b.style.setProperty('--c2', known ? ENC_OBJ_COLORS[seq[(i + 6) % 12]] : '#8d877f');
             const nm = el('span', 'enc-arc-name');
             nm.textContent = known ? it.label : '?';
             if (kind === 'cab') {   // borne : fronton avec le nom, écran allumé, tableau de commande
@@ -3844,7 +3846,8 @@ async function openEncArcade(keep = null) {
 
 /* 13/11 : « 🏆 Ma salle des trophées » (Sport). Une vitrine par chapitre ; chaque question sue = une médaille gravée.
    Bronze = 1 bonne réponse, argent = 2, or = 3 ou plus. Une médaille qui a monté depuis la dernière visite brille (souvenir sur l'appareil). */
-const ENC_TRO_TIERS = [null, ['bronze', '🥉', 'Bronze'], ['silver', '🥈', 'Argent'], ['gold', '🥇', 'Or']];
+// 13/11 : des COUPES qui grandissent (★ / ★★ / ★★★), pas des médailles : celles de l'entraînement sont déjà bronze / argent / or
+const ENC_TRO_TIERS = [null, ['bronze', '★', '1 bonne réponse'], ['silver', '★★', '2 bonnes réponses'], ['gold', '★★★', '3 bonnes réponses ou +']];
 const encTroTier = q => { const r = state.data.stats[q.id]?.right || 0; return r >= 3 ? 3 : r; };
 function encTroSeen(write = null) {   // dernières médailles vues (pour faire briller celles qui montent)
     try {
@@ -3857,23 +3860,26 @@ function encTroCounts(qs) {
     qs.forEach(q => { c[encTroTier(q)]++; });
     return c;
 }
-/** Une médaille dessinée (ruban + disque) ; tier 0 = socle vide. */
+/** Une coupe dessinée, plus grande à chaque bonne réponse (★ petite, ★★ moyenne, ★★★ grande et brillante) ; tier 0 = socle vide. */
 function encTroMedal(tier, emo) {
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox', '0 0 60 70');
     svg.setAttribute('class', 'enc-tro-svg');
     if (!tier) {
-        svg.innerHTML = '<circle cx="30" cy="40" r="19" class="enc-tro-empty"/><text x="30" y="47" text-anchor="middle" class="enc-tro-q">?</text>';
+        svg.innerHTML = '<rect x="16" y="56" width="28" height="8" rx="2" class="enc-tro-empty"/><text x="30" y="46" text-anchor="middle" class="enc-tro-q">?</text>';
         return svg;
     }
-    const col = { 1: ['#f0b27a', '#b4692e', '#7a4317'], 2: ['#f4f6f8', '#b9c1c9', '#7d8791'], 3: ['#ffe58a', '#f3b400', '#a67400'] }[tier];
-    const id = `trog${tier}`;
-    svg.innerHTML = `<defs><radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${col[0]}"/><stop offset="0.6" stop-color="${col[1]}"/><stop offset="1" stop-color="${col[2]}"/></radialGradient></defs>
-      <path d="M17 0 L27 24 L33 24 L23 0 Z" fill="#2563eb"/><path d="M43 0 L33 24 L27 24 L37 0 Z" fill="#e5484d"/>
-      <circle cx="30" cy="42" r="19" fill="url(#${id})" stroke="${col[2]}" stroke-width="1.5"/>
-      <circle cx="30" cy="42" r="14" fill="none" stroke="${col[0]}" stroke-width="1" opacity="0.8"/>
-      <text x="30" y="48.5" text-anchor="middle" font-size="16">${emo}</text>`;
+    const sc = [0, 0.62, 0.8, 1][tier], cx = 30, base = 63;
+    const g = `<g transform="translate(${cx} ${base}) scale(${sc}) translate(-30 -63)">`;
+    const cup = `<path d="M14 6 H46 V18 C46 31 39 38 30 38 C21 38 14 31 14 18 Z" fill="url(#trocup)" stroke="#a67400" stroke-width="1.2"/>
+      <path d="M14 10 C5 10 5 24 16 26" fill="none" stroke="#d99a00" stroke-width="3"/><path d="M46 10 C55 10 55 24 44 26" fill="none" stroke="#d99a00" stroke-width="3"/>
+      <rect x="27" y="38" width="6" height="9" fill="#d99a00"/><rect x="19" y="47" width="22" height="6" rx="1.5" fill="#b07800"/>
+      <rect x="15" y="53" width="30" height="10" rx="2" fill="#5b3a1e"/>
+      <path d="M19 9 C19 22 22 30 27 34" fill="none" stroke="#fff6c8" stroke-width="2" opacity="0.7"/>
+      <text x="30" y="27" text-anchor="middle" font-size="12">${emo}</text>`;
+    const stars = `<text x="30" y="61" text-anchor="middle" font-size="7.5" fill="#ffd34d" letter-spacing="0.5">${'★'.repeat(tier)}</text>`;
+    svg.innerHTML = `<defs><linearGradient id="trocup" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe58a"/><stop offset="0.55" stop-color="#f3b400"/><stop offset="1" stop-color="#c98a00"/></linearGradient></defs>${g}${cup}${stars}</g>`;
     return svg;
 }
 async function openEncTrophies() {
@@ -3884,7 +3890,7 @@ async function openEncTrophies() {
     const h = el('h2', 'review-title enc-title is-sm');
     h.textContent = '🏆 Ma salle des trophées';
     const sub = el('p', 'enc-chap-sub');
-    sub.textContent = `${fmtNum(all.length - tot[0])} / ${fmtNum(all.length)} médailles gagnées`;
+    sub.textContent = `${fmtNum(all.length - tot[0])} / ${fmtNum(all.length)} coupes gagnées`;
     // podium : argent · or · bronze
     const pod = el('div', 'enc-tro-podium');
     [[2, 'is-2'], [3, 'is-3'], [1, 'is-1']].forEach(([t, cls]) => {
@@ -3894,14 +3900,14 @@ async function openEncTrophies() {
         const n = el('b');
         n.textContent = fmtNum(tot[t]);
         const l = el('small');
-        l.textContent = ENC_TRO_TIERS[t][2];
+        l.textContent = ENC_TRO_TIERS[t][1];
         const st = el('span', 'enc-tro-block');
         st.append(n, l);
         col.append(m, st);
         pod.append(col);
     });
     const rule = el('p', 'enc-tro-rule');
-    rule.textContent = 'Bonnes réponses : 1 = 🥉 · 2 = 🥈 · 3 = 🥇';
+    rule.textContent = 'Chaque bonne réponse à une question fait grandir sa coupe : ★ = 1 bonne réponse · ★★ = 2 · ★★★ = 3 ou plus.';
     const grid = el('div', 'enc-tro-cases');
     chs.forEach(c => {
         const k = encTroCounts(c.qs);
@@ -3914,7 +3920,7 @@ async function openEncTrophies() {
         const tb = el('b');
         tb.textContent = c.name;
         const ts = el('small');
-        ts.textContent = `🥇 ${k[3]} · 🥈 ${k[2]} · 🥉 ${k[1]}`;
+        ts.textContent = `★★★ ${k[3]} · ★★ ${k[2]} · ★ ${k[1]}`;
         const bar = el('span', 'enc-ch-bar');
         const bi = el('i');
         bi.style.width = `${Math.round(won / c.qs.length * 100)}%`;
@@ -3938,7 +3944,7 @@ async function openEncTrophyCase(ci, keepScroll = null) {
     const h = el('h2', 'review-title enc-title is-sm');
     h.textContent = `${c.emo} ${c.name}`;
     const sub = el('p', 'enc-chap-sub');
-    sub.textContent = `🥇 ${k[3]} · 🥈 ${k[2]} · 🥉 ${k[1]} · ${c.qs.length - k[0]} / ${c.qs.length} médailles`;
+    sub.textContent = `★★★ ${k[3]} · ★★ ${k[2]} · ★ ${k[1]} · ${c.qs.length - k[0]} / ${c.qs.length} coupes`;
     const seen = encTroSeen();
     const next = Object.assign({}, seen || {});
     let page = null;
@@ -4146,8 +4152,17 @@ function encRowsScreen(o, keepKey = null) {
         encPanelX(hd, clear);
         card.append(hd);
         const dtxt = key === 'rest' ? o.restDesc : it.k ? o.desc?.(it) : '';
-        if (dtxt) { const d = el('p', 'enc-god-desc'); d.textContent = dtxt; card.append(d); }
+        if (dtxt && key === 'rest') { const d = el('p', 'enc-god-desc'); d.textContent = dtxt; card.append(d); }
         encQRows(card, it.qs, { label: o.retLabel, fn: () => o.reopen(key) }, o.label || (q => [q.q.replace(/\s*\?$/, ''), q.a[0]]));
+        if (dtxt && key !== 'rest') {   // 13/11 : à part, sous les questions : ce n'est pas une réponse sue, juste pour aller plus loin
+            const m = el('div', 'enc-more');
+            const mt = el('b');
+            mt.textContent = '💡 Pour aller plus loin';
+            const mp = el('p');
+            mp.textContent = dtxt;
+            m.append(mt, mp);
+            card.append(m);
+        }
         panel.append(card);
         panel.scrollTop = 0;
         page.classList.add('has-sel');
@@ -4264,7 +4279,7 @@ async function openEncMuseum(keepKey = null) {
         head: it => `${it.emo || '🖼️'} ${it.title}`,
         desc: it => {
             if (!it.person || !it.works.length || !it.qs.some(encKnown)) return '';   // 13/11 : toujours les œuvres célèbres de l'artiste
-            return `Œuvres célèbres : ${it.works.map(w => `« ${w} »`).join(', ')}`;
+            return `Ses œuvres célèbres : ${it.works.map(w => `« ${w} »`).join(', ')}`;
         },
         itemCls: it => `enc-mus-item is-${it.row}`,
         make: (it, known) => {
@@ -4306,7 +4321,7 @@ async function openEncPosters(keepKey = null) {
         head: it => it.row === 'st' ? `⭐ ${it.title}` : it.row === 're' ? `🎬 ${it.title}` : `${it.emo || '🎬'} ${it.title}${it.year ? ` · ${it.year}` : ''}`,
         desc: it => {
             if ((it.row !== 'st' && it.row !== 're') || !it.films.length || !it.qs.some(encKnown)) return '';   // 13/11 : 2-3 films connus
-            return `${it.row === 're' ? 'Ses films' : 'Films connus'} : ${it.films.map(f => /\(série\)$/.test(f) ? `« ${f.replace(/\s*\(série\)$/, '')} » (série)` : `« ${f} »`).join(', ')}`;
+            return `${it.row === 're' ? 'Ses films les plus connus' : 'Ses films les plus connus'} : ${it.films.map(f => /\(série\)$/.test(f) ? `« ${f.replace(/\s*\(série\)$/, '')} » (série)` : `« ${f} »`).join(', ')}`;
         },
         itemCls: it => `enc-pos-item is-${it.row}`,
         make: (it, known) => {
