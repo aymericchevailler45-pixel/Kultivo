@@ -1821,15 +1821,34 @@ function encTip(node, kind) {
 /** 4 feuilles de papier qui tournent avec la couverture (sinon on ne voyait que du blanc). */
 const encZoomPages = () => [0, 1, 2, 3].map(i => { const p = el('div', 'enc-zoom-page'); p.style.setProperty('--i', i); return p; });
 let encLastBook = null;   // { btn, color, icon } : le livre ouvert, pour qu'il se referme à sa place
-function encOpenAnim(from, color, icon, then) {
-    encLastBook = { btn: from, color, icon };
+const ENC_COVER_SPOTS = [[12, 8, 1.5, -12], [78, 6, 1.2, 10], [45, 16, 1, 4], [88, 30, 1.6, -8], [8, 34, 1.1, 14], [30, 48, 1.3, -6], [70, 52, 1, 12],
+    [14, 66, 1.4, 8], [86, 70, 1.2, -14], [50, 78, 1.1, -4], [24, 88, 1.2, 10], [74, 90, 1.5, -10], [58, 34, 0.9, 6], [38, 66, 0.9, -12]];
+/** Couverture du livre (animation) : grande icône, nom du thème, filet doré, et les icônes de ses chapitres en motif léger. */
+function encCoverEl(icon, theme) {
+    const cover = el('div', 'enc-zoom-cover');
+    const emos = theme ? encChapters(theme).map(c => c.emo) : [];
+    if (emos.length) ENC_COVER_SPOTS.forEach(([x, y, s, r], i) => {
+        const e = el('span', 'enc-cover-dot');
+        e.textContent = emos[i % emos.length];
+        e.style.cssText = `left:${x}%;top:${y}%;font-size:${s * 1.6}rem;transform:translate(-50%,-50%) rotate(${r}deg)`;
+        cover.append(e);
+    });
+    const mid = el('div', 'enc-cover-mid');
+    const ic = el('span', 'enc-cover-ic');
+    ic.textContent = icon;
+    mid.append(ic);
+    if (theme) { const nm = el('b'); nm.textContent = theme; mid.append(nm); }
+    cover.append(el('i', 'enc-cover-frame'), mid);
+    return cover;
+}
+function encOpenAnim(from, color, icon, then, theme = '') {
+    encLastBook = { btn: from, color, icon, theme };
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { then(); return; }
     const r = from.getBoundingClientRect();
     const navH = 0;
     const z = el('div', 'enc-zoom');
     z.style.setProperty('--c', color);
-    const cover = el('div', 'enc-zoom-cover');
-    cover.textContent = icon;
+    const cover = encCoverEl(icon, theme);
     z.append(...encZoomPages(), cover);
     Object.assign(z.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
     document.body.append(z);
@@ -1858,8 +1877,7 @@ function encCloseAnim() {
     const w = window.innerWidth > 900 ? Math.min(560, window.innerWidth) : window.innerWidth;
     const z = el('div', 'enc-zoom is-open is-closing');
     z.style.setProperty('--c', lb.color);
-    const cover = el('div', 'enc-zoom-cover');
-    cover.textContent = lb.icon;
+    const cover = encCoverEl(lb.icon, lb.theme);
     z.append(...encZoomPages(), cover);
     Object.assign(z.style, { left: `${(window.innerWidth - w) / 2}px`, top: '0px', width: `${w}px`, height: `${window.innerHeight}px` });
     document.body.append(z);
@@ -1973,7 +1991,7 @@ function renderEncyclopedia(box) {
         const hd = el('span', 'enc-book-head');   // 12/11 : icône à côté du nom (hauteur identique pour tous les livres)
         hd.append(ic, nm);
         btn.append(hd, cnt, mini, m, r);   // la barre sous « x / y savoirs », pas sous le % de réussite
-        btn.addEventListener('click', () => encOpenAnim(btn, ENC_COLORS[b.theme] || '#3d8bff', encIcon(b.theme), () => openEncBook(b.theme)));
+        btn.addEventListener('click', () => encOpenAnim(btn, ENC_COLORS[b.theme] || '#3d8bff', encIcon(b.theme), () => openEncBook(b.theme), b.theme));
         grid.append(btn);
     });
     box.append(t2, grid);
@@ -2134,6 +2152,7 @@ function openEncBook(theme, keep = false) {
         });
         const special = theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
             : theme === 'Mythologie' ? ['🌳', 'L’arbre des dieux', 'Grèce, Égypte et Nordique', () => openEncGods()]
+            : theme === 'Gastronomie' ? ['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
         const parts = [quick];
         if (special) {   // 12/11 : frise (Histoire) ou carte du monde (Géographie, Drapeaux, Monuments)
@@ -2814,6 +2833,107 @@ async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
         show(byId[keepId]);
         requestAnimationFrame(() => { scroller.scrollTop = Math.max(0, byId[keepId].y - 120); });
     }
+}
+
+/* 12/11 : « Ma France gourmande » (Gastronomie). Les 13 régions sont toujours dessinées ; elles se dorent avec les spécialités sues. */
+async function openEncFrance(keepCode = null) {
+    try { await encLoad('carte-france.js'); } catch (e) { showToast('📶 Carte indisponible hors connexion pour l’instant'); return; }
+    const M = window.FRANCE_MAP;
+    const all = encAll();
+    const by = {};
+    Object.entries(window.ENC_REGION).forEach(([id, code]) => { const q = all.get(Number(id)); if (q) (by[code] = by[code] || []).push(q); });
+    const st = code => { const qs = by[code] || []; const k = qs.filter(encKnown).length; return { qs, k, n: qs.length }; };
+    const tot = Object.values(by).reduce((t, qs) => t + qs.length, 0);
+    const kn = Object.values(by).reduce((t, qs) => t + qs.filter(encKnown).length, 0);
+    const page = el('div', 'enc-full enc-godpage enc-frpage');
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = '🧀 Ma France gourmande';
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${kn} / ${tot} spécialités sues`;
+    const wrap = el('div', 'enc-god-scroll enc-fr-wrap');
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${M.w} ${M.h}`);
+    svg.setAttribute('class', 'enc-fr-svg');
+    const lvl = s => !s.n || !s.k ? 'l0' : s.k >= s.n ? 'l3' : s.k / s.n >= 0.5 ? 'l2' : 'l1';
+    const shapes = {};
+    const labels = document.createElementNS(ns, 'g');
+    M.regions.forEach(([code, name, d, cx, cy]) => {
+        const s = st(code);
+        const p = document.createElementNS(ns, 'path');
+        p.setAttribute('d', d);
+        p.setAttribute('class', `enc-reg ${lvl(s)}`);
+        p.dataset.code = code;
+        svg.append(p);
+        shapes[code] = p;
+        const t = document.createElementNS(ns, 'text');
+        t.setAttribute('x', cx);
+        t.setAttribute('y', cy);
+        t.setAttribute('class', 'enc-reg-n');
+        t.textContent = s.n ? `${s.k}/${s.n}` : '';
+        labels.append(t);
+    });
+    svg.append(labels);
+    wrap.append(svg);
+    const legend = el('div', 'enc-map-legend enc-fr-legend');
+    [['l3', 'tout su'], ['l2', 'plus de la moitié'], ['l1', 'un peu'], ['l0', 'à découvrir']].forEach(([cls, l]) => {
+        const s = el('span');
+        s.append(el('i', `enc-fr-${cls}`), document.createTextNode(l));
+        legend.append(s);
+    });
+    const credit = el('small', 'enc-fr-credit');
+    credit.textContent = 'Contours des régions : IGN Admin Express (Licence ouverte)';
+    const panel = el('div', 'enc-map-panel enc-god-panel');
+    const CH_EMO = { 'Fromages': '🧀', 'Boissons': '🍷', 'Plats français': '🥘', 'Desserts et pâtisseries': '🍰', 'Produits et ingrédients': '🧄', 'Chefs, techniques et ustensiles': '👨‍🍳' };
+    let sel = null;
+    const show = code => {
+        if (sel) shapes[sel]?.classList.remove('is-sel');
+        sel = code;
+        shapes[code].classList.add('is-sel');
+        svg.insertBefore(shapes[code], labels);
+        const reg = M.regions.find(r => r[0] === code);
+        const s = st(code);
+        panel.replaceChildren();
+        const card = el('div', 'enc-cpanel enc-fr-card');
+        const hd = el('div', 'enc-map-head');
+        const nm = el('b');
+        nm.textContent = reg[1];
+        const ct = el('span');
+        ct.textContent = `· ${s.k} / ${s.n} ${s.n > 1 ? 'spécialités sues' : 'spécialité sue'}`;
+        hd.append(nm, ct);
+        card.append(hd);
+        const known = s.qs.filter(encKnown);
+        const ret = { label: '← Ma France gourmande', fn: () => openEncFrance(code) };
+        known.forEach(q => {
+            const row = el('button', 'enc-crow');
+            row.type = 'button';
+            const l = el('span');
+            l.textContent = `${CH_EMO[encChapterOf(q)?.name] || '🍽️'} ${q.q.replace(/\s*\?$/, '')}`;
+            const b = el('b');
+            b.textContent = q.a[0];
+            row.append(l, b);
+            row.addEventListener('click', () => openEncFiche(q, known, ret));
+            card.append(row);
+        });
+        if (s.n > s.k) {
+            const lk = el('button', 'enc-crow is-lock');
+            lk.type = 'button';
+            const l = el('span');
+            l.textContent = `❓ ${s.n - s.k} spécialité${s.n - s.k > 1 ? 's' : ''} à découvrir`;
+            lk.append(l);
+            lk.addEventListener('click', encLockedTip);
+            card.append(lk);
+        }
+        panel.append(card);
+        panel.scrollTop = 0;
+        page.classList.add('has-sel');
+    };
+    svg.addEventListener('click', e => { const p = e.target.closest('.enc-reg'); if (p) show(p.dataset.code); });
+    page.append(h, cnt, wrap, legend, credit, panel);
+    const body = $('friendBody');
+    body.replaceChildren(encBackBtn('← Gastronomie', () => openEncBook('Gastronomie', true)), page);
+    $('friendModal').hidden = false;
+    if (keepCode && shapes[keepCode]) show(keepCode);
 }
 
 function encMedia(q, small) {

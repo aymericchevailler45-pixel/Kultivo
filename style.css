@@ -4382,3 +4382,29 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-godpage .enc-god-panel { display: none; }
 .enc-godpage.has-sel .enc-god-scroll { flex: 0 0 40%; min-height: 0; }
 .enc-godpage.has-sel .enc-god-panel { display: block; flex: 1 1 auto; max-height: none; min-height: 0; }
+
+/* 12/11 : couverture du livre (nom + motif) ; « Ma France gourmande » */
+.enc-zoom-cover { overflow: hidden; }
+.enc-cover-dot { position: absolute; opacity: 0.16; filter: grayscale(1) brightness(3); pointer-events: none; }
+.enc-cover-frame { position: absolute; inset: 7%; border: 2px solid rgba(255, 214, 102, 0.75); border-radius: 10px; box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.08); }
+.enc-cover-mid { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 12%; text-align: center; }
+.enc-cover-ic { font-size: 3rem; line-height: 1; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25)); }
+.enc-cover-mid b { color: #fff; font-size: 1.6rem; font-weight: 900; letter-spacing: 0.02em; line-height: 1.1; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); }
+.enc-fr-wrap { overflow: hidden; display: flex; align-items: center; justify-content: center; background: #e8f1fb; }
+.enc-fr-svg { display: block; width: 100%; height: 100%; }
+.enc-reg { stroke: #fff; stroke-width: 3; stroke-linejoin: round; cursor: pointer; }
+.enc-reg.l0, .enc-fr-l0 { fill: #dfe3ea; }
+.enc-reg.l1, .enc-fr-l1 { fill: #f7d98a; }
+.enc-reg.l2, .enc-fr-l2 { fill: #f2b94a; }
+.enc-reg.l3, .enc-fr-l3 { fill: #d98b12; }
+.enc-reg.is-sel { stroke: #1b2745; stroke-width: 7; }
+.enc-reg-n { font: 900 34px Nunito, sans-serif; fill: #4a2c00; text-anchor: middle; dominant-baseline: middle; pointer-events: none; paint-order: stroke; stroke: rgba(255, 255, 255, 0.7); stroke-width: 6px; }
+.enc-fr-legend { flex: none; }
+.enc-fr-legend i { display: inline-block; width: 11px; height: 11px; margin-right: 4px; border-radius: 3px; vertical-align: -1px; }
+.enc-fr-credit { flex: none; display: block; margin: -4px 2px 4px; color: var(--muted); font-size: 0.6rem; }
+.enc-frpage.has-sel .enc-god-scroll { flex: 0 0 38%; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .enc-fr-wrap { background: #1d2a3f; } :root:not([data-theme="light"]) .enc-reg { stroke: #1d2a3f; } :root:not([data-theme="light"]) .enc-reg.l0 { fill: #3a465e; } }
+:root[data-theme="dark"] .enc-fr-wrap { background: #1d2a3f; }
+:root[data-theme="dark"] .enc-reg { stroke: #1d2a3f; }
+:root[data-theme="dark"] .enc-reg.l0 { fill: #3a465e; }
+.enc-fr-legend i.enc-fr-l0 { background: #dfe3ea; } .enc-fr-legend i.enc-fr-l1 { background: #f7d98a; } .enc-fr-legend i.enc-fr-l2 { background: #f2b94a; } .enc-fr-legend i.enc-fr-l3 { background: #d98b12; }
