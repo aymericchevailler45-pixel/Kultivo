@@ -2152,6 +2152,7 @@ function openEncBook(theme, keep = false) {
         });
         const special = theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
             : theme === 'Mythologie' ? ['🌳', 'L’arbre des dieux', 'Grèce, Égypte et Nordique', () => openEncGods()]
+            : theme === 'Sciences' ? [['🫀', 'Mon corps humain', 'les organes que tu connais', () => openEncSpots('sci', 'corps')], ['🪐', 'Mon système solaire', 'les planètes, les étoiles et l’espace', () => openEncSpots('sci', 'espace')]]
             : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
         const parts = [quick];
@@ -2487,6 +2488,18 @@ function encCountryLabel(q) {
     if (/^Quel pays a pour capitale/i.test(q.q)) return [q.q.replace(/^Quel pays a pour capitale\s*/i, 'Capitale : ').replace(/\s*\?$/, ''), q.a[0]];
     return [q.q.replace(/\s*\?$/, ''), q.a[0]];
 }
+/** 13/11 : balayer à gauche / à droite pour passer de la France au monde (zone = tout sauf la carte du monde, qu'on fait glisser). */
+function encSwipe(zone, onLeft, onRight, skip = null) {
+    let sx = null, sy = 0;
+    zone.addEventListener('touchstart', e => { if (skip && e.target.closest(skip)) { sx = null; return; } sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    zone.addEventListener('touchend', e => {
+        if (sx === null) return;
+        const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        sx = null;
+        if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        (dx < 0 ? onLeft : onRight)?.();
+    }, { passive: true });
+}
 /** 13/11 : onglets France / Monde de la Gastronomie. */
 function encGastroTabs(active) {
     const tabs = el('div', 'enc-god-tabs');
@@ -2691,6 +2704,7 @@ async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
     svg.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; moved = false; });
     svg.addEventListener('wheel', e => { e.preventDefault(); v.s *= e.deltaY < 0 ? 1.2 : 1 / 1.2; apply(); }, { passive: false });
     page.append(h, ...(kind === 'cuisine' ? [encGastroTabs('monde')] : []), tiles, wrap, panel);
+    if (kind === 'cuisine') encSwipe(page, null, () => openEncFrance(), '.enc-map');
     body.append(encBackBtn(fromTheme ? `← ${fromTheme}` : '← Retour', () => { encMapView = null; if (fromTheme) openEncBook(fromTheme, true); else $('friendModal').hidden = true; }), page);
     $('friendModal').hidden = false;
     requestAnimationFrame(() => { apply(); if (keepCc && by[keepCc]) show(keepCc); });
@@ -2698,35 +2712,71 @@ async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
 }
 
 /* 12/11 : l'arbre des dieux (Mythologie). Un dieu se dévoile quand une de ses questions est sue ; tap = ses questions en bas. */
-let encGodsTab = 'grece';
 let encGodsRoman = false;   // 12/11 : bouton « Noms grecs / Noms romains »
-async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
-    try { await encLoad('arbre-dieux.js'); } catch (e) { showToast('📶 Arbre indisponible hors connexion pour l’instant'); return; }
-    encGodsTab = tab;
-    const P = window.ENC_GODS[tab];
+/* 13/11 : écran générique « des choses à découvrir placées sur un dessin » : arbre des dieux, corps humain, système solaire. */
+const ENC_SPOT_SETS = {
+    gods: { src: 'arbre-dieux.js', data: () => window.ENC_GODS, tab: 'grece', title: '🌳 L’arbre des dieux', theme: 'Mythologie', back: '← L’arbre des dieux', unknown: 'Dieu à découvrir' },
+    sci: { src: 'sciences-corps.js', data: () => window.ENC_SCI, tab: 'corps', title: '🔬 Mes sciences', theme: 'Sciences', back: '← Mes sciences', unknown: 'À découvrir' }
+};
+const openEncGods = (tab, keepId, keepScroll) => openEncSpots('gods', tab, keepId, keepScroll);
+/** Décor dessiné sous les éléments : silhouette du corps, Soleil et orbites. */
+function encSpotBg(P, nodes) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', `0 0 100 ${P.h}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('class', 'enc-spot-bg');
+    const add = (tag, at) => { const e = document.createElementNS(ns, tag); Object.entries(at).forEach(([k, v]) => e.setAttribute(k, v)); svg.append(e); return e; };
+    if (P.bg === 'body') {
+        const f = { class: 'enc-body-part' };
+        add('ellipse', { ...f, cx: 50, cy: 62, rx: 8, ry: 34 });
+        add('rect', { ...f, x: 46.5, y: 92, width: 7, height: 20, rx: 2 });
+        add('rect', { ...f, x: 36, y: 108, width: 28, height: 220, rx: 7, ry: 34 });
+        add('rect', { ...f, x: 27, y: 116, width: 8, height: 210, rx: 4, ry: 20 });
+        add('rect', { ...f, x: 65, y: 116, width: 8, height: 210, rx: 4, ry: 20 });
+        add('rect', { ...f, x: 38, y: 318, width: 11, height: 290, rx: 5, ry: 22 });
+        add('rect', { ...f, x: 51, y: 318, width: 11, height: 290, rx: 5, ry: 22 });
+    }
+    if (P.bg === 'space') {
+        const sun = nodes.find(n => n.id === 'soleil');
+        nodes.filter(n => n.orbit).forEach(n => {
+            const dy = n.y - sun.y, dxpx = (n.x - sun.x) * 3.1, rr = Math.sqrt(dy * dy + dxpx * dxpx);
+            add('ellipse', { class: `enc-orbit${n.s.k ? ' is-on' : ''}`, cx: sun.x, cy: sun.y, rx: rr / 3.1, ry: rr, 'vector-effect': 'non-scaling-stroke' });
+        });
+    }
+    return svg;
+}
+async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
+    const cfg = ENC_SPOT_SETS[set];
+    tab = tab || cfg.tab;
+    try { await encLoad(cfg.src); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    cfg.tab = tab;
+    const openSelf = (...x) => openEncSpots(set, ...x);
+    const P = cfg.data()[tab];
     const all = encAll();
     const st = n => { const qs = n.q.map(id => all.get(id)).filter(Boolean); const k = qs.filter(encKnown).length; return { qs, k, n: qs.length }; };
     const nodes = P.nodes.map(n => ({ ...n, s: st(n) }));
     const found = nodes.filter(n => n.s.k > 0).length;
-    const page = el('div', 'enc-full enc-godpage');
+    const page = el('div', `enc-full enc-godpage enc-spots-${set}`);
     const h = el('h2', 'review-title enc-title is-sm');
-    h.textContent = '🌳 L’arbre des dieux';
+    h.textContent = P.title || cfg.title;
     const cnt = el('p', 'enc-chap-sub');
     cnt.textContent = `${found} / ${nodes.length} découverts`;
     const tabs = el('div', 'enc-god-tabs');
-    Object.entries(window.ENC_GODS).forEach(([k, v]) => {
+    Object.entries(cfg.data()).forEach(([k, v]) => {
         const b = el('button', `enc-god-tab${k === tab ? ' is-on' : ''}`);
         b.type = 'button';
         b.style.setProperty('--c', v.color);
         b.textContent = v.label;
-        b.addEventListener('click', () => openEncGods(k));
+        b.addEventListener('click', () => openSelf(k));
         tabs.append(b);
     });
     const scroller = el('div', 'enc-god-scroll');
-    const tree = el('div', 'enc-tree');
+    const tree = el('div', `enc-tree${P.bg ? ` is-${P.bg}` : ''}`);
     tree.style.height = `${P.h}px`;
     tree.style.setProperty('--c', P.color);
-    P.tiers.forEach(([t, y]) => { const d = el('span', 'enc-tree-tier'); d.style.top = `${y}px`; d.textContent = t; tree.append(d); });
+    if (P.bg) tree.append(encSpotBg(P, nodes));
+    (P.tiers || []).forEach(([t, y]) => { const d = el('span', 'enc-tree-tier'); d.style.top = `${y}px`; d.textContent = t; tree.append(d); });
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox', `0 0 100 ${P.h}`);
@@ -2755,6 +2805,19 @@ async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
             lines.push({ el: c, child: n.id, parents: ps.map(a => a.id) });
         }
     });
+    nodes.forEach(n => {   // trait vers l'organe (corps humain)
+        if (!n.to) return;
+        const p = document.createElementNS(ns, 'path');
+        p.setAttribute('d', `M${n.x} ${n.y} L ${n.to[0]} ${n.to[1]}`);
+        p.setAttribute('class', `enc-tree-line is-lead${n.s.k ? ' is-on' : ''}`);
+        p.setAttribute('vector-effect', 'non-scaling-stroke');
+        svg.append(p);
+        lines.push({ el: p, child: n.id, parents: [] });
+        const d = document.createElementNS(ns, 'ellipse');
+        d.setAttribute('cx', n.to[0]); d.setAttribute('cy', n.to[1]); d.setAttribute('rx', 1.2); d.setAttribute('ry', 3.6);
+        d.setAttribute('class', `enc-lead-dot${n.s.k ? ' is-on' : ''}`);
+        svg.append(d);
+    });
     tree.append(svg);
     const panel = el('div', 'enc-map-panel enc-god-panel');
     const btns = {};
@@ -2774,13 +2837,13 @@ async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
         const nm = el('b');
         const known = n.s.qs.filter(encKnown);
         const names = encGodsRoman && n.alt ? [n.alt, n.name] : [n.name, n.alt];
-        nm.textContent = known.length ? `${n.emo} ${names[0]}${names[1] ? ` · ${names[1]}` : ''}` : '❓ Dieu à découvrir';
+        nm.textContent = known.length ? `${n.emo || '●'} ${names[0]}${names[1] ? ` · ${names[1]}` : ''}` : `❓ ${P.unknown || cfg.unknown}`;
         const ct = el('span');
         ct.textContent = `· ${n.s.k} / ${n.s.n} ${n.s.n > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(nm, ct);
         card.append(hd);
         if (known.length && n.desc) { const d = el('p', 'enc-god-desc'); d.textContent = n.desc; card.append(d); }
-        const ret = { label: '← L’arbre des dieux', fn: () => openEncGods(tab, n.id) };
+        const ret = { label: cfg.back, fn: () => openSelf(tab, n.id) };
         known.forEach(q => {
             const row = el('button', 'enc-crow');
             row.type = 'button';
@@ -2808,16 +2871,20 @@ async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
         requestAnimationFrame(() => scroller.scrollTo({ top: Math.max(0, n.y - 56), behavior: 'smooth' }));
     };
     nodes.forEach(n => {
-        const b = el('button', `enc-god${n.s.k ? ' is-known' : ''}${n.s.n && n.s.k >= n.s.n ? ' is-full' : ''}`);
+        const empty = !n.s.n;   // rien à apprendre dessus pour l'instant (Mercure…) : juste dessiné, pour reconnaître l'ensemble
+        const b = el('button', `enc-god${n.s.k ? ' is-known' : ''}${n.s.n && n.s.k >= n.s.n ? ' is-full' : ''}${empty ? ' is-empty' : ''}${n.color ? ' is-disc' : ''}`);
         b.type = 'button';
         b.style.left = `${n.x}%`;
         b.style.top = `${n.y}px`;
         const i = el('i');
-        i.textContent = n.s.k ? n.emo : '?';
+        if (n.color) { i.style.setProperty('--disc', n.color); i.style.setProperty('--sz', `${n.size || 30}px`); i.textContent = n.s.k || empty ? '' : '?'; }
+        else i.textContent = n.s.k ? n.emo : '?';
         const t = el('span');
-        t.textContent = n.s.k ? (P.roman && encGodsRoman && n.alt ? n.alt : n.name) : '???';
+        t.textContent = n.s.k || empty ? (P.roman && encGodsRoman && n.alt ? n.alt : n.name) : '???';
         b.append(i, t);
-        b.addEventListener('click', () => show(n));
+        b.dataset.id = n.id;
+        if (empty) b.disabled = true;
+        else b.addEventListener('click', () => show(n));
         btns[n.id] = b;
         tree.append(b);
     });
@@ -2827,10 +2894,10 @@ async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
         const sw = el('button', `enc-god-roman${encGodsRoman ? ' is-on' : ''}`);
         sw.type = 'button';
         sw.textContent = encGodsRoman ? '🏛️ Noms romains · toucher pour les noms grecs' : '🏺 Noms grecs · toucher pour les noms romains';
-        sw.addEventListener('click', () => { encGodsRoman = !encGodsRoman; openEncGods(tab, null, scroller.scrollTop); });
+        sw.addEventListener('click', () => { encGodsRoman = !encGodsRoman; openSelf(tab, null, scroller.scrollTop); });
         romanBtn = sw;
     }
-    const keys = Object.keys(window.ENC_GODS);
+    const keys = Object.keys(cfg.data());
     let sx = null, sy = 0;
     scroller.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
     scroller.addEventListener('touchend', e => {
@@ -2840,12 +2907,12 @@ async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
         if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
         const j = keys.indexOf(tab) + (dx < 0 ? 1 : -1);
         if (j < 0 || j >= keys.length) return;
-        openEncGods(keys[j]);
+        openSelf(keys[j]);
         $('friendBody').querySelector('.enc-god-scroll')?.classList.add(dx < 0 ? 'is-from-right' : 'is-from-left');
     }, { passive: true });
     page.append(h, cnt, tabs, ...(romanBtn ? [romanBtn] : []), scroller, panel);
     const body = $('friendBody');
-    body.replaceChildren(encBackBtn('← Mythologie', () => openEncBook('Mythologie', true)), page);
+    body.replaceChildren(encBackBtn(`← ${cfg.theme}`, () => openEncBook(cfg.theme, true)), page);
     $('friendModal').hidden = false;
     if (keepScroll !== null) requestAnimationFrame(() => { scroller.scrollTop = keepScroll; });
     if (keepId && byId[keepId]) {
@@ -2949,6 +3016,7 @@ async function openEncFrance(keepCode = null) {
     };
     svg.addEventListener('click', e => { const p = e.target.closest('.enc-reg'); if (p) show(p.dataset.code); });
     page.append(h, encGastroTabs('france'), cnt, wrap, legend, credit, panel);
+    encSwipe(page, () => openEncMap('Gastronomie', null, 'cuisine'), null);
     const body = $('friendBody');
     body.replaceChildren(encBackBtn('← Gastronomie', () => openEncBook('Gastronomie', true)), page);
     $('friendModal').hidden = false;

@@ -4412,3 +4412,28 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 /* 13/11 : un peu d'air entre le titre et les onglets France / Monde */
 .enc-title + .enc-god-tabs { margin-top: 10px; }
 .enc-mappage .enc-god-tabs { flex: none; margin-bottom: 10px; }
+
+/* 13/11 : corps humain et système solaire */
+.enc-spot-bg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.enc-body-part { fill: color-mix(in srgb, #0891b2 16%, var(--surface)); stroke: color-mix(in srgb, #0891b2 30%, var(--line)); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.enc-tree-line.is-lead { stroke-dasharray: 3 3; }
+.enc-tree-line.is-lead.is-on { stroke-dasharray: none; }
+.enc-lead-dot { fill: var(--line); } .enc-lead-dot.is-on { fill: var(--c); }
+.enc-tree.is-space { background: radial-gradient(circle at 50% 0, #3b2f6b, #0f1330 60%); }
+.enc-spots-sci .enc-god-scroll:has(.is-space) { background: #0f1330; }
+.enc-orbit { fill: none; stroke: rgba(255, 255, 255, 0.16); stroke-width: 1; stroke-dasharray: 3 4; }
+.enc-orbit.is-on { stroke: rgba(255, 255, 255, 0.35); stroke-dasharray: none; }
+.enc-tree.is-space .enc-god span { color: #c9cfe8; }
+.enc-tree.is-space .enc-god.is-known span { color: #fff; }
+.enc-tree.is-space .enc-god i { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.4); color: #c9cfe8; }
+.enc-tree.is-space .enc-god.is-known i { background: rgba(255, 255, 255, 0.12); border-color: #a78bfa; color: #fff; }
+.enc-god.is-disc i { width: var(--sz); height: var(--sz); border: 2px dashed rgba(255, 255, 255, 0.5); background: transparent; font-size: 0.8rem; }
+.enc-god.is-disc.is-known i, .enc-god.is-disc.is-empty i { border: 0; background: radial-gradient(circle at 35% 30%, #fff8, transparent 45%), var(--disc); box-shadow: 0 0 10px color-mix(in srgb, var(--disc) 60%, transparent); }
+.enc-god.is-disc.is-full i { box-shadow: 0 0 0 3px #f3b400, 0 0 12px var(--disc); }
+.enc-god.is-empty { opacity: 0.55; cursor: default; }
+.enc-god[data-id="soleil"] i { box-shadow: 0 0 30px 10px rgba(255, 207, 58, 0.5); }
+
+.enc-tree.is-space .enc-god.is-disc i { border: 2px dashed rgba(255, 255, 255, 0.5); background: transparent; }
+.enc-tree.is-space .enc-god.is-disc.is-known i, .enc-tree.is-space .enc-god.is-disc.is-empty i { border: 0; background: radial-gradient(circle at 35% 30%, #fff8, transparent 45%), var(--disc); box-shadow: 0 0 10px color-mix(in srgb, var(--disc) 60%, transparent); }
+.enc-tree.is-space .enc-god.is-disc.is-full i { box-shadow: 0 0 0 3px #f3b400, 0 0 12px var(--disc); }
+.enc-tree.is-space .enc-god.is-disc[data-id="soleil"].is-known i { box-shadow: 0 0 30px 10px rgba(255, 207, 58, 0.55); }
