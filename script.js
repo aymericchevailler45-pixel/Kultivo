@@ -4269,6 +4269,7 @@ function encMusArt(it) {
 }
 async function openEncMuseum(keepKey = null) {
     try { await encLoad('musee.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    try { await encLoad('tableaux.js'); } catch (e) { /* sans les tableaux dessinés à la main */ }
     const M = window.ENC_MUSEUM || { rooms: [], q: {} };
     const { rows, rest } = encRowsGroup('Arts', M.q, M.rooms, v => ({ emo: v[2], person: v[3], works: v[4] || [] }));
     encRowsScreen({
@@ -4288,7 +4289,16 @@ async function openEncMuseum(keepKey = null) {
             const w = it.row === 'scu' ? 70 : 66 + hs % 30, hh = it.row === 'scu' ? 92 : 62 + (hs >>> 6) % 40;
             fr.style.width = `${w}px`;
             fr.style.height = `${hh}px`;
-            if (known) {
+            const paint = it.row !== 'scu' && window.ENC_MUS_PAINT?.[it.title];
+            if (known && paint) {   // 13/11 : œuvre célèbre dessinée à la main (version simplifiée reconnaissable)
+                const ns = 'http://www.w3.org/2000/svg';
+                const svg = document.createElementNS(ns, 'svg');
+                svg.setAttribute('viewBox', '0 0 100 100');
+                svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+                svg.setAttribute('class', 'enc-mus-svg');
+                svg.innerHTML = paint;
+                fr.append(svg);
+            } else if (known) {
                 if (it.row !== 'scu') fr.append(encMusArt(it));
                 const e = el('span', 'enc-mus-emo');
                 e.textContent = it.emo || '🖼️';
