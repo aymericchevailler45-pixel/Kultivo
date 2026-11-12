@@ -54,7 +54,7 @@ window.ENC_MUSEUM = { rooms: [["anc", "🕯️", "Peinture ancienne"], ["xix", "
     679: ["Paul Cézanne", "xix", "⛰️", 1, ["Les Joueurs de cartes", "La Montagne Sainte-Victoire"]],
     690: ["Marc Chagall", "mod", "🐐", 1, ["Le plafond de l’Opéra Garnier", "Moi et le village"]],
     704: ["Pablo Picasso", "mod", "🎸", 1, ["Guernica", "Les Demoiselles d’Avignon", "La Femme qui pleure"]],
-    1207: ["Claude Monet", "xix", "🪷", 0],
+    1207: ["Claude Monet", "xix", "🪷", 1, ["Impression, soleil levant", "Les Nymphéas", "La Cathédrale de Rouen"]],
     1308: ["Frida Kahlo", "mod", "🌺", 1, ["Les Deux Frida", "Autoportrait au collier d’épines"]],
     2084: ["Théodore Géricault", "xix", "🛶", 1, ["Le Radeau de La Méduse"]],
     2085: ["Eugène Delacroix", "xix", "🚩", 1, ["La Liberté guidant le peuple", "La Mort de Sardanapale"]],
