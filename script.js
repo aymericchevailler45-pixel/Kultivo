@@ -2787,6 +2787,8 @@ async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
         b.style.setProperty('--c', v.color);
         b.textContent = v.label;
         b.addEventListener('click', () => openSelf(k));
+        const ids = v.nodes.flatMap(n => n.q), qs = ids.map(id => all.get(id)).filter(Boolean);
+        if (qs.length) encDone(`spot:${set}:${k}`, qs.every(encKnown), b);
         tabs.append(b);
     });
     const scroller = el('div', 'enc-god-scroll');
@@ -3184,6 +3186,20 @@ function encByCountry(theme, extra = {}) {
     });
     return by;
 }
+/** 13/11 : petite fête discrète d'un ensemble complet (étagère, bac, continent, salle…) : ruban « ✓ Complet » et, la 1re fois
+    qu'on le voit complet, il brille et un petit carillon sonne. Rien à gagner : à part des badges. */
+let encDoneSoundAt = 0;
+function encDone(key, full, ...els) {
+    if (!full) return;
+    els.forEach(e => e?.classList.add('is-done'));
+    let seen = {};
+    try { seen = JSON.parse(localStorage.getItem('kultivo_enc_done') || '{}') || {}; } catch (e) { /* stockage indisponible */ }
+    if (seen[key]) return;
+    seen[key] = todayKey();
+    try { localStorage.setItem('kultivo_enc_done', JSON.stringify(seen)); } catch (e) { /* tant pis : il rebrillera */ }
+    els.forEach(e => e?.classList.add('is-new-done'));
+    if (Date.now() - encDoneSoundAt > 1500) { encDoneSoundAt = Date.now(); setTimeout(() => playSound('unlock'), 450); }
+}
 /** Un tap à côté (sur le fond du dessin) referme la fiche du bas et rend tout le dessin. */
 function encPanelX(hd, clear) {
     const x = el('button', 'enc-panel-x');
@@ -3271,7 +3287,7 @@ async function openEncFlags(keepCc = null, keepScroll = null) {
             if (s.k) hd.append(fl);
         }
         const nm = el('b');
-        nm.textContent = cc === 'other' ? '🏁 Les autres drapeaux' : s.k ? encCountryName(cc) : '❓ Drapeau à découvrir';
+        nm.textContent = cc === 'other' ? '🏁 Drapeaux d’ailleurs' : s.k ? encCountryName(cc) : '❓ Drapeau à découvrir';
         const ct = el('span');
         ct.textContent = `· ${s.k} / ${s.n} ${s.n > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(nm, ct);
@@ -3292,6 +3308,7 @@ async function openEncFlags(keepCc = null, keepScroll = null) {
         const t = el('p', 'enc-wall-h');
         t.textContent = `${label} · ${hk} / ${list.length}`;
         const grid = el('div', 'enc-flag-grid');
+        encDone(`flag:${k}`, list.every(cc => { const s = st(cc); return s.k >= s.n; }), t, grid);
         list.forEach(cc => {
             const s = st(cc);
             const b = el('button', `enc-flag${s.k ? ' is-known' : ''}${s.k && s.k >= s.n ? ' is-full' : ''}${ENC_FLAG_ODD.has(cc) ? ' is-odd' : ''}`);
@@ -3331,7 +3348,7 @@ async function openEncFlags(keepCc = null, keepScroll = null) {
     if (by.other) {
         const s = st('other');
         const t = el('p', 'enc-wall-h');
-        t.textContent = `🏁 Les autres drapeaux · ${s.k} / ${s.n}`;
+        t.textContent = `🏁 Drapeaux d’ailleurs · ${s.k} / ${s.n}`;
         const b = el('button', 'enc-flag-other');
         b.type = 'button';
         b.textContent = 'Pavillons, Europe, JO, plage, Formule 1… ›';
@@ -3553,6 +3570,7 @@ async function openEncPostAlbum(key, keepScroll = null) {
             parts.push(t);
         }
         const grid = el('div', 'enc-post-grid');
+        encDone(`post:${key}:${cc}`, known.length === g.length, ...(ccs.length > 1 ? [parts[parts.length - 1]] : []), grid);
         g.forEach(x => grid.append(encPostCard(x.q, x.cc, known, ret)));
         parts.push(grid);
     });
@@ -3608,7 +3626,7 @@ async function openEncLibrary(keepKey = null) {
         const card = el('div', 'enc-cpanel');
         const hd = el('div', 'enc-map-head');
         const nm = el('b');
-        nm.textContent = key === 'rest' ? '📜 Le reste de la bibliothèque' : b.k ? `📖 ${b.title}` : '❓ Livre à découvrir';
+        nm.textContent = key === 'rest' ? '📜 Manuscrits et coulisses' : b.k ? `📖 ${b.title}` : '❓ Livre à découvrir';
         const ct = el('span');
         ct.textContent = `· ${b.k} / ${b.qs.length} ${b.qs.length > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(nm, ct);
@@ -3633,6 +3651,7 @@ async function openEncLibrary(keepKey = null) {
         tc.textContent = `${bs.filter(b => b.k).length} / ${bs.length}`;
         t.append(tn, tc);
         const row = el('div', 'enc-lib-shelf');
+        encDone(`lib:${sk}`, bs.every(b => b.k >= b.qs.length), t, row);
         bs.forEach(b => {
             const hs = encLibHash(b.title);
             const known = b.k > 0;
@@ -3654,7 +3673,7 @@ async function openEncLibrary(keepKey = null) {
     if (rest.length) {
         const rb = el('button', 'enc-flag-other enc-lib-rest');
         rb.type = 'button';
-        rb.textContent = `📜 Le reste : prix, vocabulaire, auteurs… · ${rest.filter(encKnown).length} / ${rest.length} ›`;
+        rb.textContent = `📜 Manuscrits et coulisses : prix, vocabulaire, auteurs… · ${rest.filter(encKnown).length} / ${rest.length} ›`;
         rb.addEventListener('click', () => show('rest'));
         btns.rest = rb;
         scroller.append(rb);
@@ -3737,6 +3756,7 @@ function encObjScreen(o) {
         tc.textContent = `${its.filter(it => it.k).length} / ${its.length}`;
         t.append(tn, tc);
         const row = el('div', `enc-obj-row ${o.cls}-row is-${rk}`);
+        encDone(`${o.cls}:${rk}`, its.every(it => it.k >= it.qs.length), t, row);
         its.forEach(it => {
             const b = o.make(it, it.k > 0, rk);
             b.type = 'button';
@@ -3775,7 +3795,7 @@ async function openEncVinyls(keep = null) {
     encObjScreen({
         theme: 'Musique', cls: 'enc-vinpage', title: '💿 Mes vinyles', countWord: 'vinyles découverts', emo: '💿', unknown: 'Vinyle à découvrir',
         data: window.ENC_VINYLS || {}, read: d => [d[0], d[1], d[2]], rows: window.ENC_VINYL_CRATES || [],
-        restTitle: '🎼 Instruments, solfège et le reste', restDesc: 'Les questions sans disque : instruments, solfège, festivals, salles de concert…',
+        restTitle: '🎼 La boîte à musique : instruments et solfège', restDesc: 'Les questions sans disque : instruments, solfège, festivals, salles de concert…',
         subText: s => s === 'Compilation' || s === 'Comédie musicale' ? s : `« ${s} »`,
         back: '← Mes vinyles', reopen: k => openEncVinyls(k), keep,
         make: (it, known, row) => {
@@ -3804,7 +3824,7 @@ async function openEncArcade(keep = null) {
     encObjScreen({
         theme: 'Jeux', cls: 'enc-arcpage', title: '🕹️ Ma salle d’arcade', countWord: 'jeux découverts', emo: '🎮', unknown: 'Jeu à découvrir',
         data: window.ENC_ARC || {}, read: d => [d[0], '', d[1]], rows: window.ENC_ARC_ROWS || [],
-        restTitle: '💬 Le jargon des joueurs et le reste', restDesc: 'Les questions sans objet précis : vocabulaire des joueurs, éditeurs, e-sport…',
+        restTitle: '💬 Le coin des joueurs', restDesc: 'Les questions sans objet précis : vocabulaire des joueurs, éditeurs, e-sport…',
         subText: () => '', back: '← Ma salle d’arcade', reopen: k => openEncArcade(k), keep,
         make: (it, known, row) => {
             const kind = { ni: 'cart', jv: 'cab', co: 'cons', so: 'box', ec: 'board', jo: 'toy' }[row] || 'box';
@@ -3955,7 +3975,7 @@ async function openEncTrophyCase(ci, keepScroll = null) {
     if (c.qs.some(q => sub2[q.id] !== undefined)) {
         G.forEach(([emo, name], gi) => { const qs = c.qs.filter(q => sub2[q.id] === gi); if (qs.length) groups.push([`${emo} ${name}`, qs, emo]); });
         const rest = c.qs.filter(q => sub2[q.id] === undefined);
-        if (rest.length) groups.push(['🏋️ Divers', rest, '🏋️']);
+        if (rest.length) groups.push(['🏋️ Sports en tous genres', rest, '🏋️']);
     } else groups.push([null, c.qs, c.emo]);
     const parts = [];
     groups.forEach(([label, qs, gEmo]) => {
@@ -3967,6 +3987,7 @@ async function openEncTrophyCase(ci, keepScroll = null) {
             parts.push(t);
         }
         const cab = el('div', 'enc-tro-cab');
+        encDone(`tro:${ci}:${label || ''}`, known.length === qs.length, ...(label ? [parts[parts.length - 1]] : []), cab);
         sorted.forEach(q => {
             const tier = encTroTier(q);
             const up = seen && tier > (seen[q.id] || 0);
@@ -4052,7 +4073,7 @@ async function openEncTechFrise(keep = false) {
     // les questions sans date (vocabulaire, objets de tous les jours…) : à part, sous la frise
     const offT = el('p', 'enc-wall-h enc-tf-off');
     const offKnown = undated.filter(encKnown);
-    offT.textContent = `🗂️ Hors frise (sans date précise) · ${offKnown.length} / ${undated.length}`;
+    offT.textContent = `🗂️ Les inventions de tous les jours (sans date précise) · ${offKnown.length} / ${undated.length}`;
     const off = el('div', 'enc-tf-offlist');
     offKnown.forEach(q => {
         const r = encRow(q, offKnown, { label: '← La frise des inventions', fn: () => openEncTechFrise(true) });
@@ -4079,7 +4100,7 @@ async function openEncTechFrise(keep = false) {
     });
     const offChip = el('button', 'enc-tl-chip');
     offChip.type = 'button';
-    offChip.textContent = '🗂️ Hors frise';
+    offChip.textContent = '🗂️ De tous les jours';
     offChip.addEventListener('click', () => { mc.scrollTo({ top: mc.scrollTop + offT.getBoundingClientRect().top - chips.getBoundingClientRect().bottom - 8, behavior: 'smooth' }); });
     chips.append(offChip);
     mc = encPage(encBackBtn('← Technologie', () => openEncBook('Technologie', true)), tl, offT, off);
@@ -4179,6 +4200,7 @@ function encRowsScreen(o, keepKey = null) {
         tc.textContent = `${list.filter(x => x.k).length} / ${list.length}`;
         t.append(tn, tc);
         const row = el('div', `enc-rows-row is-${rk}`);
+        encDone(`${o.cls}:${rk}`, list.every(x => x.k >= x.qs.length), t, row);
         sorted.forEach(it => {
             const known = it.k > 0;
             const b = el('button', `enc-rows-item ${o.itemCls(it)}${known ? ' is-known' : ''}${it.qs.length && it.k >= it.qs.length ? ' is-full' : ''}`);
