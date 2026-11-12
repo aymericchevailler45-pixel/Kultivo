@@ -1972,6 +1972,17 @@ function encLockedTip() {
 }
 function encEmpty(text) { const p = el('p', 'muted enc-empty'); p.textContent = text; return p; }
 
+/** 12/11 : page plein écran de l'encyclopédie ; le contenu défile dedans, « ← » et ✕ restent en haut (alignés). */
+function encPage(back, ...nodes) {
+    const body = $('friendBody');
+    body.replaceChildren();
+    const page = el('div', 'enc-full enc-scroll');
+    page.append(...nodes);
+    if (back) body.append(back);
+    body.append(page);
+    $('friendModal').hidden = false;
+    return page;
+}
 let encState = { theme: '', search: '' };
 function openEncBook(theme, keep = false) {
     if (!keep) encState = { theme, search: '' };
@@ -2087,22 +2098,16 @@ function openEncBook(theme, keep = false) {
         zone.append(...parts, sec, list);
     };
     search.addEventListener('input', () => { encState.search = search.value; draw(); });
-    body.append(h, bar, tiles, search, zone);
+    const page = encPage(null, h, bar, tiles, search, zone);
     draw();
-    $('friendModal').hidden = false;
-    if (!keep) $('friendModal').querySelector('.modal-content').scrollTop = 0;
+    page.scrollTop = keep ? encState.bookScroll || 0 : 0;
+    page.addEventListener('scroll', () => { encState.bookScroll = page.scrollTop; }, { passive: true });
 }
 /** Un chapitre : les questions sues (par ordre alphabétique de la réponse), puis une case grisée par question à découvrir. */
 function openEncChapter(theme, i, keepScroll = false) {
     const c = encChapters(theme).find(x => x.i === i);
     if (!c) return openEncBook(theme, true);
-    const mc = $('friendModal').querySelector('.modal-content');
-    const body = $('friendBody');
-    body.replaceChildren();
-    const back = el('button', 'duel-back');
-    back.type = 'button';
-    back.textContent = `← ${theme}`;
-    back.addEventListener('click', () => openEncBook(theme, true));
+    const back = encBackBtn(`← ${theme}`, () => openEncBook(theme, true));
     const head = el('div', 'enc-chap-head');
     const h = el('h2', 'review-title enc-title');
     h.textContent = `${c.emo} ${c.name}`;
@@ -2124,7 +2129,7 @@ function openEncChapter(theme, i, keepScroll = false) {
     const ret = { label: `← ${c.name}`, fn: () => openEncChapter(theme, i, true) };
     known.forEach(q => list.append(encRow(q, known, ret)));
     if (!known.length) list.append(encEmpty('Aucune question sue dans ce chapitre pour l’instant.'));
-    const parts = [back, head, bar];
+    const parts = [head, bar];
     if (k) {   // 12/11 : réviser les questions sues du chapitre (cartes à retourner, rien n'est enregistré)
         const rv = el('button', 'btn btn-green btn-full enc-rv-btn');
         rv.type = 'button';
@@ -2141,28 +2146,20 @@ function openEncChapter(theme, i, keepScroll = false) {
         grid.addEventListener('click', e => { if (e.target.closest('.enc-slot')) encLockedTip(); });
         parts.push(t, grid);
     }
-    body.append(...parts);
-    $('friendModal').hidden = false;
-    mc.scrollTop = keepScroll ? encState.chapScroll || 0 : 0;
+    const page = encPage(back, ...parts);
+    page.scrollTop = keepScroll ? encState.chapScroll || 0 : 0;
     encState.chapScroll = 0;
-    list.addEventListener('click', () => { encState.chapScroll = mc.scrollTop; }, true);
+    list.addEventListener('click', () => { encState.chapScroll = page.scrollTop; }, true);
 }
 /** Liste simple (raccourcis « Ajoutées cette semaine » / « Pas encore maîtrisées »). */
 function openEncSet(theme, title, qs) {
-    const body = $('friendBody');
-    body.replaceChildren();
-    const back = el('button', 'duel-back');
-    back.type = 'button';
-    back.textContent = `← ${theme}`;
-    back.addEventListener('click', () => openEncBook(theme, true));
+    const back = encBackBtn(`← ${theme}`, () => openEncBook(theme, true));
     const h = el('h2', 'review-title enc-title');
     h.textContent = title;
     const list = el('div', 'enc-list');
     const ret = { label: '← Retour', fn: () => openEncSet(theme, title, qs) };
     qs.forEach(q => list.append(encRow(q, qs, ret, encChapterOf(q))));
-    body.append(back, h, list);
-    $('friendModal').hidden = false;
-    $('friendModal').querySelector('.modal-content').scrollTop = 0;
+    encPage(back, h, list);
 }
 /* ---------- 12/11 : « Réviser ce chapitre » (cartes à retourner), frise de l'Histoire, carte du monde ---------- */
 const encLoaded = {};
@@ -2307,17 +2304,14 @@ function encYearLabel(y, approx) {
     return d;
 }
 async function openEncFrise(keep = false) {
-    const body = $('friendBody');
-    const mc = $('friendModal').querySelector('.modal-content');
     try { await encLoad('frise-histoire.js'); } catch (e) { showToast('📶 Frise indisponible hors connexion pour l’instant'); return; }
     const all = encChapters('Histoire').flatMap(c => c.qs).map(q => ({ q, t: encYear(q) })).filter(x => x.t).sort((a, b) => a.t.y - b.t.y);
     const known = all.filter(x => encKnown(x.q));
-    body.replaceChildren();
     const h = el('h2', 'review-title enc-title');
     h.textContent = '🕰️ Ma frise';
     h.classList.add('is-sm');
     const sub = el('p', 'enc-chap-sub');
-    sub.textContent = `${plural(known.length, 'événement placé', 'événements placés')} · ${fmtNum(all.length - known.length)} à découvrir`;
+    sub.textContent = `${fmtNum(known.length)} placé${known.length > 1 ? 's' : ''} · ${fmtNum(all.length - known.length)} à découvrir`;
     const chips = el('div', 'enc-tl-eras');
     const tl = el('div', 'enc-tl');
     tl.style.setProperty('--c', ENC_COLORS['Histoire']);
@@ -2367,7 +2361,10 @@ async function openEncFrise(keep = false) {
         c.addEventListener('click', () => { mc.scrollTo({ top: mc.scrollTop + eraNodes[e].getBoundingClientRect().top - chips.getBoundingClientRect().bottom - 8, behavior: 'smooth' }); });
         chips.append(c);
     });
-    body.append(encBackBtn('← Histoire', () => openEncBook('Histoire', true)), h, sub, chips, tl);
+    const mc = encPage(encBackBtn('← Histoire', () => openEncBook('Histoire', true)), tl);
+    const fixed = el('div', 'enc-tl-head');   // 12/11 : titre + périodes restent en haut, seule la frise défile
+    fixed.append(h, sub, chips);
+    mc.before(fixed);
     // 12/11 : la barre des périodes reste en haut ; la période qu'on regarde s'allume
     const chipEls = [...chips.children];
     const eraIdx = Object.keys(eraNodes).map(Number);
@@ -2384,7 +2381,6 @@ async function openEncFrise(keep = false) {
     };
     mc.addEventListener('scroll', onScroll, { passive: true });
     requestAnimationFrame(onScroll);
-    $('friendModal').hidden = false;
     mc.scrollTop = keep ? encState.friseScroll || 0 : 0;
 }
 
@@ -2481,8 +2477,8 @@ async function openEncMap(fromTheme, keepCc = null) {
     const apply = () => {
         const r = svg.getBoundingClientRect();
         if (r.width > 0 && r.height > 0) ratio = r.height / r.width;
-        if (!v.s) { if (!(r.width > 0 && r.height > 0)) return; v.s = Math.max(1, Math.min(1.6, M.w * ratio / M.h)); }   // 1re ouverture : carte agrandie (Europe / Afrique au centre)
-        v.s = Math.max(sMin(), Math.min(14, v.s));
+        if (!v.s) { if (!(r.width > 0 && r.height > 0)) return; v.s = Math.max(1, Math.min(1.15, M.w * ratio / M.h)); }   // 1re ouverture : carte agrandie (Europe / Afrique au centre)
+        v.s = Math.max(sMin(), Math.min(80, v.s));
         const vw = M.w / v.s, vh = vw * ratio;
         v.cx = vw >= M.w ? M.w / 2 : Math.max(vw / 2, Math.min(M.w - vw / 2, v.cx));
         v.cy = vh >= M.h ? M.h / 2 : Math.max(vh / 2, Math.min(M.h - vh / 2, v.cy));
