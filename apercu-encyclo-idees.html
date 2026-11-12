@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kultivo · aperçu Réviser, frise, carte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #eef3f8; --surface: #fff; --ink: #1b2745; --muted: #66728f; --line: #d9e1ec;
+    --blue: #3d8bff; --blue-deep: #2266d6; --violet-ink: #5230a8;
+    --ok: #4fc72c; --ok-deep: #3a9a1f; --ok-ink: #2a6b14; --ok-tint: #dcf6d2;
+    --bad: #ff4b4b; --bad-tint: #ffe1e1; --bad-ink: #b32020;
+    --gold-tint: #fff4d6; --gold-ink: #8a5a00;
+    --c: #92400e; --c-tint: #f6ece4;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #dfe6f0; color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 700; }
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; }
+.lead { margin: 0 0 22px; color: var(--muted); max-width: 800px; line-height: 1.45; }
+h2 { margin: 36px 0 8px; font-size: 1.25rem; font-weight: 900; }
+.note { max-width: 800px; line-height: 1.5; margin: 0 0 14px; }
+.note b { font-weight: 900; }
+.phones { display: flex; flex-wrap: wrap; gap: 26px; align-items: flex-start; }
+.pw { display: flex; flex-direction: column; gap: 8px; width: 340px; max-width: 100%; }
+.pw > b { font-size: 1rem; font-weight: 900; }
+.pw > span { color: var(--muted); font-size: .9rem; line-height: 1.35; min-height: 5.5em; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: .75rem; font-weight: 900; margin-right: 6px; background: #e8e2fb; color: var(--violet-ink); }
+.tag.rec { background: var(--ok-tint); color: var(--ok-ink); }
+.phone { position: relative; width: 340px; max-width: 100%; height: 690px; overflow: hidden; border-radius: 34px; border: 8px solid #1b2745;
+    background: rgba(27, 39, 69, .45); box-shadow: 0 18px 40px rgba(27, 39, 69, .25); }
+.sheet { position: absolute; inset: 14px 10px; border-radius: 24px; background: var(--surface); padding: 14px; overflow: hidden; display: flex; flex-direction: column; }
+.topline { display: flex; align-items: center; justify-content: space-between; height: 30px; flex: none; }
+.back { color: var(--violet-ink); font-weight: 900; }
+.x { color: var(--muted); font-size: 1.2rem; }
+.ttl { font-size: 1.25rem; font-weight: 900; margin: 4px 0 2px; }
+.sub { color: var(--muted); font-size: .84rem; font-weight: 800; }
+.bar { height: 7px; border-radius: 5px; background: var(--line); overflow: hidden; margin-top: 8px; flex: none; }
+.bar i { display: block; height: 100%; background: var(--c); border-radius: 5px; }
+
+/* Réviser : cartes */
+.fc { flex: 1; margin-top: 12px; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--c) 30%, var(--line)); background: color-mix(in srgb, var(--c) 4%, #fff);
+    padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.fc em { font-style: normal; font-size: .68rem; font-weight: 900; letter-spacing: .05em; color: var(--muted); text-transform: uppercase; }
+.fc .q { font-size: 1.15rem; font-weight: 900; line-height: 1.3; }
+.key { padding: 12px 14px; border-radius: 16px; background: var(--gold-tint); border: 2px solid #f3d27a; }
+.key b { display: block; font-size: 1.45rem; font-weight: 900; }
+.key small { display: block; color: var(--muted); font-size: .8rem; line-height: 1.35; margin-top: 4px; }
+.key.hide { display: grid; place-items: center; min-height: 96px; background: repeating-linear-gradient(-45deg, #f6dfa0 0 8px, #fbe9b9 8px 16px); color: var(--gold-ink); font-weight: 900; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; flex: none; }
+.btn { display: grid; place-items: center; min-height: 48px; border-radius: 16px; font-weight: 900; font-size: .92rem; text-align: center; color: #fff; padding: 0 8px; }
+.btn.no { background: var(--bad); box-shadow: 0 4px 0 #d63333; }
+.btn.yes { background: var(--ok); box-shadow: 0 4px 0 var(--ok-deep); }
+.btn.blue { background: var(--blue); box-shadow: 0 4px 0 var(--blue-deep); }
+.btn.ghost { color: var(--ink); background: #fff; border: 2px solid var(--line); box-shadow: none; }
+.btn.dim { opacity: .35; }
+.step { display: flex; justify-content: space-between; color: var(--muted); font-size: .78rem; font-weight: 900; margin-top: 8px; }
+
+/* Quiz 4 choix */
+.choices { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.choice { padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); background: #fff; font-weight: 900; font-size: .95rem; box-shadow: 0 3px 0 var(--line); }
+.choice.ok { border-color: var(--ok); background: var(--ok-tint); color: var(--ok-ink); box-shadow: 0 3px 0 var(--ok); }
+.choice.ko { border-color: var(--bad); background: var(--bad-tint); color: var(--bad-ink); box-shadow: 0 3px 0 var(--bad); }
+
+/* Bilan */
+.res { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; }
+.res .big { font-size: 3rem; }
+.res h3 { margin: 0; font-size: 1.3rem; font-weight: 900; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.tiles div { padding: 10px; border-radius: 14px; background: var(--bg); }
+.tiles b { display: block; font-size: 1.4rem; font-weight: 900; }
+.tiles span { font-size: .72rem; color: var(--muted); font-weight: 800; }
+.tiles .g b { color: var(--ok-ink); }
+.tiles .r b { color: var(--bad-ink); }
+.res p { margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.4; }
+
+/* Frise */
+.zoom { display: flex; gap: 6px; margin-top: 10px; flex: none; overflow: hidden; }
+.zoom span { flex: none; padding: 5px 10px; border-radius: 999px; background: var(--bg); color: var(--muted); font-size: .74rem; font-weight: 900; }
+.zoom span.on { background: var(--c); color: #fff; }
+.tl { position: relative; flex: 1; overflow: hidden; margin-top: 10px; padding-left: 58px; }
+.tl::before { content: ""; position: absolute; left: 46px; top: 0; bottom: 0; width: 4px; border-radius: 2px; background: color-mix(in srgb, var(--c) 35%, var(--line)); }
+.ev { position: relative; margin-bottom: 9px; }
+.ev .y { position: absolute; left: -58px; top: 6px; width: 40px; text-align: right; font-size: .78rem; font-weight: 900; color: var(--c); }
+.ev .dot { position: absolute; left: -16px; top: 9px; width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px #fff; }
+.ev .box { padding: 7px 10px; border-radius: 12px; background: color-mix(in srgb, var(--c) 7%, #fff); border: 1.5px solid color-mix(in srgb, var(--c) 18%, var(--line)); }
+.ev .box b { display: block; font-size: .88rem; font-weight: 900; }
+.ev .box small { display: block; color: var(--muted); font-size: .72rem; line-height: 1.25; }
+.ev.lock .dot { background: #fff; border: 2px dashed var(--muted); box-shadow: none; }
+.ev.lock .y { color: var(--muted); }
+.ev.lock .box { background: transparent; border: 2px dashed var(--line); color: var(--muted); font-size: .82rem; font-weight: 800; }
+.era { position: relative; z-index: 1; margin: 4px 0 8px -58px; padding: 3px 10px; display: inline-block; border-radius: 8px; background: var(--c); color: #fff; font-size: .72rem; font-weight: 900; letter-spacing: .03em; }
+
+/* Carte */
+.geo { --c: #15803d; --c-tint: #e3f3e8; }
+.mapwrap { position: relative; margin-top: 10px; border-radius: 16px; background: #e8f1fb; overflow: hidden; flex: none; }
+.mapwrap svg { display: block; width: 100%; height: auto; }
+.mapwrap .pin { position: absolute; transform: translate(-50%, -100%); font-size: 1.05rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 8px; font-size: .74rem; font-weight: 800; color: var(--muted); }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.pop { margin-top: 10px; padding: 10px 12px; border-radius: 16px; border: 2px solid color-mix(in srgb, var(--c) 30%, var(--line)); background: color-mix(in srgb, var(--c) 5%, #fff); }
+.pop b.h { display: block; font-size: 1rem; font-weight: 900; margin-bottom: 4px; }
+.pop .r { display: flex; justify-content: space-between; gap: 8px; padding: 5px 0; border-top: 1px solid var(--line); font-size: .78rem; }
+.pop .r:first-of-type { border-top: 0; }
+.pop .r span { color: var(--muted); }
+.pop .r b { color: var(--gold-ink); white-space: nowrap; }
+.pop .r.lock b { color: var(--muted); }
+.count { display: flex; gap: 8px; margin-top: 10px; }
+.count div { flex: 1; padding: 8px 10px; border-radius: 14px; background: var(--bg); font-size: .72rem; color: var(--muted); font-weight: 800; }
+.count b { display: block; font-size: 1.1rem; color: var(--ink); }
+table { border-collapse: collapse; background: #fff; border-radius: 14px; overflow: hidden; font-size: .88rem; max-width: 900px; }
+td, th { padding: 7px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: var(--bg); font-weight: 900; }
+@media (max-width: 400px) { .phone { height: 660px; } }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Encyclopédie : réviser un chapitre, frise et carte</h1>
+<p class="lead">Trois idées pour plus tard : comment réviser un chapitre (deux façons à comparer), une frise du temps pour l'Histoire et une carte pour la Géographie. Rien de tout ça n'est codé : c'est seulement pour voir à quoi ça ressemblerait.</p>
+
+<h2>1. « Réviser ce chapitre » : sous quelle forme ?</h2>
+<p class="note">Le bouton est en haut d'un chapitre. Il ne révise que les questions <b>déjà sues</b> de ce chapitre, 10 au plus, en commençant par les moins maîtrisées. Ni XP, ni gouttes : c'est pour apprendre.</p>
+<div class="phones">
+  <div class="pw"><b><span class="tag rec">A · conseillée</span> Cartes à retourner</b><span>On lit la question, on cherche dans sa tête, on touche pour voir la réponse, puis on dit honnêtement si on savait. Très rapide (≈ 3 s par carte).</span>
+    <div class="phone"><div class="sheet">
+      <div class="topline"><span class="back">← Révolution et Empire</span><span class="x">✕</span></div>
+      <div class="bar"><i style="width:40%"></i></div>
+      <div class="step"><span>Carte 4 / 10</span><span>✅ 2 · ❌ 1</span></div>
+      <div class="fc">
+        <em>La question</em>
+        <div class="q">Quel coup d'État de 1799 a porté Bonaparte au pouvoir ?</div>
+        <div class="key hide">👆 Touche pour voir la réponse</div>
+      </div>
+      <div class="two"><span class="btn ghost dim">Je ne savais pas</span><span class="btn ghost dim">Je savais</span></div>
+    </div></div>
+  </div>
+  <div class="pw"><b><span class="tag rec">A</span> … une fois retournée</b><span>« Je ne savais pas » : la question reviendra plus tard dans « à revoir », comme une erreur, mais sans perdre de cœur ni ta maîtrise.</span>
+    <div class="phone"><div class="sheet">
+      <div class="topline"><span class="back">← Révolution et Empire</span><span class="x">✕</span></div>
+      <div class="bar"><i style="width:40%"></i></div>
+      <div class="step"><span>Carte 4 / 10</span><span>✅ 2 · ❌ 1</span></div>
+      <div class="fc">
+        <em>La question</em>
+        <div class="q">Quel coup d'État de 1799 a porté Bonaparte au pouvoir ?</div>
+        <div class="key"><b>Le 18 Brumaire</b><small>Le 9 novembre 1799, Bonaparte renverse le Directoire et devient Premier consul.</small></div>
+      </div>
+      <div class="two"><span class="btn no">❌ Je ne savais pas</span><span class="btn yes">✅ Je savais</span></div>
+    </div></div>
+  </div>
+  <div class="pw"><b><span class="tag">C · autre idée</span> Quiz express à 4 choix</b><span>Les 3 mauvaises réponses viennent du même chapitre (des réponses que tu connais déjà : c'est piégeux !). Ça ne ressemble pas aux autres modes, où on tape la réponse.</span>
+    <div class="phone"><div class="sheet">
+      <div class="topline"><span class="back">← Révolution et Empire</span><span class="x">✕</span></div>
+      <div class="bar"><i style="width:60%"></i></div>
+      <div class="step"><span>Question 6 / 10</span><span>✅ 4 · ❌ 1</span></div>
+      <div class="fc">
+        <em>La question</em>
+        <div class="q">Quelle bataille de 1805 est dite « des Trois Empereurs » ?</div>
+        <div class="choices">
+          <div class="choice">Wagram</div>
+          <div class="choice ok">✓ Austerlitz</div>
+          <div class="choice ko">Iéna</div>
+          <div class="choice">Waterloo</div>
+        </div>
+      </div>
+      <div class="two" style="grid-template-columns:1fr"><span class="btn blue">Continuer</span></div>
+    </div></div>
+  </div>
+  <div class="pw"><b>Le bilan (A ou C)</b><span>Court, sans récompense. On peut relancer les ratées tout de suite.</span>
+    <div class="phone"><div class="sheet">
+      <div class="topline"><span class="back">← Révolution et Empire</span><span class="x">✕</span></div>
+      <div class="res">
+        <div class="big">🧠</div>
+        <h3>Révision terminée !</h3>
+        <div class="tiles"><div class="g"><b>7</b><span>je savais</span></div><div class="r"><b>3</b><span>à retravailler</span></div></div>
+        <p>Les 3 à retravailler reviendront dans « à revoir » ces prochains jours.</p>
+      </div>
+      <div class="two" style="grid-template-columns:1fr"><span class="btn blue">🔁 Revoir les 3 ratées</span></div>
+      <div class="two" style="grid-template-columns:1fr;margin-top:8px"><span class="btn ghost">Retour au chapitre</span></div>
+    </div></div>
+  </div>
+</div>
+<p class="note" style="margin-top:14px"><b>Mon avis :</b> A. Taper la réponse, on le fait déjà partout (parcours, entraînement, « Me la reposer »), donc ce serait en effet redondant. Les cartes à retourner sont une autre façon d'apprendre : plus rapide, plus détendue, et on voit tout de suite la réponse complète avec « Le savais-tu ? ». La seule faiblesse, c'est qu'on peut tricher avec soi-même. Comme ça ne rapporte rien, ce n'est pas grave. C est plus « jeu », mais 4 choix rendent la question plus facile. On pourrait l'ajouter plus tard comme 2ᵉ bouton si A plaît.</p>
+
+<h2>2. Histoire : « 🕰️ Ma frise »</h2>
+<p class="note">Un bouton à côté des raccourcis du livre Histoire. Les questions sues sont rangées par date sur une longue frise, avec les grandes périodes comme repères ; les questions pas encore sues laissent une marque en pointillés à leur date. Les dates existent déjà : <b>281 questions d'Histoire sur 441</b> ont une année dans leur texte, et je compléterais les autres à la main.</p>
+<div class="phones">
+  <div class="pw"><b>Toute la frise</b><span>On fait défiler dans le temps. Les boutons du haut sautent d'une période à l'autre. Toucher un événement ouvre sa fiche.</span>
+    <div class="phone"><div class="sheet">
+      <div class="topline"><span class="back">← Histoire</span><span class="x">✕</span></div>
+      <div class="ttl">🕰️ Ma frise</div>
+      <div class="sub">141 événements placés · 300 à découvrir</div>
+      <div class="zoom"><span>🏺 Antiquité</span><span>🏰 Moyen Âge</span><span class="on">👑 Renaissance</span><span>⚔️ Révolution</span></div>
+      <div class="tl">
+        <span class="era">👑 ROIS ET RENAISSANCE</span>
+        <div class="ev"><span class="y">1492</span><i class="dot"></i><div class="box"><b>Christophe Colomb</b><small>atteint l'Amérique</small></div></div>
+        <div class="ev"><span class="y">1515</span><i class="dot"></i><div class="box"><b>Marignan</b><small>victoire de François Iᵉʳ</small></div></div>
+        <div class="ev lock"><span class="y">1539</span><i class="dot"></i><div class="box">❓ à découvrir</div></div>
+        <div class="ev"><span class="y">1572</span><i class="dot"></i><div class="box"><b>La Saint-Barthélemy</b><small>massacre des protestants</small></div></div>
+        <div class="ev"><span class="y">1598</span><i class="dot"></i><div class="box"><b>L'édit de Nantes</b><small>signé par Henri IV</small></div></div>
+        <div class="ev lock"><span class="y">1610</span><i class="dot"></i><div class="box">❓ à découvrir</div></div>
+        <div class="ev"><span class="y">1643</span><i class="dot"></i><div class="box"><b>Louis XIV</b><small>devient roi à 4 ans</small></div></div>
+        <div class="ev"><span class="y">1685</span><i class="dot"></i><div class="box"><b>L'édit de Fontainebleau</b><small>révocation de l'édit de Nantes</small></div></div>
+        <div class="ev lock"><span class="y">1715</span><i class="dot"></i><div class="box">❓ à découvrir</div></div>
+        <div class="ev"><span class="y">1776</span><i class="dot"></i><div class="box"><b>Indépendance américaine</b><small>déclaration du 4 juillet</small></div></div>
+        <span class="era">⚔️ RÉVOLUTION ET EMPIRE</span>
+        <div class="ev"><span class="y">1789</span><i class="dot"></i><div class="box"><b>La Bastille</b><small>prise le 14 juillet</small></div></div>
+      </div>
+    </div></div>
+  </div>
+  <div class="pw"><b>Petit jeu possible ensuite</b><span>La frise peut aussi servir de jeu : « Place cet événement » (on glisse une fiche à sa place, comme les frises du parcours). C'est pour plus tard, seulement si la frise te plaît.</span>
+    <div class="phone"><div class="sheet">
+      <div class="topline"><span class="back">← Ma frise</span><span class="x">✕</span></div>
+      <div class="ttl">🎯 Place l'événement</div>
+      <div class="sub">Entre quelles dates ?</div>
+      <div class="fc" style="flex:none">
+        <em>À placer</em>
+        <div class="q">L'édit de Nantes, signé par Henri IV</div>
+      </div>
+      <div class="tl" style="margin-top:14px">
+        <div class="ev"><span class="y">1515</span><i class="dot"></i><div class="box"><b>Marignan</b></div></div>
+        <div class="ev"><span class="y">1572</span><i class="dot"></i><div class="box"><b>La Saint-Barthélemy</b></div></div>
+        <div class="ev lock"><span class="y">?</span><i class="dot"></i><div class="box" style="border-color:var(--blue);color:var(--blue-deep)">⬇ Pose-le ici</div></div>
+        <div class="ev"><span class="y">1643</span><i class="dot"></i><div class="box"><b>Louis XIV devient roi</b></div></div>
+        <div class="ev"><span class="y">1685</span><i class="dot"></i><div class="box"><b>L'édit de Fontainebleau</b></div></div>
+      </div>
+      <div class="two" style="grid-template-columns:1fr"><span class="btn blue">Vérifier</span></div>
+    </div></div>
+  </div>
+</div>
+
+<h2>3. Géographie (et Drapeaux) : « 🗺️ Ma carte du monde »</h2>
+<p class="note">Une carte où chaque pays se colorie selon ce que tu sais de lui : sa capitale, son drapeau, ses fleuves… Un pays touché montre les questions qui en parlent. Le travail de fond : relier chaque question à un pays (≈ 900 questions de Géographie, Drapeaux et Monuments). On peut le faire de façon automatique pour les drapeaux et les capitales, et à la main pour le reste.</p>
+<div class="phones">
+  <div class="pw geo"><b>La carte</b><span>Vert foncé : tout est su. Vert clair : une partie. Gris : rien encore. On peut zoomer avec deux doigts.</span>
+    <div class="phone"><div class="sheet">
+      <div class="topline"><span class="back">← Géographie</span><span class="x">✕</span></div>
+      <div class="ttl">🗺️ Ma carte du monde</div>
+      <div class="count"><div><b>64 / 197</b>pays découverts</div><div><b>✨ 12</b>pays complets</div></div>
+      <div class="mapwrap" id="map"><svg viewBox="0 0 320 170" id="mapsvg"><text x="160" y="90" text-anchor="middle" fill="#66728f" font-size="11" font-family="Nunito">Chargement de la carte…</text></svg></div>
+      <div class="legend"><span><i style="background:#15803d"></i>tout su</span><span><i style="background:#8fd19e"></i>en partie</span><span><i style="background:#cfd8e3"></i>à découvrir</span></div>
+      <div class="pop">
+        <b class="h">🇮🇹 Italie · 5 / 7 questions sues</b>
+        <div class="r"><span>Capitale</span><b>Rome</b></div>
+        <div class="r"><span>Drapeau</span><b>✓ su</b></div>
+        <div class="r"><span>Plus haut volcan actif d'Europe</span><b>L'Etna</b></div>
+        <div class="r"><span>Ville sur l'eau aux 118 îles</span><b>Venise</b></div>
+        <div class="r lock"><span>❓ 2 questions à découvrir</span><b>›</b></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<h2>Ce que ça demanderait</h2>
+<table>
+<tr><th>Idée</th><th>Travail</th><th>Mon avis</th></tr>
+<tr><td>Réviser un chapitre (A)</td><td>Petit : tout existe déjà (fiches, « à revoir »).</td><td>À faire en premier.</td></tr>
+<tr><td>Quiz 4 choix (C)</td><td>Petit : mauvaises réponses tirées du même chapitre.</td><td>Plus tard, en 2ᵉ bouton, si A plaît.</td></tr>
+<tr><td>Frise de l'Histoire</td><td>Moyen : une année par question (281 sur 441 déjà dans le texte), puis l'écran.</td><td>Très parlant pour l'Histoire. À faire ensuite.</td></tr>
+<tr><td>Carte du monde</td><td>Le plus gros : un pays pour chaque question, plus une carte légère dans le jeu (~100 Ko, hors ligne).</td><td>La plus belle, mais la plus longue. Après la frise.</td></tr>
+</table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+(async () => {
+  try {
+    const world = await (await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json')).json();
+    const countries = topojson.feature(world, world.objects.countries).features.filter(f => f.properties.name !== 'Antarctica');
+    const full = new Set(['France', 'Italy', 'Spain', 'Japan', 'Brazil', 'Egypt', 'Canada', 'Australia', 'Mexico', 'Germany', 'Greece', 'Peru']);
+    const part = new Set(['United States of America', 'China', 'India', 'Russia', 'United Kingdom', 'Portugal', 'Morocco', 'Argentina', 'Chile', 'Norway', 'Sweden', 'Turkey',
+      'South Africa', 'Kenya', 'Tanzania', 'Algeria', 'Tunisia', 'Ireland', 'Poland', 'Switzerland', 'Belgium', 'Netherlands', 'Austria', 'Thailand', 'Vietnam', 'Indonesia',
+      'Iran', 'Saudi Arabia', 'Israel', 'Colombia', 'Venezuela', 'Cuba', 'Iceland', 'Finland', 'Denmark', 'New Zealand', 'Philippines', 'South Korea', 'Nepal', 'Mali',
+      'Senegal', 'Nigeria', 'Ethiopia', 'Madagascar', 'Mongolia', 'Ukraine', 'Croatia', 'Hungary', 'Czechia', 'Romania', 'Ecuador', 'Bolivia']);
+    const proj = d3.geoNaturalEarth1().fitSize([320, 170], { type: 'FeatureCollection', features: countries });
+    const path = d3.geoPath(proj);
+    const svg = d3.select('#mapsvg');
+    svg.selectAll('*').remove();
+    svg.selectAll('path').data(countries).join('path')
+      .attr('d', path)
+      .attr('fill', f => f.properties.name === 'Italy' ? '#15803d' : full.has(f.properties.name) ? '#15803d' : part.has(f.properties.name) ? '#8fd19e' : '#cfd8e3')
+      .attr('stroke', f => f.properties.name === 'Italy' ? '#1b2745' : '#fff')
+      .attr('stroke-width', f => f.properties.name === 'Italy' ? 1.4 : 0.4);
+    const it = countries.find(f => f.properties.name === 'Italy');
+    if (it) {
+      const [x, y] = path.centroid(it);
+      const pin = document.createElement('span');
+      pin.className = 'pin';
+      pin.textContent = '📍';
+      pin.style.left = `${x / 320 * 100}%`;
+      pin.style.top = `${y / 170 * 100}%`;
+      document.getElementById('map').append(pin);
+    }
+  } catch (e) {
+    document.querySelector('#mapsvg text').textContent = 'Carte indisponible (pas de connexion)';
+  }
+})();
+</script>
+</body>
+</html>
