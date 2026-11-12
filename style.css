@@ -4278,3 +4278,24 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-tl-head .enc-tl-eras { position: static; margin: 0 -24px; padding: 4px 24px 10px; box-shadow: 0 6px 8px -8px rgba(0, 0, 0, 0.3); }
 .enc-tl-head + .enc-scroll { padding-top: 10px; }
 .enc-scroll > .enc-title:first-child { margin-top: 0; }
+
+/* 12/11 : retouches de l'encyclopédie (espaces, fiche sans « Me la reposer », mot de Kulti) */
+.enc-full.enc-scroll { display: block; }
+.modal-content.is-enc-fiche.is-enc-noback { padding-top: 26px; }
+.is-enc-noback .enc-scroll > .enc-title:first-child { margin-right: 44px; }
+.is-enc-fiche .duel-back { max-width: calc(100% - 90px); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: block; line-height: 42px; }
+.enc-chap-head .enc-chap-sub { margin-bottom: 0; }
+.enc-chap-head + .enc-bar { margin: 8px 0 12px; }
+.enc-quick { margin-top: 12px; }
+.enc-special { margin-top: 10px; }
+.enc-chap-sec { margin: 14px 2px 10px; }
+.enc-kulti { display: flex; align-items: flex-start; gap: 8px; margin-top: 14px; }
+.enc-kulti .kulti { flex: none; width: 48px; height: 48px; }
+.enc-fiche .enc-kulti-say, .enc-kulti-say { position: relative; flex: 1; margin: 4px 0 0; padding: 9px 12px; border-radius: 14px; background: var(--bg); color: var(--ink); font-size: 0.85rem; font-weight: 700; line-height: 1.35; }
+.enc-kulti-say::before { content: ""; position: absolute; left: -6px; top: 14px; border: 6px solid transparent; border-left: 0; border-right-color: var(--bg); }
+.enc-kulti-say em { display: block; margin-bottom: 2px; color: var(--muted); font-size: 0.68rem; font-style: normal; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
+.enc-mates { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.enc-mates > em { color: var(--muted); font-size: 0.68rem; font-style: normal; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
+.enc-mate { display: block; width: 100%; padding: 7px 10px; border: 1.5px solid color-mix(in srgb, var(--c) 22%, var(--line)); border-radius: 12px; background: color-mix(in srgb, var(--c) 5%, var(--surface)); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.enc-mate b { display: block; font-size: 0.86rem; font-weight: 900; }
+.enc-mate small { display: block; color: var(--muted); font-size: 0.72rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

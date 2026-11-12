@@ -2228,6 +2228,11 @@ function openEncRevise(theme, i, only = null) {
                 again.addEventListener('click', () => openEncRevise(theme, i, ko));
                 acts.append(again);
             }
+            const more = el('button', `btn ${res.ko.length ? 'btn-ghost' : 'btn-green'} btn-full`);   // 12/11 : relancer d'autres questions
+            more.type = 'button';
+            more.textContent = '🔀 10 autres questions';
+            more.addEventListener('click', () => openEncRevise(theme, i));
+            acts.append(more);
             const ret = el('button', 'btn btn-ghost btn-full');
             ret.type = 'button';
             ret.textContent = 'Retour au chapitre';
@@ -2661,10 +2666,12 @@ function encFitKeyboard() {
     new MutationObserver(() => {
         const mc = fb.closest('.modal-content');
         mc.classList.toggle('is-enc-fiche', !!fb.querySelector(':scope > .enc-fiche, :scope > .enc-full'));
+        mc.classList.toggle('is-enc-noback', !fb.querySelector(':scope > .duel-back'));
         encFitKeyboard();
     }).observe(fb, { childList: true });
     window.visualViewport?.addEventListener('resize', encFitKeyboard);
 })();
+const ENC_FACT_SKIP = new Set(['siecle', 'siecles', 'quelle', 'quelles', 'comment', 'appelle', 'celebre', 'celebres', 'premier', 'premiere', 'grande', 'grandes', 'france', 'francais', 'francaise', 'monde', 'histoire', 'nomme', 'surnomme', 'depuis', 'pendant', 'combien', 'toujours', 'encore', 'plusieurs', 'contre', 'autres', 'entre']);
 function openEncFiche(q, list, backTheme, fromEnd = false) {
     const body = $('friendBody');
     body.replaceChildren();
@@ -2717,50 +2724,43 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     d2.textContent = isMastered(q.id) ? '✨ Maîtrisé' : '✨ Pas encore maîtrisé';
     meta.append(d2);
     fiche.append(meta);
-    // « Me la reposer » : la réponse se cache, on la tape, on vérifie (rien n'est enregistré)
-    const quiz = el('div', 'enc-quiz');
-    const ask = el('button', 'btn btn-green btn-full');
-    ask.type = 'button';
-    ask.textContent = '🔁 Me la reposer';
-    const showEnd = () => setTimeout(() => { fiche.scrollTop = fiche.scrollHeight; }, 0);
-    ask.addEventListener('click', () => {
-        fiche.classList.add('is-quiz');
-        quiz.replaceChildren();
-        const inp = el('input', 'enc-input');
-        inp.type = 'text';
-        inp.placeholder = 'Ta réponse';
-        inp.autocomplete = 'off';
-        const ok = el('button', 'btn btn-green btn-full');
-        ok.type = 'button';
-        ok.textContent = 'Vérifier';
-        const res = el('p', 'enc-res');
-        const check = () => {
-            if (!inp.value.trim()) { shake(inp); return; }
-            const v = judge(inp.value, q.a, q.q);
-            res.textContent = v === 'wrong' ? `❌ Pas tout à fait : c’était « ${q.a[0]} ».` : v === 'typo' ? '✅ Juste (attention à l’orthographe) !' : '✅ Bravo, tu la sais toujours !';
-            res.className = `enc-res ${v === 'wrong' ? 'is-ko' : 'is-ok'}`;
-            playSound(v === 'wrong' ? 'bad' : 'good');
-            fiche.classList.remove('is-quiz');
-            inp.readOnly = true;
-            inp.blur();   // le clavier se ferme : on voit la réponse
-            ok.hidden = true;
-            showEnd();
-            // 12/11 : le résultat ne reste pas : après 2,5 s, on revient au bouton « Me la reposer »
-            setTimeout(() => {
-                if (!fiche.isConnected) return;
-                quiz.classList.add('is-fading');
-                setTimeout(() => { if (!fiche.isConnected) return; quiz.classList.remove('is-fading'); quiz.replaceChildren(ask); }, 300);
-            }, 2500);
-        };
-        ok.addEventListener('click', check);
-        inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
-        quiz.append(inp, ok, res);
-        inp.focus();
-        // le clavier s'ouvre : la fiche remonte pour garder « Vérifier » visible
-        [80, 350, 700].forEach(ms => setTimeout(() => { encFitKeyboard(); showEnd(); }, ms));
-    });
-    quiz.append(ask);
-    fiche.append(quiz);
+    // 12/11 : « Me la reposer » retiré ; à la place, un mot de Kulti (anecdote du thème) et d'autres questions du même chapitre
+    const facts = (typeof THEME_FACTS !== 'undefined' && THEME_FACTS[q.theme]) || [];
+    if (facts.length) {
+        const words = encNorm(`${q.a[0]} ${q.q}`).split(/[^a-z0-9]+/).filter(w => w.length > 5 && !ENC_FACT_SKIP.has(w));
+        const near = facts.filter(f => words.some(w => encNorm(f).includes(w)));
+        const pool = near.length ? near : facts;
+        const fact = pool[q.id % pool.length];
+        const kb = el('div', 'enc-kulti');
+        kb.append(kultiEl('content', 'kulti-blink'));
+        const say = el('p', 'enc-kulti-say');
+        const sl = el('em');
+        sl.textContent = 'Le mot de Kulti';
+        say.append(sl, document.createTextNode(fact));
+        kb.append(say);
+        fiche.append(kb);
+    }
+    const chap = encChapterOf(q);
+    const mates = chap ? shuffle(chap.qs.filter(x => x !== q && encKnown(x))).slice(0, 3) : [];
+    if (mates.length) {
+        const box = el('div', 'enc-mates');
+        const t = el('em');
+        t.textContent = `Dans le même chapitre · ${chap.emo} ${chap.name}`;
+        box.append(t);
+        const chapList = chap.qs.filter(encKnown).sort(encSortAnswer);
+        mates.forEach(m => {
+            const b = el('button', 'enc-mate');
+            b.type = 'button';
+            const bb = el('b');
+            bb.textContent = m.a[0];
+            const ss = el('small');
+            ss.textContent = m.q;
+            b.append(bb, ss);
+            b.addEventListener('click', () => openEncFiche(m, chapList, backTheme, fromEnd));
+            box.append(b);
+        });
+        fiche.append(box);
+    }
     const nav = el('div', 'enc-nav');
     const mk = (txt, j) => {
         const b = el('button', 'enc-navbtn');
