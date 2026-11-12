@@ -331,6 +331,20 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   disques colorés `color/size`, astre sans question = juste dessiné `is-empty`). LANGUE FRANÇAISE = dictionnaire A-Z (`openEncDico`, lettre
   = 1re lettre du mot, `encDicoWord` : mot entre « » pour « que signifie », sinon la réponse sans article ; expressions : sans avoir / être…).
   Restent : bibliothèque, musée, affiches, vinyles, trophées, arcade, frise Techno ; Drapeaux / Monuments à rediscuter (ils partagent la carte).
+- 13/11 (v=20261113f, bac à sable) : DRAPEAUX = « 🏳️ Mon mur de drapeaux » (`openEncFlags` : pays par continent `WORLD_CONT` dans carte-monde.js,
+  drapeau gris « ? » tant que rien n'est su, doré si tout est su, tap = questions en bas, « 🏁 Les autres drapeaux » = questions sans pays ;
+  12 drapeaux téléchargés : ao bb bd dm fo ge gh im ly ni pg so). MONUMENTS = « 💌 Mes cartes postales » (`openEncPostcards` : une carte par
+  question, photo si elle existe, sinon 🏛️ ; date / mesure / architecte = carte ÉCRITE au dos `encPostIsFact` ; pas sue = dos de la carte ;
+  timbre = drapeau du pays ; `ENC_POST_CC` = pays ajoutés à la main pour les « Dans quel pays… » ; vocabulaire en dernier). Les deux livres
+  gardent aussi « Ma carte du monde ». TAP À CÔTÉ = fiche du bas refermée et dessin rendu en entier (`encTapOff`) : dieux, corps, système
+  solaire, France, dictionnaire, drapeaux ; carte du monde : tap dans la mer. Dictionnaire : lettre = mot entre « » si « que signifie »,
+  sinon 1er vrai mot de la RÉPONSE.
+- 13/11 (v=20261113g) : CARTES POSTALES EN ALBUMS (`openEncPostcards` = 7 albums Paris / France / Europe / Asie / Amériques / Afrique et Océanie /
+  vocabulaire, `openEncPostAlbum` = cartes rangées par pays) ; 180 PHOTOS EN PLUS (monuments/pc/, `cartes-postales.js` = `ENC_POST_PH` id ->
+  [fichier, l, h, crédit, titre], Wikimedia Commons, scratchpad post_fetch.py / post_shrink.py, 8 refusées : logo / plan / carte), montrées
+  sur la carte postale ET dans la fiche (`encMedia`), jamais dans les questions ; photo entière (contain + fond flouté). Drapeaux et
+  Monuments : plus de carte du monde. Drapeaux en entier (contain, contour drop-shadow). Fiches du bas : bouton ✕ (`encPanelX`) + retoucher
+  l'élément = refermer. Fiche : photo entière (plus de recadrage des photos en hauteur).
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
