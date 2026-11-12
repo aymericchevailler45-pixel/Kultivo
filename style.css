@@ -4592,3 +4592,10 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-lib-n { bottom: 1px; font-size: 0.5rem; line-height: 9px; }
 .enc-flagpage .enc-wall-h { margin: 26px 2px 12px; }
 .enc-flagpage .enc-wall-h:first-child { margin-top: 4px; }
+/* 13/11 : la fiche du bas prend la place de son contenu (pas de blanc dessous) ; le dessin garde au moins sa part */
+.enc-godpage.has-sel .enc-god-scroll { flex: 1 1 0; min-height: 40%; }
+.enc-godpage.has-sel .enc-god-panel { flex: 0 1 auto; min-height: 0; }
+.enc-frpage.has-sel .enc-god-scroll { flex: 1 1 0; min-height: 38%; }
+.enc-dicopage.has-sel .enc-god-scroll { flex: 1 1 0; min-height: 34%; }
+.enc-flagpage.has-sel .enc-god-scroll { flex: 1 1 0; min-height: 40%; }
+.enc-libpage.has-sel .enc-god-scroll { flex: 1 1 0; min-height: 44%; }
