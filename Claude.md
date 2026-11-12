@@ -380,6 +380,12 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   podium vert) ; « 💡 Pour aller plus loin » (œuvres / films connus) dans un encadré à part SOUS les questions ; arcade : couleurs alternées. FAIT (v=20261113x) : TOUT le musée DESSINÉ à la main (tableaux.js = `ENC_MUS_PAINT` titre -> SVG, 47 + 215 dessins,
   scratchpad make_tableaux.py, make_paint_*.py, make_sam.py, fusion merge_paint.py ; sculptures au-dessus du socle `.is-statue`) ; podium des coupes or / argent / bronze, plaques de même taille ; avant : tableaux du musée dessinés « génériques » (proposition : vrais dessins simplifiés des
   ~30 œuvres les plus connues).
+- 13/11 (v=20261113y) : redessinés à la main (scratchpad paint_fix.json) : Création d'Adam (gros plan des mains), Penseur / Rodin, Bernin
+  (Extase de sainte Thérèse), Rude (La Marseillaise), David pour Michel-Ange SCULPTEUR (clé « scu|Michel-Ange », la recherche essaie
+  `row|titre` puis `titre`) ; objet tout su = plaque dorée ★ (musée) / liseré doré (affiches) (`is-full` dans encRowsScreen) ; livres :
+  titre > 12 lettres sur 2 colonnes. À FAIRE AVANT D'OUVRIR L'ENCYCLOPÉDIE À TOUS : code de l'encyclopédie dans un fichier à part chargé
+  au 1er tap sur « Savoirs » (script.js = 810 Ko), annonce dans « Quoi de neuf ? ». Garder en tête : limiter « J'avais juste », relire
+  les fins de partie rares. Prochainement : couleur des bonnes réponses, vue questions_les_plus_ratees ; semaine pro : Noël.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées

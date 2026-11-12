@@ -3641,7 +3641,7 @@ async function openEncLibrary(keepKey = null) {
             bt.style.height = `${108 + hs % 46}px`;
             bt.style.width = `${28 + (hs >>> 5) % 9}px`;
             if (known) bt.style.setProperty('--bk', ENC_LIB_COLORS[(hs >>> 3) % ENC_LIB_COLORS.length]);
-            const sp = el('span', `enc-lib-title${known && b.title.length > 18 ? ' is-long' : ''}`);
+            const sp = el('span', `enc-lib-title${known && b.title.length > 12 ? ' is-long' : ''}`);
             sp.textContent = known ? b.title : '?';
             bt.append(sp);
             if (b.qs.length > 1) { const n = el('i', 'enc-lib-n'); n.textContent = b.qs.length; bt.append(n); }
@@ -4181,7 +4181,7 @@ function encRowsScreen(o, keepKey = null) {
         const row = el('div', `enc-rows-row is-${rk}`);
         sorted.forEach(it => {
             const known = it.k > 0;
-            const b = el('button', `enc-rows-item ${o.itemCls(it)}${known ? ' is-known' : ''}`);
+            const b = el('button', `enc-rows-item ${o.itemCls(it)}${known ? ' is-known' : ''}${it.qs.length && it.k >= it.qs.length ? ' is-full' : ''}`);
             b.type = 'button';
             b.append(...[].concat(o.make(it, known)));
             if (it.qs.length > 1) { const n = el('i', 'enc-rows-n'); n.textContent = it.qs.length; b.append(n); }
@@ -4289,7 +4289,7 @@ async function openEncMuseum(keepKey = null) {
             const w = it.row === 'scu' ? 70 : 66 + hs % 30, hh = it.row === 'scu' ? 92 : 62 + (hs >>> 6) % 40;
             fr.style.width = `${w}px`;
             fr.style.height = `${hh}px`;
-            const paint = window.ENC_MUS_PAINT?.[it.title];
+            const paint = window.ENC_MUS_PAINT?.[`${it.row}|${it.title}`] || window.ENC_MUS_PAINT?.[it.title];   // « scu|Michel-Ange » = David, pas la Chapelle Sixtine
             if (known && paint) {   // 13/11 : œuvre célèbre dessinée à la main (version simplifiée reconnaissable)
                 const ns = 'http://www.w3.org/2000/svg';
                 const svg = document.createElementNS(ns, 'svg');
