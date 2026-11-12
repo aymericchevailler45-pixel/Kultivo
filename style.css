@@ -4851,9 +4851,7 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 /* frise des inventions : de l'air avant « Hors frise » */
 .enc-wall-h.enc-tf-off { margin-top: 34px; }
 /* 13/11 : trophées = coupes à étoiles (podium vert, plus de bronze / argent / or) */
-.enc-tro-step.is-3 .enc-tro-block { background: linear-gradient(#84cc16, #4d7c0f); }
-.enc-tro-step.is-2 .enc-tro-block { background: linear-gradient(#a3d65c, #65a30d); }
-.enc-tro-step.is-1 .enc-tro-block { background: linear-gradient(#c5e59a, #86b84a); }
+/* podium : or, argent, bronze (les objets sont des coupes à étoiles, pas de confusion avec les médailles d'entraînement) */
 .enc-tro-block small { letter-spacing: 1px; color: #fff6c8; }
 .enc-tro-rule { font-size: 0.74rem; line-height: 1.3; padding: 0 6px; }
 .enc-tro-item.is-gold .enc-tro-svg { filter: drop-shadow(0 0 5px rgba(243, 180, 0, 0.65)) drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)); }
