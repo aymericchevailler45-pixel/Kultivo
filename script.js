@@ -2153,6 +2153,7 @@ function openEncBook(theme, keep = false) {
         const special = theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
             : theme === 'Mythologie' ? ['🌳', 'L’arbre des dieux', 'Grèce, Égypte et Nordique', () => openEncGods()]
             : theme === 'Sciences' ? [['🫀', 'Mon corps humain', 'les organes que tu connais', () => openEncSpots('sci', 'corps')], ['🪐', 'Mon système solaire', 'les planètes, les étoiles et l’espace', () => openEncSpots('sci', 'espace')]]
+            : theme === 'Langue française' ? ['📖', 'Mon dictionnaire', 'tes mots et expressions de A à Z', () => openEncDico()]
             : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
         const parts = [quick];
@@ -3021,6 +3022,99 @@ async function openEncFrance(keepCode = null) {
     body.replaceChildren(encBackBtn('← Gastronomie', () => openEncBook('Gastronomie', true)), page);
     $('friendModal').hidden = false;
     if (keepCode && shapes[keepCode]) show(keepCode);
+}
+
+/* 13/11 : « Mon dictionnaire » (Langue française) : chaque question est rangée à la 1re lettre de son mot ; la case se remplit d'encre. */
+const ENC_DICO_SKIP = new Set(['avoir', 'etre', 'faire', 'se', 's', 'ne', 'il', 'y', 'en', 'on']);
+function encDicoWord(q) {
+    const m = /(signifie|veut dire|définit|désigne le mot|sens d)/i.test(q.q) && q.q.match(/«\s*([^»]+?)\s*»/);
+    let w = m ? m[1] : q.a[0];
+    const words = encNorm(w).replace(/[’']/g, ' ').split(/[^a-z0-9]+/).filter(Boolean);
+    const art = new Set(['le', 'la', 'les', 'l', 'un', 'une', 'des', 'd', 'du', 'de']);
+    let i = 0;
+    const isExpr = /Expressions|Proverbes/.test(encChapterOf(q)?.name || '');
+    while (i < words.length - 1 && (art.has(words[i]) || (isExpr && ENC_DICO_SKIP.has(words[i])))) i++;
+    return words[i] || '';
+}
+function encDicoLetter(q) {
+    const c = encDicoWord(q).charAt(0).toUpperCase();
+    return /[A-Z]/.test(c) ? c : '#';
+}
+function openEncDico(keepL = null) {
+    const qs = encChapters('Langue française').flatMap(c => c.qs);
+    const by = {};
+    qs.forEach(q => { const l = encDicoLetter(q); (by[l] = by[l] || []).push(q); });
+    const kn = qs.filter(encKnown).length;
+    const page = el('div', 'enc-full enc-godpage enc-dicopage');
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = '📖 Mon dictionnaire';
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${kn} / ${qs.length} mots et expressions sus`;
+    const wrap = el('div', 'enc-god-scroll enc-dico-wrap');
+    const grid = el('div', 'enc-dico');
+    const panel = el('div', 'enc-map-panel enc-god-panel');
+    const cells = {};
+    const show = L => {
+        Object.values(cells).forEach(c => c.classList.remove('is-sel'));
+        cells[L]?.classList.add('is-sel');
+        const list = (by[L] || []).slice().sort((a, b) => encDicoWord(a).localeCompare(encDicoWord(b), 'fr'));
+        const known = list.filter(encKnown);
+        panel.replaceChildren();
+        const card = el('div', 'enc-cpanel enc-dico-card');
+        const hd = el('div', 'enc-map-head');
+        const nm = el('b', 'enc-dico-big');
+        nm.textContent = L === '#' ? '0-9' : L;
+        const ct = el('span');
+        ct.textContent = `· ${known.length} / ${list.length} ${list.length > 1 ? 'mots et expressions' : 'mot'}`;
+        hd.append(nm, ct);
+        card.append(hd);
+        const ret = { label: '← Mon dictionnaire', fn: () => openEncDico(L) };
+        known.forEach(q => {
+            const row = el('button', 'enc-crow');
+            row.type = 'button';
+            const l = el('span');
+            l.textContent = q.q.replace(/\s*\?$/, '');
+            const b = el('b');
+            b.textContent = q.a[0];
+            row.append(l, b);
+            row.addEventListener('click', () => openEncFiche(q, known, ret));
+            card.append(row);
+        });
+        if (list.length > known.length) {
+            const lk = el('button', 'enc-crow is-lock');
+            lk.type = 'button';
+            const l = el('span');
+            l.textContent = `❓ ${list.length - known.length} à découvrir`;
+            lk.append(l);
+            lk.addEventListener('click', encLockedTip);
+            card.append(lk);
+        }
+        panel.append(card);
+        panel.scrollTop = 0;
+        page.classList.add('has-sel');
+        requestAnimationFrame(() => cells[L]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+    };
+    [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ...(by['#'] ? ['#'] : [])].forEach(L => {
+        const list = by[L] || [];
+        const k = list.filter(encKnown).length;
+        const c = el('button', `enc-letter${!list.length ? ' is-empty' : ''}${list.length && k >= list.length ? ' is-full' : ''}${k ? ' is-known' : ''}`);
+        c.type = 'button';
+        c.style.setProperty('--f', `${list.length ? Math.round(k / list.length * 100) : 0}%`);
+        const b = el('b');
+        b.textContent = L === '#' ? '0-9' : L;
+        const s = el('small');
+        s.textContent = list.length ? `${k}/${list.length}` : '';
+        c.append(b, s);
+        if (list.length) c.addEventListener('click', () => show(L));
+        else c.disabled = true;
+        cells[L] = c;
+        grid.append(c);
+    });
+    wrap.append(grid);
+    page.append(h, cnt, wrap, panel);
+    $('friendBody').replaceChildren(encBackBtn('← Langue française', () => openEncBook('Langue française', true)), page);
+    $('friendModal').hidden = false;
+    if (keepL && by[keepL]) show(keepL);
 }
 
 function encMedia(q, small) {

@@ -4437,3 +4437,17 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-tree.is-space .enc-god.is-disc.is-known i, .enc-tree.is-space .enc-god.is-disc.is-empty i { border: 0; background: radial-gradient(circle at 35% 30%, #fff8, transparent 45%), var(--disc); box-shadow: 0 0 10px color-mix(in srgb, var(--disc) 60%, transparent); }
 .enc-tree.is-space .enc-god.is-disc.is-full i { box-shadow: 0 0 0 3px #f3b400, 0 0 12px var(--disc); }
 .enc-tree.is-space .enc-god.is-disc[data-id="soleil"].is-known i { box-shadow: 0 0 30px 10px rgba(255, 207, 58, 0.55); }
+
+/* 13/11 : dictionnaire de A à Z */
+.enc-dico-wrap { background: color-mix(in srgb, #2563eb 5%, var(--surface)); padding: 10px; }
+.enc-dico { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.enc-letter { position: relative; aspect-ratio: 1; overflow: hidden; padding: 0; border: 2px solid #c9d6f5; border-radius: 12px; background: var(--surface); font: inherit; cursor: pointer; display: grid; place-items: center; }
+.enc-letter::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--f); background: color-mix(in srgb, #2563eb 22%, var(--surface)); transition: height 0.4s; }
+.enc-letter b { position: relative; z-index: 1; font-family: Georgia, 'Times New Roman', serif; font-size: 1.55rem; font-weight: 700; color: #2563eb; }
+.enc-letter small { position: absolute; z-index: 1; right: 5px; bottom: 3px; color: #2563eb; font-size: 0.55rem; font-weight: 900; }
+.enc-letter.is-empty { border-style: dashed; opacity: 0.45; cursor: default; }
+.enc-letter:not(.is-known) b { color: #9fb3dd; }
+.enc-letter.is-full { border-color: #f3b400; box-shadow: 0 0 0 2px #f3b400 inset; }
+.enc-letter.is-sel { border-color: #1b2745; box-shadow: 0 0 0 2px #1b2745 inset; }
+.enc-dico-big { font-family: Georgia, 'Times New Roman', serif; font-size: 1.6rem !important; color: #2563eb; }
+.enc-dicopage.has-sel .enc-god-scroll { flex: 0 0 34%; }
