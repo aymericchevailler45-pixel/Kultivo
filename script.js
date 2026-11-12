@@ -2063,7 +2063,28 @@ function openEncBook(theme, keep = false) {
             row.addEventListener('click', () => openEncChapter(theme, c.i));
             list.append(row);
         });
-        zone.append(quick, sec, list);
+        const special = theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
+            : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
+        const parts = [quick];
+        if (special) {   // 12/11 : frise (Histoire) ou carte du monde (Géographie, Drapeaux, Monuments)
+            const b = el('button', 'enc-special');
+            b.type = 'button';
+            b.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
+            const e = el('span', 'enc-special-e');
+            e.textContent = special[0];
+            const t = el('span', 'enc-special-t');
+            const tb = el('b');
+            tb.textContent = special[1];
+            const ts = el('small');
+            ts.textContent = special[2];
+            t.append(tb, ts);
+            const ar = el('span', 'enc-special-ar');
+            ar.textContent = '›';
+            b.append(e, t, ar);
+            b.addEventListener('click', special[3]);
+            parts.push(b);
+        }
+        zone.append(...parts, sec, list);
     };
     search.addEventListener('input', () => { encState.search = search.value; draw(); });
     body.append(h, bar, tiles, search, zone);
@@ -2103,7 +2124,15 @@ function openEncChapter(theme, i, keepScroll = false) {
     const ret = { label: `← ${c.name}`, fn: () => openEncChapter(theme, i, true) };
     known.forEach(q => list.append(encRow(q, known, ret)));
     if (!known.length) list.append(encEmpty('Aucune question sue dans ce chapitre pour l’instant.'));
-    const parts = [back, head, bar, list];
+    const parts = [back, head, bar];
+    if (k) {   // 12/11 : réviser les questions sues du chapitre (cartes à retourner, rien n'est enregistré)
+        const rv = el('button', 'btn btn-green btn-full enc-rv-btn');
+        rv.type = 'button';
+        rv.textContent = '🧠 Réviser ce chapitre';
+        rv.addEventListener('click', () => openEncRevise(theme, i));
+        parts.push(rv);
+    }
+    parts.push(list);
     if (n > k) {   // une petite case « ? » par question à découvrir (comme les cartes qui manquent)
         const t = el('p', 'enc-sec');
         t.textContent = `Encore ${plural(n - k, 'question', 'questions')} à découvrir`;
@@ -2135,6 +2164,388 @@ function openEncSet(theme, title, qs) {
     $('friendModal').hidden = false;
     $('friendModal').querySelector('.modal-content').scrollTop = 0;
 }
+/* ---------- 12/11 : « Réviser ce chapitre » (cartes à retourner), frise de l'Histoire, carte du monde ---------- */
+const encLoaded = {};
+function encLoad(src) {   // fichiers lourds chargés seulement à la 1re ouverture (frise, carte)
+    if (!encLoaded[src]) encLoaded[src] = new Promise((ok, ko) => {
+        const s = document.createElement('script');
+        s.src = `${src}?v=${(document.querySelector('script[src*="script.js?v="]')?.src.split('v=')[1]) || ''}`;
+        s.onload = ok;
+        s.onerror = () => { delete encLoaded[src]; ko(); };
+        document.head.append(s);
+    });
+    return encLoaded[src];
+}
+function encBackBtn(label, fn) {
+    const b = el('button', 'duel-back');
+    b.type = 'button';
+    b.textContent = label;
+    b.addEventListener('click', fn);
+    return b;
+}
+
+/** Révision d'un chapitre : 10 questions sues au plus (les moins maîtrisées d'abord). Rien n'est enregistré :
+    « Je ne savais pas » ne va PAS dans « à revoir » (choix de l'utilisateur, 12/11). */
+function openEncRevise(theme, i, only = null) {
+    const c = encChapters(theme).find(x => x.i === i);
+    if (!c) return;
+    let deck = only || (() => {
+        const known = shuffle(c.qs.filter(encKnown));
+        const notM = known.filter(q => !isMastered(q.id)), m = known.filter(q => isMastered(q.id));
+        return notM.concat(m).slice(0, 10);
+    })();
+    deck = shuffle(deck.slice());
+    let k = 0;
+    const res = { ok: [], ko: [] };
+    const back = () => openEncChapter(theme, i, true);
+    const body = $('friendBody');
+    const draw = () => {
+        body.replaceChildren();
+        const top = encBackBtn(`← ${c.name}`, back);
+        if (k >= deck.length) {   // bilan
+            const box = el('div', 'enc-fiche enc-rv-end');
+            box.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
+            const big = el('div', 'enc-rv-big');
+            big.append(kultiEl(res.ko.length ? 'content' : 'fier', 'kulti-blink kulti-float'));
+            const h = el('h3');
+            h.textContent = 'Révision terminée !';
+            const tiles = el('div', 'enc-tiles enc-rv-tiles');
+            [[res.ok.length, 'je savais', 'is-ok'], [res.ko.length, 'à retravailler', 'is-ko']].forEach(([v, l, cls]) => {
+                const d = el('div', cls);
+                const b = el('b');
+                b.textContent = v;
+                const s = el('span');
+                s.textContent = l;
+                d.append(b, s);
+                tiles.append(d);
+            });
+            const p = el('p', 'muted');
+            p.textContent = res.ko.length ? 'Relance-les tout de suite pour bien les retenir.' : 'Tout juste : bravo !';
+            box.append(big, h, tiles, p);
+            const acts = el('div', 'enc-rv-acts');
+            if (res.ko.length) {
+                const again = el('button', 'btn btn-green btn-full');
+                again.type = 'button';
+                again.textContent = `🔁 Revoir ${res.ko.length > 1 ? `les ${res.ko.length} ratées` : 'la ratée'}`;
+                const ko = res.ko.slice();
+                again.addEventListener('click', () => openEncRevise(theme, i, ko));
+                acts.append(again);
+            }
+            const ret = el('button', 'btn btn-ghost btn-full');
+            ret.type = 'button';
+            ret.textContent = 'Retour au chapitre';
+            ret.addEventListener('click', back);
+            acts.append(ret);
+            body.append(top, box, acts);
+            playSound(res.ko.length ? 'good' : 'win');
+            return;
+        }
+        const q = deck[k];
+        const bar = el('div', 'enc-bar');
+        bar.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
+        const fill = el('i');
+        fill.style.width = `${Math.round(k / deck.length * 100)}%`;
+        bar.append(fill);
+        const step = el('div', 'enc-rv-step');
+        const s1 = el('span');
+        s1.textContent = `Carte ${k + 1} / ${deck.length}`;
+        const s2 = el('span');
+        s2.textContent = `✅ ${res.ok.length} · ❌ ${res.ko.length}`;
+        step.append(s1, s2);
+        const card = el('div', 'enc-fiche enc-rv-card');
+        card.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
+        const media = q.rebus ? (() => { const d = el('div', 'enc-rebus'); d.append(...q.rebus.map(emojiImg)); return d; })() : encMedia(q, false);
+        if (media) { const w = el('div', `enc-media${q.flag ? ' is-flag' : ''}`); w.append(media); card.append(w); }
+        const qq = el('div', 'enc-q');
+        const ql = el('em');
+        ql.textContent = 'La question';
+        qq.append(ql, document.createTextNode(q.q));
+        const key = el('button', 'enc-rv-key');
+        key.type = 'button';
+        key.textContent = '👆 Touche pour voir la réponse';
+        card.append(qq, key);
+        const two = el('div', 'enc-rv-two');
+        const no = el('button', 'btn btn-red');
+        no.type = 'button';
+        no.textContent = '❌ Je ne savais pas';
+        const yes = el('button', 'btn btn-green');
+        yes.type = 'button';
+        yes.textContent = '✅ Je savais';
+        no.disabled = yes.disabled = true;
+        two.append(no, yes);
+        key.addEventListener('click', () => {
+            if (key.classList.contains('is-open')) return;
+            key.classList.add('is-open');
+            key.replaceChildren();
+            const b = el('b');
+            b.textContent = q.a[0];
+            key.append(b);
+            if (q.exp) { const s = el('small'); s.textContent = q.exp; key.append(s); }
+            no.disabled = yes.disabled = false;
+            setTimeout(() => { card.scrollTop = card.scrollHeight; }, 0);
+        });
+        const next = ok => { (ok ? res.ok : res.ko).push(q); k++; draw(); };
+        no.addEventListener('click', () => next(false));
+        yes.addEventListener('click', () => next(true));
+        body.append(top, bar, step, card, two);
+    };
+    draw();
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
+}
+
+/* Frise de l'Histoire : questions sues rangées par année ; celles à découvrir = cases en pointillés (regroupées). */
+const ENC_ERAS = [[-1e9, '🏺', 'Antiquité'], [476, '🏰', 'Moyen Âge'], [1492, '👑', 'Rois et Renaissance'], [1789, '⚔️', 'Révolution et Empire'],
+    [1815, '🚂', 'XIXe siècle'], [1914, '🪖', 'Guerres mondiales'], [1945, '🕊️', 'Depuis 1945']];
+const encYear = q => { const v = window.ENC_YEARS?.[q.id]; return v === undefined ? null : Array.isArray(v) ? { y: v[0], approx: true } : { y: v, approx: false }; };
+const encEra = y => { let e = 0; ENC_ERAS.forEach((x, j) => { if (y >= x[0]) e = j; }); return e; };
+function encYearLabel(y, approx) {
+    const d = el('span', 'enc-tl-y');
+    if (approx) { const s = el('small'); s.textContent = 'vers'; d.append(s); }
+    d.append(document.createTextNode(y < 0 ? fmtNum(-y) : String(y)));
+    if (y < 0) { const s = el('small'); s.textContent = 'av. J.-C.'; d.append(s); }
+    return d;
+}
+async function openEncFrise(keep = false) {
+    const body = $('friendBody');
+    const mc = $('friendModal').querySelector('.modal-content');
+    try { await encLoad('frise-histoire.js'); } catch (e) { showToast('📶 Frise indisponible hors connexion pour l’instant'); return; }
+    const all = encChapters('Histoire').flatMap(c => c.qs).map(q => ({ q, t: encYear(q) })).filter(x => x.t).sort((a, b) => a.t.y - b.t.y);
+    const known = all.filter(x => encKnown(x.q));
+    body.replaceChildren();
+    const h = el('h2', 'review-title enc-title');
+    h.textContent = '🕰️ Ma frise';
+    h.classList.add('is-sm');
+    const sub = el('p', 'enc-chap-sub');
+    sub.textContent = `${plural(known.length, 'événement placé', 'événements placés')} · ${fmtNum(all.length - known.length)} à découvrir`;
+    const chips = el('div', 'enc-tl-eras');
+    const tl = el('div', 'enc-tl');
+    tl.style.setProperty('--c', ENC_COLORS['Histoire']);
+    const eraNodes = {};
+    const list = known.map(x => x.q);
+    let era = -1, hole = null;
+    all.forEach(({ q, t }) => {
+        const e = encEra(t.y);
+        if (e !== era) {
+            era = e;
+            hole = null;
+            const lab = el('div', 'enc-tl-era');
+            lab.textContent = `${ENC_ERAS[e][1]} ${ENC_ERAS[e][2]}`;
+            tl.append(lab);
+            eraNodes[e] = lab;
+        }
+        if (!encKnown(q)) {   // à découvrir : les cases qui se suivent sont regroupées
+            if (hole) { hole.n++; hole.y2 = t.y; hole.txt.textContent = `❓ ${hole.n} événements à découvrir`; return; }
+            const row = el('button', 'enc-tl-ev is-lock');
+            row.type = 'button';
+            const txt = el('span', 'enc-tl-box');
+            txt.textContent = '❓ 1 événement à découvrir';
+            row.append(encYearLabel(t.y, t.approx), el('i', 'enc-tl-dot'), txt);
+            row.addEventListener('click', encLockedTip);
+            hole = { n: 1, txt };
+            tl.append(row);
+            return;
+        }
+        hole = null;
+        const row = el('button', 'enc-tl-ev');
+        row.type = 'button';
+        const box = el('span', 'enc-tl-box');
+        const b = el('b');
+        b.textContent = q.a[0];
+        const s = el('small');
+        s.textContent = q.q;
+        box.append(b, s);
+        row.append(encYearLabel(t.y, t.approx), el('i', 'enc-tl-dot'), box);
+        row.addEventListener('click', () => { encState.friseScroll = mc.scrollTop; openEncFiche(q, list, { label: '← Ma frise', fn: () => openEncFrise(true) }); });
+        tl.append(row);
+    });
+    ENC_ERAS.forEach(([, emo, name], e) => {
+        if (!eraNodes[e]) return;
+        const c = el('button', 'enc-tl-chip');
+        c.type = 'button';
+        c.textContent = `${emo} ${name}`;
+        c.addEventListener('click', () => { mc.scrollTo({ top: eraNodes[e].offsetTop - 60, behavior: 'smooth' }); });
+        chips.append(c);
+    });
+    body.append(encBackBtn('← Histoire', () => openEncBook('Histoire', true)), h, sub, chips, tl);
+    $('friendModal').hidden = false;
+    mc.scrollTop = keep ? encState.friseScroll || 0 : 0;
+}
+
+/* Carte du monde (Géographie, Drapeaux, Monuments) : chaque pays se colore selon les questions sues qui en parlent. */
+const ENC_MAP_THEMES = ['Géographie', 'Drapeaux', 'Monuments'];
+function encCountryData() {
+    const by = {};
+    ENC_MAP_THEMES.forEach(t => encChapters(t).forEach(c => c.qs.forEach(q => {
+        (window.ENC_COUNTRY?.[q.id] || []).forEach(cc => { (by[cc] = by[cc] || []).push(q); });
+    })));
+    return by;
+}
+let encMapView = null;
+async function openEncMap(fromTheme, keepCc = null) {
+    const body = $('friendBody');
+    const mc = $('friendModal').querySelector('.modal-content');
+    try { await encLoad('carte-monde.js'); } catch (e) { showToast('📶 Carte indisponible hors connexion pour l’instant'); return; }
+    const M = window.WORLD_MAP;
+    const by = encCountryData();
+    const st = cc => { const qs = by[cc] || []; const k = qs.filter(encKnown).length; return { qs, k, n: qs.length }; };
+    const codes = Object.keys(by);
+    const found = codes.filter(cc => st(cc).k > 0).length, full = codes.filter(cc => { const s = st(cc); return s.k === s.n; }).length;
+    body.replaceChildren();
+    const h = el('h2', 'review-title enc-title');
+    h.textContent = '🗺️ Ma carte du monde';
+    h.classList.add('is-sm');
+    const tiles = el('div', 'enc-tiles enc-map-tiles');
+    [[`${found} / ${codes.length}`, 'pays découverts'], [`✨ ${full}`, 'pays complets']].forEach(([v, l]) => {
+        const d = el('div');
+        const b = el('b');
+        b.textContent = v;
+        const s = el('span');
+        s.textContent = l;
+        d.append(b, s);
+        tiles.append(d);
+    });
+    const wrap = el('div', 'enc-map');
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'enc-map-svg');
+    const g = document.createElementNS(ns, 'g');
+    svg.append(g);
+    const shapes = {};
+    const color = cc => { const s = st(cc); return !s.n ? 'is-none' : s.k >= s.n ? 'is-full' : s.k ? 'is-part' : 'is-todo'; };
+    M.countries.forEach(([cc, d]) => {
+        const p = document.createElementNS(ns, 'path');
+        p.setAttribute('d', d);
+        p.setAttribute('class', `enc-cty ${color(cc)}`);
+        p.dataset.cc = cc;
+        g.append(p);
+        (shapes[cc] = shapes[cc] || []).push(p);
+    });
+    const dots = document.createElementNS(ns, 'g');
+    M.dots.forEach(([cc, x, y]) => {
+        const c = document.createElementNS(ns, 'circle');
+        c.setAttribute('cx', x);
+        c.setAttribute('cy', y);
+        c.setAttribute('class', `enc-cty enc-dot ${color(cc)}`);
+        c.dataset.cc = cc;
+        dots.append(c);
+        (shapes[cc] = shapes[cc] || []).push(c);
+    });
+    g.append(dots);
+    const zoom = el('div', 'enc-map-zoom');
+    const zin = el('button');
+    zin.type = 'button';
+    zin.textContent = '+';
+    const zout = el('button');
+    zout.type = 'button';
+    zout.textContent = '−';
+    zoom.append(zin, zout);
+    wrap.append(svg, zoom);
+    const legend = el('div', 'enc-map-legend');
+    [['is-full', 'tout su'], ['is-part', 'en partie'], ['is-todo', 'à découvrir'], ['is-none', 'rien pour l’instant']].forEach(([cls, l]) => {
+        const s = el('span');
+        s.append(el('i', cls), document.createTextNode(l));
+        legend.append(s);
+    });
+    const panel = el('div', 'enc-map-panel');
+    const hint = el('p', 'muted enc-map-hint');
+    hint.textContent = '👆 Touche un pays pour voir ce que tu sais de lui. Deux doigts ou + / − pour zoomer.';
+    panel.append(hint);
+    // vue (zoom / déplacement) : viewBox autour d'un centre
+    const v = encMapView || (encMapView = { s: 1, cx: M.w / 2, cy: M.h / 2 });
+    const clamp = () => {
+        v.s = Math.max(1, Math.min(12, v.s));
+        const hw = M.w / v.s / 2, hh = M.h / v.s / 2;
+        v.cx = Math.max(hw, Math.min(M.w - hw, v.cx));
+        v.cy = Math.max(hh, Math.min(M.h - hh, v.cy));
+    };
+    const apply = () => {
+        clamp();
+        svg.setAttribute('viewBox', `${v.cx - M.w / v.s / 2} ${v.cy - M.h / v.s / 2} ${M.w / v.s} ${M.h / v.s}`);
+        svg.style.setProperty('--sw', String(0.6 / v.s));
+        dots.querySelectorAll('circle').forEach(c => c.setAttribute('r', String(Math.max(2.2, 7 / Math.sqrt(v.s)) / Math.sqrt(v.s))));
+    };
+    apply();
+    zin.addEventListener('click', () => { v.s *= 1.8; apply(); });
+    zout.addEventListener('click', () => { v.s /= 1.8; apply(); });
+    let sel = null;
+    const show = cc => {
+        if (sel) (shapes[sel] || []).forEach(p => p.classList.remove('is-sel'));
+        sel = cc;
+        (shapes[cc] || []).forEach(p => { p.classList.add('is-sel'); p.parentNode.append(p); });
+        const s = st(cc);
+        panel.replaceChildren();
+        const hd = el('div', 'enc-map-head');
+        const fl = el('img', 'enc-map-flag');
+        fl.src = `flags/${cc.toLowerCase()}.svg`;
+        fl.alt = '';
+        fl.onerror = () => fl.remove();
+        const nm = el('b');
+        nm.textContent = M.names[cc] || cc;
+        const ct = el('span');
+        ct.textContent = s.n ? `${s.k} / ${s.n} ${s.n > 1 ? 'questions sues' : 'question sue'}` : 'aucune question pour l’instant';
+        hd.append(fl, nm, ct);
+        panel.append(hd);
+        const known = s.qs.filter(encKnown);
+        const list = el('div', 'enc-list');
+        known.forEach(q => list.append(encRow(q, known, { label: '← Ma carte', fn: () => openEncMap(fromTheme, cc) })));
+        if (s.n > s.k) {
+            const lk = el('button', 'enc-row is-locked is-slot');
+            lk.type = 'button';
+            const ic = el('span', 'enc-row-ic');
+            ic.textContent = '?';
+            const tx = el('span', 'enc-row-tx');
+            const b = el('b');
+            b.textContent = `${s.n - s.k} question${s.n - s.k > 1 ? 's' : ''} à découvrir`;
+            tx.append(b);
+            lk.append(ic, tx);
+            lk.addEventListener('click', encLockedTip);
+            list.append(lk);
+        }
+        panel.append(list);
+    };
+    // gestes : tap = pays, glisser = déplacer, deux doigts = zoomer
+    const pts = new Map();
+    let moved = false, pinch = null;
+    const toMap = (x, y) => { const r = svg.getBoundingClientRect(); return [v.cx + (x - r.left - r.width / 2) / r.width * M.w / v.s, v.cy + (y - r.top - r.height / 2) / r.height * M.h / v.s]; };
+    svg.addEventListener('pointerdown', e => { svg.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); moved = pts.size > 1; if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), s: v.s }; } });
+    svg.addEventListener('pointermove', e => {
+        if (!pts.has(e.pointerId)) return;
+        const [px, py] = pts.get(e.pointerId);
+        if (pts.size === 2 && pinch) {
+            pts.set(e.pointerId, [e.clientX, e.clientY]);
+            const [a, b] = [...pts.values()];
+            v.s = pinch.s * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch.d;
+            apply();
+            return;
+        }
+        if (Math.abs(e.clientX - px) + Math.abs(e.clientY - py) < 4 && !moved) return;
+        moved = true;
+        const r = svg.getBoundingClientRect();
+        v.cx -= (e.clientX - px) / r.width * M.w / v.s;
+        v.cy -= (e.clientY - py) / r.height * M.h / v.s;
+        pts.set(e.pointerId, [e.clientX, e.clientY]);
+        apply();
+    });
+    const up = e => {
+        const was = pts.has(e.pointerId);
+        pts.delete(e.pointerId);
+        if (pts.size < 2) pinch = null;
+        if (!was || moved || pts.size) { if (!pts.size) moved = false; return; }
+        const t = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.enc-cty');
+        if (t && t.dataset.cc && by[t.dataset.cc]) show(t.dataset.cc);
+        void toMap;
+    };
+    svg.addEventListener('pointerup', up);
+    svg.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; moved = false; });
+    svg.addEventListener('wheel', e => { e.preventDefault(); v.s *= e.deltaY < 0 ? 1.2 : 1 / 1.2; apply(); }, { passive: false });
+    const backLabel = fromTheme ? `← ${fromTheme}` : '← Retour';
+    body.append(encBackBtn(backLabel, () => { encMapView = null; if (fromTheme) openEncBook(fromTheme, true); else $('friendModal').hidden = true; }), h, tiles, wrap, legend, panel);
+    if (keepCc && by[keepCc]) show(keepCc);
+    $('friendModal').hidden = false;
+    if (!keepCc) mc.scrollTop = 0;
+}
+
 function encMedia(q, small) {
     if (q.flag) return flagImg(q.flag);
     if (q.photo) { const img = el('img'); img.src = q.photo; img.alt = ''; img.loading = 'lazy'; return img; }
