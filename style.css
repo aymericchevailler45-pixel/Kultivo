@@ -4530,3 +4530,22 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-album { --c: #a16207; }
 .enc-album .enc-stamp.is-mini { top: 6px; left: 6px; right: auto; transform: rotate(-14deg); }
 .enc-album-t .enc-ch-bar { display: block; width: 100%; }
+
+/* 13/11 (suite 2) : drapeaux de même taille, couverture entière, cartes « Souvenir », titres de pays aérés */
+.enc-flag-img img { object-fit: fill; }
+.enc-flag.is-odd .enc-flag-img img { object-fit: contain; }
+.enc-album-cover img.enc-album-ph { object-fit: contain; }
+.enc-album-cover .enc-post-bg { position: absolute; inset: -10px; width: calc(100% + 20px); height: calc(100% + 20px); object-fit: cover; filter: blur(8px) brightness(0.8); }
+.enc-postpage .enc-wall-h { margin: 24px 2px 12px; }
+.enc-postpage .enc-post-grid + .enc-wall-h { margin-top: 26px; }
+.enc-post.is-known.is-souvenir { background: linear-gradient(150deg, hsl(var(--h) 70% 88%), hsl(calc(var(--h) + 40) 65% 76%)); }
+.enc-post.is-known.is-souvenir::before { display: none; }
+.enc-post-sil { position: absolute; inset: 8% 6% 8% 6%; width: 88%; height: 84%; }
+.enc-post-sil path { fill: #fff; opacity: 0.6; stroke: hsl(var(--h) 45% 45%); stroke-width: 0.6; vector-effect: non-scaling-stroke; }
+.enc-souv-t { position: absolute; left: 9px; top: 7px; font-family: 'Segoe Print', 'Bradley Hand', cursive; font-size: 0.62rem; color: hsl(var(--h) 45% 28%); }
+.enc-souv-n { position: absolute; left: 6px; right: 6px; bottom: 8px; text-align: center; font-size: 1rem; font-weight: 900; line-height: 1.1; color: hsl(var(--h) 55% 22%); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.9); text-transform: uppercase; letter-spacing: 0.5px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .enc-post.is-known.is-souvenir { background: linear-gradient(150deg, hsl(var(--h) 35% 30%), hsl(calc(var(--h) + 40) 35% 22%)); } :root:not([data-theme="light"]) .enc-souv-n { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); } :root:not([data-theme="light"]) .enc-souv-t { color: #e8e2d4; } :root:not([data-theme="light"]) .enc-post-sil path { opacity: 0.25; } }
+:root[data-theme="dark"] .enc-post.is-known.is-souvenir { background: linear-gradient(150deg, hsl(var(--h) 35% 30%), hsl(calc(var(--h) + 40) 35% 22%)); }
+:root[data-theme="dark"] .enc-souv-n { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+:root[data-theme="dark"] .enc-souv-t { color: #e8e2d4; }
+:root[data-theme="dark"] .enc-post-sil path { opacity: 0.25; }

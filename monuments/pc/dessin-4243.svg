@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <defs>
+    <pattern id="lace" width="14" height="14" patternUnits="userSpaceOnUse">
+      <rect width="14" height="14" fill="#5b5550"/>
+      <path d="M0 7 Q7 0 14 7 Q7 14 0 7 M7 0 Q14 7 7 14 Q0 7 7 0" fill="none" stroke="#2c2926" stroke-width="2.4"/>
+    </pattern>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc3f2"/><stop offset="1" stop-color="#d6eefb"/></linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b7fb8"/><stop offset="1" stop-color="#1a5d8c"/></linearGradient>
+  </defs>
+  <rect width="300" height="200" fill="url(#sky)"/>
+  <circle cx="250" cy="38" r="16" fill="#ffe27a"/>
+  <rect y="150" width="300" height="50" fill="url(#sea)"/>
+  <path d="M0 160 Q30 156 60 160 T120 160 T180 160 T240 160 T300 160" fill="none" stroke="#8fc6ea" stroke-width="2" opacity="0.7"/>
+  <!-- le cube et sa dentelle -->
+  <rect x="40" y="72" width="130" height="80" fill="url(#lace)"/>
+  <rect x="40" y="68" width="130" height="6" fill="#47423d"/>
+  <rect x="52" y="96" width="106" height="44" fill="#d9e7ee" opacity="0.35"/>
+  <!-- la passerelle -->
+  <path d="M170 92 L232 84" stroke="#3a3632" stroke-width="5"/>
+  <path d="M170 86 L232 78" stroke="#3a3632" stroke-width="1.5"/>
+  <!-- le fort Saint-Jean -->
+  <path d="M222 150 L222 84 L290 84 L290 150 Z" fill="#d9b98a"/>
+  <path d="M222 84 l0 -7 h8 v7 h8 v-7 h8 v7 h8 v-7 h8 v7 h8 v-7 h8 v7 h6" fill="#d9b98a"/>
+  <rect x="262" y="44" width="22" height="40" fill="#cfae7d"/>
+  <path d="M262 44 l0 -6 h5 v6 h6 v-6 h5 v6 h6 v-6" fill="#cfae7d"/>
+  <rect x="268" y="56" width="5" height="9" fill="#8a6a43"/>
+  <rect x="236" y="104" width="6" height="10" fill="#8a6a43"/>
+  <rect x="256" y="104" width="6" height="10" fill="#8a6a43"/>
+</svg>

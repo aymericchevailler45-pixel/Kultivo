@@ -3222,6 +3222,7 @@ function encMapLink(theme) {
     return b;
 }
 
+const ENC_FLAG_ODD = new Set(['NP', 'CH', 'VA', 'NE', 'MC', 'QA']);   // 13/11 : drapeaux carrés ou très allongés, gardés à leur forme
 async function openEncFlags(keepCc = null, keepScroll = null) {
     try { await encLoad('carte-monde.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
     const by = encByCountry('Drapeaux');
@@ -3286,7 +3287,7 @@ async function openEncFlags(keepCc = null, keepScroll = null) {
         const grid = el('div', 'enc-flag-grid');
         list.forEach(cc => {
             const s = st(cc);
-            const b = el('button', `enc-flag${s.k ? ' is-known' : ''}${s.k && s.k >= s.n ? ' is-full' : ''}`);
+            const b = el('button', `enc-flag${s.k ? ' is-known' : ''}${s.k && s.k >= s.n ? ' is-full' : ''}${ENC_FLAG_ODD.has(cc) ? ' is-odd' : ''}`);
             b.type = 'button';
             const fr = el('span', 'enc-flag-img');
             const img = el('img');
@@ -3352,13 +3353,48 @@ function encPostAlbums() {
     }));
     return albums;
 }
-/** Une carte postale : photo (sue), carte écrite (date, mesure…), dessin 🏛️, ou le dos (à découvrir). */
+const encPostSouvenir = q => !q.photo && /^Dans quel(?:le)? (pays|ville|capitale|État)\b/i.test(q.q);
+/** Silhouette d'un pays (carte du monde), cadrée sur sa plus grande terre. */
+function encCountrySil(cc) {
+    const d = window.WORLD_MAP?.countries?.find(c => c[0] === cc)?.[1];
+    if (!d) return null;
+    let best = null;
+    d.split('M').filter(Boolean).forEach(part => {
+        const n = (part.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
+        let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+        for (let i = 0; i + 1 < n.length; i += 2) { x0 = Math.min(x0, n[i]); x1 = Math.max(x1, n[i]); y0 = Math.min(y0, n[i + 1]); y1 = Math.max(y1, n[i + 1]); }
+        const a = (x1 - x0) * (y1 - y0);
+        if (!best || a > best.a) best = { a, x0, y0, x1, y1 };
+    });
+    if (!best) return null;
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    const w = best.x1 - best.x0, h = best.y1 - best.y0, pad = Math.max(w, h) * 0.08;
+    svg.setAttribute('viewBox', `${best.x0 - pad} ${best.y0 - pad} ${w + 2 * pad} ${h + 2 * pad}`);
+    svg.setAttribute('class', 'enc-post-sil');
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', d);
+    svg.append(p);
+    return svg;
+}
+/** Une carte postale : photo (sue), souvenir d'un pays / d'une ville, carte écrite (date, mesure…), dessin 🏛️, ou le dos (à découvrir). */
 function encPostCard(q, cc, known, ret) {
     const k = encKnown(q);
-    const ph = k ? encPostPhoto(q) : null;
+    const souv = k && encPostSouvenir(q);
+    const ph = k && !souv ? encPostPhoto(q) : null;
     const b = el('button', `enc-post${k ? ' is-known' : ' is-back'}${ph ? ' has-photo' : ''}`);
     b.type = 'button';
-    if (ph) {
+    if (souv) {
+        b.classList.add('is-souvenir', 'is-written');
+        b.style.setProperty('--h', String([...(cc || 'xx')].reduce((t, c) => t * 31 + c.charCodeAt(0), 7) % 360));
+        const sil = cc && encCountrySil(cc);
+        if (sil) b.append(sil);
+        const t1 = el('span', 'enc-souv-t');
+        t1.textContent = 'Souvenir de…';
+        const t2 = el('b', 'enc-souv-n');
+        t2.textContent = q.a[0];
+        b.append(t1, t2);
+    } else if (ph) {
         const bg = el('img', 'enc-post-bg');
         bg.src = ph;
         bg.alt = '';
@@ -3427,12 +3463,18 @@ async function openEncPostcards() {
         b.type = 'button';
         const cover = el('span', 'enc-album-cover');
         const withPh = list.filter(x => encKnown(x.q) && encPostPhoto(x.q));
-        if (withPh.length) {
-            const img = el('img');
-            img.src = encPostPhoto(withPh[0].q);
+        const coverQ = withPh.find(x => !encPostSouvenir(x.q)) || withPh[0];
+        if (coverQ) {
+            const src = encPostPhoto(coverQ.q);
+            const bg = el('img', 'enc-post-bg');
+            bg.src = src;
+            bg.alt = '';
+            bg.loading = 'lazy';
+            const img = el('img', 'enc-album-ph');
+            img.src = src;
             img.alt = '';
             img.loading = 'lazy';
-            cover.append(img);
+            cover.append(bg, img);
         } else {
             const e = el('span', 'enc-album-emo');
             e.textContent = emo;
