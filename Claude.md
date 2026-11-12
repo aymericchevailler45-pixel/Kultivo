@@ -285,6 +285,15 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Gemini a fait classement.txt (racine, ~2 600 lignes, copié dans classement/gemini/tout.txt) ; ChatGPT presque rien ; 96 % d'accord. Quand Gemini finit : recopier,
   `python comparer.py`, montrer les désaccords avec mon avis, puis relancer make_chapitres.py. APERÇU apercu-encyclo-idees.html (réviser un chapitre A cartes « Je
   savais / Je ne savais pas » conseillé ou C quiz 4 choix ; frise de l'Histoire, 281/441 questions ont une année ; carte du monde par pays) EN ATTENTE de son avis.
+- 12/11 (suite 2, v=20261112m, bac à sable) : RÉVISER UN CHAPITRE = cartes à retourner (`openEncRevise` : 10 questions sues au plus, moins maîtrisées
+  d'abord ; « Je ne savais pas » N'EST PAS envoyé dans « à revoir », rien n'est enregistré, choix de l'utilisateur ; bilan + « Revoir les ratées »).
+  FRISE DE L'HISTOIRE (`openEncFrise`, `frise-histoire.js` = `ENC_YEARS` id -> année, [année, 1] = « vers » ; 434 / 441 datées, scratchpad years_fix.py ;
+  hors frise : Élysée, Sénat, Assemblée, coq, pont-levis, douves, tipi) : questions sues par année, repères des 7 périodes (`ENC_ERAS`), cases « à découvrir »
+  regroupées. PAS de jeu « Place l'événement » (doublon des niveaux de frise). CARTE DU MONDE (`openEncMap`, bouton dans les livres Géographie, Drapeaux,
+  Monuments ; `carte-monde.js` = `WORLD_MAP` (Natural Earth 1:110m, domaine public, tracés projetés par scratchpad make_map.py, petits pays = points) +
+  `ENC_COUNTRY` id -> pays (826 / 930 questions, scratchpad tag_auto.py + tag_fix.py ; mur des Lamentations et dôme du Rocher sans pays exprès) ;
+  tap = questions du pays, zoom + / − et deux doigts). Les deux fichiers sont chargés à la 1re ouverture (`encLoad`). Autres thèmes : plus tard (idées : frise
+  pour Cinéma / Musique / Sport / Techno / Jeux, carte de France pour la Gastronomie, arbre des dieux pour la Mythologie, corps humain / système solaire).
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
