@@ -4778,13 +4778,13 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-muspage .enc-rows-row.is-scu { background: #4b5563; }
 .enc-muspage .enc-rows-row.is-arc { background: #d8dde6; box-shadow: inset 0 8px 14px rgba(0, 0, 0, 0.08); }
 .enc-muspage .enc-rows-row.is-mus { background: #5b4636; }
-.enc-muspage .enc-rows-row.is-sce { background: #1f2937; }
+.enc-muspage .enc-rows-row.is-sce { background: #4a2c4f; }
 .enc-mus-frame { position: relative; display: grid; place-items: center; overflow: hidden; border: 5px solid #c9a23a; border-radius: 2px; background: #efe7d8; box-shadow: inset 0 0 0 2px #8a6a1e, 0 0 0 1px #8a6a1e, 0 5px 8px rgba(0, 0, 0, 0.35); }
 .enc-mus-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .enc-mus-emo { position: relative; z-index: 1; font-size: 1.7rem; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35)); }
 .enc-mus-item.is-anc .enc-mus-emo { filter: sepia(0.45) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)); }
-.enc-mus-item.is-sce .enc-mus-svg { filter: grayscale(1); }
-.enc-mus-item.is-sce .enc-mus-emo { filter: grayscale(1) contrast(1.2); }
+.enc-mus-item.is-sce .enc-mus-svg { filter: none; }   /* 13/11 : dessins en couleur (avant : noir et blanc) */
+.enc-mus-item.is-sce .enc-mus-emo { filter: none; }
 .enc-mus-q { font-family: Georgia, 'Times New Roman', serif; font-size: 1.5rem; font-weight: 700; color: #b9ae98; }
 .enc-mus-item:not(.is-known) .enc-mus-frame { border-color: #a8a29e; box-shadow: inset 0 0 0 2px #78716c, 0 0 0 1px #78716c, 0 5px 8px rgba(0, 0, 0, 0.3); background: #e7e2d8; }
 
