@@ -317,6 +317,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (`openEncGods`, `arbre-dieux.js` = `ENC_GODS` : grece / egypte / nordique, nœuds {id, name, alt, emo, x %, y px, parents, q, desc}, 115 questions) :
   un dieu se dévoile dès qu'une de ses questions est sue, un seul trait par enfant (depuis le milieu du couple), tap = ses questions en bas.
   Prochain : carte de France de la Gastronomie (13 régions toujours dessinées), puis les autres écrans.
+- 12-13/11 (v=20261113a, bac à sable) : encyclopédie PLEINE PAGE (barre du bas cachée), animation du livre ~0,8 s avec pages qui tournent
+  (`encZoomPages`) et couverture « nom du thème + filet doré + icônes de ses chapitres en motif » (`encCoverEl`), fermeture vers le livre
+  (`encCloseAnim`, MutationObserver sur hidden). Arbre des dieux : branche du dieu touché en doré (ancêtres + enfants), balayage entre arbres,
+  bouton « Noms grecs / romains » (`encGodsRoman`, `alt` dans arbre-dieux.js), dieu touché = l'arbre se réduit à 40 % en haut et la fiche
+  remplit le reste (`.has-sel`). « MA FRANCE GOURMANDE » (`openEncFrance`, `carte-france.js` = `FRANCE_MAP` 13 régions IGN Admin Express
+  Licence ouverte (crédit affiché) + `ENC_REGION` 107 questions, scratchpad make_france.py) : régions toujours dessinées, dorées selon la part sue.
+  Prochain : sciences (corps humain + système solaire), puis dictionnaire, bibliothèque, musée, affiches, vinyles, trophées, arcade, frise Techno.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
