@@ -2156,6 +2156,8 @@ function openEncBook(theme, keep = false) {
             : theme === 'Langue française' ? ['📖', 'Mon dictionnaire', 'tes mots et expressions de A à Z', () => openEncDico()]
             : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
             : theme === 'Littérature' ? ['📚', 'Ma bibliothèque', 'tes livres rangés sur les étagères', () => openEncLibrary()]
+            : theme === 'Musique' ? ['💿', 'Mes vinyles', 'tes artistes rangés dans les bacs', () => openEncVinyls()]
+            : theme === 'Jeux' ? ['🕹️', 'Ma salle d’arcade', 'cartouches, bornes, consoles et jeux de société', () => openEncArcade()]
             : theme === 'Drapeaux' ? ['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()]
             : theme === 'Monuments' ? ['💌', 'Mes cartes postales', 'des albums de monuments à compléter', () => openEncPostcards()]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
@@ -3658,6 +3660,176 @@ async function openEncLibrary(keepKey = null) {
     $('friendBody').replaceChildren(encBackBtn('← Littérature', () => openEncBook('Littérature', true)), page);
     $('friendModal').hidden = false;
     if (keepKey && (books[keepKey] || keepKey === 'rest')) show(keepKey);
+}
+
+/* 13/11 : écran commun « des objets rangés sur des rayons qui défilent de côté » (vinyles, salle d'arcade).
+   Un objet = plusieurs questions possibles ; su = dessiné en couleur avec son nom, pas su = gris « ? ». Tap = ses questions en bas. */
+const ENC_OBJ_COLORS = ['#e5484d', '#3d8bff', '#12b3a8', '#f3b400', '#8e4ec6', '#ea580c', '#2f9e44', '#db2777', '#1e3a8a', '#0891b2', '#a16207', '#4b5563'];
+function encObjHash(s) { let h = 7; for (const c of s) h = (h * 31 + c.codePointAt(0)) >>> 0; return h; }
+function encObjScreen(o) {
+    const items = {};
+    const rest = [];
+    encChapters(o.theme).flatMap(c => c.qs).forEach(q => {
+        const d = o.data[q.id];
+        if (!d) { rest.push(q); return; }
+        const [label, sub, row] = o.read(d);
+        const key = `${row}|${label}`;
+        const it = items[key] = items[key] || { key, label, sub: '', row, qs: [] };
+        if (!it.sub && sub) it.sub = sub;
+        it.qs.push(q);
+    });
+    const list = Object.values(items);
+    list.forEach(it => { it.k = it.qs.filter(encKnown).length; it.h = encObjHash(it.label); });
+    const page = el('div', `enc-full enc-godpage enc-objpage ${o.cls}`);
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = o.title;
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${list.filter(it => it.k).length} / ${list.length} ${o.countWord}`;
+    const scroller = el('div', `enc-god-scroll enc-obj-wall ${o.cls}-wall`);
+    const panel = el('div', 'enc-map-panel enc-god-panel');
+    const btns = {};
+    let sel = null, before = 0;
+    const clear = () => {
+        if (!sel) return;
+        btns[sel]?.classList.remove('is-sel');
+        sel = null;
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+        const top = before;
+        requestAnimationFrame(() => { scroller.scrollTop = top; });
+    };
+    const show = key => {
+        if (sel === key) { clear(); return; }
+        if (!sel) before = scroller.scrollTop;
+        btns[sel]?.classList.remove('is-sel');
+        sel = key;
+        btns[key]?.classList.add('is-sel');
+        const it = key === 'rest' ? { label: o.restTitle, sub: '', qs: rest, k: rest.filter(encKnown).length } : items[key];
+        panel.replaceChildren();
+        const card = el('div', 'enc-cpanel');
+        const hd = el('div', 'enc-map-head');
+        const nm = el('b');
+        nm.textContent = key === 'rest' ? o.restTitle : it.k ? `${o.emo} ${it.label}` : `❓ ${o.unknown}`;
+        const ct = el('span');
+        ct.textContent = `· ${it.k} / ${it.qs.length} ${it.qs.length > 1 ? 'questions sues' : 'question sue'}`;
+        hd.append(nm, ct);
+        encPanelX(hd, clear);
+        card.append(hd);
+        const desc = key === 'rest' ? o.restDesc : it.k && it.sub ? o.subText(it.sub) : '';
+        if (desc) { const d = el('p', 'enc-god-desc'); d.textContent = desc; card.append(d); }
+        encQRows(card, it.qs, { label: o.back, fn: () => o.reopen(key) }, q => [q.q.replace(/\s*\?$/, ''), q.a[0]]);
+        panel.append(card);
+        panel.scrollTop = 0;
+        page.classList.add('has-sel');
+        requestAnimationFrame(() => btns[key]?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }));
+    };
+    o.rows.forEach(([rk, emo, name]) => {
+        const its = list.filter(it => it.row === rk).sort((a, b) => (b.k > 0) - (a.k > 0) || a.label.localeCompare(b.label, 'fr'));
+        if (!its.length) return;
+        const t = el('p', 'enc-wall-h enc-obj-h');
+        const tn = el('span');
+        tn.textContent = `${emo} ${name}`;
+        const tc = el('b');
+        tc.textContent = `${its.filter(it => it.k).length} / ${its.length}`;
+        t.append(tn, tc);
+        const row = el('div', `enc-obj-row ${o.cls}-row is-${rk}`);
+        its.forEach(it => {
+            const b = o.make(it, it.k > 0, rk);
+            b.type = 'button';
+            b.classList.add('enc-obj');
+            if (!it.k) b.classList.add('is-off');
+            if (it.qs.length > 1) { const n = el('i', 'enc-obj-n'); n.textContent = it.qs.length; b.append(n); }
+            b.addEventListener('click', () => show(it.key));
+            btns[it.key] = b;
+            row.append(b);
+        });
+        scroller.append(t, row);
+    });
+    if (rest.length) {
+        const rb = el('button', 'enc-flag-other enc-obj-rest');
+        rb.type = 'button';
+        rb.textContent = `${o.restTitle} · ${rest.filter(encKnown).length} / ${rest.length} ›`;
+        rb.addEventListener('click', () => show('rest'));
+        btns.rest = rb;
+        scroller.append(rb);
+    }
+    encTapOff(scroller, '.enc-obj, .enc-obj-rest', clear);
+    page.append(h, cnt, scroller, panel);
+    $('friendBody').replaceChildren(encBackBtn(`← ${o.theme}`, () => openEncBook(o.theme, true)), page);
+    $('friendModal').hidden = false;
+    if (o.keep && (items[o.keep] || o.keep === 'rest')) show(o.keep);
+}
+
+/* « 💿 Mes vinyles » (Musique) : un vinyle par artiste, rangé dans le bac de son genre ; pochette dessinée (aucune vraie image). */
+async function openEncVinyls(keep = null) {
+    try { await encLoad('vinyles.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    encObjScreen({
+        theme: 'Musique', cls: 'enc-vinpage', title: '💿 Mes vinyles', countWord: 'vinyles découverts', emo: '💿', unknown: 'Vinyle à découvrir',
+        data: window.ENC_VINYLS || {}, read: d => [d[0], d[1], d[2]], rows: window.ENC_VINYL_CRATES || [],
+        restTitle: '🎼 Instruments, solfège et le reste', restDesc: 'Les questions sans disque : instruments, solfège, festivals, salles de concert…',
+        subText: s => s === 'Compilation' || s === 'Comédie musicale' ? s : `« ${s} »`,
+        back: '← Mes vinyles', reopen: k => openEncVinyls(k), keep,
+        make: (it, known) => {
+            const b = el('button', 'enc-vin');
+            const disc = el('span', 'enc-vin-disc');
+            const c1 = ENC_OBJ_COLORS[it.h % ENC_OBJ_COLORS.length], c2 = ENC_OBJ_COLORS[(it.h >>> 4) % ENC_OBJ_COLORS.length];
+            disc.style.setProperty('--lab', known ? c2 : '#9a948b');
+            const sl = el('span', `enc-vin-sleeve is-p${(it.h >>> 8) % 5}`);
+            if (known) { sl.style.setProperty('--c1', c1); sl.style.setProperty('--c2', c2 === c1 ? '#1b2745' : c2); }
+            const art = el('b', 'enc-vin-art');
+            art.textContent = known ? it.label : '?';
+            sl.append(art);
+            if (known && it.sub) { const tt = el('small', 'enc-vin-tt'); tt.textContent = it.sub; sl.append(tt); }
+            b.append(disc, sl);
+            return b;
+        }
+    });
+}
+
+/* « 🕹️ Ma salle d'arcade » (Jeux) : cartouches, bornes, consoles, boîtes de jeu, plateaux et jouets dessinés (aucune vraie image).
+   Utilise encObjScreen / ENC_OBJ_COLORS (enc_vinyles.js), à insérer avant. */
+async function openEncArcade(keep = null) {
+    try { await encLoad('arcade.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    encObjScreen({
+        theme: 'Jeux', cls: 'enc-arcpage', title: '🕹️ Ma salle d’arcade', countWord: 'jeux découverts', emo: '🎮', unknown: 'Jeu à découvrir',
+        data: window.ENC_ARC || {}, read: d => [d[0], '', d[1]], rows: window.ENC_ARC_ROWS || [],
+        restTitle: '💬 Le jargon des joueurs et le reste', restDesc: 'Les questions sans objet précis : vocabulaire des joueurs, éditeurs, e-sport…',
+        subText: () => '', back: '← Ma salle d’arcade', reopen: k => openEncArcade(k), keep,
+        make: (it, known, row) => {
+            const kind = { ni: 'cart', jv: 'cab', co: 'cons', so: 'box', ec: 'board', jo: 'toy' }[row] || 'box';
+            const b = el('button', `enc-arc is-${kind}`);
+            b.style.setProperty('--c1', known ? ENC_OBJ_COLORS[it.h % ENC_OBJ_COLORS.length] : '#a8a29a');
+            b.style.setProperty('--c2', known ? ENC_OBJ_COLORS[(it.h >>> 4) % ENC_OBJ_COLORS.length] : '#8d877f');
+            const nm = el('span', 'enc-arc-name');
+            nm.textContent = known ? it.label : '?';
+            if (kind === 'cab') {   // borne : fronton avec le nom, écran allumé, tableau de commande
+                const top = el('span', 'enc-arc-marquee');
+                top.append(nm);
+                const scr = el('span', 'enc-arc-screen');
+                const px = el('i');
+                scr.append(px);
+                const pan = el('span', 'enc-arc-panel');
+                pan.append(el('i', 'enc-arc-stick'), el('i', 'enc-arc-btn'), el('i', 'enc-arc-btn'));
+                b.append(top, scr, pan);
+            } else if (kind === 'cons') {   // console : écran-étiquette, croix et deux boutons
+                const lab = el('span', 'enc-arc-lab');
+                lab.append(nm);
+                const pad = el('span', 'enc-arc-pad');
+                pad.append(el('i', 'enc-arc-cross'), el('i', 'enc-arc-ab'));
+                b.append(lab, pad);
+            } else if (kind === 'cart') {   // cartouche : stries en haut, étiquette en couleur
+                b.append(el('span', 'enc-arc-ridges'));
+                const lab = el('span', 'enc-arc-lab');
+                lab.append(nm);
+                b.append(lab);
+            } else {   // boîte de jeu, plateau ou jouet : le nom sur un bandeau
+                const lab = el('span', 'enc-arc-lab');
+                lab.append(nm);
+                b.append(lab);
+            }
+            return b;
+        }
+    });
 }
 
 function encMedia(q, small) {
