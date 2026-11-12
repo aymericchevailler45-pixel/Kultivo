@@ -301,6 +301,16 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   séries se répartissent selon leur d (2,3-3,6). Encyclopédie (bac à sable) : pages plein écran qui défilent dedans (`encPage`, ← et ✕ fixes),
   en-tête de la frise fixe (`.enc-tl-head`), carte moins zoomée à l'ouverture (1,15), zoom jusqu'à ×80, points des petits pays toujours au-dessus et
   touchables à 22 px près.
+- 12/11 (suite 4) : classement ChatGPT reçu (classement/chatgpt/reponses.txt, 2 979 lignes) ; règles validées : auteurs français du XXe = « Romans
+  français modernes », poètes / théâtre étrangers RESTENT dans « Théâtre et poésie », Jules Verne = Classiques, chapitre renommé « Jazz, soul et musiques
+  du monde » (disco / funk / reggae / musiques du monde), savants = « Savants et mathématiques » (inventeurs en Techno = « Inventions et inventeurs »),
+  créatures génériques = « Créatures, folklore… », Spotify et navigateurs = Internet ; musique française RANGÉE PAR GENRE (« Chanson française » = chanson /
+  variété / pop en français ; rock, R&B, disco, reggae ailleurs). ENCYCLOPÉDIE, décisions sur apercu-encyclo-themes.html : plein écran (B) quand on touche
+  un livre (les livres restent dans Profil → Savoirs, pas d'onglet à part pour l'instant) ; idée d'animation « le livre s'ouvre » ; écrans validés :
+  arbre des dieux, carte de France (13 régions toujours dessinées, grises si rien), corps + système solaire, dictionnaire, bibliothèque (titres sur les
+  tranches, tranches ~30 px, étagère qui défile), musée et affiches de cinéma en CARICATURES dessinées (pas de vraies images : droits / crédits),
+  vinyles (titre + artiste sur la pochette), trophées à enrichir (médailles par question, plaque, fête bronze → or, podium), arcade, frise Techno.
+  Ordre conseillé : plein écran → arbre des dieux → carte de France → le reste.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
