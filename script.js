@@ -3957,6 +3957,7 @@ async function openEncTrophies() {
 }
 /** Une vitrine : les médailles d'un chapitre (« Autres sports » découpé en petites vitrines). */
 async function openEncTrophyCase(ci, keepScroll = null) {
+    try { await encLoad('trophees-plaques.js'); } catch (e) { /* plaques = réponses */ }
     try { await encLoad('trophees.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
     const c = encChapters('Sport')[ci];
     if (!c) return;
@@ -3996,7 +3997,7 @@ async function openEncTrophyCase(ci, keepScroll = null) {
             b.type = 'button';
             b.append(encTroMedal(tier, gEmo));
             const pl = el('span', 'enc-tro-plate');
-            pl.textContent = tier ? q.a[0] : '???';
+            pl.textContent = tier ? (window.ENC_TRO_PLATE?.[q.id] || q.a[0]) : '???';   // 13/11 : le sujet, pas « 11 » ou « L’Angleterre »
             b.append(pl);
             if (up) { const s = el('span', 'enc-tro-new'); s.textContent = (seen[q.id] || 0) ? '⬆ monte !' : 'nouvelle !'; b.append(s); }
             if (tier) b.addEventListener('click', () => openEncFiche(q, known, ret));

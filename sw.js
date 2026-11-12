@@ -10,7 +10,7 @@
    Si tu ajoutes un nouveau fichier au jeu, ajoute-le dans FILES.
    ============================================================ */
 
-const CACHE = 'kultivo-v173';
+const CACHE = 'kultivo-v174';
 const FILES = [
     './',
     './index.html',
@@ -83,6 +83,7 @@ const FILES = [
     './tableaux.js',
     './frise-techno.js',
     './trophees.js',
+    './trophees-plaques.js',
     './arcade.js',
     './vinyles.js',
     './script.js',
