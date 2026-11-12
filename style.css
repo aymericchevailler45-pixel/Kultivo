@@ -4357,3 +4357,12 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-god.is-sel i { outline: 3px solid var(--ink); outline-offset: 2px; }
 .enc-god-panel { flex: 0 1 auto; max-height: 42%; overflow-y: auto; margin-top: 8px; }
 .enc-god-desc { margin: 0 0 4px; color: var(--muted); font-size: 0.8rem; font-weight: 700; }
+
+/* 12/11 : ouverture plus lente, fermeture, branche allumée, balayage entre les arbres */
+.enc-zoom { transition: left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1), top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1), width 0.7s cubic-bezier(0.3, 0.7, 0.2, 1), height 0.7s cubic-bezier(0.3, 0.7, 0.2, 1), border-radius 0.7s, opacity 0.18s; }
+.enc-zoom-cover { transition: transform 0.6s ease-in 0.12s; }
+.enc-zoom.is-closing { transition-duration: 0.55s, 0.55s, 0.55s, 0.55s, 0.55s, 0.18s; }
+.enc-zoom.is-closing .enc-zoom-cover { transition: transform 0.45s ease-out 0.05s; }
+.enc-tree-line.is-hl { stroke: #f3b400; stroke-width: 3; stroke-dasharray: none; opacity: 1; }
+.enc-god-scroll.is-from-right { animation: encFromRight 0.25s ease-out; }
+.enc-god-scroll.is-from-left { animation: encFromLeft 0.25s ease-out; }

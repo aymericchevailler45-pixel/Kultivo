@@ -1818,7 +1818,9 @@ function encTip(node, kind) {
     node.addEventListener('click', e => { e.stopPropagation(); encExplain(kind); });
 }
 /** 12/11 : le livre touché grandit jusqu'à remplir l'écran pendant que sa couverture s'ouvre (~0,4 s, un tap l'achève). */
+let encLastBook = null;   // { btn, color, icon } : le livre ouvert, pour qu'il se referme à sa place
 function encOpenAnim(from, color, icon, then) {
+    encLastBook = { btn: from, color, icon };
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { then(); return; }
     const r = from.getBoundingClientRect();
     const nav = document.querySelector('.nav');
@@ -1844,8 +1846,34 @@ function encOpenAnim(from, color, icon, then) {
         const w = window.innerWidth > 900 ? Math.min(560, window.innerWidth) : window.innerWidth;
         Object.assign(z.style, { left: `${(window.innerWidth - w) / 2}px`, top: '0px', width: `${w}px`, height: `${window.innerHeight - navH}px` });
     }));
-    setTimeout(finish, 400);
+    setTimeout(finish, 820);
 }
+/** 12/11 : en quittant l'encyclopédie, la page rétrécit vers le livre du Profil et sa couverture se referme (~0,5 s). */
+function encCloseAnim() {
+    const lb = encLastBook;
+    if (!lb || !lb.btn.isConnected || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const r = lb.btn.getBoundingClientRect();
+    if (!r.width || r.bottom < 0 || r.top > window.innerHeight) return;
+    const w = window.innerWidth > 900 ? Math.min(560, window.innerWidth) : window.innerWidth;
+    const z = el('div', 'enc-zoom is-open is-closing');
+    z.style.setProperty('--c', lb.color);
+    const cover = el('div', 'enc-zoom-cover');
+    cover.textContent = lb.icon;
+    z.append(cover);
+    Object.assign(z.style, { left: `${(window.innerWidth - w) / 2}px`, top: '0px', width: `${w}px`, height: `${window.innerHeight}px` });
+    document.body.append(z);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        z.classList.remove('is-open');
+        Object.assign(z.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+    }));
+    setTimeout(() => { z.classList.add('is-out'); setTimeout(() => z.remove(), 180); }, 620);
+}
+(() => {   // la fenêtre de l'encyclopédie se ferme (✕, retour, onglet) : animation de fermeture
+    const ov = document.getElementById('friendModal');
+    if (!ov) return;
+    new MutationObserver(() => { if (ov.hidden && ov.classList.contains('is-enc-full')) { ov.classList.remove('is-enc-full'); encCloseAnim(); } })
+        .observe(ov, { attributes: true, attributeFilter: ['hidden'] });
+})();
 function encBooks() {
     const map = {};
     encAll().forEach(q => {
@@ -2664,6 +2692,7 @@ async function openEncGods(tab = encGodsTab, keepId = null) {
     svg.setAttribute('viewBox', `0 0 100 ${P.h}`);
     svg.setAttribute('preserveAspectRatio', 'none');
     const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+    const lines = [];
     // un seul trait par enfant : depuis son parent, ou depuis le milieu du couple (sinon l'arbre devient illisible)
     nodes.forEach(n => {
         const ps = (n.parents || []).map(pid => byId[pid]).filter(Boolean);
@@ -2673,6 +2702,7 @@ async function openEncGods(tab = encGodsTab, keepId = null) {
         const my = (ay + n.y - 20) / 2;
         p.setAttribute('d', `M${ax} ${ay} C ${ax} ${my}, ${n.x} ${my}, ${n.x} ${n.y - 20}`);
         p.setAttribute('class', `enc-tree-line${ps.every(a => a.s.k) && n.s.k ? ' is-on' : ''}`);
+        lines.push({ el: p, child: n.id, parents: ps.map(a => a.id) });
         p.setAttribute('vector-effect', 'non-scaling-stroke');
         svg.append(p);
         if (ps.length === 2) {   // petit trait horizontal entre les deux parents (le couple)
@@ -2682,6 +2712,7 @@ async function openEncGods(tab = encGodsTab, keepId = null) {
             c.setAttribute('class', `enc-tree-line is-couple${a1.s.k && a2.s.k ? ' is-on' : ''}`);
             c.setAttribute('vector-effect', 'non-scaling-stroke');
             svg.append(c);
+            lines.push({ el: c, child: n.id, parents: ps.map(a => a.id) });
         }
     });
     tree.append(svg);
@@ -2692,6 +2723,12 @@ async function openEncGods(tab = encGodsTab, keepId = null) {
     const btns = {};
     const show = n => {
         Object.values(btns).forEach(b => b.classList.remove('is-sel'));
+        // 12/11 : la branche du dieu touché s'allume (ses ancêtres jusqu'en haut, et ses enfants)
+        const up = new Set([n.id]);
+        let grew = true;
+        while (grew) { grew = false; lines.forEach(l => { if (up.has(l.child)) l.parents.forEach(p => { if (!up.has(p)) { up.add(p); grew = true; } }); }); }
+        lines.forEach(l => l.el.classList.toggle('is-hl', up.has(l.child) || l.parents.includes(n.id)));
+        svg.append(...lines.filter(l => l.el.classList.contains('is-hl')).map(l => l.el));
         btns[n.id]?.classList.add('is-sel');
         panel.replaceChildren();
         const card = el('div', 'enc-cpanel');
@@ -2744,6 +2781,19 @@ async function openEncGods(tab = encGodsTab, keepId = null) {
         tree.append(b);
     });
     scroller.append(tree);
+    const keys = Object.keys(window.ENC_GODS);
+    let sx = null, sy = 0;
+    scroller.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    scroller.addEventListener('touchend', e => {
+        if (sx === null) return;
+        const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        sx = null;
+        if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        const j = keys.indexOf(tab) + (dx < 0 ? 1 : -1);
+        if (j < 0 || j >= keys.length) return;
+        openEncGods(keys[j]);
+        $('friendBody').querySelector('.enc-god-scroll')?.classList.add(dx < 0 ? 'is-from-right' : 'is-from-left');
+    }, { passive: true });
     page.append(h, cnt, tabs, scroller, panel);
     const body = $('friendBody');
     body.replaceChildren(encBackBtn('← Mythologie', () => openEncBook('Mythologie', true)), page);
