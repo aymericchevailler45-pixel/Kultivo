@@ -4366,3 +4366,14 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-tree-line.is-hl { stroke: #f3b400; stroke-width: 3; stroke-dasharray: none; opacity: 1; }
 .enc-god-scroll.is-from-right { animation: encFromRight 0.25s ease-out; }
 .enc-god-scroll.is-from-left { animation: encFromLeft 0.25s ease-out; }
+
+/* 12/11 : pages qui tournent dans l'animation du livre ; bouton noms grecs / romains */
+.enc-zoom { background: #fbf7ec; }
+.enc-zoom-page { position: absolute; inset: 3% 2% 3% 0; border-radius: 0 6px 6px 0; transform-origin: left center; backface-visibility: hidden;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.14), transparent 9%), repeating-linear-gradient(transparent 0 21px, rgba(60, 50, 30, 0.09) 21px 22px), #fffdf6;
+    box-shadow: 1px 0 2px rgba(0, 0, 0, 0.12); transition: transform 0.55s ease-in-out calc(0.2s + var(--i) * 0.07s); }
+.enc-zoom.is-open .enc-zoom-page { transform: rotateY(calc(-96deg + var(--i) * 6deg)); }
+.enc-zoom.is-closing .enc-zoom-page { transition: transform 0.4s ease-in-out calc(0.12s - var(--i) * 0.03s); }
+.enc-zoom.is-open .enc-zoom-page:last-of-type { transform: none; }
+.enc-god-roman { flex: none; margin: -2px 0 8px; padding: 6px 10px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-size: 0.76rem; font-weight: 900; cursor: pointer; }
+.enc-god-roman.is-on { border-color: #1e3a8a; background: color-mix(in srgb, #1e3a8a 10%, var(--surface)); }

@@ -1818,18 +1818,19 @@ function encTip(node, kind) {
     node.addEventListener('click', e => { e.stopPropagation(); encExplain(kind); });
 }
 /** 12/11 : le livre touché grandit jusqu'à remplir l'écran pendant que sa couverture s'ouvre (~0,4 s, un tap l'achève). */
+/** 4 feuilles de papier qui tournent avec la couverture (sinon on ne voyait que du blanc). */
+const encZoomPages = () => [0, 1, 2, 3].map(i => { const p = el('div', 'enc-zoom-page'); p.style.setProperty('--i', i); return p; });
 let encLastBook = null;   // { btn, color, icon } : le livre ouvert, pour qu'il se referme à sa place
 function encOpenAnim(from, color, icon, then) {
     encLastBook = { btn: from, color, icon };
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { then(); return; }
     const r = from.getBoundingClientRect();
-    const nav = document.querySelector('.nav');
-    const navH = window.innerWidth <= 900 && nav ? nav.offsetHeight : 0;
+    const navH = 0;
     const z = el('div', 'enc-zoom');
     z.style.setProperty('--c', color);
     const cover = el('div', 'enc-zoom-cover');
     cover.textContent = icon;
-    z.append(cover);
+    z.append(...encZoomPages(), cover);
     Object.assign(z.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
     document.body.append(z);
     let done = false;
@@ -1859,7 +1860,7 @@ function encCloseAnim() {
     z.style.setProperty('--c', lb.color);
     const cover = el('div', 'enc-zoom-cover');
     cover.textContent = lb.icon;
-    z.append(cover);
+    z.append(...encZoomPages(), cover);
     Object.assign(z.style, { left: `${(window.innerWidth - w) / 2}px`, top: '0px', width: `${w}px`, height: `${window.innerHeight}px` });
     document.body.append(z);
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -2660,7 +2661,8 @@ async function openEncMap(fromTheme, keepCc = null) {
 
 /* 12/11 : l'arbre des dieux (Mythologie). Un dieu se dévoile quand une de ses questions est sue ; tap = ses questions en bas. */
 let encGodsTab = 'grece';
-async function openEncGods(tab = encGodsTab, keepId = null) {
+let encGodsRoman = false;   // 12/11 : bouton « Noms grecs / Noms romains »
+async function openEncGods(tab = encGodsTab, keepId = null, keepScroll = null) {
     try { await encLoad('arbre-dieux.js'); } catch (e) { showToast('📶 Arbre indisponible hors connexion pour l’instant'); return; }
     encGodsTab = tab;
     const P = window.ENC_GODS[tab];
@@ -2736,7 +2738,8 @@ async function openEncGods(tab = encGodsTab, keepId = null) {
         const hd = el('div', 'enc-map-head');
         const nm = el('b');
         const known = n.s.qs.filter(encKnown);
-        nm.textContent = known.length ? `${n.emo} ${n.name}${n.alt ? ` · ${n.alt}` : ''}` : '❓ Dieu à découvrir';
+        const names = encGodsRoman && n.alt ? [n.alt, n.name] : [n.name, n.alt];
+        nm.textContent = known.length ? `${n.emo} ${names[0]}${names[1] ? ` · ${names[1]}` : ''}` : '❓ Dieu à découvrir';
         const ct = el('span');
         ct.textContent = `· ${n.s.k} / ${n.s.n} ${n.s.n > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(nm, ct);
@@ -2774,13 +2777,21 @@ async function openEncGods(tab = encGodsTab, keepId = null) {
         const i = el('i');
         i.textContent = n.s.k ? n.emo : '?';
         const t = el('span');
-        t.textContent = n.s.k ? n.name : '???';
+        t.textContent = n.s.k ? (P.roman && encGodsRoman && n.alt ? n.alt : n.name) : '???';
         b.append(i, t);
         b.addEventListener('click', () => show(n));
         btns[n.id] = b;
         tree.append(b);
     });
     scroller.append(tree);
+    let romanBtn = null;
+    if (P.roman) {
+        const sw = el('button', `enc-god-roman${encGodsRoman ? ' is-on' : ''}`);
+        sw.type = 'button';
+        sw.textContent = encGodsRoman ? '🏛️ Noms romains · toucher pour les noms grecs' : '🏺 Noms grecs · toucher pour les noms romains';
+        sw.addEventListener('click', () => { encGodsRoman = !encGodsRoman; openEncGods(tab, null, scroller.scrollTop); });
+        romanBtn = sw;
+    }
     const keys = Object.keys(window.ENC_GODS);
     let sx = null, sy = 0;
     scroller.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
@@ -2794,10 +2805,11 @@ async function openEncGods(tab = encGodsTab, keepId = null) {
         openEncGods(keys[j]);
         $('friendBody').querySelector('.enc-god-scroll')?.classList.add(dx < 0 ? 'is-from-right' : 'is-from-left');
     }, { passive: true });
-    page.append(h, cnt, tabs, scroller, panel);
+    page.append(h, cnt, tabs, ...(romanBtn ? [romanBtn] : []), scroller, panel);
     const body = $('friendBody');
     body.replaceChildren(encBackBtn('← Mythologie', () => openEncBook('Mythologie', true)), page);
     $('friendModal').hidden = false;
+    if (keepScroll !== null) requestAnimationFrame(() => { scroller.scrollTop = keepScroll; });
     if (keepId && byId[keepId]) {
         show(byId[keepId]);
         requestAnimationFrame(() => { scroller.scrollTop = Math.max(0, byId[keepId].y - 120); });
@@ -2876,8 +2888,7 @@ function encFitKeyboard() {
         const full = mc.classList.contains('is-enc-fiche');
         const ov = $('friendModal');
         ov.classList.toggle('is-enc-full', full);
-        const nav = document.querySelector('.nav');
-        ov.style.bottom = full && window.innerWidth <= 900 && nav ? `${nav.offsetHeight}px` : '';
+        ov.style.bottom = '';   // 12/11 : toute la page (la barre du bas est cachée dessous)
         encFitKeyboard();
     }).observe(fb, { childList: true });
     window.visualViewport?.addEventListener('resize', encFitKeyboard);
