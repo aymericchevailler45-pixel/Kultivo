@@ -2098,7 +2098,9 @@ function openEncBook(theme, keep = false) {
         zone.append(...parts, sec, list);
     };
     search.addEventListener('input', () => { encState.search = search.value; draw(); });
-    const page = encPage(null, h, bar, tiles, search, zone);
+    const page = encPage(null, bar, tiles, search, zone);
+    h.classList.add('enc-fixed-title');
+    page.before(h);
     draw();
     page.scrollTop = keep ? encState.bookScroll || 0 : 0;
     page.addEventListener('scroll', () => { encState.bookScroll = page.scrollTop; }, { passive: true });
@@ -2671,6 +2673,21 @@ function encFitKeyboard() {
     }).observe(fb, { childList: true });
     window.visualViewport?.addEventListener('resize', encFitKeyboard);
 })();
+/** 12/11 : une phrase de Kulti sur ta façon d'avoir appris cette question (essais, réussites, maîtrise). */
+function encKultiLine(q) {
+    const s = state.data.stats[q.id] || {};
+    const tries = s.tries || 0, right = s.right || 0, miss = Math.max(0, tries - right);
+    const pick = arr => arr[q.id % arr.length];
+    const days = s.first ? Math.round((new Date(todayKey()) - new Date(s.first)) / 86400000) : null;
+    if (isMastered(q.id) && right >= 4) return pick([`Réussie ${right} fois sur ${tries} : celle-là, tu la connais par cœur !`, `${right} bonnes réponses sur ${tries} essais. Elle est gravée dans ton cerveau !`]);
+    if (isMastered(q.id) && miss) return `Ratée ${miss} fois au début, et maintenant maîtrisée. La preuve que réviser, ça marche !`;
+    if (isMastered(q.id)) return pick(['Maîtrisée ! Elle ne t’échappera plus.', 'Maîtrisée : tu peux la ranger dans tes valeurs sûres.']);
+    if (miss >= 2) return `Elle t’a résisté ${miss} fois avant que tu la trouves. Bien joué de ne pas avoir lâché !`;
+    if (miss === 1) return 'Ratée une fois, puis trouvée : c’est comme ça qu’on retient le mieux !';
+    if (days === 0) return 'Découverte aujourd’hui ! Réussis-la encore un autre jour pour la maîtriser.';
+    if (days !== null && days > 0) return `Découverte il y a ${plural(days, 'jour', 'jours')}. Encore une bonne réponse un autre jour et elle sera maîtrisée !`;
+    return 'Encore une bonne réponse, un autre jour, et elle sera maîtrisée !';
+}
 const ENC_FACT_SKIP = new Set(['siecle', 'siecles', 'quelle', 'quelles', 'comment', 'appelle', 'celebre', 'celebres', 'premier', 'premiere', 'grande', 'grandes', 'france', 'francais', 'francaise', 'monde', 'histoire', 'nomme', 'surnomme', 'depuis', 'pendant', 'combien', 'toujours', 'encore', 'plusieurs', 'contre', 'autres', 'entre']);
 function openEncFiche(q, list, backTheme, fromEnd = false) {
     const body = $('friendBody');
@@ -2724,42 +2741,16 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     d2.textContent = isMastered(q.id) ? '✨ Maîtrisé' : '✨ Pas encore maîtrisé';
     meta.append(d2);
     fiche.append(meta);
-    // 12/11 : « Me la reposer » retiré ; à la place, un mot de Kulti (anecdote du thème) et d'autres questions du même chapitre
-    const facts = (typeof THEME_FACTS !== 'undefined' && THEME_FACTS[q.theme]) || [];
-    if (facts.length) {
-        const words = encNorm(`${q.a[0]} ${q.q}`).split(/[^a-z0-9]+/).filter(w => w.length > 5 && !ENC_FACT_SKIP.has(w));
-        const near = facts.filter(f => words.some(w => encNorm(f).includes(w)));
-        const pool = near.length ? near : facts;
-        const fact = pool[q.id % pool.length];
+    // 12/11 : à la place de « Me la reposer », Kulti commente CETTE question d'après tes réponses (rien à écrire en plus)
+    {
         const kb = el('div', 'enc-kulti');
-        kb.append(kultiEl('content', 'kulti-blink'));
+        kb.append(kultiEl(isMastered(q.id) ? 'fier' : 'content', 'kulti-blink'));
         const say = el('p', 'enc-kulti-say');
         const sl = el('em');
         sl.textContent = 'Le mot de Kulti';
-        say.append(sl, document.createTextNode(fact));
+        say.append(sl, document.createTextNode(encKultiLine(q)));
         kb.append(say);
         fiche.append(kb);
-    }
-    const chap = encChapterOf(q);
-    const mates = chap ? shuffle(chap.qs.filter(x => x !== q && encKnown(x))).slice(0, 3) : [];
-    if (mates.length) {
-        const box = el('div', 'enc-mates');
-        const t = el('em');
-        t.textContent = `Dans le même chapitre · ${chap.emo} ${chap.name}`;
-        box.append(t);
-        const chapList = chap.qs.filter(encKnown).sort(encSortAnswer);
-        mates.forEach(m => {
-            const b = el('button', 'enc-mate');
-            b.type = 'button';
-            const bb = el('b');
-            bb.textContent = m.a[0];
-            const ss = el('small');
-            ss.textContent = m.q;
-            b.append(bb, ss);
-            b.addEventListener('click', () => openEncFiche(m, chapList, backTheme, fromEnd));
-            box.append(b);
-        });
-        fiche.append(box);
     }
     const nav = el('div', 'enc-nav');
     const mk = (txt, j) => {

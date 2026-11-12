@@ -4299,3 +4299,16 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-mate { display: block; width: 100%; padding: 7px 10px; border: 1.5px solid color-mix(in srgb, var(--c) 22%, var(--line)); border-radius: 12px; background: color-mix(in srgb, var(--c) 5%, var(--surface)); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
 .enc-mate b { display: block; font-size: 0.86rem; font-weight: 900; }
 .enc-mate small { display: block; color: var(--muted); font-size: 0.72rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 12/11 (suite) : titre du livre figé à la hauteur de la croix ; « Chapitres » centré ; bouton « Super ! » et dos des cartes en bleu */
+.modal-content.is-enc-fiche.is-enc-noback { padding-top: 12px; }
+.enc-fixed-title { flex: none; min-height: 42px; margin: 0 44px 6px 0; padding: 0; justify-content: flex-start; font-size: 1.5rem; line-height: 1.15; }
+.enc-fixed-title + .enc-scroll { padding-top: 2px; }
+.enc-fixed-title + .enc-scroll > .enc-bar:first-child { margin-top: 0; }
+.enc-scroll .enc-chap-sec { margin: 16px 2px 12px; line-height: 1.2; }
+.enc-scroll .enc-special, .enc-scroll .enc-quick { margin-bottom: 0; }
+.title-anim .btn.title-continue { background: #fff; color: #1c5bd6; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18); }
+.pal-elec .flip-back { background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 10px, transparent 10px 20px), linear-gradient(150deg, #5ea4ff, #1c5bd6); box-shadow: 0 3px 0 #123f99; }
+.pal-elec .flip:not(.rarity-common) .flip-back { box-shadow: 0 3px 0 #123f99, 0 0 10px 2px var(--r); }
+.pal-elec .flip.is-charging .flip-back { box-shadow: 0 4px 0 #123f99, 0 0 30px 8px var(--r); }
+.pal-elec .coll-back { background: #1c5bd6; box-shadow: 0 3px 0 #123f99; }
