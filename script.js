@@ -2155,8 +2155,8 @@ function openEncBook(theme, keep = false) {
             : theme === 'Sciences' ? [['🫀', 'Mon corps humain', 'les organes que tu connais', () => openEncSpots('sci', 'corps')], ['🪐', 'Mon système solaire', 'les planètes, les étoiles et l’espace', () => openEncSpots('sci', 'espace')]]
             : theme === 'Langue française' ? ['📖', 'Mon dictionnaire', 'tes mots et expressions de A à Z', () => openEncDico()]
             : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
-            : theme === 'Drapeaux' ? [['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()], ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)]]
-            : theme === 'Monuments' ? [['💌', 'Mes cartes postales', 'un album des monuments du monde', () => openEncPostcards()], ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)]]
+            : theme === 'Drapeaux' ? ['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()]
+            : theme === 'Monuments' ? ['💌', 'Mes cartes postales', 'des albums de monuments à compléter', () => openEncPostcards()]
             : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
         const parts = [quick];
         (special ? (Array.isArray(special[0]) ? special : [special]) : []).forEach(special => {   // frise, arbre, cartes… (13/11 : plusieurs possibles)
@@ -2610,7 +2610,13 @@ async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
     zout.addEventListener('click', () => { v.s /= 1.8; apply(); });
     let sel = null;
     const order = fromTheme ? [fromTheme, ...ENC_MAP_THEMES.filter(t => t !== fromTheme)] : ENC_MAP_THEMES;
+    const clearMap = () => {
+        if (sel) (shapes[sel] || []).forEach(p => p.classList.remove('is-sel'));
+        sel = null;
+        panel.replaceChildren(hint);
+    };
     const show = cc => {
+        if (sel === cc) { clearMap(); return; }
         if (sel) (shapes[sel] || []).forEach(p => p.classList.remove('is-sel'));
         sel = cc;
         (shapes[cc] || []).forEach(p => { p.classList.add('is-sel'); if (p.tagName === 'circle') dots.append(p); else g.insertBefore(p, dots); });   // les petits pays restent toujours par-dessus
@@ -2627,6 +2633,7 @@ async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
         const ct = el('span');
         ct.textContent = `· ${s.k} / ${s.n} ${s.n > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(fl, nm, ct);
+        encPanelX(hd, clearMap);
         card.append(hd);
         // 12/11 : on commence par le thème du livre ouvert (drapeaux dans Drapeaux, monuments dans Monuments…)
         const known = s.qs.filter(encKnown).sort((a, b) => order.indexOf(a.theme) - order.indexOf(b.theme));
@@ -2703,11 +2710,7 @@ async function openEncMap(fromTheme, keepCc = null, kind = 'geo') {
         const cc = best || t?.dataset?.cc;
         if (cc === 'FR' && kind === 'cuisine') { openEncFrance(); return; }   // la France a sa propre carte
         if (cc && by[cc]) show(cc);
-        else if (sel) {   // 13/11 : tap dans la mer (ou un pays sans question) = on referme
-            (shapes[sel] || []).forEach(p => p.classList.remove('is-sel'));
-            sel = null;
-            panel.replaceChildren(hint);
-        }
+        else if (sel) clearMap();   // 13/11 : tap dans la mer (ou un pays sans question) = on referme
     });
     svg.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; moved = false; });
     svg.addEventListener('wheel', e => { e.preventDefault(); v.s *= e.deltaY < 0 ? 1.2 : 1 / 1.2; apply(); }, { passive: false });
@@ -2841,6 +2844,7 @@ async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
         requestAnimationFrame(() => { scroller.scrollTop = top; });
     };
     const show = n => {
+        if (btns[n.id]?.classList.contains('is-sel')) { clearSel(); return; }
         if (spotBefore === null) spotBefore = scroller.scrollTop;
         Object.values(btns).forEach(b => b.classList.remove('is-sel'));
         // 12/11 : la branche du dieu touché s'allume (ses ancêtres jusqu'en haut, et ses enfants)
@@ -2861,6 +2865,7 @@ async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
         const ct = el('span');
         ct.textContent = `· ${n.s.k} / ${n.s.n} ${n.s.n > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(nm, ct);
+        encPanelX(hd, clearSel);
         card.append(hd);
         if (known.length && n.desc) { const d = el('p', 'enc-god-desc'); d.textContent = n.desc; card.append(d); }
         const ret = { label: cfg.back, fn: () => openSelf(tab, n.id) };
@@ -2993,7 +2998,15 @@ async function openEncFrance(keepCode = null) {
     const panel = el('div', 'enc-map-panel enc-god-panel');
     const CH_EMO = { 'Fromages': '🧀', 'Boissons': '🍷', 'Plats français': '🥘', 'Desserts et pâtisseries': '🍰', 'Produits et ingrédients': '🧄', 'Chefs, techniques et ustensiles': '👨‍🍳' };
     let sel = null;
+    const clearFr = () => {
+        if (!sel) return;
+        shapes[sel]?.classList.remove('is-sel');
+        sel = null;
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+    };
     const show = code => {
+        if (sel === code) { clearFr(); return; }
         if (sel) shapes[sel]?.classList.remove('is-sel');
         sel = code;
         shapes[code].classList.add('is-sel');
@@ -3008,6 +3021,7 @@ async function openEncFrance(keepCode = null) {
         const ct = el('span');
         ct.textContent = `· ${s.k} / ${s.n} ${s.n > 1 ? 'spécialités sues' : 'spécialité sue'}`;
         hd.append(nm, ct);
+        encPanelX(hd, clearFr);
         card.append(hd);
         const known = s.qs.filter(encKnown);
         const ret = { label: '← Ma France gourmande', fn: () => openEncFrance(code) };
@@ -3036,13 +3050,7 @@ async function openEncFrance(keepCode = null) {
         page.classList.add('has-sel');
     };
     svg.addEventListener('click', e => { const p = e.target.closest('.enc-reg'); if (p) show(p.dataset.code); });
-    encTapOff(wrap, '.enc-reg', () => {   // 13/11 : tap à côté = carte entière
-        if (!sel) return;
-        shapes[sel]?.classList.remove('is-sel');
-        sel = null;
-        panel.replaceChildren();
-        page.classList.remove('has-sel');
-    });
+    encTapOff(wrap, '.enc-reg', clearFr);   // 13/11 : tap à côté = carte entière
     page.append(h, encGastroTabs('france'), cnt, wrap, legend, credit, panel);
     encSwipe(page, () => openEncMap('Gastronomie', null, 'cuisine'), null);
     const body = $('friendBody');
@@ -3081,7 +3089,13 @@ function openEncDico(keepL = null) {
     const grid = el('div', 'enc-dico');
     const panel = el('div', 'enc-map-panel enc-god-panel');
     const cells = {};
+    const clearDico = () => {
+        Object.values(cells).forEach(c => c.classList.remove('is-sel'));
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+    };
     const show = L => {
+        if (cells[L]?.classList.contains('is-sel')) { clearDico(); return; }
         Object.values(cells).forEach(c => c.classList.remove('is-sel'));
         cells[L]?.classList.add('is-sel');
         const list = (by[L] || []).slice().sort((a, b) => encDicoWord(a).localeCompare(encDicoWord(b), 'fr'));
@@ -3094,6 +3108,7 @@ function openEncDico(keepL = null) {
         const ct = el('span');
         ct.textContent = `· ${known.length} / ${list.length} ${list.length > 1 ? 'mots et expressions' : 'mot'}`;
         hd.append(nm, ct);
+        encPanelX(hd, clearDico);
         card.append(hd);
         const ret = { label: '← Mon dictionnaire', fn: () => openEncDico(L) };
         known.forEach(q => {
@@ -3138,11 +3153,7 @@ function openEncDico(keepL = null) {
         grid.append(c);
     });
     wrap.append(grid);
-    encTapOff(wrap, '.enc-letter', () => {   // 13/11 : tap à côté = toutes les lettres
-        Object.values(cells).forEach(c => c.classList.remove('is-sel'));
-        panel.replaceChildren();
-        page.classList.remove('has-sel');
-    });
+    encTapOff(wrap, '.enc-letter', clearDico);   // 13/11 : tap à côté = toutes les lettres
     page.append(h, cnt, wrap, panel);
     $('friendBody').replaceChildren(encBackBtn('← Langue française', () => openEncBook('Langue française', true)), page);
     $('friendModal').hidden = false;
@@ -3167,6 +3178,14 @@ function encByCountry(theme, extra = {}) {
     return by;
 }
 /** Un tap à côté (sur le fond du dessin) referme la fiche du bas et rend tout le dessin. */
+function encPanelX(hd, clear) {
+    const x = el('button', 'enc-panel-x');
+    x.type = 'button';
+    x.setAttribute('aria-label', 'Fermer');
+    x.textContent = '✕';
+    x.addEventListener('click', e => { e.stopPropagation(); clear(); });
+    hd.append(x);
+}
 function encTapOff(zone, itemSel, clear) {
     zone.addEventListener('click', e => { if (!e.target.closest(itemSel)) clear(); });
 }
@@ -3227,6 +3246,7 @@ async function openEncFlags(keepCc = null, keepScroll = null) {
         requestAnimationFrame(() => { scroller.scrollTop = before; });
     };
     const show = cc => {
+        if (sel === cc) { clear(); return; }
         if (!sel) before = scroller.scrollTop;
         tiles[sel]?.classList.remove('is-sel');
         sel = cc;
@@ -3247,6 +3267,7 @@ async function openEncFlags(keepCc = null, keepScroll = null) {
         const ct = el('span');
         ct.textContent = `· ${s.k} / ${s.n} ${s.n > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(nm, ct);
+        encPanelX(hd, clear);
         card.append(hd);
         encQRows(card, s.qs, { label: '← Mon mur de drapeaux', fn: () => openEncFlags(cc, before) },
             q => q.flag ? ['🏳️ Son drapeau', '✓ reconnu'] : [q.q.replace(/\s*\?$/, ''), q.a[0]]);
@@ -3296,7 +3317,7 @@ async function openEncFlags(keepCc = null, keepScroll = null) {
         scroller.append(t, b);
     }
     encTapOff(scroller, '.enc-flag, .enc-flag-other', clear);
-    page.append(h, cnt, encMapLink('Drapeaux'), scroller, panel);
+    page.append(h, cnt, scroller, panel);
     $('friendBody').replaceChildren(encBackBtn('← Drapeaux', () => openEncBook('Drapeaux', true)), page);
     $('friendModal').hidden = false;
     if (keepCc && by[keepCc]) { show(keepCc); before = keepScroll || 0; }
@@ -3308,92 +3329,166 @@ const ENC_POST_CC = { 2303: ['CN'], 4088: ['TR'], 4193: ['GB'], 4330: ['AE'], 47
     24059: ['DE'], 24062: ['ES'], 24068: ['AU'], 24088: ['CL'], 24106: ['ID'], 24108: ['IR'], 24109: ['SY'], 24126: ['MM'], 24132: ['MA'], 24139: ['ET'],
     24140: ['TN'], 24232: ['CH'] };
 function encPostTitle(q) {
-    const m = q.q.match(/^Dans quel(?:le)? (?:pays|ville|région|île) (?:se trouvent?|se dresse|s[’']élève|est situé[e]?)\s+(.+?)\s*\?$/i);
+    const ph = window.ENC_POST_PH?.[q.id];
+    if (ph?.[4]) return ph[4];
+    const m = q.q.match(/^Dans quel(?:le)? (?:pays|ville|région|île) (?:se trouve(?:nt)?|se dresse|s[’']élève|est situé[e]?)\s+(.+?)\s*\?$/i);
     if (m) { const t = m[1].split(/,\s/)[0]; return t.charAt(0).toUpperCase() + t.slice(1); }
     if (/^\d/.test(q.a[0])) return q.q.replace(/\s*\?$/, '');
     return q.a[0];
 }
-const encPostIsFact = q => !q.photo && (/^\d/.test(q.a[0]) || /^(En quelle|Combien|Qui |Quel (architecte|roi|empereur|pharaon|sculpteur|ingénieur|peintre|président)|Quelle (reine|hauteur|couleur))/i.test(q.q));
-async function openEncPostcards(keepScroll = null) {
-    try { await encLoad('carte-monde.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+const encPostIsFact = q => !q.photo && !window.ENC_POST_PH?.[q.id] && (/^\d/.test(q.a[0]) || /^(En quelle|Combien|Qui |Quel (architecte|roi|empereur|pharaon|sculpteur|ingénieur|peintre|président)|Quelle (reine|hauteur|couleur))/i.test(q.q));
+/** Photo d'une carte postale : celle de la question, sinon celle trouvée pour l'album (cartes-postales.js). */
+const encPostPhoto = q => q.photo || window.ENC_POST_PH?.[q.id]?.[0] || null;
+const ENC_POST_ALBUMS = [['paris', '🗼', 'Paris'], ['fr', '🥖', 'France'], ['eu', '🏰', 'Europe'], ['as', '🐉', 'Asie'], ['am', '🗽', 'Amériques'], ['afoc', '🦁', 'Afrique et Océanie'], ['other', '📐', 'Le vocabulaire des monuments']];
+function encPostAlbums() {
     const by = encByCountry('Monuments', ENC_POST_CC);
-    const allQs = Object.values(by).flat();
-    const kn = allQs.filter(encKnown).length;
+    const cont = window.WORLD_CONT || {};
+    const albums = Object.fromEntries(ENC_POST_ALBUMS.map(([k]) => [k, []]));
+    Object.entries(by).forEach(([cc, qs]) => qs.forEach(q => {
+        const c = cont[cc];
+        const k = cc === 'other' ? 'other' : cc === 'FR' ? (/Paris|parisien|Montmartre|tour Eiffel|Louvre|Champs-Élysées|Notre-Dame de Paris/i.test(`${q.q} ${q.a.join(' ')} ${q.exp || ''}`) && !/Versailles|Trianon|Fontainebleau|Chantilly|Saint-Denis|Vaux/i.test(`${q.q} ${q.a[0]}`) ? 'paris' : 'fr')
+            : c === 'eu' ? 'eu' : c === 'as' ? 'as' : c === 'an' || c === 'sa' ? 'am' : 'afoc';
+        albums[k].push({ q, cc });
+    }));
+    return albums;
+}
+/** Une carte postale : photo (sue), carte écrite (date, mesure…), dessin 🏛️, ou le dos (à découvrir). */
+function encPostCard(q, cc, known, ret) {
+    const k = encKnown(q);
+    const ph = k ? encPostPhoto(q) : null;
+    const b = el('button', `enc-post${k ? ' is-known' : ' is-back'}${ph ? ' has-photo' : ''}`);
+    b.type = 'button';
+    if (ph) {
+        const bg = el('img', 'enc-post-bg');
+        bg.src = ph;
+        bg.alt = '';
+        bg.loading = 'lazy';
+        const img = el('img', 'enc-post-ph');
+        img.src = ph;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.draggable = false;
+        b.append(bg, img);
+    } else if (k && encPostIsFact(q)) {
+        b.classList.add('is-written');
+        const w = el('span', 'enc-post-txt');
+        w.textContent = q.q;
+        const ans = el('b', 'enc-post-ans');
+        ans.textContent = q.a[0];
+        b.append(w, ans);
+    } else if (k) {
+        const e = el('span', 'enc-post-emo');
+        e.textContent = cc ? '🏛️' : '📐';
+        b.append(e);
+    } else {
+        const e = el('span', 'enc-post-q');
+        e.textContent = '?';
+        b.append(e, el('span', 'enc-post-lines'));
+    }
+    if (cc && cc !== 'other') {
+        const sp = el('span', 'enc-post-stamp');
+        const fl = el('img');
+        fl.src = `flags/${cc.toLowerCase()}.svg`;
+        fl.alt = '';
+        fl.loading = 'lazy';
+        fl.onerror = () => sp.remove();
+        sp.append(fl);
+        b.append(sp);
+    }
+    if (k && !b.classList.contains('is-written')) {
+        const c = el('span', 'enc-post-cap');
+        c.textContent = encPostTitle(q);
+        b.append(c);
+    }
+    if (k) b.addEventListener('click', () => openEncFiche(q, known, ret()));
+    else b.addEventListener('click', encLockedTip);
+    return b;
+}
+async function encPostLoad() {
+    await encLoad('carte-monde.js');
+    try { await encLoad('cartes-postales.js'); } catch (e) { /* sans les photos en plus */ }
+}
+/** 13/11 : l'album des cartes postales = 7 petits albums (Paris, France, Europe…) ; on en ouvre un. */
+async function openEncPostcards() {
+    try { await encPostLoad(); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const albums = encPostAlbums();
+    const allQs = Object.values(albums).flat();
+    const kn = allQs.filter(x => encKnown(x.q)).length;
     const h = el('h2', 'review-title enc-title is-sm');
     h.textContent = '💌 Mes cartes postales';
     const cnt = el('p', 'enc-chap-sub');
     cnt.textContent = `${kn} / ${allQs.length} cartes postales`;
-    const cont = window.WORLD_CONT || {};
-    const parts = [];
-    let page = null;
-    const ret = () => ({ label: '← Mes cartes postales', fn: () => openEncPostcards(page ? page.scrollTop : 0) });
-    const section = (label, qs) => {
-        const known = qs.filter(encKnown);
-        const t = el('p', 'enc-wall-h');
-        t.textContent = `${label} · ${known.length} / ${qs.length}`;
-        const grid = el('div', 'enc-post-grid');
-        qs.forEach(q => {
-            const cc = (window.ENC_COUNTRY?.[q.id] || ENC_POST_CC[q.id] || [])[0];
-            const k = encKnown(q);
-            const b = el('button', `enc-post${k ? ' is-known' : ' is-back'}${k && q.photo ? ' has-photo' : ''}`);
-            b.type = 'button';
-            if (k && q.photo) {
-                const img = el('img', 'enc-post-ph');
-                img.src = q.photo;
-                img.alt = '';
-                img.loading = 'lazy';
-                img.draggable = false;
-                b.append(img);
-            } else if (k && encPostIsFact(q)) {   // date, mesure, architecte… : une carte écrite au dos
-                b.classList.add('is-written');
-                const w = el('span', 'enc-post-txt');
-                w.textContent = q.q;
-                const ans = el('b', 'enc-post-ans');
-                ans.textContent = q.a[0];
-                b.append(w, ans);
-            } else if (k) {
-                const e = el('span', 'enc-post-emo');
-                e.textContent = cc ? '🏛️' : '📐';
-                b.append(e);
-            } else {
-                const e = el('span', 'enc-post-q');
-                e.textContent = '?';
-                b.append(e, el('span', 'enc-post-lines'));
-            }
-            if (cc) {
-                const sp = el('span', 'enc-post-stamp');
-                const fl = el('img');
-                fl.src = `flags/${cc.toLowerCase()}.svg`;
-                fl.alt = '';
-                fl.loading = 'lazy';
-                fl.onerror = () => sp.remove();
-                sp.append(fl);
-                b.append(sp);
-            }
-            if (k && !b.classList.contains('is-written')) {
-                const c = el('span', 'enc-post-cap');
-                c.textContent = encPostTitle(q);
-                b.append(c);
-            }
-            if (k) b.addEventListener('click', () => openEncFiche(q, known, ret()));
-            else b.addEventListener('click', encLockedTip);
-            grid.append(b);
-        });
-        parts.push(t, grid);
-    };
-    ENC_CONTS.forEach(([k, label]) => {
-        const ccs = Object.keys(by).filter(cc => cont[cc] === k).sort((a, b) => encCountryName(a).localeCompare(encCountryName(b), 'fr'));
-        const qs = ccs.flatMap(cc => by[cc].slice().sort((a, b) => encKnown(b) - encKnown(a)));
-        if (qs.length) section(label, qs);
+    const grid = el('div', 'enc-album-grid');
+    ENC_POST_ALBUMS.forEach(([key, emo, name]) => {
+        const list = albums[key];
+        if (!list.length) return;
+        const k = list.filter(x => encKnown(x.q)).length;
+        const b = el('button', `enc-album${k >= list.length ? ' is-full' : ''}${key === 'other' ? ' is-wide' : ''}`);
+        b.type = 'button';
+        const cover = el('span', 'enc-album-cover');
+        const withPh = list.filter(x => encKnown(x.q) && encPostPhoto(x.q));
+        if (withPh.length) {
+            const img = el('img');
+            img.src = encPostPhoto(withPh[0].q);
+            img.alt = '';
+            img.loading = 'lazy';
+            cover.append(img);
+        } else {
+            const e = el('span', 'enc-album-emo');
+            e.textContent = emo;
+            cover.append(e);
+        }
+        const t = el('span', 'enc-album-t');
+        const tb = el('b');
+        tb.textContent = `${emo} ${name}`;
+        const ts = el('small');
+        ts.textContent = `${k} / ${list.length} cartes`;
+        const bar = el('span', 'enc-ch-bar');
+        const bi = el('i');
+        bi.style.width = `${Math.round(k / list.length * 100)}%`;
+        bar.append(bi);
+        t.append(tb, ts, bar);
+        b.append(cover, t);
+        if (k >= list.length) b.append(encStamp('is-mini'));
+        b.addEventListener('click', () => openEncPostAlbum(key));
+        grid.append(b);
     });
-    if (by.other) section('📐 Le vocabulaire des monuments', by.other.slice().sort((a, b) => encKnown(b) - encKnown(a)));
-    page = encPage(encBackBtn('← Monuments', () => openEncBook('Monuments', true)), h, cnt, encMapLink('Monuments'), ...parts);
+    const page = encPage(encBackBtn('← Monuments', () => openEncBook('Monuments', true)), h, cnt, grid);
+    page.classList.add('enc-postpage');
+}
+async function openEncPostAlbum(key, keepScroll = null) {
+    try { await encPostLoad(); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const [, emo, name] = ENC_POST_ALBUMS.find(a => a[0] === key);
+    const list = encPostAlbums()[key];
+    const h = el('h2', 'review-title enc-title is-sm');
+    h.textContent = `${emo} ${name}`;
+    const cnt = el('p', 'enc-chap-sub');
+    cnt.textContent = `${list.filter(x => encKnown(x.q)).length} / ${list.length} cartes postales`;
+    let page = null;
+    const ret = () => ({ label: `← ${name}`, fn: () => openEncPostAlbum(key, page ? page.scrollTop : 0) });
+    const parts = [];
+    const groups = {};
+    list.forEach(x => (groups[x.cc] = groups[x.cc] || []).push(x));
+    const ccs = Object.keys(groups).sort((a, b) => encCountryName(a).localeCompare(encCountryName(b), 'fr'));
+    ccs.forEach(cc => {
+        const g = groups[cc].slice().sort((a, b) => encKnown(b.q) - encKnown(a.q));
+        const known = g.map(x => x.q).filter(encKnown);
+        if (ccs.length > 1) {
+            const t = el('p', 'enc-wall-h');
+            t.textContent = `${encCountryName(cc)} · ${known.length} / ${g.length}`;
+            parts.push(t);
+        }
+        const grid = el('div', 'enc-post-grid');
+        g.forEach(x => grid.append(encPostCard(x.q, x.cc, known, ret)));
+        parts.push(grid);
+    });
+    page = encPage(encBackBtn('← Mes cartes postales', () => openEncPostcards()), h, cnt, ...parts);
     page.classList.add('enc-postpage');
     if (keepScroll) requestAnimationFrame(() => { page.scrollTop = keepScroll; });
 }
-
 function encMedia(q, small) {
     if (q.flag) return flagImg(q.flag);
+    if (!q.photo && window.ENC_POST_PH?.[q.id]?.[0]) { const img = el('img'); img.src = window.ENC_POST_PH[q.id][0]; img.alt = ''; img.loading = 'lazy'; return img; }   // photo de l'album des cartes postales
     if (q.photo) { const img = el('img'); img.src = q.photo; img.alt = ''; img.loading = 'lazy'; return img; }
     if (q.rebus) return small ? emojiImg(q.rebus[0]) : null;
     return null;
@@ -3508,7 +3603,8 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     if (media) {
         const w = el('div', `enc-media${q.flag ? ' is-flag' : ''}`);
         w.append(media);
-        if (q.credit) { const c = el('small'); c.textContent = q.credit; w.append(c); }
+        const credit = q.credit || (!q.photo && window.ENC_POST_PH?.[q.id]?.[3]);
+        if (credit) { const c = el('small'); c.textContent = credit; w.append(c); }
         fiche.append(w);
     }
     const qq = el('div', 'enc-q');
