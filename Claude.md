@@ -397,6 +397,14 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
 - 12/11 (v=20261114c) : ENCYCLOPÉDIE EN LIGNE POUR TOUS (`ENC_ON = true`) + « Quoi de neuf ? » (`NOTES_DAY = '2026-11-12'`, 4 lignes :
   encyclopédie, décors, réviser sans risque, tout compléter). Amélioration possible plus tard : code de l'encyclopédie dans un fichier
   à part chargé au 1er tap sur « Savoirs » (script.js = 810 Ko).
+- NUIT DU 12 AU 13/11 (demande de l'utilisateur) : 1) PARCOURS : après tout niveau du parcours (en cours, refait OU facultatif
+  derrière soi), retour sur le niveau suivant (raté : le même) — `mapFocusLevel` posé dans `endSession` pour level/pairs/order/challenge
+  (avant : seulement `state.replay`, donc pas les niveaux insérés jamais faits). 2) ENCYCLOPÉDIE vérifiée (scratchpad enc_check.js,
+  et_encall.js) : tous les ids existent et sont du bon thème, 0 erreur JS sur tous les écrans (rien su / moitié / tout su) ; ajoutés :
+  dessin de La Cène, fiche Monet complète. Akhenaton (Histoire 2002) dans l'arbre des dieux : laissé exprès. 3) RELECTURE DES 5 554
+  QUESTIONS (58 corrections, scratchpad fixes_lot1.txt / fixes_lot2.txt, outil apply_fix.py) : explications fausses (Brunei fond
+  jaune, Madagascar 4e île, K2 hors Himalaya, Rothko, Gauguin, Ogier 9 titres en 2025…), tournures, variantes. Doublons exacts
+  laissés (11009/11157, 11102/11151, 10118/31034). Test : 0 bonne réponse refusée.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
