@@ -4590,3 +4590,5 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-lib-book.is-known { padding: 15px 0 18px; }
 .enc-lib-title { text-orientation: sideways; }
 .enc-lib-n { bottom: 1px; font-size: 0.5rem; line-height: 9px; }
+.enc-flagpage .enc-wall-h { margin: 26px 2px 12px; }
+.enc-flagpage .enc-wall-h:first-child { margin-top: 4px; }
