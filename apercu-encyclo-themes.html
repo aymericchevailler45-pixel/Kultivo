@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kultivo · aperçu Écrans des thèmes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #eef3f8; --surface: #fff; --ink: #1b2745; --muted: #66728f; --line: #d9e1ec; --blue: #3d8bff; --blue-deep: #1c5bd6; --violet-ink: #5230a8;
+    --ok: #4fc72c; --gold: #f3b400; --gold-tint: #fff4d6; --gold-ink: #8a5a00; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #dfe6f0; color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 700; }
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; }
+.lead { margin: 0 0 18px; color: var(--muted); max-width: 820px; line-height: 1.45; }
+h2 { margin: 38px 0 8px; font-size: 1.25rem; font-weight: 900; }
+.note { max-width: 820px; line-height: 1.5; margin: 0 0 14px; }
+.note b { font-weight: 900; }
+.phones { display: flex; flex-wrap: wrap; gap: 26px; align-items: flex-start; }
+.pw { display: flex; flex-direction: column; gap: 8px; width: 340px; max-width: 100%; }
+.pw > b { font-size: 1rem; font-weight: 900; }
+.pw > span { color: var(--muted); font-size: .88rem; line-height: 1.35; min-height: 4.1em; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: .72rem; font-weight: 900; margin-right: 6px; background: #e8e2fb; color: var(--violet-ink); }
+.tag.easy { background: #dcf6d2; color: #2a6b14; } .tag.mid { background: #fff4d6; color: #8a5a00; } .tag.long { background: #ffe1e1; color: #b32020; } .tag.rec { background: #dcf6d2; color: #2a6b14; }
+.phone { position: relative; width: 340px; max-width: 100%; height: 690px; overflow: hidden; border-radius: 34px; border: 8px solid #1b2745; background: #f4f7fb; box-shadow: 0 18px 40px rgba(27, 39, 69, .25); }
+.full { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 14px 14px 10px; }
+.top { display: flex; align-items: center; justify-content: space-between; height: 34px; flex: none; }
+.top .back { color: var(--violet-ink); font-weight: 900; font-size: .95rem; }
+.top .x { color: var(--muted); font-size: 1.2rem; }
+.ttl { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 2px 0 8px; flex: none; }
+.ttl b { font-size: 1.25rem; font-weight: 900; }
+.ttl small { color: var(--muted); font-size: .78rem; font-weight: 800; white-space: nowrap; }
+.panel { margin-top: auto; padding: 9px 11px; border-radius: 14px; background: #fff; border: 2px solid var(--line); flex: none; }
+.panel b.h { display: block; font-size: .95rem; font-weight: 900; margin-bottom: 3px; }
+.panel .r { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-top: 1px solid var(--line); font-size: .74rem; }
+.panel .r:first-of-type { border-top: 0; }
+.panel .r span { color: var(--muted); } .panel .r b { color: var(--gold-ink); white-space: nowrap; }
+.panel .r.l b { color: var(--muted); }
+/* comparaison fenêtre / plein écran */
+.behind { position: absolute; inset: 0; padding: 14px; background: #eef3f8; }
+.behind .bar { height: 40px; border-radius: 12px; background: #fff; margin-bottom: 10px; }
+.behind .blk { height: 120px; border-radius: 16px; background: #fff; margin-bottom: 10px; }
+.dim { position: absolute; inset: 0; background: rgba(27, 39, 69, .45); }
+.win { position: absolute; left: 12px; right: 12px; top: 40px; bottom: 40px; border-radius: 24px; background: #fff; padding: 14px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.navbar { flex: none; display: flex; justify-content: space-around; padding: 8px 0 2px; border-top: 1px solid var(--line); font-size: 1.2rem; opacity: .35; }
+/* arbre */
+.tree { position: relative; flex: 1; border-radius: 16px; background: linear-gradient(#eaf2ff, #fff); overflow: hidden; }
+.tree svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.god { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; width: 64px; text-align: center; font-size: .6rem; font-weight: 900; line-height: 1.05; }
+.god i { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #fff; border: 3px solid #1e3a8a; font-style: normal; font-size: 1.2rem; box-shadow: 0 2px 6px rgba(0,0,0,.15); margin-bottom: 2px; }
+.god.k i { background: #dbe6ff; }
+.god.u i { border: 2px dashed #9aa6bd; background: #f4f6fa; color: #9aa6bd; font-size: .9rem; } .god.u { color: #9aa6bd; }
+.god.sel i { box-shadow: 0 0 0 4px #f3b400; }
+.tier { position: absolute; left: 8px; font-size: .58rem; font-weight: 900; color: #1e3a8a; opacity: .55; letter-spacing: .05em; text-transform: uppercase; }
+/* carte de France en tuiles */
+.fr { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; padding: 6px; border-radius: 16px; background: #e8f1fb; }
+.reg { border-radius: 10px; padding: 4px; display: flex; flex-direction: column; justify-content: space-between; font-size: .55rem; font-weight: 900; line-height: 1.05; color: #4a2c00; overflow: hidden; }
+.reg em { font-style: normal; font-size: .86rem; letter-spacing: -1px; }
+.reg small { font-size: .6rem; opacity: .8; }
+.l0 { background: #eadfcd; color: #8a7a60; } .l1 { background: #f7d98a; } .l2 { background: #f2b94a; } .l3 { background: #d98b12; color: #fff; }
+.reg.sel { outline: 3px solid #1b2745; }
+/* sciences */
+.sci { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.tabs { display: flex; gap: 6px; flex: none; }
+.tabs span { flex: 1; text-align: center; padding: 6px; border-radius: 999px; background: var(--bg); font-size: .76rem; font-weight: 900; color: var(--muted); }
+.tabs span.on { background: #0891b2; color: #fff; }
+.body { position: relative; flex: 1; border-radius: 16px; background: #e6f6fa; }
+.org { position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 4px; font-size: .6rem; font-weight: 900; white-space: nowrap; }
+.org i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 2px solid #0891b2; font-style: normal; font-size: .95rem; box-shadow: 0 0 0 4px rgba(8,145,178,.15); }
+.org.u i { border: 2px dashed #9aa6bd; filter: grayscale(1); opacity: .6; box-shadow: none; } .org.u { color: #9aa6bd; }
+.solar { position: relative; height: 150px; flex: none; border-radius: 16px; background: radial-gradient(circle at 12% 50%, #2b2f55, #0f1330); overflow: hidden; }
+.solar .orb { position: absolute; left: 12%; top: 50%; border: 1px solid rgba(255,255,255,.18); border-radius: 50%; transform: translate(-50%, -50%); }
+.solar .pl { position: absolute; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; }
+.solar .pl.u { background: transparent !important; border: 1.5px dashed rgba(255,255,255,.45); }
+.solar small { position: absolute; bottom: 6px; right: 10px; color: #fff; font-size: .66rem; opacity: .8; }
+/* dictionnaire */
+.dico { flex: 1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; align-content: start; }
+.let { position: relative; aspect-ratio: 1; border-radius: 12px; background: #fff; border: 2px solid #c9d6f5; overflow: hidden; display: grid; place-items: center; }
+.let b { position: relative; z-index: 1; font-family: Georgia, serif; font-size: 1.45rem; font-weight: 700; color: #2563eb; }
+.let small { position: absolute; z-index: 1; bottom: 2px; right: 5px; font-size: .55rem; color: #2563eb; font-weight: 900; }
+.let::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--f); background: #dbe6ff; }
+.let.z { border-style: dashed; } .let.z b { color: #b6c2da; }
+.let.sel { border-color: #2563eb; box-shadow: 0 0 0 3px #2563eb inset; }
+/* bibliothèque */
+.lib { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 16px; background: #6b4a2b; }
+.shelf { position: relative; padding: 14px 6px 0; border-bottom: 7px solid #3e2a17; display: flex; align-items: flex-end; gap: 2px; height: 74px; }
+.shelf > small { position: absolute; top: 2px; left: 6px; color: #f3e1c6; font-size: .58rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+.sp { width: 12px; border-radius: 2px 2px 0 0; box-shadow: inset -2px 0 0 rgba(0,0,0,.18), inset 2px 0 0 rgba(255,255,255,.18); }
+.sp.e { background: transparent !important; border: 1px dashed rgba(243,225,198,.45); border-bottom: 0; }
+/* musée */
+.museum { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.room { border-radius: 14px; padding: 8px 8px 10px; background: linear-gradient(#f7efe3, #efe2cf); border-bottom: 6px solid #c9a978; }
+.room > small { display: block; font-size: .62rem; font-weight: 900; color: #7a5a2a; margin-bottom: 6px; letter-spacing: .04em; text-transform: uppercase; }
+.wall { display: flex; flex-wrap: wrap; gap: 7px; align-items: flex-end; }
+.frame { display: grid; place-items: center; border: 4px solid #c99a2e; outline: 1px solid #8a6616; background: #fff; font-size: 1.1rem; box-shadow: 0 3px 4px rgba(0,0,0,.2); }
+.frame.e { border: 2px dashed #c9a978; outline: 0; background: transparent; box-shadow: none; color: #c9a978; font-size: .7rem; font-weight: 900; }
+/* cinéma */
+.posters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.poster { aspect-ratio: 2 / 3; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; justify-content: flex-end; color: #fff; font-size: .5rem; font-weight: 900; line-height: 1.05; box-shadow: 0 2px 4px rgba(0,0,0,.25); }
+.poster.e { background: transparent !important; border: 2px dashed #c4ccda; color: #9aa6bd; justify-content: center; text-align: center; box-shadow: none; }
+.walk { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; padding: 8px; border-radius: 12px; background: #3a3f4b; }
+.star { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 8px; background: #555b69; color: #ffd76a; font-size: .52rem; font-weight: 900; text-align: center; line-height: 1.1; }
+.star b { font-size: 1.1rem; }
+.star.e { color: #8a90a0; }
+/* vinyles */
+.crates { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.crate { padding: 6px 8px 8px; border-radius: 12px; background: #f3e9f7; }
+.crate > small { display: block; font-size: .62rem; font-weight: 900; color: #9d174d; margin-bottom: 4px; letter-spacing: .04em; text-transform: uppercase; }
+.recs { display: flex; gap: 0; }
+.rec { flex: none; width: 46px; height: 46px; margin-right: -14px; border-radius: 50%; background: radial-gradient(circle, var(--l) 0 22%, #111 23% 30%, #222 31% 100%); box-shadow: 0 2px 4px rgba(0,0,0,.3), inset 0 0 0 3px rgba(255,255,255,.06); }
+.rec.e { background: transparent; border: 2px dashed #d3b9e0; box-shadow: none; }
+/* trophées */
+.vitrine { flex: 1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 10px; border-radius: 16px; background: linear-gradient(#e3ecf7, #cfdcec); align-content: start; }
+.tro { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 12px; background: rgba(255,255,255,.7); font-size: .66rem; font-weight: 900; text-align: center; }
+.tro b { font-size: 1.8rem; line-height: 1; }
+.tro small { color: var(--muted); font-size: .6rem; }
+.tro .m { padding: 1px 7px; border-radius: 999px; font-size: .58rem; color: #fff; }
+.bz { background: #b87333; } .ag { background: #9aa3ae; } .au { background: #d4a106; } .no { background: #c4ccda; color: #66728f !important; }
+/* arcade */
+.arcade { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px; border-radius: 16px; background: #1b1033; align-content: start; }
+.cab { display: flex; flex-direction: column; align-items: center; padding: 6px 4px 8px; border-radius: 10px 10px 4px 4px; background: linear-gradient(#5b2ea6, #3a1c70); color: #fff; font-size: .55rem; font-weight: 900; text-align: center; line-height: 1.1; }
+.cab .scr { width: 100%; aspect-ratio: 4 / 3; border-radius: 4px; margin-bottom: 4px; display: grid; place-items: center; font-size: 1.2rem; background: #0b0b18; box-shadow: inset 0 0 8px rgba(0,0,0,.8); }
+.cab.on .scr { background: radial-gradient(#4de8ff, #1b6cff); box-shadow: 0 0 10px #4de8ff; }
+.cab small { color: #c9b6ff; font-size: .55rem; }
+/* frise techno */
+.tl { position: relative; flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 7px; }
+.tl::before { content: ""; position: absolute; left: 51px; top: 0; bottom: 0; width: 4px; border-radius: 2px; background: #b9c0cb; }
+.ev { display: grid; grid-template-columns: 44px 18px 1fr; align-items: start; }
+.ev .y { padding-top: 5px; text-align: right; color: #4b5563; font-size: .74rem; font-weight: 900; }
+.ev .d { justify-self: center; margin-top: 8px; width: 11px; height: 11px; border-radius: 50%; background: #4b5563; box-shadow: 0 0 0 3px #f4f7fb; position: relative; z-index: 1; }
+.ev .bx { padding: 6px 9px; border-radius: 11px; background: #fff; border: 1.5px solid #d6dbe3; font-size: .78rem; font-weight: 900; }
+.ev .bx small { display: block; color: var(--muted); font-size: .64rem; font-weight: 700; }
+.ev.u .d { background: #f4f7fb; border: 2px dashed #9aa6bd; box-shadow: none; } .ev.u .bx { background: transparent; border: 2px dashed #d6dbe3; color: #9aa6bd; font-size: .72rem; } .ev.u .y { color: #9aa6bd; }
+table { border-collapse: collapse; background: #fff; border-radius: 14px; overflow: hidden; font-size: .86rem; max-width: 960px; }
+td, th { padding: 7px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: var(--bg); font-weight: 900; }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Encyclopédie : un écran à part pour chaque thème</h1>
+<p class="lead">Un bouton dans chaque livre ouvre un écran propre au thème. Partout, c'est la même règle : ce que tu sais se dessine ou s'allume, et ce qui reste est en pointillés. Toucher un élément montre ses questions sues, en bas de l'écran, comme pour la carte du monde. Les chiffres sont des exemples.</p>
+
+<h2>0. Fenêtre par-dessus, ou vraie page en plein écran ?</h2>
+<div class="phones">
+  <div class="pw"><b>A · Fenêtre par-dessus (aujourd'hui)</b><span>On devine encore le Profil derrière. Bien pour une liste ou une fiche, mais l'arbre, la carte ou le musée manquent de place.</span>
+    <div class="phone"><div class="behind"><div class="bar"></div><div class="blk"></div><div class="blk"></div><div class="blk"></div></div><div class="dim"></div>
+      <div class="win"><div class="top"><span class="back">← Mythologie</span><span class="x">✕</span></div><div class="ttl"><b>🌳 L'arbre des dieux</b></div>
+        <div class="tree" id="treeSmall"></div></div></div>
+  </div>
+  <div class="pw"><b><span class="tag rec">conseillé</span> B · Vraie page plein écran</b><span>On « entre » dans l'encyclopédie : toute la hauteur et les bords de l'écran, une barre en haut (← et titre), et la touche retour du téléphone revient en arrière. Comme une appli dans l'appli.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Mythologie</span><span class="x"></span></div><div class="ttl"><b>🌳 L'arbre des dieux</b><small>9 / 22 dieux</small></div>
+      <div class="tree" id="treeBig"></div><div class="navbar"><span>🗺️</span><span>🎯</span><span>🥇</span><span>🛒</span><span>👤</span></div></div></div>
+  </div>
+</div>
+<p class="note" style="margin-top:12px"><b>Mon avis : B</b>, pour toute l'encyclopédie (livres, chapitres, fiches et ces écrans), pas seulement pour les écrans spéciaux. Si certaines pages restaient en fenêtre et d'autres en plein écran, on passerait de l'un à l'autre sans arrêt, et ce serait déroutant. La barre du bas du jeu resterait visible, pour pouvoir partir vers un autre onglet.</p>
+
+<h2>1. Mythologie · 🌳 L'arbre des dieux <span class="tag long">le plus long</span></h2>
+<div class="phones">
+  <div class="pw"><b>L'arbre</b><span>Des Titans aux enfants de Zeus. Un dieu se dévoile dès qu'on connaît une question sur lui. Les autres mythologies (Égypte, Nordique…) auraient leur propre arbre, avec des onglets en haut.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Mythologie</span><span class="x"></span></div><div class="ttl"><b>🌳 L'arbre des dieux</b><small>9 / 22 dieux</small></div>
+      <div class="tabs" style="margin-bottom:8px"><span class="on" style="background:#1e3a8a">Grèce</span><span>Égypte</span><span>Nordique</span></div>
+      <div class="tree" id="treeMain"></div>
+      <div class="panel"><b class="h">⚡ Zeus · 4 / 6 questions sues</b><div class="r"><span>Son arme</span><b>La foudre</b></div><div class="r"><span>Son équivalent romain</span><b>Jupiter</b></div><div class="r"><span>Montagne où il trône</span><b>L'Olympe</b></div><div class="r l"><span>❓ 2 questions à découvrir</span><b>›</b></div></div>
+    </div></div>
+  </div>
+</div>
+
+<h2>2. Gastronomie · 🧀 La carte de France des régions <span class="tag mid">moyen</span></h2>
+<div class="phones">
+  <div class="pw"><b>Les régions qui se remplissent</b><span>Plus une région est dorée, plus tu connais ses spécialités. Les petites icônes montrent ce que tu as trouvé : 🧀 fromage, 🍷 vin, 🥘 plat, 🍰 dessert. Les cuisines étrangères vont sur la carte du monde.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Gastronomie</span><span class="x"></span></div><div class="ttl"><b>🧀 Ma France gourmande</b><small>58 / 140 spécialités</small></div>
+      <div class="fr" id="fr"></div>
+      <div class="panel"><b class="h">Bourgogne-Franche-Comté · 6 / 9</b><div class="r"><span>🥘 Plat mijoté au vin rouge</span><b>Bœuf bourguignon</b></div><div class="r"><span>🧀 Fromage du Jura en meule</span><b>Comté</b></div><div class="r"><span>🧄 Condiment de Dijon</span><b>Moutarde</b></div><div class="r l"><span>❓ 3 à découvrir</span><b>›</b></div></div>
+    </div></div>
+  </div>
+</div>
+
+<h2>3. Sciences · 🫀 Le corps humain et 🪐 le système solaire <span class="tag long">corps : long</span> <span class="tag mid">espace : moyen</span></h2>
+<div class="phones">
+  <div class="pw"><b>Corps humain</b><span>Les organes s'allument quand tu connais leurs questions. Toucher le cœur montre ce que tu sais sur lui.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Sciences</span><span class="x"></span></div><div class="ttl"><b>🫀 Mon corps humain</b><small>7 / 11 organes</small></div>
+      <div class="tabs" style="margin-bottom:8px"><span class="on">Corps humain</span><span>Système solaire</span></div>
+      <div class="body" id="bodyMap"></div>
+      <div class="panel" style="margin-top:8px"><b class="h">❤️ Le cœur · 3 / 4</b><div class="r"><span>Nombre de cavités</span><b>4</b></div><div class="r"><span>Vaisseau qui part du cœur</span><b>L'aorte</b></div><div class="r l"><span>❓ 1 question à découvrir</span><b>›</b></div></div>
+    </div></div>
+  </div>
+  <div class="pw"><b>Système solaire</b><span>Le Soleil et ses planètes, à toucher. Les planètes pas encore connues sont en pointillés. Il y aurait aussi la Lune, les comètes et les étoiles.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Sciences</span><span class="x"></span></div><div class="ttl"><b>🪐 Mon système solaire</b><small>6 / 10 astres</small></div>
+      <div class="tabs" style="margin-bottom:8px"><span>Corps humain</span><span class="on">Système solaire</span></div>
+      <div class="solar" id="solar" style="height:280px"><small>Glisse pour te déplacer</small></div>
+      <div class="panel"><b class="h">🪐 Saturne · 2 / 3</b><div class="r"><span>Planète aux plus beaux anneaux</span><b>Saturne</b></div><div class="r"><span>Sa plus grande lune</span><b>Titan</b></div><div class="r l"><span>❓ 1 question à découvrir</span><b>›</b></div></div>
+    </div></div>
+  </div>
+</div>
+
+<h2>4. Langue française · 📖 Le dictionnaire de A à Z <span class="tag easy">facile</span></h2>
+<div class="phones">
+  <div class="pw"><b>26 lettres qui se remplissent</b><span>Chaque mot, expression ou proverbe su est rangé à sa première lettre, et la case se remplit d'encre. Toucher une lettre l'ouvre comme une page du dictionnaire.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Langue française</span><span class="x"></span></div><div class="ttl"><b>📖 Mon dictionnaire</b><small>86 / 405 mots</small></div>
+      <div class="dico" id="dico"></div>
+      <div class="panel"><b class="h">E · 7 mots et expressions</b><div class="r"><span>Être dans la lune</span><b>Rêver</b></div><div class="r"><span>Éphémère</span><b>Qui dure un jour</b></div><div class="r l"><span>❓ 12 à découvrir</span><b>›</b></div></div>
+    </div></div>
+  </div>
+</div>
+
+<h2>5. Littérature · 📚 La bibliothèque · Arts · 🖼️ Le musée <span class="tag easy">faciles</span></h2>
+<div class="phones">
+  <div class="pw"><b>Bibliothèque</b><span>Une étagère par chapitre. Chaque question sue range un livre de plus, à sa couleur. Les places vides attendent. Toucher un livre ouvre sa fiche.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Littérature</span><span class="x"></span></div><div class="ttl"><b>📚 Ma bibliothèque</b><small>97 / 406 livres</small></div>
+      <div class="lib" id="lib"></div></div></div>
+  </div>
+  <div class="pw"><b>Musée</b><span>Une salle par chapitre : chaque œuvre ou artiste su accroche un tableau au mur, et les cadres vides attendent.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Arts</span><span class="x"></span></div><div class="ttl"><b>🖼️ Mon musée</b><small>64 / 317 œuvres</small></div>
+      <div class="museum" id="museum"></div></div></div>
+  </div>
+</div>
+
+<h2>6. Cinéma · 🎬 Le mur d'affiches · Musique · 💿 Les vinyles <span class="tag easy">faciles</span></h2>
+<div class="phones">
+  <div class="pw"><b>Mur d'affiches + étoiles</b><span>Chaque film su colle une affiche. Les acteurs et actrices sus ont leur étoile, comme sur un trottoir des célébrités.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Cinéma</span><span class="x"></span></div><div class="ttl"><b>🎬 Mon cinéma</b><small>112 / 409</small></div>
+      <div class="posters" id="posters"></div>
+      <div class="walk" id="walk"></div></div></div>
+  </div>
+  <div class="pw"><b>Collection de vinyles</b><span>Un bac par genre. Chaque artiste ou chanson su ajoute un disque. Toucher un disque le fait tourner et ouvre sa fiche.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Musique</span><span class="x"></span></div><div class="ttl"><b>💿 Mes vinyles</b><small>88 / 389 disques</small></div>
+      <div class="crates" id="crates"></div></div></div>
+  </div>
+</div>
+
+<h2>7. Sport · 🏆 La vitrine · Jeux · 🕹️ La salle d'arcade <span class="tag easy">faciles</span></h2>
+<div class="phones">
+  <div class="pw"><b>Vitrine de trophées</b><span>Un trophée par chapitre. Il est gris au début, puis passe au bronze au tiers des questions sues, à l'argent aux deux tiers, et à l'or quand tout est su.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Sport</span><span class="x"></span></div><div class="ttl"><b>🏆 Ma vitrine</b><small>3 trophées en or</small></div>
+      <div class="vitrine" id="vitrine"></div></div></div>
+  </div>
+  <div class="pw"><b>Salle d'arcade</b><span>Une borne par chapitre. L'écran s'allume quand le chapitre avance, et le score affiché est le nombre de questions sues.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Jeux</span><span class="x"></span></div><div class="ttl"><b>🕹️ Ma salle d'arcade</b><small>4 / 6 bornes allumées</small></div>
+      <div class="arcade" id="arcade"></div></div></div>
+  </div>
+</div>
+
+<h2>8. Technologie · 🕰️ La frise des inventions <span class="tag mid">moyen</span></h2>
+<div class="phones">
+  <div class="pw"><b>Seule autre frise</b><span>C'est le même écran que pour l'Histoire, en gris acier. C'est le thème où les dates comptent le plus après l'Histoire.</span>
+    <div class="phone"><div class="full"><div class="top"><span class="back">← Technologie</span><span class="x"></span></div><div class="ttl"><b>🕰️ Les inventions</b><small>74 placées · 327 à découvrir</small></div>
+      <div class="tl" id="tl"></div></div></div>
+  </div>
+</div>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Thème</th><th>Écran</th><th>Travail</th></tr>
+<tr><td>Histoire</td><td>🕰️ Frise</td><td>fait</td></tr>
+<tr><td>Géographie, Drapeaux, Monuments</td><td>🗺️ Carte du monde</td><td>fait</td></tr>
+<tr><td>Mythologie</td><td>🌳 Arbre des dieux (+ Égypte, Nordique)</td><td>long : relier chaque question à un dieu, dessiner les arbres</td></tr>
+<tr><td>Gastronomie</td><td>🧀 Carte de France des régions</td><td>moyen : une région par question</td></tr>
+<tr><td>Sciences</td><td>🫀 Corps humain + 🪐 système solaire</td><td>corps : long (dessin + un organe par question) · espace : moyen</td></tr>
+<tr><td>Langue française</td><td>📖 Dictionnaire A-Z</td><td>facile (lettre = 1re lettre du mot, à vérifier à la main pour les expressions)</td></tr>
+<tr><td>Littérature, Arts, Cinéma, Musique, Sport, Jeux</td><td>📚 🖼️ 🎬 💿 🏆 🕹️</td><td>facile : les chapitres suffisent, aucune donnée à ajouter</td></tr>
+<tr><td>Technologie</td><td>🕰️ Frise des inventions</td><td>moyen : une année par question</td></tr>
+</table>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+// arbre des dieux
+function tree(box, compact) {
+  const G = [
+    ['Ouranos', '🌌', 50, 7, 1], ['Gaïa', '🌍', 70, 7, 1],
+    ['Cronos', '⏳', 40, 25, 1], ['Rhéa', '👑', 62, 25, 0],
+    ['Zeus', '⚡', 18, 47, 1, 1], ['Héra', '🦚', 36, 47, 1], ['Poséidon', '🔱', 54, 47, 1], ['Hadès', '💀', 72, 47, 0], ['Déméter', '🌾', 88, 47, 0],
+    ['Athéna', '🦉', 10, 70, 1], ['Apollon', '☀️', 27, 70, 1], ['Artémis', '🏹', 44, 70, 0], ['Arès', '⚔️', 61, 70, 1], ['Hermès', '👟', 78, 70, 0],
+    ['Aphrodite', '🌹', 20, 90, 0], ['Héphaïstos', '🔨', 42, 90, 0], ['Dionysos', '🍇', 64, 90, 0], ['Perséphone', '🌸', 86, 90, 0]];
+  const L = [[0,2],[1,2],[1,3],[2,4],[2,5],[2,6],[2,7],[2,8],[3,4],[4,9],[4,10],[4,11],[4,12],[4,13],[5,12],[5,15],[4,16],[8,17]];
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
+  L.forEach(([a, b]) => { const p = document.createElementNS(ns, 'path'); const A = G[a], B = G[b];
+    p.setAttribute('d', `M${A[2]} ${A[3]} C ${A[2]} ${(A[3] + B[3]) / 2}, ${B[2]} ${(A[3] + B[3]) / 2}, ${B[2]} ${B[3]}`);
+    p.setAttribute('fill', 'none'); p.setAttribute('stroke', A[4] && B[4] ? '#1e3a8a' : '#b6c2da'); p.setAttribute('stroke-width', '.5'); p.setAttribute('vector-effect', 'non-scaling-stroke');
+    p.setAttribute('stroke-dasharray', A[4] && B[4] ? '' : '3 3'); svg.append(p); });
+  box.append(svg);
+  [['Titans', 25], ['Olympiens', 47], ['Enfants', 70]].forEach(([t, y]) => { if (compact) return; const d = document.createElement('span'); d.className = 'tier'; d.style.top = `calc(${y}% - 34px)`; d.textContent = t; box.append(d); });
+  G.forEach(([n, e, x, y, k, sel]) => { const d = document.createElement('div'); d.className = `god ${k ? 'k' : 'u'}${sel ? ' sel' : ''}`; d.style.left = x + '%'; d.style.top = y + '%';
+    d.innerHTML = `<i>${k ? e : '?'}</i>${k ? n : '???'}`; if (compact) d.style.transform = 'translate(-50%,-50%) scale(.8)'; box.append(d); });
+}
+tree($('treeSmall'), true); tree($('treeBig')); tree($('treeMain'));
+// France en tuiles
+[['Hauts-de-France', 1, 3, 1, 2, '🧀🍟'], ['Normandie', 2, 2, 1, 2, '🧀🧀🍎'], ['Île-de-France', 2, 3, 1, 1, '🥐'], ['Grand Est', 2, 4, 2, 2, '🍷🥨🥧'], ['Bretagne', 3, 1, 1, 3, '🥞🧈🦪'],
+ ['Pays de la Loire', 3, 2, 1, 0, ''], ['Centre-Val de Loire', 3, 3, 1, 1, '🍷'], ['Bourgogne-FC', 3, 4, 1, 3, '🥘🧀🍷'], ['Nouvelle-Aquitaine', 4, 2, 2, 2, '🍷🦆🥖'],
+ ['Auvergne-Rhône-Alpes', 4, 3, 1, 3, '🧀🧀🥘'], ['Occitanie', 5, 2, 1, 1, '🥘'], ['Provence-Alpes-CdA', 5, 3, 1, 2, '🐟🫒'], ['Corse', 5, 5, 1, 0, '']]
+ .forEach(([n, r, c, rs, lv, em], i) => { const d = document.createElement('div'); d.className = `reg l${lv}${n === 'Bourgogne-FC' ? ' sel' : ''}`;
+   d.style.gridArea = `${r} / ${c} / span ${rs} / span ${n === 'Grand Est' || n === 'Provence-Alpes-CdA' ? 1 : 1}`; d.innerHTML = `<span>${n}</span><em>${em || '·'}</em><small>${[0, 2, 4, 6][lv]} / ${[6, 8, 9, 7][lv] || 8}</small>`; $('fr').append(d); });
+// corps humain
+const body = $('bodyMap');
+body.innerHTML = '<svg viewBox="0 0 100 160" style="position:absolute;inset:6% 18%;width:64%;height:88%"><circle cx="50" cy="18" r="13" fill="#c9eef6"/><rect x="30" y="34" width="40" height="62" rx="16" fill="#c9eef6"/><rect x="16" y="38" width="12" height="52" rx="6" fill="#c9eef6"/><rect x="72" y="38" width="12" height="52" rx="6" fill="#c9eef6"/><rect x="33" y="92" width="14" height="60" rx="7" fill="#c9eef6"/><rect x="53" y="92" width="14" height="60" rx="7" fill="#c9eef6"/></svg>';
+[['🧠', 'Cerveau', 50, 11, 1], ['👁️', 'Yeux', 70, 15, 1], ['🫁', 'Poumons', 34, 33, 1], ['❤️', 'Cœur', 56, 34, 1], ['🟤', 'Foie', 38, 45, 0], ['🫃', 'Estomac', 62, 47, 1],
+ ['🦴', 'Os', 74, 66, 1], ['🩸', 'Sang', 26, 62, 1], ['🫘', 'Reins', 40, 56, 0], ['🦷', 'Dents', 30, 19, 0], ['💪', 'Muscles', 74, 82, 0]]
+ .forEach(([e, n, x, y, k]) => { const d = document.createElement('div'); d.className = `org${k ? '' : ' u'}`; d.style.left = x + '%'; d.style.top = y + '%'; d.innerHTML = `<i>${e}</i>${k ? n : '?'}`; body.append(d); });
+// système solaire
+const so = $('solar');
+[['#ffcf3a', 0, 34, 1], ['#b0a8a0', 9, 6, 1], ['#e8c27a', 16, 9, 0], ['#3d8bff', 24, 10, 1], ['#d9572b', 32, 8, 1], ['#d8b07a', 46, 22, 1], ['#e4d39b', 62, 18, 1], ['#9fe0ee', 77, 13, 0], ['#4a6bd8', 90, 13, 0]]
+ .forEach(([c, x, s, k], i) => { if (i) { const o = document.createElement('div'); o.className = 'orb'; o.style.width = o.style.height = `${(x) * 2 * 3.4}px`; so.append(o); }
+   const p = document.createElement('div'); p.className = `pl${k ? '' : ' u'}`; p.style.left = `calc(12% + ${x * 3.4}px)`; p.style.width = p.style.height = s + 'px'; p.style.background = c;
+   if (!i) p.style.boxShadow = '0 0 24px 8px rgba(255,207,58,.55)'; if (i === 6) p.style.boxShadow = '0 0 0 3px #f3b400'; so.append(p); });
+// dictionnaire
+'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach((l, i) => { const n = [9, 4, 12, 6, 7, 5, 3, 2, 1, 1, 0, 4, 8, 3, 2, 9, 1, 3, 6, 4, 0, 2, 0, 0, 0, 1][i];
+  const d = document.createElement('div'); d.className = `let${n ? '' : ' z'}${l === 'E' ? ' sel' : ''}`; d.style.setProperty('--f', `${Math.min(100, n * 9)}%`); d.innerHTML = `<b>${l}</b><small>${n || ''}</small>`; $('dico').append(d); });
+// bibliothèque
+const pal = ['#0f766e', '#1d4ed8', '#b45309', '#9d174d', '#4d7c0f', '#6d28d9', '#be123c'];
+[['Classiques français', 14, 9], ['Romans modernes', 9, 7], ['Littérature du monde', 12, 10], ['Théâtre et poésie', 8, 8], ['Jeunesse et fantasy', 13, 4], ['BD et mangas', 10, 6]]
+ .forEach(([n, k, e], j) => { const s = document.createElement('div'); s.className = 'shelf'; s.innerHTML = `<small>${n}</small>`;
+   for (let i = 0; i < k + e; i++) { const b = document.createElement('i'); b.className = `sp${i >= k ? ' e' : ''}`; b.style.height = `${34 + (i * 37 + j * 11) % 22}px`; b.style.background = pal[(i + j) % pal.length]; if (i % 5 === 3) b.style.width = '16px'; s.append(b); }
+   $('lib').append(s); });
+// musée
+[['Peinture ancienne', ['🖼️', '👩‍🦰', '🌊', '⛪'], 3], ['Peinture moderne', ['🌻', '🌌', '🕰️', '🎨', '🟦'], 2], ['Sculpture', ['🗿', '🤔'], 3], ['Photo, scène et mode', ['📸', '🩰'], 2]]
+ .forEach(([n, f, e], j) => { const r = document.createElement('div'); r.className = 'room'; r.innerHTML = `<small>Salle ${j + 1} · ${n}</small>`; const w = document.createElement('div'); w.className = 'wall';
+   f.forEach((x, i) => { const d = document.createElement('div'); d.className = 'frame'; const W = [44, 36, 52, 40, 34][i % 5]; d.style.width = W + 'px'; d.style.height = (W * [1.25, 1, .8, 1.3, 1][i % 5]) + 'px'; d.textContent = x; w.append(d); });
+   for (let i = 0; i < e; i++) { const d = document.createElement('div'); d.className = 'frame e'; d.style.width = '38px'; d.style.height = '44px'; d.textContent = '?'; w.append(d); }
+   r.append(w); $('museum').append(r); });
+// cinéma
+[['Titanic', '#1e3a8a'], ['Le Parrain', '#111'], ['Amélie', '#15803d'], ['Inception', '#334155'], ['Intouchables', '#b45309'], ['Avatar', '#0e7490'], ['', ''], ['Jurassic Park', '#7c2d12'], ['La Haine', '#3f3f46'], ['', ''], ['Gladiator', '#92400e'], ['', '']]
+ .forEach(([t, c]) => { const d = document.createElement('div'); d.className = `poster${t ? '' : ' e'}`; d.style.background = c ? `linear-gradient(transparent 40%, rgba(0,0,0,.55)), ${c}` : ''; d.textContent = t || '?'; $('posters').append(d); });
+[['Marilyn Monroe', 1], ['Jean Dujardin', 1], ['Meryl Streep', 1], ['?', 0], ['Omar Sy', 1], ['?', 0]].forEach(([n, k]) => { const d = document.createElement('div'); d.className = `star${k ? '' : ' e'}`; d.innerHTML = `<b>${k ? '⭐' : '☆'}</b>${n}`; $('walk').append(d); });
+// vinyles
+[['Chanson française', 7, 3, '#e11d48'], ['Pop et rock', 9, 2, '#2563eb'], ['Rap, R&B et électro', 4, 5, '#7c3aed'], ['Jazz, soul et blues', 3, 5, '#d97706'], ['Classique et opéra', 5, 4, '#0f766e']]
+ .forEach(([n, k, e, c]) => { const cr = document.createElement('div'); cr.className = 'crate'; cr.innerHTML = `<small>${n} · ${k}</small>`; const r = document.createElement('div'); r.className = 'recs';
+   for (let i = 0; i < k + e; i++) { const d = document.createElement('i'); d.className = `rec${i >= k ? ' e' : ''}`; d.style.setProperty('--l', ['#f3b400', c, '#fff', c][i % 4]); r.append(d); } cr.append(r); $('crates').append(cr); });
+// trophées
+[['⚽', 'Football', 'au', 'Or', '44 / 44'], ['🎾', 'Tennis', 'ag', 'Argent', '22 / 31'], ['🏉', 'Rugby', 'bz', 'Bronze', '8 / 21'], ['🏃', 'Athlétisme et natation', 'au', 'Or', '36 / 36'],
+ ['🚴', 'Vélo et sports mécaniques', 'ag', 'Argent', '25 / 37'], ['⛷️', 'Sports d’hiver', 'no', 'À gagner', '2 / 24'], ['🏅', 'Autres sports', 'bz', 'Bronze', '50 / 131'], ['🏆', 'Toute la vitrine', 'au', '3 en or', '']]
+ .forEach(([e, n, cls, m, s]) => { const d = document.createElement('div'); d.className = 'tro'; d.innerHTML = `<b style="${cls === 'no' ? 'filter:grayscale(1);opacity:.4' : ''}">${e}</b>${n}<span class="m ${cls}">${m}</span><small>${s}</small>`; $('vitrine').append(d); });
+// arcade
+[['🍄', 'Nintendo et Pokémon', 1, 38], ['🎮', 'Autres jeux vidéo', 1, 24], ['🕹️', 'Consoles et gaming', 1, 15], ['🎲', 'Jeux de société', 1, 19], ['♟️', 'Échecs et casse-tête', 0, 0], ['🧸', 'Jouets d’enfants', 0, 3]]
+ .forEach(([e, n, on, sc]) => { const d = document.createElement('div'); d.className = `cab${on ? ' on' : ''}`; d.innerHTML = `<div class="scr">${on ? e : ''}</div>${n}<small>${on ? 'SCORE ' + String(sc).padStart(3, '0') : 'en veille'}</small>`; $('arcade').append(d); });
+// frise techno
+[['1450', 'Imprimerie', 'Gutenberg', 1], ['1609', '', '', 0], ['1876', 'Téléphone', 'Graham Bell', 1], ['1895', 'Cinématographe', 'frères Lumière', 1], ['1903', '', '', 0], ['1969', 'Internet (Arpanet)', 'premier message', 1],
+ ['1981', 'PC d’IBM', 'ordinateur personnel', 1], ['1991', '', '', 0], ['2004', 'Facebook', 'Mark Zuckerberg', 1], ['2007', 'iPhone', 'présenté par Steve Jobs', 1], ['2022', 'ChatGPT', 'OpenAI', 1]]
+ .forEach(([y, t, s, k]) => { const d = document.createElement('div'); d.className = `ev${k ? '' : ' u'}`; d.innerHTML = `<span class="y">${y}</span><i class="d"></i><span class="bx">${k ? `${t}<small>${s}</small>` : '❓ à découvrir'}</span>`; $('tl').append(d); });
+</script>
+</body>
+</html>
