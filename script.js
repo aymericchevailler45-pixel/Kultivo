@@ -3765,21 +3765,27 @@ function encObjScreen(o) {
 }
 
 /* « 💿 Mes vinyles » (Musique) : un vinyle par artiste, rangé dans le bac de son genre ; pochette dessinée (aucune vraie image). */
+/** 13/11 : duos de couleurs choisis pour aller ensemble ; motif et duo suivent la place dans le bac (deux voisins ne se ressemblent jamais). */
+const ENC_VIN_DUOS = [['#e63946', '#f1faee'], ['#1d3557', '#a8dadc'], ['#f4a261', '#264653'], ['#2a9d8f', '#e9c46a'], ['#6d28d9', '#f472b6'], ['#0f172a', '#facc15'],
+    ['#ef476f', '#ffd166'], ['#118ab2', '#06d6a0'], ['#3a0ca3', '#4cc9f0'], ['#ff7b00', '#ffd000'], ['#14532d', '#86efac'], ['#7f1d1d', '#fca5a5'],
+    ['#334155', '#f97316'], ['#be185d', '#fde68a'], ['#0e7490', '#fef3c7'], ['#111827', '#e5e7eb']];
 async function openEncVinyls(keep = null) {
     try { await encLoad('vinyles.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
+    const vinPos = {}, crates = (window.ENC_VINYL_CRATES || []).map(c => c[0]);
     encObjScreen({
         theme: 'Musique', cls: 'enc-vinpage', title: '💿 Mes vinyles', countWord: 'vinyles découverts', emo: '💿', unknown: 'Vinyle à découvrir',
         data: window.ENC_VINYLS || {}, read: d => [d[0], d[1], d[2]], rows: window.ENC_VINYL_CRATES || [],
         restTitle: '🎼 Instruments, solfège et le reste', restDesc: 'Les questions sans disque : instruments, solfège, festivals, salles de concert…',
         subText: s => s === 'Compilation' || s === 'Comédie musicale' ? s : `« ${s} »`,
         back: '← Mes vinyles', reopen: k => openEncVinyls(k), keep,
-        make: (it, known) => {
+        make: (it, known, row) => {
             const b = el('button', 'enc-vin');
             const disc = el('span', 'enc-vin-disc');
-            const c1 = ENC_OBJ_COLORS[it.h % ENC_OBJ_COLORS.length], c2 = ENC_OBJ_COLORS[(it.h >>> 4) % ENC_OBJ_COLORS.length];
+            const i = vinPos[row] = (vinPos[row] ?? -1) + 1, ci = Math.max(0, crates.indexOf(row));
+            const [c1, c2] = ENC_VIN_DUOS[(i * 7 + ci * 3) % ENC_VIN_DUOS.length];
             disc.style.setProperty('--lab', known ? c2 : '#9a948b');
-            const sl = el('span', `enc-vin-sleeve is-p${(it.h >>> 8) % 5}`);
-            if (known) { sl.style.setProperty('--c1', c1); sl.style.setProperty('--c2', c2 === c1 ? '#1b2745' : c2); }
+            const sl = el('span', `enc-vin-sleeve is-p${(i + ci) % 10}`);
+            if (known) { sl.style.setProperty('--c1', c1); sl.style.setProperty('--c2', c2); }
             const art = el('b', 'enc-vin-art');
             art.textContent = known ? it.label : '?';
             sl.append(art);
@@ -6589,9 +6595,17 @@ function recapToShow() {
     if (seen && shiftDays(seen, 7) <= todayKey()) return null;
     return { m, unseen: !seen };
 }
-const recapUnseen = () => { const r = recapToShow(); return r && r.unseen ? 1 : 0; };
+const parcoursRecapUnseen = () => state.data.summitDone && !state.data.parcoursRecapSeen ? 1 : 0;   // 13/11
+const recapUnseen = () => { if (parcoursRecapUnseen()) return 1; const r = recapToShow(); return r && r.unseen ? 1 : 0; };
 function renderMonthRecapBtn() {
     const btn = $('monthRecapBtn');
+    if (parcoursRecapUnseen()) {   // 13/11 : récap du parcours pas encore vu → bouton avec pastille (aussi dans Records, pour toujours)
+        btn.hidden = false;
+        btn.textContent = '🏔️ Ton récap du parcours';
+        btn.setAttribute('data-notif', 1);
+        btn.onclick = () => openParcoursRecap();
+        return;
+    }
     const r = recapToShow();
     btn.hidden = !r;
     if (!r) return;
@@ -6804,6 +6818,7 @@ function closeRecap() {
     if (ov) ov.hidden = true;
     const sh = $('recapShare');
     if (sh) sh.hidden = true;
+    if (recapMonth === 'parcours' && !state.data.parcoursRecapSeen) { state.data.parcoursRecapSeen = true; saveData(); if (typeof renderMonthRecapBtn === 'function') renderMonthRecapBtn(); updateNavNotifications(); }   // 13/11 : vu jusqu'au bout (ou fermé)
     if (recapFromQueue) { recapFromQueue = false; nextCelebration(); }   // récap du parcours ouvert depuis la file des fêtes
 }
 
@@ -7160,10 +7175,11 @@ function synthNoise(start, dur, vol = 0.2, freq = 1200, q = 0.7, sweep) {
 /** 13/11 : le dernier niveau est fait mais la fête n'a jamais été vue (bug du nom « celebrate ») : on la montre à l'ouverture. */
 function summitCatchUp(tries = 0) {
     const d = state.data;
-    if (!d.done[MAX_LEVEL] || d.summitSeen) return;
+    if (!d.done[MAX_LEVEL] || (d.summitSeen && d.parcoursRecapSeen)) return;
     const busy = $('studyScreen')?.hidden === false || $('onboardScreen')?.hidden === false || [...document.querySelectorAll('.modal-overlay')].some(m => !m.hidden) || celebrating;
     if (busy) { if (tries < 40) setTimeout(() => summitCatchUp(tries + 1), 3000); return; }
     if (!d.summitDone) d.summitDone = todayKey();
+    if (d.summitSeen) { celebrate(() => openParcoursRecap(true)); return; }   // fête vue mais appli fermée avant le récap : le récap seul
     d.summitSeen = true;
     saveData();
     celebrate(() => showSummitAnim());
