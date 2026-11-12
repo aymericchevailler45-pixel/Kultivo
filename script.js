@@ -4255,7 +4255,7 @@ function encMusArt(it) {
 async function openEncMuseum(keepKey = null) {
     try { await encLoad('musee.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
     const M = window.ENC_MUSEUM || { rooms: [], q: {} };
-    const { rows, rest } = encRowsGroup('Arts', M.q, M.rooms, v => ({ emo: v[2], person: v[3] }));
+    const { rows, rest } = encRowsGroup('Arts', M.q, M.rooms, v => ({ emo: v[2], person: v[3], works: v[4] || [] }));
     encRowsScreen({
         cls: 'enc-muspage', title: '🖼️ Mon musée', unit: 'œuvres et artistes découverts', unknown: it => it.row === 'scu' ? 'Sculpture à découvrir' : it.row === 'mus' ? 'Musée à découvrir' : 'Œuvre à découvrir',
         back: { label: '← Arts', fn: () => openEncBook('Arts', true) }, rows, rest,
@@ -4263,9 +4263,8 @@ async function openEncMuseum(keepKey = null) {
         retLabel: '← Mon musée', reopen: k => openEncMuseum(k),
         head: it => `${it.emo || '🖼️'} ${it.title}`,
         desc: it => {
-            if (!it.person) return '';
-            const works = [...new Set(it.qs.filter(encKnown).flatMap(q => [...q.q.matchAll(/«\s*([^»]+?)\s*»/g)].map(m => m[1])))];
-            return works.length ? `Au musée : ${works.map(w => `« ${w} »`).join(', ')}` : '';
+            if (!it.person || !it.works.length || !it.qs.some(encKnown)) return '';   // 13/11 : toujours les œuvres célèbres de l'artiste
+            return `Œuvres célèbres : ${it.works.map(w => `« ${w} »`).join(', ')}`;
         },
         itemCls: it => `enc-mus-item is-${it.row}`,
         make: (it, known) => {
@@ -4294,11 +4293,11 @@ async function openEncMuseum(keepKey = null) {
 
 /* 13/11 : « 🎬 Mes affiches de cinéma » (Cinéma). Une affiche dessinée par film / série / saga (plusieurs questions possibles),
    une étoile du « Walk of Fame » par star, une chaise de tournage par réalisateur. Pas su = affiche grise « ? ». Utilise encRowsScreen (enc_musee.js). */
-const ENC_POS_HUES = { fr: [210, 350], cl: [35, 20], sf: [230, 270], dr: [0, 330], co: [320, 20], sa: [260, 200], an: [190, 140], se: [280, 170] };
+const ENC_POS_HUES = { gu: [90, 40], fr: [210, 350], cl: [35, 20], sf: [230, 270], dr: [0, 330], co: [320, 20], sa: [260, 200], an: [190, 140], se: [280, 170] };
 async function openEncPosters(keepKey = null) {
     try { await encLoad('affiches.js'); } catch (e) { showToast('📶 Indisponible hors connexion pour l’instant'); return; }
     const P = window.ENC_POSTERS || { rows: [], q: {} };
-    const { rows, rest } = encRowsGroup('Cinéma', P.q, P.rows, v => ({ emo: v[2], year: v[3] }));
+    const { rows, rest } = encRowsGroup('Cinéma', P.q, P.rows, v => ({ emo: v[2], year: v[3], films: v[4] || [] }));
     encRowsScreen({
         cls: 'enc-pospage', title: '🎬 Mes affiches de cinéma', unit: 'affiches découvertes', unknown: it => it.row === 'st' ? 'Star à découvrir' : it.row === 're' ? 'Réalisateur à découvrir' : 'Affiche à découvrir',
         back: { label: '← Cinéma', fn: () => openEncBook('Cinéma', true) }, rows, rest,
@@ -4306,9 +4305,8 @@ async function openEncPosters(keepKey = null) {
         retLabel: '← Mes affiches', reopen: k => openEncPosters(k),
         head: it => it.row === 'st' ? `⭐ ${it.title}` : it.row === 're' ? `🎬 ${it.title}` : `${it.emo || '🎬'} ${it.title}${it.year ? ` · ${it.year}` : ''}`,
         desc: it => {
-            if (it.row !== 'st' && it.row !== 're') return '';
-            const films = [...new Set(it.qs.filter(encKnown).flatMap(q => [...q.q.matchAll(/«\s*([^»]+?)\s*»/g)].map(m => m[1])))];
-            return films.length ? `${it.row === 're' ? 'Ses films' : 'À l’affiche de'} : ${films.map(f => `« ${f} »`).join(', ')}` : '';
+            if ((it.row !== 'st' && it.row !== 're') || !it.films.length || !it.qs.some(encKnown)) return '';   // 13/11 : 2-3 films connus
+            return `${it.row === 're' ? 'Ses films' : 'Films connus'} : ${it.films.map(f => /\(série\)$/.test(f) ? `« ${f.replace(/\s*\(série\)$/, '')} » (série)` : `« ${f} »`).join(', ')}`;
         },
         itemCls: it => `enc-pos-item is-${it.row}`,
         make: (it, known) => {
