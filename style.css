@@ -4134,3 +4134,40 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-quiz .btn { padding: 10px 16px; font-size: 0.98rem; }
 .enc-quiz { transition: opacity 0.3s; }
 .enc-quiz.is-fading { opacity: 0; }
+
+/* 12/11 : encyclopédie en chapitres (sommaire, cases à découvrir, tampon « Complet ») */
+.enc-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.enc-qk { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 9px 11px; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.enc-qk b { font-size: 1.05rem; font-weight: 900; }
+.enc-qk span { color: var(--muted); font-size: 0.72rem; font-weight: 800; line-height: 1.15; }
+.enc-qk.is-gold b { color: #b07800; }
+.enc-qk:disabled { opacity: 0.55; cursor: default; }
+.enc-chap-sec { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.enc-chap-sec span { text-transform: none; letter-spacing: 0; font-weight: 800; }
+.enc-chaps { display: flex; flex-direction: column; gap: 7px; }
+.enc-ch { position: relative; display: grid; grid-template-columns: 30px 1fr auto; grid-template-rows: auto auto; column-gap: 9px; row-gap: 5px; align-items: center;
+    width: 100%; padding: 9px 12px; border: 2px solid color-mix(in srgb, var(--c) 22%, var(--line)); border-radius: 14px; background: color-mix(in srgb, var(--c) 6%, var(--surface)); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.enc-ch-e { grid-row: 1 / 3; font-size: 1.35rem; line-height: 1; text-align: center; }
+.enc-ch-n { font-size: 0.9rem; font-weight: 900; line-height: 1.15; }
+.enc-ch-k { color: var(--muted); font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+.enc-ch-k b { color: var(--ink); }
+.enc-ch-bar { grid-column: 2 / 4; height: 6px; border-radius: 99px; background: var(--bg); overflow: hidden; }
+.enc-ch-bar i { display: block; height: 100%; border-radius: 99px; background: var(--c); }
+.enc-ch.is-full { border-color: color-mix(in srgb, #e5484d 45%, var(--line)); padding-right: 50px; }
+.enc-ch.is-full .enc-ch-bar i { background: #e5484d; }
+.enc-stamp.is-mini { position: absolute; right: 6px; top: 50%; width: 40px; height: 40px; transform: translateY(-50%) rotate(-14deg); }
+.enc-chap-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.enc-chap-head .enc-title { margin: 4px 0 2px; font-size: 1.3rem; line-height: 1.2; text-align: left; }
+.enc-chap-sub { margin: 0 0 8px; color: var(--muted); font-size: 0.85rem; font-weight: 800; text-align: left; }
+.enc-stamp.is-big { flex: none; width: 74px; height: 74px; transform: rotate(-14deg); animation: encStampIn 0.45s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes encStampIn { from { transform: rotate(-30deg) scale(1.8); opacity: 0; } to { transform: rotate(-14deg) scale(1); opacity: 1; } }
+.enc-chap-head + .enc-bar { margin-bottom: 12px; }
+.enc-row.is-slot { padding: 6px 10px; cursor: pointer; }
+.enc-row.is-slot .enc-row-ic { width: 30px; height: 30px; background: var(--bg); }
+.enc-row.is-slot b { color: var(--muted); font-weight: 800; font-size: 0.84rem; }
+.enc-row-ch { display: block; margin-bottom: 1px; color: var(--muted); font-size: 0.68rem; font-weight: 900; font-style: normal; }
+.end-chip.is-chap { border-color: #e5484d; color: #c62a30; }
+@media (prefers-reduced-motion: reduce) { .enc-stamp.is-big { animation: none; } }
+.enc-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(30px, 1fr)); gap: 5px; }
+#friendBody .enc-sec { text-align: left; }
+.enc-slot { aspect-ratio: 1; border: 2px dashed var(--line); border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-weight: 900; font-size: 0.9rem; cursor: pointer; padding: 0; }

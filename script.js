@@ -1921,10 +1921,62 @@ function renderEncyclopedia(box) {
     box.append(t2, grid);
 }
 
-let encState = { theme: '', filter: 'all', search: '' };
+/* 12/11 : un livre = un sommaire de chapitres (chapitres.js). Un chapitre = la liste de ses questions sues, puis une ligne
+   grisée par question pas encore découverte ; chapitre entièrement su = tampon « Chapitre complet ». */
+let encChapCache = null, encChapCount = -1;
+function encChapters(theme) {
+    const all = encAll();
+    if (!encChapCache || encChapCount !== all.size) {
+        encChapCache = {};
+        encChapCount = all.size;
+        const placed = new Set();
+        const src = typeof ENC_CHAPTERS === 'undefined' ? {} : ENC_CHAPTERS;
+        Object.entries(src).forEach(([t, chs]) => {
+            encChapCache[t] = chs.map(([emo, name, ids], i) => {
+                const qs = ids.map(id => all.get(id)).filter(q => q && q.theme === t);
+                qs.forEach(q => placed.add(q.id));
+                return { theme: t, i, emo, name, qs };
+            });
+        });
+        const rest = {};   // question pas encore rangée (nouvelle) : chapitre « Divers » à la fin du livre
+        all.forEach(q => { if (!placed.has(q.id)) (rest[q.theme] = rest[q.theme] || []).push(q); });
+        Object.entries(rest).forEach(([t, qs]) => {
+            const list = encChapCache[t] || (encChapCache[t] = []);
+            list.push({ theme: t, i: list.length, emo: '📦', name: 'Divers', qs });
+        });
+    }
+    return (encChapCache[theme] || []).filter(c => c.qs.length);
+}
+const encChapKnown = c => c.qs.filter(encKnown).length;
+const encChapFull = c => c.qs.length > 0 && c.qs.every(encKnown);
+/** Chapitre d'une question (pour la recherche et l'écran de fin). */
+function encChapterOf(q) { return encChapters(q.theme).find(c => c.qs.includes(q)) || null; }
+const encSortAnswer = (a, b) => encNorm(a.a[0].replace(/^(le |la |les |l'|l’)/i, '')).localeCompare(encNorm(b.a[0].replace(/^(le |la |les |l'|l’)/i, '')), 'fr');
+/** Petit tampon rond « COMPLET » avec le K (même dessin que « Sans faute »). */
+function encStamp(cls = '') {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('class', `enc-stamp ${cls}`);
+    svg.setAttribute('aria-label', 'Chapitre complet');
+    const id = `encArc${Math.random().toString(36).slice(2, 8)}`;
+    svg.innerHTML = `<defs><path id="${id}" d="M50 50 m-34 0 a34 34 0 1 1 68 0 a34 34 0 1 1 -68 0"/></defs>
+      <circle cx="50" cy="50" r="46" fill="rgba(255,255,255,.9)" stroke="#e5484d" stroke-width="5"/>
+      <circle cx="50" cy="50" r="24" fill="none" stroke="#e5484d" stroke-width="2.5"/>
+      <text font-family="Nunito, sans-serif" font-weight="900" font-size="10.5" fill="#e5484d" letter-spacing="1.2"><textPath href="#${id}" startOffset="1%">COMPLET ★ COMPLET ★ COMPLET ★</textPath></text>
+      <g transform="translate(37.5 37) scale(.135)"><path d="${K_PATH}" fill="#e5484d"/></g>`;
+    return svg;
+}
+function encLockedTip() {
+    askConfirm({ title: '❓ Pas encore découverte', text: 'Cette question t’attend quelque part dans le jeu : parcours, entraînement, défis…\n\nRéussis-la une fois et elle viendra se ranger ici, pour toujours.', yes: 'Compris', no: null });
+}
+function encEmpty(text) { const p = el('p', 'muted enc-empty'); p.textContent = text; return p; }
+
+let encState = { theme: '', search: '' };
 function openEncBook(theme, keep = false) {
-    if (!keep) encState = { theme, filter: 'all', search: '' };
+    if (!keep) encState = { theme, search: '' };
     const book = encBooks().find(b => b.theme === theme);
+    const chs = encChapters(theme);
     const body = $('friendBody');
     body.replaceChildren();
     const h = el('h2', 'review-title enc-title');
@@ -1949,52 +2001,139 @@ function openEncBook(theme, keep = false) {
     });
     const search = el('input', 'enc-search');
     search.type = 'search';
-    search.placeholder = '🔍 Chercher une question…';
+    search.placeholder = '🔍 Chercher dans ce livre…';
     search.value = encState.search;
-    const filters = el('div', 'enc-filters');
-    const list = el('div', 'enc-list');
-    const all = [...encAll().values()].filter(q => q.theme === theme);
+    const zone = el('div');
+    const all = chs.flatMap(c => c.qs);
     const known = all.filter(encKnown);
+    const weekAgo = dayKey(new Date(Date.now() - 6 * 86400000));
+    const thisWeek = known.filter(q => (state.data.stats[q.id].first || '') >= weekAgo)
+        .sort((a, b) => encWhen(b).localeCompare(encWhen(a)) || (state.data.stats[b.id].last || 0) - (state.data.stats[a.id].last || 0));
+    const toMaster = known.filter(q => !isMastered(q.id)).sort(encSortAnswer);
     const draw = () => {
-        filters.replaceChildren();
-        [['all', `Tous · ${known.length}`], ['mastered', `✨ Maîtrisés · ${book.mastered}`], ['recent', '🕒 Récents']].forEach(([k, label]) => {
-            const f = el('button', `enc-filter${encState.filter === k ? ' is-on' : ''}`);
-            f.type = 'button';
-            f.textContent = label;
-            f.addEventListener('click', () => { encState.filter = k; draw(); });
-            filters.append(f);
-        });
+        zone.replaceChildren();
         const qs = encNorm(encState.search.trim());
-        let items = known.filter(q => (encState.filter !== 'mastered' || isMastered(q.id)) && (!qs || encNorm(q.a.join(' ') + ' ' + q.q).includes(qs)));
-        if (encState.filter === 'recent') items.sort((a, b) => encWhen(b).localeCompare(encWhen(a)) || (state.data.stats[b.id].last || 0) - (state.data.stats[a.id].last || 0));
-        else items.sort((a, b) => encNorm(a.a[0].replace(/^(le |la |les |l'|l’)/i, '')).localeCompare(encNorm(b.a[0].replace(/^(le |la |les |l'|l’)/i, '')), 'fr'));
-        list.replaceChildren();
-        items.slice(0, 400).forEach(q => list.append(encRow(q, items)));
-        if (!items.length) {
-            const p = el('p', 'muted enc-empty');
-            p.textContent = known.length ? 'Aucune question ne correspond.' : 'Aucune question sue dans ce livre pour l’instant : joue des questions de ce thème pour le remplir !';
-            list.append(p);
+        if (qs) {   // recherche : toutes les questions sues du livre qui en parlent
+            const found = known.filter(q => encNorm(q.a.join(' ') + ' ' + q.q).includes(qs)).sort(encSortAnswer);
+            const list = el('div', 'enc-list');
+            found.slice(0, 300).forEach(q => list.append(encRow(q, found, { label: `← ${theme}`, fn: () => openEncBook(theme, true) }, encChapterOf(q))));
+            if (!found.length) list.append(encEmpty('Aucune question sue ne correspond.'));
+            zone.append(list);
+            return;
         }
-        const left = all.length - known.length;
-        if (left > 0 && !qs && encState.filter === 'all') {
-            const lk = el('div', 'enc-row is-locked');
-            const ic = el('span', 'enc-row-ic');
-            ic.textContent = '?';
-            const tx = el('span', 'enc-row-tx');
-            const b = el('b');
-            b.textContent = `${fmtNum(left)} question${left > 1 ? 's' : ''} à découvrir`;
-            const s = el('small');
-            s.textContent = `Joue en ${theme} pour les trouver`;
-            tx.append(b, s);
-            lk.append(ic, tx);
-            list.append(lk);
-        }
+        const quick = el('div', 'enc-quick');
+        [['🕒', thisWeek, 'Ajoutées cette semaine', ''], ['✨', toMaster, 'Pas encore maîtrisées', 'is-gold']].forEach(([e, qs2, label, cls]) => {
+            const b = el('button', `enc-qk ${cls}`);
+            b.type = 'button';
+            const n = el('b');
+            n.textContent = `${e} ${fmtNum(qs2.length)}`;
+            const s = el('span');
+            s.textContent = label;
+            b.append(n, s);
+            b.disabled = !qs2.length;
+            b.addEventListener('click', () => openEncSet(theme, `${e} ${label}`, qs2));
+            quick.append(b);
+        });
+        const full = chs.filter(encChapFull).length;
+        const sec = el('p', 'enc-sec enc-chap-sec');
+        sec.textContent = 'Chapitres';
+        const sc = el('span');
+        sc.textContent = `${full} complet${full > 1 ? 's' : ''} sur ${chs.length}`;
+        sec.append(sc);
+        const list = el('div', 'enc-chaps');
+        chs.forEach(c => {
+            const k = encChapKnown(c), n = c.qs.length;
+            const row = el('button', `enc-ch${k >= n ? ' is-full' : ''}`);
+            row.type = 'button';
+            row.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
+            const e = el('span', 'enc-ch-e');
+            e.textContent = c.emo;
+            const nm = el('span', 'enc-ch-n');
+            nm.textContent = c.name;
+            const cnt = el('span', 'enc-ch-k');
+            const kb = el('b');
+            kb.textContent = fmtNum(k);
+            cnt.append(kb, document.createTextNode(` / ${fmtNum(n)}`));
+            const br = el('span', 'enc-ch-bar');
+            const bi = el('i');
+            bi.style.width = `${Math.round(k / n * 100)}%`;
+            br.append(bi);
+            row.append(e, nm, cnt, br);
+            if (k >= n) row.append(encStamp('is-mini'));
+            row.addEventListener('click', () => openEncChapter(theme, c.i));
+            list.append(row);
+        });
+        zone.append(quick, sec, list);
     };
     search.addEventListener('input', () => { encState.search = search.value; draw(); });
-    body.append(h, bar, tiles, search, filters, list);
+    body.append(h, bar, tiles, search, zone);
     draw();
     $('friendModal').hidden = false;
     if (!keep) $('friendModal').querySelector('.modal-content').scrollTop = 0;
+}
+/** Un chapitre : les questions sues (par ordre alphabétique de la réponse), puis une case grisée par question à découvrir. */
+function openEncChapter(theme, i, keepScroll = false) {
+    const c = encChapters(theme).find(x => x.i === i);
+    if (!c) return openEncBook(theme, true);
+    const mc = $('friendModal').querySelector('.modal-content');
+    const body = $('friendBody');
+    body.replaceChildren();
+    const back = el('button', 'duel-back');
+    back.type = 'button';
+    back.textContent = `← ${theme}`;
+    back.addEventListener('click', () => openEncBook(theme, true));
+    const head = el('div', 'enc-chap-head');
+    const h = el('h2', 'review-title enc-title');
+    h.textContent = `${c.emo} ${c.name}`;
+    const k = encChapKnown(c), n = c.qs.length;
+    const sub = el('p', 'enc-chap-sub');
+    sub.textContent = k >= n ? `Chapitre complet : ${fmtNum(n)} / ${fmtNum(n)} questions sues !` : `${fmtNum(k)} / ${fmtNum(n)} questions sues`;
+    encTip(sub, 'known');
+    const tx = el('div');
+    tx.append(h, sub);
+    head.append(tx);
+    if (k >= n) head.append(encStamp('is-big'));
+    const bar = el('div', 'enc-bar');
+    bar.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
+    const fill = el('i');
+    fill.style.width = `${Math.round(k / n * 100)}%`;
+    bar.append(fill);
+    const known = c.qs.filter(encKnown).sort(encSortAnswer);
+    const list = el('div', 'enc-list');
+    const ret = { label: `← ${c.name}`, fn: () => openEncChapter(theme, i, true) };
+    known.forEach(q => list.append(encRow(q, known, ret)));
+    if (!known.length) list.append(encEmpty('Aucune question sue dans ce chapitre pour l’instant.'));
+    const parts = [back, head, bar, list];
+    if (n > k) {   // une petite case « ? » par question à découvrir (comme les cartes qui manquent)
+        const t = el('p', 'enc-sec');
+        t.textContent = `Encore ${plural(n - k, 'question', 'questions')} à découvrir`;
+        const grid = el('div', 'enc-slots');
+        for (let j = 0; j < n - k; j++) { const s = el('button', 'enc-slot'); s.type = 'button'; s.textContent = '?'; s.setAttribute('aria-label', 'Question pas encore découverte'); grid.append(s); }
+        grid.addEventListener('click', e => { if (e.target.closest('.enc-slot')) encLockedTip(); });
+        parts.push(t, grid);
+    }
+    body.append(...parts);
+    $('friendModal').hidden = false;
+    mc.scrollTop = keepScroll ? encState.chapScroll || 0 : 0;
+    encState.chapScroll = 0;
+    list.addEventListener('click', () => { encState.chapScroll = mc.scrollTop; }, true);
+}
+/** Liste simple (raccourcis « Ajoutées cette semaine » / « Pas encore maîtrisées »). */
+function openEncSet(theme, title, qs) {
+    const body = $('friendBody');
+    body.replaceChildren();
+    const back = el('button', 'duel-back');
+    back.type = 'button';
+    back.textContent = `← ${theme}`;
+    back.addEventListener('click', () => openEncBook(theme, true));
+    const h = el('h2', 'review-title enc-title');
+    h.textContent = title;
+    const list = el('div', 'enc-list');
+    const ret = { label: '← Retour', fn: () => openEncSet(theme, title, qs) };
+    qs.forEach(q => list.append(encRow(q, qs, ret, encChapterOf(q))));
+    body.append(back, h, list);
+    $('friendModal').hidden = false;
+    $('friendModal').querySelector('.modal-content').scrollTop = 0;
 }
 function encMedia(q, small) {
     if (q.flag) return flagImg(q.flag);
@@ -2002,13 +2141,15 @@ function encMedia(q, small) {
     if (q.rebus) return small ? emojiImg(q.rebus[0]) : null;
     return null;
 }
-function encRow(q, list, fromEnd = false) {
+// back : true = liste de fin de partie, ou { label, fn } = où ramène « ← » depuis la fiche ; chap = chapitre affiché au-dessus
+function encRow(q, list, back = null, chap = null) {
     const row = el('button', 'enc-row');
     row.type = 'button';
     const ic = el('span', 'enc-row-ic');
     const m = encMedia(q, true);
     if (m) ic.append(m); else ic.append(encIconEl(q.theme));
     const tx = el('span', 'enc-row-tx');
+    if (chap) { const ch = el('em', 'enc-row-ch'); ch.textContent = `${chap.emo} ${chap.name}`; tx.append(ch); }
     const b = el('b');
     b.textContent = q.a[0];
     const s = el('small');
@@ -2016,7 +2157,7 @@ function encRow(q, list, fromEnd = false) {
     tx.append(b, s);
     row.append(ic, tx);
     if (isMastered(q.id)) { const st = el('span', 'enc-row-st'); st.textContent = '✨'; row.append(st); }
-    row.addEventListener('click', () => openEncFiche(q, list, fromEnd ? null : q.theme, fromEnd));
+    row.addEventListener('click', () => openEncFiche(q, list, back === true ? null : back, back === true));
     return row;
 }
 /** Liste des savoirs trouvés pendant une partie (pastille de l'écran de fin). */
@@ -2072,8 +2213,9 @@ function openEncFiche(q, list, backTheme, fromEnd = false) {
     const idx = list.indexOf(q);
     const back = el('button', 'duel-back');
     back.type = 'button';
-    back.textContent = backTheme ? `← ${backTheme}` : fromEnd ? '← Nouvelles questions sues' : '← Retour';
-    back.addEventListener('click', () => { if (backTheme) openEncBook(backTheme, true); else if (fromEnd) openEncList(list.map(x => x.id)); else $('friendModal').hidden = true; });
+    const bk = typeof backTheme === 'object' && backTheme ? backTheme : null;   // 12/11 : { label, fn } (chapitre, recherche…)
+    back.textContent = bk ? bk.label : backTheme ? `← ${backTheme}` : fromEnd ? '← Nouvelles questions sues' : '← Retour';
+    back.addEventListener('click', () => { if (bk) bk.fn(); else if (backTheme) openEncBook(backTheme, true); else if (fromEnd) openEncList(list.map(x => x.id)); else $('friendModal').hidden = true; });
     const fiche = el('div', 'enc-fiche');
     fiche.style.setProperty('--c', ENC_COLORS[q.theme] || '#3d8bff');
     const chip = el('span', 'enc-chip');
@@ -7700,6 +7842,16 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
         c.textContent = `📚 +${plural(found.length, 'question sue', 'questions sues')} dans ton encyclopédie ›`;
         c.addEventListener('click', () => openEncList(found));
         $('endExtra').prepend(c);
+        // 12/11 : une question qui termine un chapitre = pastille « 🏅 Chapitre complet » (tap = le chapitre, avec son tampon)
+        const done = new Map();
+        found.map(encQuestion).filter(Boolean).forEach(q => { const ch = encChapterOf(q); if (ch && encChapFull(ch)) done.set(`${ch.theme}:${ch.i}`, ch); });
+        done.forEach(ch => {
+            const b = el('button', 'end-chip is-enc is-chap');
+            b.type = 'button';
+            b.textContent = `🏅 Chapitre complet : ${ch.emo} ${ch.name} ›`;
+            b.addEventListener('click', () => openEncChapter(ch.theme, ch.i));
+            c.after(b);
+        });
     }
     if (fsLine) requestAnimationFrame(() => {
         if (document.documentElement.scrollHeight > window.innerHeight + 2) chipLines([extra, ...missions]);
