@@ -10141,7 +10141,9 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
 let mapFocusLevel = 0;   // 11/11 : niveau à montrer en revenant sur le parcours (après un niveau refait)
 function endSession(win) {
     stopTimer();
-    if (state.replay && state.level) mapFocusLevel = win ? Math.min(state.level + 1, MAX_LEVEL) : state.level;
+    // 12/11 : tout niveau du parcours (en cours, refait ou facultatif derrière soi) → on revient juste après lui
+    if (['level', 'pairs', 'order', 'challenge'].includes(state.mode) && state.level)
+        mapFocusLevel = win ? Math.min(state.level + 1, MAX_LEVEL) : state.level;
     if (state.mode === 'kulti') win = true;   // défi de Kulti : toujours l'écran du défi (réussi ou raté)
     queueStats(win ? 'won' : 'lost');
     state.phase = 'over';
