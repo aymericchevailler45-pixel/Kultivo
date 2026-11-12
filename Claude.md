@@ -324,6 +324,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   remplit le reste (`.has-sel`). « MA FRANCE GOURMANDE » (`openEncFrance`, `carte-france.js` = `FRANCE_MAP` 13 régions IGN Admin Express
   Licence ouverte (crédit affiché) + `ENC_REGION` 107 questions, scratchpad make_france.py) : régions toujours dessinées, dorées selon la part sue.
   Prochain : sciences (corps humain + système solaire), puis dictionnaire, bibliothèque, musée, affiches, vinyles, trophées, arcade, frise Techno.
+- 13/11 (v=20261113e, bac à sable) : cuisines du monde (`ENC_CUISINE` dans carte-france.js, 134 questions -> 39 pays, `openEncMap(…, 'cuisine')`),
+  onglets + balayage France / Monde (`encGastroTabs`, `encSwipe`), la France touchée sur la carte des cuisines ouvre la carte de France.
+  Écran générique `openEncSpots(set, tab…)` (ENC_SPOT_SETS : gods = arbre-dieux.js, sci = sciences-corps.js) : SCIENCES = corps humain
+  (19 parties, traits vers l'organe `to`, silhouette `bg: 'body'`) et système solaire (Soleil + 10 astres sur orbites `bg: 'space'`,
+  disques colorés `color/size`, astre sans question = juste dessiné `is-empty`). LANGUE FRANÇAISE = dictionnaire A-Z (`openEncDico`, lettre
+  = 1re lettre du mot, `encDicoWord` : mot entre « » pour « que signifie », sinon la réponse sans article ; expressions : sans avoir / être…).
+  Restent : bibliothèque, musée, affiches, vinyles, trophées, arcade, frise Techno ; Drapeaux / Monuments à rediscuter (ils partagent la carte).
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
