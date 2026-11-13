@@ -2341,6 +2341,7 @@ function renderBadgesV2(grid) {
             .filter(x => !x.b.hidden || data.badges[x.b.id]);   // ancien badge retiré : visible seulement pour qui l'a
         if (!list.length) return;
         list.forEach(x => { x.has = !!data.badges[x.b.id]; x.claim = x.has && !data.claimedBadges[x.b.id]; });
+        if (list[0].b.secret) list.sort((a, b) => (b.claim - a.claim) || (b.has - a.has));   // 13/11 : badges secrets trouvés en premier (à récupérer d'abord)
         const done = list.filter(x => x.has).length;
         got += done; all += list.length;
         const sec = el('section', 'bdf');
