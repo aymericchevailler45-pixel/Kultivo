@@ -109,9 +109,9 @@ TRAINING_QUESTIONS.push(
     { id: 19093, theme: "Sport", d: 3.2, q: "Quelle vague mythique de Tahiti a accueilli le surf des JO de 2024 ?", a: ["Teahupo’o", "Teahupoo", "Teahupo'o"], exp: "À 15 000 km de Paris, la plus lointaine épreuve olympique de l’histoire." },
     { id: 19094, theme: "Sport", d: 3.2, q: "Quel Néo-Zélandais a réussi la première ascension de l’Everest avec Tenzing Norgay ?", a: ["Edmund Hillary", "Hillary"], exp: "Le 29 mai 1953." },
     { id: 19095, theme: "Sport", d: 3.4, q: "Quel combattant français a été champion des poids lourds de l’UFC par intérim en 2021 ?", a: ["Ciryl Gane", "Gane"], exp: "Surnommé « Bon Gamin »." },
-    { id: 19096, theme: "Sport", d: 3.5, q: "Quel est le premier Français à avoir reçu le Ballon d’or, en 1958 ?", a: ["Raymond Kopa", "Kopa"], exp: "Il jouait alors au Real Madrid." },
+    { id: 19096, theme: "Sport", d: 3.5, q: "Quel est le premier Français à avoir reçu le Ballon d’or, en 1958 ?", a: ["Raymond Kopa", "Kopa", "Copa"], exp: "Il jouait alors au Real Madrid." },
     { id: 19097, theme: "Sport", d: 3.6, q: "Quelle ville australienne accueillera les Jeux olympiques d’été de 2032 ?", a: ["Brisbane"], exp: "Troisième ville australienne olympique après Melbourne et Sydney." },
-    { id: 19098, theme: "Sport", d: 3.8, q: "Quelle région française accueillera les Jeux olympiques d’hiver de 2030 ?", a: ["Les Alpes françaises", "Alpes", "Les Alpes", "Alpes françaises"], exp: "Avec Nice pour les sports de glace." },
+    { id: 19098, theme: "Sport", d: 3.8, q: "Dans quelles montagnes françaises auront lieu les Jeux olympiques d’hiver de 2030 ?", a: ["Les Alpes françaises", "Alpes", "Les Alpes", "Alpes françaises", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d’Azur"], exp: "Organisés par les régions Auvergne-Rhône-Alpes et Provence-Alpes-Côte d’Azur, avec Nice pour les sports de glace." },
     { id: 19099, theme: "Sport", d: 4.1, q: "Combien de kilomètres mesure un semi-marathon, environ ?", a: ["21,1", "21", "21.1", "21,0975"], exp: "Exactement 21,0975 km : la moitié de 42,195." },
     { id: 19100, theme: "Sport", d: 4.4, q: "Quel cycliste danois a gagné le Tour de France en 2022 et 2023 ?", a: ["Jonas Vingegaard", "Vingegaard"], exp: "Ancien employé d’une usine de poissons." },
     // Lot 3

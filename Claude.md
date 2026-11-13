@@ -405,6 +405,15 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   QUESTIONS (58 corrections, scratchpad fixes_lot1.txt / fixes_lot2.txt, outil apply_fix.py) : explications fausses (Brunei fond
   jaune, Madagascar 4e île, K2 hors Himalaya, Rothko, Gauguin, Ogier 9 titres en 2025…), tournures, variantes. Doublons exacts
   laissés (11009/11157, 11102/11151, 10118/31034). Test : 0 bonne réponse refusée.
+- 13/11 : ENCYCLOPÉDIE CHARGÉE À PART : les écrans (encPage … openEncFiche) sont dans `encyclopedie.js` (139 Ko), chargé 4 s après
+  le démarrage (`encCode`, fin de `init`) ; les 4 appels depuis script.js passent par `encGo(fn)` (attend le fichier, « 📚 Ouverture… »
+  après 0,3 s). Ce qui sert ailleurs (encAll, encKnown, encChapters, renderEncyclopedia, encOpenAnim, encLoad) reste dans script.js.
+  CORRECTION : mot de la question omis dans la réponse (`echoShort`, demande de l'utilisateur) : le mot qui suit « quel(le)(s) » /
+  « appelle-t-on » peut manquer au début (« Quel mode… » → « avion », « Quelles guerres… » → « puniques ») ; un adjectif écrit juste
+  après peut manquer à la fin (« Quel sport basque » → « pelote ») ; jamais : personne, expression, proverbe, trait d'union, Grand /
+  Petit, reste < 4 lettres, nombre, coupure après « de » sauf nom propre (« Catan » oui, « fer » non). 313 formes nouvelles relues.
+  Signalements du 13/11 traités (Kopa / copa, Stark, Carrie, ristretto, égouttoir, ATM, MAJ…) ; reformulées : 24154 créneaux, 18295 moka,
+  18205 bleu d'Auvergne, 19098 JO 2030 (montagnes, + les 2 régions), 4470 point d'exclamation. Refusé : « chrome » pour Google.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées

@@ -183,7 +183,7 @@ TRAINING_QUESTIONS.push(
     { id: 17162, theme: "Cinéma", d: 1.4, q: "Quel petit dragon rouge accompagne Mulan ?", a: ["Mushu"], exp: "Doublé en VO par Eddie Murphy." },
     { id: 17163, theme: "Cinéma", d: 1.4, q: "Quel garçon élevé par des singes vit dans la jungle avec Jane chez Disney ?", a: ["Tarzan"], exp: "Disney, 1999, chansons de Phil Collins." },
     { id: 17164, theme: "Cinéma", d: 1.4, q: "Quelle princesse amérindienne Disney rencontre le colon John Smith ?", a: ["Pocahontas"], exp: "Disney, 1995, inspiré très librement d’une vraie personne." },
-    { id: 17165, theme: "Cinéma", d: 1.5, q: "Quel grillon sert de conscience à Pinocchio chez Disney ?", a: ["Jiminy Cricket", "Jiminy"], exp: "Il chante « Quand on prie la bonne étoile »." },
+    { id: 17165, theme: "Cinéma", d: 1.5, q: "Quel grillon sert de conscience à Pinocchio chez Disney ?", a: ["Jiminy Cricket", "Jiminy", "Cricket"], exp: "Il chante « Quand on prie la bonne étoile »." },
     { id: 17166, theme: "Cinéma", d: 1.5, q: "Quel méchant vizir veut la lampe d’Aladdin ?", a: ["Jafar"], exp: "Il a un perroquet bavard, Iago." },
     { id: 17167, theme: "Cinéma", d: 1.5, q: "Quelle princesse écossaise rousse est la championne de tir à l’arc de « Rebelle » ?", a: ["Mérida", "Merida"], exp: "Pixar, 2012 ; sa mère est changée en ourse." },
     { id: 17168, theme: "Cinéma", d: 1.5, q: "Quelle styliste minuscule refuse les capes dans « Les Indestructibles » ?", a: ["Edna Mode", "Edna"], exp: "« Pas de capes ! » : sa réplique culte." },

@@ -742,6 +742,33 @@ function listMatch(input, rawAnswers, question) {
     return best;
 }
 
+/** 13/11 : la réponse sans les mots du début / de la fin déjà écrits dans la question (pluriel toléré), ou null. */
+const ECHO_LINKS = new Set(['de', 'du', 'des', 'd', 'a', 'au', 'aux', 'et', 'en', 'le', 'la', 'les', 'l', 'un', 'une']);
+function echoShort(raw, question) {
+    raw = String(raw);
+    if (/[-,!?«»]/.test(raw)) return null;   // jamais dans un mot composé (Pays-Bas, Pac-Man) ni une citation
+    const stem = w => w.replace(/[sx]$/, '');
+    // seulement les mots qui suivent « quel(le)(s) » / « appelle-t-on » : « Quel mode… », « Quel sport basque… »
+    const m = normalize(question).match(/(?:^| )(?:quel|quelle|quels|quelles|appelle t on(?: le| la| les| l| un| une| des)?) (\S+)(?: (\S+))?(?: (\S+))?/);
+    if (!m) return null;
+    const head = stem(m[1]), tails = new Set([m[2], m[3]].filter(x => x && x.length >= 3).map(stem));
+    const caps = new Set(raw.split(/[\s’']+/).filter(x => /^\p{Lu}/u.test(x)).map(x => normalize(x)));
+    let w = normalize(raw).split(' ').filter(Boolean);
+    while (w.length && ECHO_LINKS.has(w[0])) w = w.slice(1);
+    const start = w.join(' ');
+    let crossed = false;
+    if (w.length > 1 && w[0].length >= 3 && stem(w[0]) === head && !/^(grand|grande|petit|petite|nouveau|nouvelle|vieux|vieille)$/.test(stem(w[0]))) {   // « mode avion » → « avion »
+        w = w.slice(1);
+        while (w.length > 1 && ECHO_LINKS.has(w[0])) { w = w.slice(1); crossed = true; }
+    }
+    // à la fin : un adjectif écrit juste après (« Quel sport basque » → « pelote »), pas un complément ni un nom propre
+    const last = w[w.length - 1];
+    if (w.length > 1 && tails.has(stem(last)) && !ECHO_LINKS.has(w[w.length - 2]) && !caps.has(last)) w = w.slice(0, -1);
+    const rest = w.join(' ');
+    if (!rest || rest === start || /\d/.test(rest) || ECHO_LINKS.has(w[0]) || ECHO_LINKS.has(w[w.length - 1])) return null;
+    if (w.length === 1 && (rest.length < 4 || (crossed && !caps.has(rest)))) return null;   // « fer » (masque de fer) : non ; « Catan » : oui
+    return stripArticles(rest) || null;
+}
 function judgeV2(input, rawAnswers, question = '') {
     // Réponse faite d'un seul « article » (la note « La », la lettre « D ») : on ne l'efface pas
     // Expressions (rébus ou « Quelle expression… ») : « avoir » / « être » au début ignorés (« la main verte » = « avoir la main verte »)
@@ -764,6 +791,11 @@ function judgeV2(input, rawAnswers, question = '') {
         answers.push([ans, full(raw), false, isCommonRaw(String(raw)) || /^\p{Ll}/u.test(String(raw).trim())]);   // 4e : nom commun (pluriel toléré)
         const short = answerWithoutGeneric(ans);
         if (short && short.length >= 3 && !short.split(' ').every(w => questionWords.has(w))) answers.push([short, short, true]);
+        // 13/11 (demande de l'utilisateur) : un mot de la réponse déjà écrit dans la question peut être omis au début ou à la fin
+        // (« Quel mode… ? » → « avion », « Quelles guerres… ? » → « puniques », « Quel sport basque… ? » → « pelote ») ;
+        // jamais pour une personne, une expression, un proverbe, ni s'il ne reste qu'un nombre
+        const echo = echoShort(raw, question);
+        if (echo && !expression && !/complète le proverbe/i.test(question) && !PERSON_Q.test(question)) answers.push([echo, echo, true]);
         if (!expression && looksLikeName(raw)) {   // nom avant le prénom : « Sartre Jean-Paul », « Khan Kubilaï »
             const w = ans.split(' ');
             if (w.length >= 2) { const turned = [w[w.length - 1], ...w.slice(0, -1)].join(' '); answers.push([turned, turned, true]); }

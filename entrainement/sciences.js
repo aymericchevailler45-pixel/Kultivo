@@ -291,7 +291,7 @@ TRAINING_QUESTIONS.push(
     { id: 11275, theme: "Sciences", d: 1.3, q: "Quel tuyau conduit l’air de la gorge jusqu’aux poumons ?", a: ["La trachée", "Trachée", "Trachee"], exp: "Elle se divise ensuite en deux bronches." },
     { id: 11276, theme: "Sciences", d: 1.4, q: "Quelle petite masse de chair pend au fond de la gorge ?", a: ["La luette", "Luette"], exp: "Elle aide à fermer le nez quand on avale." },
     { id: 11277, theme: "Sciences", d: 1.4, q: "Comment appelle-t-on la couche dure qui recouvre les dents ?", a: ["L’émail", "Émail", "Email"], exp: "La matière la plus dure du corps humain." },
-    { id: 11278, theme: "Sciences", d: 1.4, q: "Comment appelle-t-on le trou dans une dent causé par les bactéries et le sucre ?", a: ["Une carie", "Carie", "Caries"], exp: "Le brossage et le fluor la préviennent." },
+    { id: 11278, theme: "Sciences", d: 1.4, q: "Comment appelle-t-on le trou dans une dent causé par les bactéries et le sucre ?", a: ["Une carie", "Carie", "Caries", "Carrie"], exp: "Le brossage et le fluor la préviennent." },
     { id: 11279, theme: "Sciences", d: 1.5, q: "Quelle maladie d’enfance donne des boutons qui démangent et des croûtes ?", a: ["La varicelle", "Varicelle"], exp: "On ne l’attrape en général qu’une fois." },
     { id: 11280, theme: "Sciences", d: 1.5, q: "Comment appelle-t-on la marque bleue qui apparaît après un coup ?", a: ["Un bleu", "Bleu", "Ecchymose", "Hématome"], exp: "Elle passe ensuite au vert puis au jaune." },
     { id: 11281, theme: "Sciences", d: 1.5, q: "Comment appelle-t-on une cheville tordue dont les ligaments sont étirés ?", a: ["Une entorse", "Entorse", "Foulure"], exp: "Une foulure est une entorse légère." },
