@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kultivo · aperçu Escales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #eef3f8; --surface: #fff; --ink: #1b2745; --muted: #66728f; --line: #d9e1ec; --blue: #3d8bff; --blue-deep: #1c5bd6;
+    --ok: #4fc72c; --ok-ink: #2a6b14; --gold: #f3b400; --gold-tint: #fff4d6; --gold-ink: #8a5a00; --pink: #ff4b8b; --pairs: #12b3a8;
+    --red: #e5484d; --violet-ink: #5230a8; --sakura: #ffd6e4; --stamp: #c62a3a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #dfe6f0; color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 700; }
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; }
+.lead { margin: 0 0 18px; color: var(--muted); max-width: 820px; line-height: 1.45; }
+h2 { margin: 40px 0 8px; font-size: 1.25rem; font-weight: 900; }
+.note { max-width: 820px; line-height: 1.5; margin: 0 0 14px; }
+.note b, .lead b { font-weight: 900; color: var(--ink); }
+.phones { display: flex; flex-wrap: wrap; gap: 26px; align-items: flex-start; }
+.pw { display: flex; flex-direction: column; gap: 8px; width: 330px; max-width: 100%; }
+.pw > b { font-size: 1rem; font-weight: 900; }
+.pw > span { color: var(--muted); font-size: .88rem; line-height: 1.35; min-height: 4.1em; }
+.phone { position: relative; width: 330px; max-width: 100%; height: 680px; overflow: hidden; border-radius: 34px; border: 8px solid #1b2745; background: var(--bg); box-shadow: 0 18px 40px rgba(27, 39, 69, .25); }
+.scr { position: absolute; inset: 0; display: flex; flex-direction: column; }
+/* barre du haut du jeu */
+.hud { flex: none; display: flex; align-items: center; gap: 8px; padding: 10px 12px 8px; background: #fff; border-bottom: 1px solid var(--line); font-size: .86rem; font-weight: 900; }
+.hud img { width: 28px; height: 28px; border-radius: 8px; }
+.hud .sp { flex: 1; }
+.hud .c { display: inline-flex; align-items: center; gap: 3px; }
+.nav { flex: none; display: flex; justify-content: space-around; padding: 8px 0 10px; background: #fff; border-top: 1px solid var(--line); font-size: 1.25rem; }
+.nav span { opacity: .4; } .nav span.on { opacity: 1; }
+.body { flex: 1; overflow: hidden; position: relative; padding: 10px 12px; }
+/* bascule Parcours / Escales */
+.switch { display: flex; padding: 4px; border-radius: 14px; background: #e3e9f2; margin-bottom: 10px; }
+.switch span { flex: 1; text-align: center; padding: 7px 0; border-radius: 10px; font-size: .86rem; font-weight: 900; color: var(--muted); position: relative; }
+.switch span.on { background: #fff; color: var(--ink); box-shadow: 0 2px 4px rgba(0,0,0,.08); }
+.dot { position: absolute; top: 2px; right: 14px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--red); color: #fff; font-size: .66rem; display: grid; place-items: center; }
+/* parcours principal (fond) */
+.trail { position: relative; height: 470px; }
+.node { position: absolute; transform: translate(-50%, -50%); width: 58px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 1rem; color: #fff; background: var(--gold); box-shadow: 0 5px 0 #c99400; }
+.node.cur { background: var(--blue); box-shadow: 0 5px 0 var(--blue-deep), 0 0 0 6px rgba(61,139,255,.2); }
+.node.lock { background: #d4dbe6; color: #8c97ad; box-shadow: 0 5px 0 #b7c0cf; }
+.node.pairs { background: var(--pairs); box-shadow: 0 5px 0 #0b8179; }
+.node.order { background: var(--pink); box-shadow: 0 5px 0 #c42c63; border-radius: 16px; }
+.node.boss { width: 66px; height: 60px; }
+.node small { position: absolute; bottom: -18px; font-size: .62rem; color: var(--muted); white-space: nowrap; }
+.tick { position: absolute; left: 50%; transform: translate(-50%, -50%); padding: 3px 9px; border-radius: 10px; background: #fff; border: 2px dashed var(--blue); color: var(--blue-deep); font-size: .7rem; font-weight: 900; white-space: nowrap; }
+/* page des escales */
+.tickets { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 16px; background: linear-gradient(135deg, #3d8bff, #6a5cff); color: #fff; margin-bottom: 10px; }
+.tickets .big { font-size: 1.9rem; }
+.tickets b { display: block; font-size: 1.05rem; font-weight: 900; }
+.tickets small { font-size: .74rem; opacity: .9; font-weight: 800; }
+.dest { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 16px; background: #fff; border: 2px solid var(--line); margin-bottom: 8px; position: relative; overflow: hidden; }
+.dest .ico { flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 1.6rem; }
+.dest .t { flex: 1; min-width: 0; }
+.dest .t b { display: block; font-size: .95rem; font-weight: 900; }
+.dest .t small { display: block; color: var(--muted); font-size: .72rem; font-weight: 800; line-height: 1.25; }
+.bar { height: 7px; border-radius: 4px; background: #e3e9f2; margin-top: 5px; overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 4px; background: var(--blue); }
+.btn { flex: none; padding: 7px 10px; border-radius: 12px; font-size: .74rem; font-weight: 900; color: #fff; background: var(--blue); box-shadow: 0 3px 0 var(--blue-deep); white-space: nowrap; }
+.btn.ok { background: var(--ok); box-shadow: 0 3px 0 #389a1c; }
+.btn.ghost { background: #fff; color: var(--muted); border: 2px solid var(--line); box-shadow: none; }
+.dest.done { border-color: #f1d27a; background: #fffaf0; }
+.dest.soon { opacity: .55; }
+.mini-stamp { position: absolute; right: 8px; top: 6px; width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--stamp); color: var(--stamp); display: grid; place-items: center; font-size: .5rem; font-weight: 900; transform: rotate(-14deg); text-align: center; line-height: 1; opacity: .85; }
+.sec { font-size: .72rem; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 12px 2px 6px; }
+/* fenêtre */
+.dim { position: absolute; inset: 0; background: rgba(27, 39, 69, .5); }
+.win { position: absolute; left: 14px; right: 14px; top: 120px; border-radius: 24px; background: #fff; padding: 18px 16px 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.win .em { font-size: 2.6rem; }
+.win b.h { display: block; font-size: 1.2rem; font-weight: 900; margin: 4px 0 6px; }
+.win p { margin: 0 0 12px; color: var(--muted); font-size: .86rem; line-height: 1.4; }
+.tiles { display: flex; gap: 8px; margin: 14px 0 18px; }
+.tiles div { flex: 1; padding: 8px 4px; border-radius: 14px; background: #f1f5fb; font-size: .66rem; color: var(--muted); font-weight: 800; }
+.tiles div b { display: block; font-size: 1.15rem; color: var(--ink); font-weight: 900; }
+.tiles div.g { background: #e5f8dc; } .tiles div.g b { color: var(--ok-ink); }
+.wbtn { display: block; padding: 12px; border-radius: 14px; background: var(--blue); color: #fff; font-weight: 900; box-shadow: 0 4px 0 var(--blue-deep); margin-bottom: 8px; }
+.wbtn.g { background: #fff; color: var(--muted); border: 2px solid var(--line); box-shadow: none; }
+/* mini-parcours d'une escale */
+.jp { background: linear-gradient(#fff2f6, #fde7ee 60%, #f6e1ea); }
+.esc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.esc-head .back { color: var(--violet-ink); font-weight: 900; font-size: .9rem; }
+.esc-head b { flex: 1; text-align: center; font-size: 1rem; font-weight: 900; }
+.esc-head small { font-size: .74rem; color: var(--muted); font-weight: 900; }
+.blk { position: absolute; left: 0; right: 0; text-align: center; font-size: .62rem; font-weight: 900; color: #b55b7a; letter-spacing: .06em; text-transform: uppercase; }
+.blk::before, .blk::after { content: ''; display: inline-block; width: 60px; height: 1px; background: #e9b4c6; vertical-align: middle; margin: 0 8px; }
+.deco { position: absolute; font-size: 1.3rem; opacity: .75; }
+.kulti { position: absolute; transform: translate(-50%, -50%); width: 42px; height: 42px; }
+/* question */
+.q-top { display: flex; align-items: center; gap: 8px; padding: 10px 12px; }
+.q-top .x { color: var(--muted); font-size: 1.2rem; font-weight: 900; }
+.q-top .pb { flex: 1; height: 12px; border-radius: 6px; background: #e3e9f2; overflow: hidden; }
+.q-top .pb i { display: block; height: 100%; width: 40%; background: var(--ok); border-radius: 6px; }
+.q-top .h { color: var(--red); font-size: .9rem; font-weight: 900; }
+.q-tag { display: inline-block; margin: 6px 14px 0; padding: 3px 9px; border-radius: 8px; background: #ffe3ec; color: #a2385c; font-size: .7rem; font-weight: 900; }
+.q-txt { margin: 12px 16px; font-size: 1.25rem; font-weight: 900; line-height: 1.3; }
+.q-img { margin: 0 16px; height: 150px; border-radius: 16px; background: linear-gradient(#bfe0ff, #fde1ea); display: grid; place-items: center; font-size: 4rem; }
+.q-in { margin: 18px 16px 10px; padding: 12px; border-radius: 14px; border: 2px solid var(--line); background: #fff; color: var(--muted); font-size: 1rem; }
+.q-ok { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 16px 18px; background: #e5f8dc; border-top: 2px solid #bfe9ad; }
+.q-ok b { display: block; color: var(--ok-ink); font-size: 1.05rem; font-weight: 900; }
+.q-ok small { display: block; color: var(--ok-ink); font-size: .8rem; margin: 3px 0 10px; font-weight: 800; }
+.q-ok .wbtn { background: var(--ok); box-shadow: 0 4px 0 #389a1c; text-align: center; margin: 0; }
+/* fin d'escale */
+.end { background: radial-gradient(circle at 50% 35%, #fff7d6, #ffe08a 55%, #f3b400); }
+.big-stamp { position: absolute; left: 50%; top: 150px; transform: translate(-50%, -50%) rotate(-12deg); width: 170px; height: 170px; border-radius: 50%; border: 6px solid var(--stamp); color: var(--stamp); display: grid; place-items: center; text-align: center; background: rgba(255,255,255,.45); }
+.big-stamp::before { content: ''; position: absolute; inset: 7px; border-radius: 50%; border: 2px dashed var(--stamp); }
+.big-stamp div { font-size: .7rem; font-weight: 900; letter-spacing: .08em; line-height: 1.15; }
+.big-stamp div em { display: block; font-style: normal; font-size: 2.6rem; letter-spacing: 0; }
+.big-stamp div strong { display: block; font-size: 1.15rem; letter-spacing: .04em; }
+.end-t { position: absolute; left: 0; right: 0; top: 262px; text-align: center; }
+.end-t b { display: block; font-size: 1.5rem; font-weight: 900; }
+.end-t small { color: var(--gold-ink); font-weight: 900; font-size: .9rem; }
+.gains { position: absolute; left: 16px; right: 16px; top: 340px; display: flex; flex-direction: column; gap: 8px; }
+.gains div { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: rgba(255,255,255,.85); font-size: .86rem; font-weight: 900; }
+.gains div i { font-style: normal; font-size: 1.4rem; }
+.end .wbtn { position: absolute; left: 16px; right: 16px; bottom: 22px; text-align: center; margin: 0; }
+/* carnet de voyage */
+.carnet { background: #2c3e66; }
+.carnet .ttl { color: #fff; padding: 12px 14px 4px; display: flex; justify-content: space-between; align-items: baseline; }
+.carnet .ttl b { font-size: 1.15rem; font-weight: 900; }
+.carnet .ttl small { font-size: .78rem; opacity: .8; font-weight: 800; }
+.pages { margin: 6px 12px; flex: 1; border-radius: 12px; background: #fbf6e9; background-image: repeating-linear-gradient(0deg, transparent 0 27px, #efe5cc 27px 28px); display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 118px; gap: 6px; padding: 12px 10px; position: relative; }
+.pages::after { content: ''; position: absolute; top: 8px; bottom: 8px; left: 50%; width: 2px; background: #e3d6b3; }
+.st { display: grid; place-items: center; }
+.st div { width: 96px; height: 96px; border-radius: 50%; border: 4px solid; display: grid; place-items: center; text-align: center; font-size: .52rem; font-weight: 900; letter-spacing: .05em; line-height: 1.1; background: rgba(255,255,255,.4); }
+.st div em { display: block; font-style: normal; font-size: 1.7rem; letter-spacing: 0; }
+.st div strong { display: block; font-size: .78rem; }
+.st.r div { transform: rotate(-10deg); } .st.l div { transform: rotate(8deg); }
+.st.sq div { border-radius: 14px; }
+.st.empty div { border: 3px dashed #cdbf98; color: #b8a77a; background: none; transform: none; }
+.badges { margin: 4px 12px 10px; padding: 10px 12px; border-radius: 14px; background: #fff; }
+.badges b { font-size: .86rem; font-weight: 900; }
+.badges .row { display: flex; gap: 8px; margin-top: 7px; }
+.badges .row div { flex: 1; text-align: center; padding: 6px 2px; border-radius: 12px; background: #f1f5fb; font-size: .64rem; color: var(--muted); font-weight: 800; }
+.badges .row div i { display: block; font-style: normal; font-size: 1.3rem; }
+.badges .row div.on { background: var(--gold-tint); color: var(--gold-ink); }
+.badges .row div.next { background: #ece6ff; color: var(--violet-ink); }
+/* tableaux */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; max-width: 1100px; }
+.card { background: #fff; border-radius: 18px; padding: 14px; border: 2px solid var(--line); }
+.card h3 { margin: 0 0 4px; font-size: 1.05rem; font-weight: 900; }
+.card .when { display: inline-block; font-size: .72rem; font-weight: 900; padding: 2px 8px; border-radius: 8px; margin-bottom: 8px; }
+.when.l { background: #dcf6d2; color: var(--ok-ink); } .when.n { background: #e3ecff; color: var(--blue-deep); } .when.p { background: #f1f1f4; color: var(--muted); }
+.card ul { margin: 0; padding-left: 18px; font-size: .84rem; line-height: 1.45; color: #35415e; }
+.card p { margin: 6px 0 0; font-size: .78rem; color: var(--muted); line-height: 1.35; }
+.rules { max-width: 820px; background: #fff; border-radius: 18px; padding: 6px 16px; border: 2px solid var(--line); }
+.rules div { display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: .9rem; line-height: 1.4; }
+.rules div:first-child { border-top: 0; }
+.rules div i { font-style: normal; font-size: 1.3rem; flex: none; width: 28px; text-align: center; }
+.q { max-width: 820px; background: #fff8e1; border: 2px solid #f1d27a; border-radius: 18px; padding: 12px 16px; }
+.q ol { margin: 6px 0 0; padding-left: 20px; line-height: 1.55; font-size: .9rem; }
+.q ol small { color: var(--muted); font-weight: 700; }
+@media (max-width: 400px) { .pw, .phone { width: 100%; } }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>🧳 Les Escales</h1>
+<p class="lead">La 1<sup>re</sup> grosse mise à jour <b>après la sortie</b> sur le Play Store (préparée pendant les 14 jours de test fermé).
+Des <b>petits parcours de voyage</b> de 15 niveaux, chacun dans un pays, à ouvrir avec des <b>billets ✈️</b> gagnés sur le grand parcours.
+Ce n'est qu'un aperçu : rien n'est codé, tout peut changer.</p>
+
+<h2>1. Comment ça marche</h2>
+<div class="rules">
+  <div><i>✈️</i><span><b>1 billet tous les 20 niveaux</b> du parcours (niveaux 20, 40, 60…). Rétroactif : un joueur déjà au niveau 70 reçoit 3 billets d'un coup.</span></div>
+  <div><i>🎟️</i><span><b>1 billet = 1 escale de ton choix</b>, pour toujours. Pas d'escale attachée à un endroit du parcours : on va où on veut.</span></div>
+  <div><i>🗺️</i><span><b>15 niveaux par escale</b> en 3 étapes : questions, une grille de paires 🔗, une frise ⏳… et un <b>défi final</b> 🏆 au niveau 15.</span></div>
+  <div><i>💧</i><span>Comme le grand parcours : <b>gouttes, cœurs et XP</b> (l'XP compte pour la ligue et l'objectif du jour).</span></div>
+  <div><i>🌸</i><span>Chaque escale a son <b>décor</b> (fond, petites icônes qui racontent une anecdote) et son <b>chapeau de Kulti</b>.</span></div>
+  <div><i>📕</i><span>Escale finie = <b>tampon dans ton carnet de voyage</b> (Profil) + <b>carte de l'escale</b> + <b>badge</b>. Famille de badges « 🧳 Globe-trotter » : 3, 6 et 10 escales.</span></div>
+  <div><i>🙂</i><span>Questions <b>faciles</b> (d ≈ 1,8 en moyenne, de 1,4 à 2,6, 3-4 dures au plus) : les <b>grands classiques du pays</b> ont le droit d'être là, même s'ils existent ailleurs dans le jeu (jamais la même question exacte).</span></div>
+</div>
+
+<h2>2. Les écrans</h2>
+<div class="phones">
+
+  <!-- 1 : parcours avec la bascule -->
+  <div class="pw"><b>① Le parcours, avec un 2e onglet</b><span>En haut du parcours : « 🗺️ Parcours | 🧳 Escales ». Pastille = billets pas encore utilisés. Sur le chemin, une étiquette annonce le prochain billet.</span>
+    <div class="phone"><div class="scr">
+      <div class="hud"><img src="icons/logo-bleu.svg" alt=""><span class="sp"></span><span class="c">🪙 1 240</span><span class="c">💧 4/5</span><span class="c">🔥 23</span></div>
+      <div class="body">
+        <div class="switch"><span class="on">🗺️ Parcours</span><span>🧳 Escales<i class="dot">2</i></span></div>
+        <div class="trail">
+          <div class="tick" style="top:30px">✈️ Billet au niveau 80</div>
+          <div class="node lock" style="left:62%;top:90px">78</div>
+          <div class="node cur" style="left:38%;top:175px">77</div>
+          <div class="node order" style="left:60%;top:260px">76</div>
+          <div class="node" style="left:40%;top:345px">75</div>
+          <div class="node" style="left:58%;top:430px">74</div>
+        </div>
+      </div>
+      <div class="nav"><span class="on">🗺️</span><span>🎯</span><span>🥇</span><span>🛍️</span><span>👤</span></div>
+    </div></div>
+  </div>
+
+  <!-- 2 : liste des escales -->
+  <div class="pw"><b>② L'onglet Escales</b><span>Mes billets en haut, puis mes voyages (en cours, finis avec leur tampon), les escales à ouvrir et celles qui arrivent bientôt.</span>
+    <div class="phone"><div class="scr">
+      <div class="hud"><img src="icons/logo-bleu.svg" alt=""><span class="sp"></span><span class="c">🪙 1 240</span><span class="c">💧 4/5</span><span class="c">🔥 23</span></div>
+      <div class="body">
+        <div class="switch"><span>🗺️ Parcours</span><span class="on">🧳 Escales</span></div>
+        <div class="tickets"><span class="big">✈️</span><div><b>2 billets</b><small>Prochain billet au niveau 80</small></div></div>
+        <div class="sec">Mes voyages</div>
+        <div class="dest"><div class="ico" style="background:#ffe3ec">🗾</div><div class="t"><b>Japon</b><small>Niveau 6 / 15</small><div class="bar"><i style="width:40%"></i></div></div><span class="btn">Continuer</span></div>
+        <div class="dest done"><div class="ico" style="background:#fbe7c6">🕌</div><div class="t"><b>Maghreb</b><small>15 / 15 · tampon gagné</small></div><span class="mini-stamp">MAGHREB<br>✓</span></div>
+        <div class="sec">À ouvrir avec un billet</div>
+        <div class="dest"><div class="ico" style="background:#dff3e3">🍕</div><div class="t"><b>Italie</b><small>Colisée, pizza, Venise…</small></div><span class="btn ok">✈️ 1 billet</span></div>
+        <div class="sec">Bientôt</div>
+        <div class="dest soon"><div class="ico" style="background:#e3ecff">🗽</div><div class="t"><b>États-Unis</b><small>Arrive en janvier</small></div><span class="btn ghost">🔒</span></div>
+      </div>
+      <div class="nav"><span class="on">🗺️</span><span>🎯</span><span>🥇</span><span>🛍️</span><span>👤</span></div>
+    </div></div>
+  </div>
+
+  <!-- 3 : confirmation -->
+  <div class="pw"><b>③ Utiliser un billet</b><span>Une fenêtre de confirmation, comme pour les achats, avec les chiffres en cases.</span>
+    <div class="phone"><div class="scr">
+      <div class="hud"><img src="icons/logo-bleu.svg" alt=""><span class="sp"></span><span class="c">🪙 1 240</span><span class="c">💧 4/5</span><span class="c">🔥 23</span></div>
+      <div class="body"></div>
+      <div class="nav"><span class="on">🗺️</span><span>🎯</span><span>🥇</span><span>🛍️</span><span>👤</span></div>
+      <div class="dim"></div>
+      <div class="win">
+        <div class="em">🍕</div>
+        <b class="h">Partir en Italie ?</b>
+        <p>Le billet est utilisé pour de bon : l'escale reste ouverte pour toujours.</p>
+        <div class="tiles"><div><b>15</b>niveaux</div><div><b>2 → 1</b>billets ✈️</div><div class="g"><b>🃏 + 📕</b>carte + tampon</div></div>
+        <span class="wbtn">✈️ Partir · −1 billet</span>
+        <span class="wbtn g">Plus tard</span>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 4 : mini-parcours -->
+  <div class="pw"><b>④ Le petit parcours de l'escale</b><span>15 niveaux en 3 étapes, décor du pays (ici fond rose « cerisiers »), Kulti avec son bandeau japonais. Le défi final porte le tampon.</span>
+    <div class="phone"><div class="scr jp">
+      <div class="body">
+        <div class="esc-head"><span class="back">← Escales</span><b>🗾 Escale au Japon</b><small>6 / 15</small></div>
+        <div style="position:relative;height:600px">
+          <span class="deco" style="left:4%;top:60px">🌸</span><span class="deco" style="right:5%;top:120px">⛩️</span>
+          <span class="deco" style="left:6%;top:250px">🍣</span><span class="deco" style="right:4%;top:330px">🗻</span>
+          <span class="deco" style="left:5%;top:470px">🎎</span><span class="deco" style="right:6%;top:540px">🍵</span>
+          <div class="blk" style="top:14px">Étape 3 · Tokyo</div>
+          <div class="node lock boss" style="left:50%;top:62px">🏆<small>Défi final 15</small></div>
+          <div class="node lock" style="left:34%;top:140px">12</div>
+          <div class="blk" style="top:196px">Étape 2 · Kyoto</div>
+          <div class="node lock" style="left:62%;top:250px">8</div>
+          <div class="node lock pairs" style="left:40%;top:322px;background:#cfe9e6;box-shadow:0 5px 0 #a9d3ce;color:#5f9e98">🔗</div>
+          <div class="node cur" style="left:60%;top:394px">6</div>
+          <svg class="kulti" style="left:80%;top:384px" viewBox="0 0 42 42"><circle cx="21" cy="23" r="16" fill="#ff9cc0"/><path d="M8 15 Q21 6 34 15" stroke="#fff" stroke-width="5" fill="none"/><circle cx="10" cy="14" r="3" fill="#e5484d"/><circle cx="16" cy="23" r="3" fill="#1b2745"/><circle cx="26" cy="23" r="3" fill="#1b2745"/><path d="M15 30 Q21 35 27 30" stroke="#1b2745" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+          <div class="blk" style="top:450px">Étape 1 · Premiers pas</div>
+          <div class="node order" style="left:40%;top:500px">⏳</div>
+          <div class="node" style="left:58%;top:568px">4</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 5 : question -->
+  <div class="pw"><b>⑤ Une question d'escale</b><span>Une étiquette rappelle où l'on est. Les questions sont faciles, avec des images quand c'est possible (photos libres de droits, comme les monuments).</span>
+    <div class="phone"><div class="scr jp">
+      <div class="q-top"><span class="x">✕</span><div class="pb"><i></i></div><span class="h">❤️ 3</span></div>
+      <span class="q-tag">🗾 Escale au Japon</span>
+      <div class="q-txt">Quel volcan enneigé est le plus haut sommet du Japon ?</div>
+      <div class="q-img">🗻</div>
+      <div class="q-in">mont Fuji</div>
+      <div class="q-ok"><b>✓ Bonne réponse !</b><small>3 776 m. Sa dernière éruption date de 1707.</small><span class="wbtn">Continuer</span></div>
+    </div></div>
+  </div>
+
+  <!-- 6 : fin d'escale -->
+  <div class="pw"><b>⑥ Escale terminée</b><span>Le tampon tombe sur l'écran (comme le tampon « Sans faute »), puis les récompenses.</span>
+    <div class="phone"><div class="scr end">
+      <div class="big-stamp"><div>ESCALE AU<em>🗾</em><strong>JAPON</strong>2027</div></div>
+      <div class="end-t"><b>Bon voyage !</b><small>Escale au Japon terminée</small></div>
+      <div class="gains">
+        <div><i>📕</i>Tampon dans ton carnet de voyage</div>
+        <div><i>🃏</i>Carte « Escale au Japon »</div>
+        <div><i>🏅</i>Badge « Japon » · Globe-trotter 2 / 3</div>
+      </div>
+      <span class="wbtn">Continuer</span>
+    </div></div>
+  </div>
+
+  <!-- 7 : carnet -->
+  <div class="pw"><b>⑦ Le carnet de voyage (Profil)</b><span>Un passeport qui se remplit de tampons. Les escales pas encore faites sont des emplacements vides en pointillés. Les amis peuvent voir le carnet dans le profil.</span>
+    <div class="phone"><div class="scr carnet">
+      <div class="ttl"><b>📕 Mon carnet de voyage</b><small>2 / 4 tampons</small></div>
+      <div class="pages">
+        <div class="st r"><div style="border-color:#c62a3a;color:#c62a3a">ESCALE AU<em>🗾</em><strong>JAPON</strong></div></div>
+        <div class="st l sq"><div style="border-color:#1c6b8a;color:#1c6b8a">ESCALE AU<em>🕌</em><strong>MAGHREB</strong></div></div>
+        <div class="st empty"><div>ITALIE<em>?</em></div></div>
+        <div class="st empty"><div>ÉTATS-UNIS<em>?</em></div></div>
+        <div class="st empty"><div>…<em>?</em></div></div>
+        <div class="st empty"><div>…<em>?</em></div></div>
+      </div>
+      <div class="badges"><b>🧳 Globe-trotter</b>
+        <div class="row"><div class="next"><i>🧳</i>3 escales<br>2 / 3</div><div><i>🌍</i>6 escales</div><div><i>🌐</i>10 escales</div></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<h2>3. Les destinations prévues</h2>
+<p class="note">Environ <b>100 questions par escale</b> (de quoi faire 15 niveaux avec des paires et des frises). <b>3 escales à la sortie</b> de la mise à jour, puis <b>1 nouvelle tous les 1 à 2 mois</b>. Halloween et Noël restent des événements à part, chaque année.</p>
+<div class="cards">
+  <div class="card"><h3>🗾 Japon</h3><span class="when l">À la sortie</span><ul><li>Mont Fuji, Tokyo, Kyoto, les cerisiers</li><li>Sushi, ramen, baguettes, thé vert</li><li>Mangas, Pokémon, Mario, Godzilla</li><li>Samouraïs, kimono, origami, sumo</li></ul><p>Frise : JO de Tokyo 1964, Shinkansen, Pokémon… Paires : plats japonais ↔ ce que c'est.</p></div>
+  <div class="card"><h3>🍕 Italie</h3><span class="when l">À la sortie</span><ul><li>Rome, Colisée, Venise et ses gondoles, Pise</li><li>Pizza, pâtes, glaces, tiramisu</li><li>Léonard de Vinci, Michel-Ange, la Joconde</li><li>César, Pompéi, la Vespa, Ferrari</li></ul><p>Frise : fondation de Rome, mort de César, la Joconde, l'unité italienne.</p></div>
+  <div class="card"><h3>🕌 Maghreb (revu)</h3><span class="when l">À la sortie</span><ul><li>Marrakech, la médina, le Sahara</li><li>Couscous, tajine, thé à la menthe</li><li>Le désert, les dromadaires, les oasis</li></ul><p>L'Escale de novembre était trop dure (d moyen 2,45, 21 questions ≥ 3) : la plupart des questions seraient remplacées par des classiques.</p></div>
+  <div class="card"><h3>🗽 États-Unis</h3><span class="when n">Ensuite</span><ul><li>Statue de la Liberté, Grand Canyon, Hollywood</li><li>Burgers, pancakes, Thanksgiving</li><li>NBA, Super Bowl, Disney</li></ul></div>
+  <div class="card"><h3>💂 Royaume-Uni</h3><span class="when n">Ensuite</span><ul><li>Big Ben, la reine, les bus rouges</li><li>Harry Potter, les Beatles, Sherlock</li><li>Le thé de 5 heures, le fish and chips</li></ul></div>
+  <div class="card"><h3>🏛️ Grèce</h3><span class="when n">Ensuite</span><ul><li>Acropole, Santorin, les îles</li><li>Les JO antiques, les dieux (faciles)</li><li>Feta, olives, moussaka</li></ul></div>
+  <div class="card"><h3>🐫 Égypte</h3><span class="when p">Plus tard</span><ul><li>Pyramides, Sphinx, le Nil</li><li>Toutânkhamon, Cléopâtre, momies</li></ul></div>
+  <div class="card"><h3>🍁 Québec</h3><span class="when p">Plus tard</span><ul><li>Expressions québécoises, sirop d'érable, poutine</li><li>Hockey, Céline Dion</li></ul></div>
+  <div class="card"><h3>💃 Espagne · 🇧🇷 Brésil · 🐘 Inde · 🦘 Australie</h3><span class="when p">Plus tard</span><ul><li>Une escale chacun, même format</li></ul><p>Avec 300 niveaux, un joueur gagne 15 billets en tout : assez pour une douzaine d'escales.</p></div>
+</div>
+
+<h2>4. À décider ensemble (pas maintenant)</h2>
+<div class="q"><ol>
+  <li>Les <b>3 escales de la sortie</b> : Japon, Italie et Maghreb revu ? <small>(ou les États-Unis à la place du Maghreb)</small></li>
+  <li>Le <b>1<sup>er</sup> billet</b> au niveau 20 (≈ 1 semaine de jeu après la remise à zéro) ou plus tôt, au niveau 10, pour faire découvrir vite ?</li>
+  <li>Une escale <b>finie peut se refaire</b> ? <small>(proposé : oui, avec l'XP réduite comme les niveaux refaits)</small></li>
+  <li>Les cartes d'escale : rangées avec les cartes d'<b>événement</b> (hors des 180) ? <small>(proposé : oui)</small></li>
+  <li>Plus de billets que d'escales sorties : on les <b>garde</b> pour les prochaines escales (proposé), ou on peut les échanger contre des pièces ?</li>
+  <li>Une <b>collection de boutique</b> par escale (cadre + fond + emoji du pays) ? <small>(comme la collection « Médina »)</small></li>
+</ol></div>
+</div>
+</body>
+</html>
