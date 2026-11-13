@@ -8936,9 +8936,18 @@ async function cloudPush(force = false) {
     const updatedAt = new Date().toISOString();
     try {
         if (!force) {
-            const { data: remote, error: readError } = await c.from('saves')
-                .select('data, xp, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+            // 13/11 : on ne relit QUE l'XP et la marque de remise à zéro (quelques octets) au lieu de toute la sauvegarde
+            // (jusqu'à ~350 Ko, à chaque envoi : ça vidait le quota de trafic de Supabase) ; la sauvegarde entière
+            // n'est téléchargée que si le compte a plus d'XP que l'appareil.
+            const { data: head, error: readError } = await c.from('saves')
+                .select('xp, epoch:data->>resetEpoch').eq('user_id', cloudUser.id).maybeSingle();
             if (readError) return;   // on réessaiera plus tard, sans risque d'écraser quoi que ce soit
+            let remote = null;
+            if (head && head.epoch === RESET_EPOCH && (head.xp || 0) > (state.data.xp || 0)) {
+                const res = await c.from('saves').select('data, xp, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+                if (res.error || !res.data) return;
+                remote = res.data;
+            }
             if (remote && remote.data?.resetEpoch === RESET_EPOCH && (remote.xp || 0) > (state.data.xp || 0)) {
                 if (isEmptyProgress(state.data)) applyRemote(remote);
                 else if ($('cloudConflictModal').hidden) openCloudConflict(remote);
@@ -8985,14 +8994,19 @@ async function cloudSync(justLoggedIn) {
     if (cloudBusy || !c || !cloudUser || !navigator.onLine) return;
     cloudBusy = true;
     try {
-        const { data: remote, error } = await c.from('saves')
-            .select('data, xp, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+        // 13/11 : d'abord seulement la date et la marque (quelques octets) ; la sauvegarde entière n'est téléchargée
+        // que si le compte a avancé ailleurs (sinon, à chaque lancement, jusqu'à ~350 Ko pour rien)
+        const { data: head, error } = await c.from('saves')
+            .select('xp, updated_at, epoch:data->>resetEpoch').eq('user_id', cloudUser.id).maybeSingle();
         if (error) return;
         const meta = cloudMeta();
-        if (!remote) { await cloudPush(); return; }                       // compte tout neuf
-        if (remote.data?.resetEpoch !== RESET_EPOCH) { await cloudPush(true); return; }   // d'avant la remise à zéro : remplacée
-        const remoteNewer = !meta.updatedAt || new Date(remote.updated_at) > new Date(meta.updatedAt);
+        if (!head) { await cloudPush(); return; }                       // compte tout neuf
+        if (head.epoch !== RESET_EPOCH) { await cloudPush(true); return; }   // d'avant la remise à zéro : remplacée
+        const remoteNewer = !meta.updatedAt || new Date(head.updated_at) > new Date(meta.updatedAt);
         if (!remoteNewer) { if (meta.dirty) await cloudPush(); return; }   // l'appareil est à jour
+        const { data: remote, error: fullError } = await c.from('saves')
+            .select('data, xp, updated_at').eq('user_id', cloudUser.id).maybeSingle();
+        if (fullError || !remote) return;
         // Le compte a avancé ailleurs (autre appareil) ou c'est une première connexion sur cet appareil
         if (isEmptyProgress(state.data)) { applyRemote(remote); return; }
         if (!meta.dirty && !justLoggedIn) { applyRemote(remote); return; }
