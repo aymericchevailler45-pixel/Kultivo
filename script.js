@@ -2450,7 +2450,7 @@ function currentEvent() {
     if (demo === 'bebe') return null;   // démo du décor « Bienvenue bébé » : sans événement
     const today = todayKey();
     return EVENTS.find(e => demo === e.bank) || EVENTS.find(e => today >= e.start && today <= e.end)
-        || (demo === 'lundi' || BAC ? EVENTS[0] : null);
+        || (demo === 'lundi' ? EVENTS[0] : null);   // 13/11 : plus d'Halloween forcé dans le bac à sable (?demo=halloween pour le revoir)
 }
 const eventQuestions = ev => (window.EVENT_BANKS && window.EVENT_BANKS[ev.bank]) || [];
 function eventData(ev) {
