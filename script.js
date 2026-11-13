@@ -869,6 +869,7 @@ function defaultData() {
         daily: {},                       // résultats des défis du jour
         badges: {},                       // badge -> jour d'obtention
         claimedBadges: {},
+        secrets: {}, secretProg: {},      // 13/11 : badges secrets
         claimedGoals: {},
         placement: null,                 // test de placement fait : { day, start }
         placementOffered: false,         // popup de bienvenue déjà montrée

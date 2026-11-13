@@ -433,7 +433,7 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   🔒 à trouver », tap = indice vague (`hint`), pas de ligne « Prochain ». Les 7 : 🔎 15 décors différents touchés (clic sur #mapDecor),
   🤭 Kulti touché 10 fois en < 1,5 s entre deux taps (`kultiTickled` : il rit et se tortille) — le bac à sable n'ouvre plus le défi
   de Kulti à chaque tap —, 🚀 niveau (mode level, ≥ 6 questions) réussi en < 25 s, 🦉 partie finie entre 3 h et 4 h, ⛓️ combo 10 (indice : « Quand on est lancé, plus rien ne nous arrête… »),
-  🗝️ les 17 salles de l'encyclopédie (`ENC_ROOM_TOTAL`), 💎 question d ≥ 4,8 réussie du 1er coup (40 questions). Pour tous : `SECRET_ON = true`.
+  🗝️ les 17 salles de l'encyclopédie (trouvés rangés EN PREMIER dans la famille ; secrets / secretProg aussi dans defaultData) (`ENC_ROOM_TOTAL`), 💎 question d ≥ 4,8 réussie du 1er coup (40 questions). Pour tous : `SECRET_ON = true`.
 - 13/11 : arbre des dieux : la ✕ de la fiche ne ferme QUE la fiche (`closePanel`) ; la branche reste dorée et le dieu sélectionné
   jusqu'à un autre dieu ou un tap à côté (`clearSel`) ; retoucher le dieu rouvre sa fiche. KULTI : aperçu apercu-kulti-evolution.html
   (garde-robe + évolutions A aura / B il grandit, vrais dessins / C neurones) ; l'utilisateur : « l'évolution ne va pas si on ajoute des
