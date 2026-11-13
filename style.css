@@ -4931,3 +4931,13 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .bdf-next.is-secret { font-style: italic; }
 .map-kulti.is-tickled { animation: kultiTickle 0.6s ease-in-out; }
 @keyframes kultiTickle { 0%, 100% { transform: none; } 20% { transform: rotate(-14deg) scale(1.08); } 40% { transform: rotate(12deg) scale(1.08); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(6deg); } }
+
+/* 13/11 : « Vrai ou faux » de Kulti — l'affirmation au milieu de l'écran, les boutons en bas (avant : tout en haut + grand vide) */
+.card-view.is-tf { flex: 1 1 auto; }
+.card-view.is-tf .question { margin-block: auto; padding: 22px 18px; border-radius: 20px; background: var(--surface); border: 2px solid var(--line);
+    box-shadow: 0 4px 0 var(--line); text-align: center; font-size: clamp(1.25rem, 5.4vw, 1.6rem); line-height: 1.3; }
+.card-view.is-tf .question::before { content: "🤔 Vrai ou faux ?"; display: block; margin-bottom: 10px; color: var(--muted); font-size: 0.8rem; font-weight: 900; letter-spacing: 0.02em; }
+.card-view.is-tf .tf-actions { margin-top: auto; }
+body.has-feedback .card-view.is-tf .question { margin-block: 0 auto; }
+/* 13/11 : clavier ouvert pendant une question : la page s'arrête au-dessus du clavier (plus de défilement sous la question) */
+body.keyboard-open:not(.has-feedback) .lesson { min-height: var(--kbvh, 100dvh); }

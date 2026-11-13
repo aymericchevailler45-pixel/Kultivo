@@ -6935,6 +6935,7 @@ function fitToKeyboard() {
     if (!vv || !document.body.classList.contains('keyboard-open')) return;
     // On calcule avec la hauteur « clavier ouvert » mémorisée, même si le clavier n'est pas encore revenu
     const visible = keyboardHeightSeen || vv.height;
+    root.setProperty('--kbvh', `${Math.round(visible)}px`);   // 13/11 : la page s'arrête au-dessus du clavier (plus de défilement dans le vide)
     const free = () => visible - ($('answerActions').getBoundingClientRect().bottom + window.scrollY) - 12;
     let extra = Math.min(Math.max(0, free()), 160);
     for (let i = 0; i < 3 && extra > 0; i++) {
@@ -7198,6 +7199,7 @@ function showCard() {
     const tf = !!item.q.tf;   // défi de Kulti « Vrai ou faux » : deux boutons au lieu de la zone de réponse
     input.hidden = tf;
     $('tfActions').hidden = !tf;
+    $('cardView').classList.toggle('is-tf', tf);   // 13/11 : affirmation au milieu, Vrai / Faux en bas (plus de grand vide)
     if (tf) $('answerActions').hidden = true;
     // réponse en chiffres (année, « combien… ») → pavé numérique (avec la virgule : 42,195) ; « 8 » suffit même si « huit » est aussi accepté
     const numAnswer = /^\d[\d\s.,]*$/.test(String((item.q.a && item.q.a[0]) || '').trim());
