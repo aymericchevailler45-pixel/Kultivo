@@ -9695,7 +9695,7 @@ function renderTraining() {
             label.textContent = `Palier ${pr.tier} / ${TRAIN_TIERS}\n${TRAIN_TIER_NAMES[pr.tier - 1]}`;   // toujours 2 lignes : cases de même allure
             // 10 morceaux : pleins = paliers passés, le palier en cours se remplit selon ce qu'il reste à faire
             // Bac à sable (10/11, idée E) : 10 morceaux sur UNE ligne, celui du palier en cours plus large
-            const bar = el('div', `train-steps${BAC ? ' is-accordion' : ''}`);
+            const bar = el('div', 'train-steps');
             const goal = pr.needRight + pr.needMastered;
             const done = Math.min(pr.right, pr.needRight) + Math.min(pr.mastered, pr.needMastered);
             for (let i = 1; i <= TRAIN_TIERS; i++) {
