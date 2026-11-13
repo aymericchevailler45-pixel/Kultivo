@@ -6935,7 +6935,6 @@ function fitToKeyboard() {
     if (!vv || !document.body.classList.contains('keyboard-open')) return;
     // On calcule avec la hauteur « clavier ouvert » mémorisée, même si le clavier n'est pas encore revenu
     const visible = keyboardHeightSeen || vv.height;
-    root.setProperty('--kbvh', `${Math.round(visible)}px`);   // 13/11 : la page s'arrête au-dessus du clavier (plus de défilement dans le vide)
     const free = () => visible - ($('answerActions').getBoundingClientRect().bottom + window.scrollY) - 12;
     let extra = Math.min(Math.max(0, free()), 160);
     for (let i = 0; i < 3 && extra > 0; i++) {
@@ -9384,6 +9383,7 @@ function medalRow(theme, icon) {
     bar.append(fill);
     const num = el('span', 'train-mnum');
     num.textContent = next ? `${pr.totalMastered}/${next.need}` : '✓';
+    if (num.textContent.length >= 6) num.classList.add('is-long');
     row.append(bar, num);
     row.setAttribute('role', 'button');
     row.setAttribute('aria-label', 'Médailles du thème : comment les gagner');

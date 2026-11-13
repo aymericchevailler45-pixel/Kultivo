@@ -4939,5 +4939,7 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .card-view.is-tf .question::before { content: "🤔 Vrai ou faux ?"; display: block; margin-bottom: 10px; color: var(--muted); font-size: 0.8rem; font-weight: 900; letter-spacing: 0.02em; }
 .card-view.is-tf .tf-actions { margin-top: auto; }
 body.has-feedback .card-view.is-tf .question { margin-block: 0 auto; }
-/* 13/11 : clavier ouvert pendant une question : la page s'arrête au-dessus du clavier (plus de défilement sous la question) */
-body.keyboard-open:not(.has-feedback) .lesson { min-height: var(--kbvh, 100dvh); }
+/* 13/11 : médailles des cases teintées : « 150/300 » tient dans la case */
+.train-tile.is-tinted .train-meds { gap: 3px; }
+.train-tile.is-tinted .train-slot { width: 19px; height: 19px; }
+.train-mnum.is-long { font-size: 0.66rem; letter-spacing: -0.02em; }
