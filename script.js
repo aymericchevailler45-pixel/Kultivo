@@ -1807,7 +1807,7 @@ function profileThemeStats() {
    ✨ maîtrisé = même règle que l'entraînement (isMastered). Les savoirs pas encore trouvés restent cachés (seulement un nombre).
    Profil → onglet « 📚 Savoirs » (à la place de « Thèmes ») ; livre = un thème ; fiche = réponse, question, explication, image ;
    « Me la reposer » = petite question dans la fiche, pour le plaisir (rien n'est enregistré). Pas de « à revoir » (choix 12/11). */
-const ENC_VITRINE = BAC;   // 13/11 : salle spéciale en vitrine au-dessus des chapitres (bac à sable)
+const ENC_VITRINE = true;   // en ligne pour tous le 13/11, salle spéciale en vitrine au-dessus des chapitres
 const ENC_ON = true;   // 12/11 : encyclopédie des savoirs, EN LIGNE POUR TOUS depuis le 12/11 (avant : bac à sable seulement)
 // 12/11 : 15 couleurs bien distinctes (Cinéma et Drapeaux se ressemblaient), l'icône est posée sur un rond blanc
 const ENC_COLORS = { 'Arts': '#c026d3', 'Cinéma': '#dc2626', 'Drapeaux': '#ea580c', 'Gastronomie': '#ca8a04', 'Géographie': '#15803d', 'Histoire': '#92400e',
@@ -7265,6 +7265,8 @@ function kultiFeedbackLine(verdict, skipped) {
     return { text: pickOne(reviews ? [...KULTI_WRONG, 'Raté, tu la reverras !'] : KULTI_WRONG), face: 'triste' };
 }
 /** Phrase de Kulti pour l'écran de fin (bulle à côté de lui). */
+/** 13/11 : espace insécable avant ! ? : ; » et après « (le signe ne part jamais seul à la ligne). */
+const nbspPunct = s => String(s).replace(/ ([!?:;»…])/g, ' $1').replace(/« /g, '« ');
 function kultiEndLine(mood, stamp) {
     const h = new Date().getHours();
     if (mood === 'triste') return pickOne(['Pas grave, on réessaie ?', 'Elles m’ont eu aussi, la première fois.', 'On se relève, on recommence !']);
@@ -7295,7 +7297,7 @@ function showFeedback(verdict, skipped) {
     $('explanationText').textContent = q.exp;
     if (PAL_ELEC) {   // 11/11 : carte flottante avec Kulti qui réagit, dans la ligne du titre (pas plus haut)
         const said = kultiFeedbackLine(verdict, skipped);   // 12/11 : de temps en temps, Kulti parle à la place du titre
-        if (said) $('feedbackTitle').textContent = said.text;
+        if (said) $('feedbackTitle').textContent = nbspPunct(said.text);
         const face = el('span', 'fb-kulti');
         face.append(kultiEl(said?.face || (ok ? 'content' : 'triste'), 'kulti-blink'));
         $('feedbackTitle').prepend(face);
@@ -7589,7 +7591,7 @@ function setEnd({ emoji, face, title, text, extra = '', stats = [], primary, pri
     else $('endEmoji').textContent = emoji;
     if (mood && PAL_ELEC && state.mode !== 'placement') {   // 12/11 : Kulti dit un mot, dans une bulle à sa gauche (le tampon est à droite)
         const bub = el('span', 'end-say');
-        bub.textContent = kultiEndLine(mood, stamp);
+        bub.textContent = nbspPunct(kultiEndLine(mood, stamp));   // 13/11 : jamais un « ! » seul sur sa ligne
         $('endEmoji').append(bub);
     }
     clearTimeout(stampTimer);
@@ -11315,6 +11317,7 @@ function showTourStep() {
    La place du texte entier est réservée dès le début (partie pas encore écrite invisible) : la bulle ne grandit pas. */
 let tourTyping = null;
 function typeTourText(text) {
+    text = nbspPunct(text);   // 13/11 : jamais un « ! » ou « : » seul en début de ligne
     clearInterval(tourTyping);
     const p = $('tourText');
     const shown = el('span'), rest = el('span', 'tour-rest');
@@ -11461,7 +11464,7 @@ function renderOnboard(animate = true) {
     if (step === 0) {
         const kulti = kultiEl('clin', 'onboard-kulti kulti-blink kulti-float');   // Kulti se présente (2026-10-27)
         title.textContent = 'Bienvenue sur Kultivo !';
-        text.textContent = 'Moi, c’est Kulti ! Ta culture générale, un niveau après l’autre : questions, défis, grilles à associer… Commençons par faire connaissance.';
+        text.textContent = nbspPunct('Moi, c’est Kulti ! Ta culture générale, un niveau après l’autre : questions, défis, grilles à associer… Commençons par faire connaissance.');
         body.append(kulti, title, text);
         next.textContent = 'C’est parti';
     } else if (step === 1) {

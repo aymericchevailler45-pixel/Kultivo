@@ -3983,7 +3983,8 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 /* 12/11 : personnalité de Kulti — bulle sur l'écran de fin, à sa gauche (le tampon « Sans faute » est à droite) ; ne change pas la hauteur */
 .end-say { position: absolute; right: calc(100% + 10px); top: 8px; width: max-content; max-width: min(140px, calc(50vw - 72px)); padding: 7px 10px;
     border-radius: 14px 14px 4px 14px; background: var(--surface); color: var(--ink); box-shadow: 0 3px 10px rgba(27, 39, 69, 0.14);
-    font-size: 0.8rem; font-weight: 800; line-height: 1.25; text-align: left; opacity: 0; animation: endSay 0.35s ease 0.6s forwards; }
+    font-size: 0.8rem; font-weight: 800; line-height: 1.25; text-align: left; opacity: 0; animation: endSay 0.35s ease 0.6s forwards;
+    overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty; }   /* 13/11 : un mot long ne dépasse plus de la bulle */
 .end-say::after { content: ''; position: absolute; right: -6px; bottom: 6px; border: 6px solid transparent; border-left-color: var(--surface); border-right: 0; }
 @keyframes endSay { from { opacity: 0; transform: translateY(6px) scale(0.9); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .end-say { animation: none; opacity: 1; } }
