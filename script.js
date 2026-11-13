@@ -12442,6 +12442,15 @@ function initBac() {
         const more = await askConfirm({ title: '🧪 Bac à sable', text: `Une copie de ta partie : tout ce que tu fais ici reste ici. Rien n’est envoyé en ligne, ton vrai jeu ne change pas. ${realLv ? `Copie : niveau ${Math.min(state.data.unlocked, MAX_LEVEL)} (vraie partie : niveau ${Math.min(realLv, MAX_LEVEL)}).` : 'Ta vraie partie n’est pas sur ce navigateur : ouvre le bac à sable depuis l’appli (5 taps sur le logo).'}`,
             yes: '+1 000 🪙 pour tester', no: 'Plus d’options' });
         if (more) { state.data.coins += 1000; saveData(); renderHeader(); if (!$('shopScreen').hidden) renderShop(); return; }
+        // 13/11 : défi de Kulti « Vrai ou faux » tout de suite (pour voir la nouvelle mise en page)
+        const tf = await askConfirm({ title: '🧪 Bac à sable', text: 'Faire un défi de Kulti « Vrai ou faux » ?', yes: 'Lancer le défi', no: 'Plus d’options' });
+        if (tf) {
+            state.data.kulti = { day: todayKey(), kind: 'tf', done: true };
+            state.kultiItems = kultiItems(state.data.kulti);
+            saveData();
+            startSession('kulti');
+            return;
+        }
         // 11/11 : en 2e, pour la trouver facilement (demande de l'utilisateur)
         const anim = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir l’animation du jour de série (avec ta série actuelle) ?', yes: 'Voir l’animation', no: 'Plus d’options' });
         if (anim) { showStreakAnim(Math.max(2, state.data.streak || 1)); return; }
