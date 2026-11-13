@@ -4944,15 +4944,13 @@ body.has-feedback .card-view.is-tf .question { margin-block: 0 auto; }
 .train-tile.is-tinted .train-slot { width: 19px; height: 19px; }
 .train-mnum.is-long { font-size: 0.66rem; letter-spacing: -0.02em; }
 
-/* ===== 13/11 : fonds d'avatar PASTEL (choix C de apercu-avatars-pastel.html), bac à sable seulement (classe .av-pastel posée par script.js)
-   Les fonds de la boutique (classes bg-…) gardent leur style. Pour tous : poser la classe toujours. ===== */
-.av-pastel .league-avatar:not([class*="bg-"]) { background: hsl(var(--hue) 70% 76%); color: hsl(var(--hue) 60% 26%); }
-.av-pastel .avatar-swatch { background: hsl(var(--hue) 70% 76%); }
+/* ===== 13/11 : couleurs unies d'avatar en PASTEL au choix (interrupteur « Vif | Pastel » dans Mon avatar → look.tone, classe .is-pastel ;
+   apercu-avatars-pastel.html, choix C). Les fonds de la boutique (classes bg-…) gardent leur style. ===== */
+.league-avatar.is-pastel:not([class*="bg-"]) { background: hsl(var(--hue) 70% 76%); color: hsl(var(--hue) 60% 26%); }
 @media (prefers-color-scheme: dark) {
-    :root.av-pastel:not([data-theme="light"]) .league-avatar:not([class*="bg-"]),
-    :root.av-pastel:not([data-theme="light"]) .avatar-swatch { background: hsl(var(--hue) 45% 64%); }
-    :root.av-pastel:not([data-theme="light"]) .league-avatar:not([class*="bg-"]) { color: hsl(var(--hue) 60% 18%); }
+    :root:not([data-theme="light"]) .league-avatar.is-pastel:not([class*="bg-"]) { background: hsl(var(--hue) 45% 64%); color: hsl(var(--hue) 60% 18%); }
 }
-:root.av-pastel[data-theme="dark"] .league-avatar:not([class*="bg-"]),
-:root.av-pastel[data-theme="dark"] .avatar-swatch { background: hsl(var(--hue) 45% 64%); }
-:root.av-pastel[data-theme="dark"] .league-avatar:not([class*="bg-"]) { color: hsl(var(--hue) 60% 18%); }
+:root[data-theme="dark"] .league-avatar.is-pastel:not([class*="bg-"]) { background: hsl(var(--hue) 45% 64%); color: hsl(var(--hue) 60% 18%); }
+.av-tone { grid-column: 1 / -1; display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--line); }
+.av-tone-btn { flex: 1; padding: 8px 0; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: inherit; font-size: 0.9rem; font-weight: 900; cursor: pointer; }
+.av-tone-btn.is-on { background: var(--surface); color: var(--ink); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); }

@@ -17,7 +17,7 @@ const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs
 // Bac à sable (?bac=1, 2026-10-25) : copie de la vraie partie dans une sauvegarde à part, toutes les nouveautés actives,
 // RIEN envoyé en ligne (sauvegarde, classement, duels, statistiques). Pour essayer avant les autres.
 const BAC = (() => { try { return new URLSearchParams(location.search).get('bac') === '1'; } catch (err) { return false; } })();
-if (BAC) document.documentElement.classList.add('av-pastel');   // 13/11 : fonds d'avatar pastel (essai, bac à sable)
+const AV_TONE_ON = BAC;   // 13/11 : interrupteur « Vif | Pastel » des couleurs unies d'avatar (essai, bac à sable ; pour tous : true)
 const STORAGE_KEY = BAC ? 'kultivo_bac' : 'cultureG_v2';
 // 11/11 : nouvelles couleurs (Bleu électrique) — classe posée par index.html dans le bac à sable ; logo bleu qui va avec
 const PAL_ELEC = document.documentElement.classList.contains('pal-elec');
@@ -10104,6 +10104,7 @@ function avatarEl(pseudo, look, cls = '') {
     if (look?.emoji) a.append(emojiImg(look.emoji));
     else a.textContent = [...pseudo][0].toUpperCase();
     if (look && avOn()) avDress(a, look);
+    if (look?.tone === 'pastel') a.classList.add('is-pastel');   // sans effet sur les fonds de la boutique (CSS)
     return a;
 }
 
@@ -10156,7 +10157,7 @@ function renderAvatarModalV2() {
     const art = it => {
         if (it.type === 'pic') return emojiImg(it.emoji);
         if (it.type === 'bg') {   // le fond seul, sans le cadre ni le dessin portés
-            const a = avatarEl(name, it.hue !== undefined ? { hue: it.hue } : { hue: look.hue, bg: it.id });
+            const a = avatarEl(name, it.hue !== undefined ? { hue: it.hue, tone: look.tone } : { hue: look.hue, bg: it.id });
             a.textContent = '';
             return a;
         }
@@ -10165,6 +10166,17 @@ function renderAvatarModalV2() {
     const active = it => it.type === 'frame' ? look.frame === it.id
         : it.type === 'pic' ? look.emoji === it.emoji
         : it.hue !== undefined ? !look.bg && look.hue === it.hue : look.bg === it.id;
+    if (avTab === 'bg' && AV_TONE_ON) {
+        const sw = el('div', 'av-tone');
+        [[null, '🎨 Vif'], ['pastel', '🍬 Pastel']].forEach(([tone, label]) => {
+            const b = el('button', `av-tone-btn${(look.tone || null) === tone ? ' is-on' : ''}`);
+            b.type = 'button';
+            b.textContent = label;
+            b.addEventListener('click', () => { look.tone = tone; saveData(); renderAvatarModalV2(); });
+            sw.append(b);
+        });
+        grid.append(sw);
+    }
     if (avTab === 'pic') {
         const ini = el('span');
         ini.textContent = [...name][0].toUpperCase();
@@ -10407,7 +10419,7 @@ function profileSummary() {
         bestStreak: Math.max(d.best.streak, currentStreak()),
         levels: Object.values(d.done).filter(Boolean).length,
         unlocked: d.unlocked,   // niveau en cours (avatar sur le parcours des amis)
-        look: d.avatar ? { bg: d.avatar.bg || null, frame: d.avatar.frame || null } : null,   // fond et cadre (26/10)
+        look: d.avatar ? { bg: d.avatar.bg || null, frame: d.avatar.frame || null, tone: d.avatar.tone || null } : null,   // fond et cadre (26/10), vif / pastel (13/11)
         event: (ev => ev ? { id: ev.id, found: Object.keys(eventData(ev).found).length } : null)(currentEvent()),
         rate: d.totals.tries > 0 ? Math.round((d.totals.right / d.totals.tries) * 100) : null,
         sprint: d.best.sprint || 0,
@@ -10743,7 +10755,7 @@ async function leagueFetch() {
             const prof = pseudos[id] || {};
             const base = Number.isInteger(prof.avatar_hue) ? { hue: prof.avatar_hue, emoji: prof.avatar_emoji || null } : null;
             const extra = scores[id]?.summary?.look;   // fond et cadre, envoyés dans le résumé du profil
-            const look = extra && (extra.bg || extra.frame) ? { ...(base || {}), bg: extra.bg || null, frame: extra.frame || null } : base;
+            const look = extra && (extra.bg || extra.frame || extra.tone) ? { ...(base || {}), bg: extra.bg || null, frame: extra.frame || null, tone: extra.tone || null } : base;
             return { link: l.id, id, pseudo: prof.pseudo || '?', look, ...(scores[id] || { week: null, week_xp: 0, prev_week: null, prev_week_xp: 0, streak: 0 }) };
         };
         const before = league?.userId === me ? league : null;
