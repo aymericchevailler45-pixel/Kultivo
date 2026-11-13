@@ -4882,3 +4882,38 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-lib-h.is-done > b, .enc-obj-h.is-done > b, .enc-rows-h.is-done > b { padding: 1px 8px; border-radius: 99px; background: linear-gradient(#ffe58a, #f3b400); color: #5a3d00; white-space: nowrap; }
 .enc-lib-h.is-done > b::before, .enc-obj-h.is-done > b::before, .enc-rows-h.is-done > b::before { content: "✓ "; }
 .enc-lib-h.is-done > b, .enc-obj-h.is-done > b, .enc-rows-h.is-done > b { padding: 0 6px; font-size: 0.72rem; }
+
+/* 13/11 (bac à sable) : salle spéciale en vitrine en haut du livre */
+.enc-vit { display: grid; gap: 8px; margin: 10px 0 4px; }
+.enc-vit.is-two { grid-template-columns: 1fr 1fr; }
+.enc-vit-card { position: relative; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "tag tag" "e t" "shelf shelf" "go go"; align-items: center; gap: 4px 10px;
+  width: 100%; padding: 12px 14px 12px; border: 0; border-radius: 18px; text-align: left; color: #fff; overflow: hidden; cursor: pointer;
+  background: radial-gradient(circle at 85% 0%, rgba(255, 255, 255, 0.28), transparent 55%), linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 62%, #000));
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--c) 55%, #000), 0 8px 18px color-mix(in srgb, var(--c) 30%, transparent); font: inherit; }
+.enc-vit-card:active { transform: translateY(3px); box-shadow: 0 1px 0 color-mix(in srgb, var(--c) 55%, #000); }
+.enc-vit-tag { grid-area: tag; justify-self: start; padding: 2px 8px; border-radius: 99px; background: rgba(255, 255, 255, 0.22); font-size: 0.66rem; font-weight: 900;
+  letter-spacing: 0.04em; text-transform: uppercase; }
+.enc-vit-e { grid-area: e; font-size: 2.2rem; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)); }
+.enc-vit-t { grid-area: t; min-width: 0; }
+.enc-vit-t b { display: block; font-size: 1.08rem; font-weight: 900; line-height: 1.15; }
+.enc-vit-t small { display: block; margin-top: 2px; font-size: 0.76rem; font-weight: 800; opacity: 0.9; line-height: 1.2; }
+.enc-vit-shelf { grid-area: shelf; display: flex; justify-content: space-around; align-items: flex-end; margin-top: 6px; padding: 4px 6px 3px;
+  border-bottom: 4px solid rgba(0, 0, 0, 0.25); border-radius: 0 0 4px 4px; background: rgba(255, 255, 255, 0.1); }
+.enc-vit-shelf i { font-style: normal; font-size: 1.35rem; line-height: 1.1; animation: enc-vit-bob 3s ease-in-out infinite; animation-delay: calc(var(--j) * -0.7s); }
+.enc-vit-go { grid-area: go; justify-self: end; margin-top: 4px; padding: 4px 12px; border-radius: 99px; background: #fff; color: color-mix(in srgb, var(--c) 75%, #000);
+  font-size: 0.82rem; font-weight: 900; }
+.enc-vit.is-two .enc-vit-card { grid-template-columns: 1fr; grid-template-areas: "tag" "e" "t" "shelf" "go"; padding: 10px; }
+.enc-vit.is-two .enc-vit-e { font-size: 1.8rem; }
+.enc-vit.is-two .enc-vit-t b { font-size: 0.92rem; }
+.enc-vit.is-two .enc-vit-t small { font-size: 0.7rem; }
+.enc-vit.is-two .enc-vit-shelf i { font-size: 1.1rem; }
+.enc-vit.is-two .enc-vit-go { justify-self: stretch; text-align: center; }
+.enc-vit-card.is-fresh::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 48%, transparent 66%);
+  transform: translateX(-120%); animation: enc-vit-shine 1.6s ease-in-out 0.5s 3; pointer-events: none; }
+@keyframes enc-vit-shine { to { transform: translateX(120%); } }
+@keyframes enc-vit-bob { 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .enc-vit-shelf i, .enc-vit-card.is-fresh::after { animation: none; } }
+.enc-book.has-room .enc-book-head { width: 100%; padding-right: 30px; }
+.enc-book-room { position: absolute; right: 7px; top: 7px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15); font-size: 0.95rem; line-height: 1; }
+.enc-book.has-room.is-full::after { right: 40px; }

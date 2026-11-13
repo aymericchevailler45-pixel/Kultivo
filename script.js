@@ -1807,6 +1807,9 @@ function profileThemeStats() {
    ✨ maîtrisé = même règle que l'entraînement (isMastered). Les savoirs pas encore trouvés restent cachés (seulement un nombre).
    Profil → onglet « 📚 Savoirs » (à la place de « Thèmes ») ; livre = un thème ; fiche = réponse, question, explication, image ;
    « Me la reposer » = petite question dans la fiche, pour le plaisir (rien n'est enregistré). Pas de « à revoir » (choix 12/11). */
+const ENC_VITRINE = BAC;   // 13/11 : salle spéciale en vitrine en haut du livre + emoji de la salle sur la couverture (bac à sable)
+const ENC_ROOM_EMO = { 'Histoire': '🕰️', 'Mythologie': '🌳', 'Sciences': '🪐', 'Langue française': '📖', 'Gastronomie': '🧀', 'Littérature': '📚',
+    'Musique': '💿', 'Jeux': '🕹️', 'Sport': '🏆', 'Technologie': '⚙️', 'Arts': '🖼️', 'Cinéma': '🎬', 'Drapeaux': '🏳️', 'Monuments': '💌', 'Géographie': '🗺️' };
 const ENC_ON = true;   // 12/11 : encyclopédie des savoirs, EN LIGNE POUR TOUS depuis le 12/11 (avant : bac à sable seulement)
 // 12/11 : 15 couleurs bien distinctes (Cinéma et Drapeaux se ressemblaient), l'icône est posée sur un rond blanc
 const ENC_COLORS = { 'Arts': '#c026d3', 'Cinéma': '#dc2626', 'Drapeaux': '#ea580c', 'Gastronomie': '#ca8a04', 'Géographie': '#15803d', 'Histoire': '#92400e',
@@ -2022,6 +2025,12 @@ function renderEncyclopedia(box) {
         mini.append(mf);
         const hd = el('span', 'enc-book-head');   // 12/11 : icône à côté du nom (hauteur identique pour tous les livres)
         hd.append(ic, nm);
+        if (ENC_VITRINE && ENC_ROOM_EMO[b.theme]) {   // 13/11 (bac à sable) : la salle à visiter, dans le coin du livre
+            const rm = el('span', 'enc-book-room');
+            rm.textContent = ENC_ROOM_EMO[b.theme];
+            btn.classList.add('has-room');
+            hd.append(rm);
+        }
         btn.append(hd, cnt, mini, m, r);   // la barre sous « x / y savoirs », pas sous le % de réussite
         btn.addEventListener('click', () => encOpenAnim(btn, ENC_COLORS[b.theme] || '#3d8bff', encIcon(b.theme), () => encGo(() => openEncBook(b.theme)), b.theme));
         grid.append(btn);

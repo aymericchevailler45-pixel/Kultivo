@@ -414,6 +414,11 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   Petit, reste < 4 lettres, nombre, coupure après « de » sauf nom propre (« Catan » oui, « fer » non). 313 formes nouvelles relues.
   Signalements du 13/11 traités (Kopa / copa, Stark, Carrie, ristretto, égouttoir, ATM, MAJ…) ; reformulées : 24154 créneaux, 18295 moka,
   18205 bleu d'Auvergne, 19098 JO 2030 (montagnes, + les 2 régions), 4470 point d'exclamation. Refusé : « chrome » pour Google.
+- 13/11 (v=20261114j, BAC À SABLE, `ENC_VITRINE = BAC`) : SALLES SPÉCIALES PLUS VISIBLES (l'utilisateur trouvait qu'on ne les voyait pas) :
+  en haut du livre, sous la barre, une « vitrine » de la couleur du livre (`encVitrine`, `encSpecial` = la liste des salles, `ENC_VITRINE_DECO` =
+  petite étagère d'emojis qui flottent, « Entrer › », reflet qui passe la 1re fois : localStorage kultivo_enc_vitrine) ; 2 salles = 2 cartes
+  côte à côte ; l'ancien bouton sous les raccourcis est retiré dans ce cas. Bibliothèque : emoji de la salle dans le coin du livre
+  (`ENC_ROOM_EMO`, `.enc-book-room`). Pour tous : `ENC_VITRINE = true`. EN ATTENTE de son avis.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées

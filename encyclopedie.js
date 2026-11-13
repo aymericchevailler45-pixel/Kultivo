@@ -11,6 +11,66 @@ function encPage(back, ...nodes) {
     return page;
 }
 let encState = { theme: '', search: '' };
+/** La (ou les) salle(s) spéciale(s) d'un livre : [emoji, nom, phrase, ouverture]. */
+function encSpecial(theme) {
+    return theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
+        : theme === 'Mythologie' ? ['🌳', 'L’arbre des dieux', 'Grèce, Égypte et Nordique', () => openEncGods()]
+        : theme === 'Sciences' ? [['🫀', 'Mon corps humain', 'les organes que tu connais', () => openEncSpots('sci', 'corps')], ['🪐', 'Mon système solaire', 'les planètes et l’espace', () => openEncSpots('sci', 'espace')]]
+        : theme === 'Langue française' ? ['📖', 'Mon dictionnaire', 'tes mots et expressions de A à Z', () => openEncDico()]
+        : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
+        : theme === 'Littérature' ? ['📚', 'Ma bibliothèque', 'tes livres rangés sur les étagères', () => openEncLibrary()]
+        : theme === 'Musique' ? ['💿', 'Mes vinyles', 'tes artistes rangés dans les bacs', () => openEncVinyls()]
+        : theme === 'Jeux' ? ['🕹️', 'Ma salle d’arcade', 'cartouches, bornes, consoles et jeux de société', () => openEncArcade()]
+        : theme === 'Sport' ? ['🏆', 'Ma salle des trophées', 'tes coupes, qui grandissent à chaque bonne réponse', () => openEncTrophies()]
+        : theme === 'Technologie' ? ['⚙️', 'La frise des inventions', 'de l’imprimerie à l’IA', () => openEncTechFrise()]
+        : theme === 'Arts' ? ['🖼️', 'Mon musée', 'tes œuvres accrochées salle par salle', () => openEncMuseum()]
+        : theme === 'Cinéma' ? ['🎬', 'Mes affiches', 'films, séries, stars et réalisateurs', () => openEncPosters()]
+        : theme === 'Drapeaux' ? ['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()]
+        : theme === 'Monuments' ? ['💌', 'Mes cartes postales', 'des albums de monuments à compléter', () => openEncPostcards()]
+        : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
+}
+/** 13/11 (bac à sable) : la salle spéciale en « vitrine » en haut du livre, avec un petit décor ; brille la 1re fois. */
+const ENC_VITRINE_DECO = {
+    'Histoire': ['🏺', '🏰', '👑', '⚔️'], 'Mythologie': ['⚡', '🔱', '🦉', '🐍'], 'Sciences': [['🫁', '🧠', '🦴'], ['☀️', '🪐', '🌙']],
+    'Langue française': ['🔤', '✒️', '📜', '💬'], 'Gastronomie': [['🥖', '🍷', '🥐'], ['🍣', '🌮', '🍝']], 'Littérature': ['📕', '📗', '📘', '📙'],
+    'Musique': ['🎸', '🎹', '🎤', '🎷'], 'Jeux': ['👾', '🎲', '🎮', '♟️'], 'Sport': ['🥇', '🏅', '🥈', '🥉'], 'Technologie': ['💡', '📱', '🚂', '🚀'],
+    'Arts': ['🎨', '🗿', '🖌️', '🏛️'], 'Cinéma': ['🍿', '🎞️', '🎥', '⭐'], 'Drapeaux': ['🏁', '🚩', '🎌', '🏴'], 'Monuments': ['🗼', '🗽', '🏛️', '📮'],
+    'Géographie': ['🌍', '🧭', '⛰️', '🏝️'],
+};
+function encVitrine(theme) {
+    const sp = encSpecial(theme);
+    if (!sp) return null;
+    const list = Array.isArray(sp[0]) ? sp : [sp];
+    const deco = ENC_VITRINE_DECO[theme] || [];
+    let seen = {};
+    try { seen = JSON.parse(localStorage.getItem('kultivo_enc_vitrine') || '{}'); } catch (e) { /* rien */ }
+    const fresh = !seen[theme];
+    if (fresh) { seen[theme] = 1; try { localStorage.setItem('kultivo_enc_vitrine', JSON.stringify(seen)); } catch (e) { /* rien */ } }
+    const box = el('div', `enc-vit${list.length > 1 ? ' is-two' : ''}`);
+    list.forEach((s, i) => {
+        const b = el('button', `enc-vit-card${fresh ? ' is-fresh' : ''}`);
+        b.type = 'button';
+        b.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
+        const tag = el('span', 'enc-vit-tag');
+        tag.textContent = list.length > 1 ? 'Salle à visiter' : 'Ta salle à visiter';
+        const big = el('span', 'enc-vit-e');
+        big.textContent = s[0];
+        const tx = el('span', 'enc-vit-t');
+        const nm = el('b');
+        nm.textContent = s[1];
+        const sm = el('small');
+        sm.textContent = s[2];
+        tx.append(nm, sm);
+        const shelf = el('span', 'enc-vit-shelf');
+        (Array.isArray(deco[0]) ? deco[i] || [] : deco).forEach((d, j) => { const x = el('i'); x.textContent = d; x.style.setProperty('--j', j); shelf.append(x); });
+        const go = el('span', 'enc-vit-go');
+        go.textContent = 'Entrer ›';
+        b.append(tag, big, tx, shelf, go);
+        b.addEventListener('click', s[3]);
+        box.append(b);
+    });
+    return box;
+}
 function openEncBook(theme, keep = false) {
     if (!keep) encState = { theme, search: '' };
     const book = encBooks().find(b => b.theme === theme);
@@ -101,23 +161,9 @@ function openEncBook(theme, keep = false) {
             row.addEventListener('click', () => openEncChapter(theme, c.i));
             list.append(row);
         });
-        const special = theme === 'Histoire' ? ['🕰️', 'Ma frise', 'tes événements rangés dans le temps', () => openEncFrise()]
-            : theme === 'Mythologie' ? ['🌳', 'L’arbre des dieux', 'Grèce, Égypte et Nordique', () => openEncGods()]
-            : theme === 'Sciences' ? [['🫀', 'Mon corps humain', 'les organes que tu connais', () => openEncSpots('sci', 'corps')], ['🪐', 'Mon système solaire', 'les planètes, les étoiles et l’espace', () => openEncSpots('sci', 'espace')]]
-            : theme === 'Langue française' ? ['📖', 'Mon dictionnaire', 'tes mots et expressions de A à Z', () => openEncDico()]
-            : theme === 'Gastronomie' ? [['🧀', 'Ma France gourmande', 'les spécialités de chaque région', () => openEncFrance()], ['🍜', 'Ma cuisine du monde', 'les plats des autres pays', () => openEncMap('Gastronomie', null, 'cuisine')]]
-            : theme === 'Littérature' ? ['📚', 'Ma bibliothèque', 'tes livres rangés sur les étagères', () => openEncLibrary()]
-            : theme === 'Musique' ? ['💿', 'Mes vinyles', 'tes artistes rangés dans les bacs', () => openEncVinyls()]
-            : theme === 'Jeux' ? ['🕹️', 'Ma salle d’arcade', 'cartouches, bornes, consoles et jeux de société', () => openEncArcade()]
-            : theme === 'Sport' ? ['🏆', 'Ma salle des trophées', 'tes coupes, qui grandissent à chaque bonne réponse', () => openEncTrophies()]
-            : theme === 'Technologie' ? ['⚙️', 'La frise des inventions', 'de l’imprimerie à l’IA', () => openEncTechFrise()]
-            : theme === 'Arts' ? ['🖼️', 'Mon musée', 'tes œuvres accrochées salle par salle', () => openEncMuseum()]
-            : theme === 'Cinéma' ? ['🎬', 'Mes affiches', 'films, séries, stars et réalisateurs', () => openEncPosters()]
-            : theme === 'Drapeaux' ? ['🏳️', 'Mon mur de drapeaux', 'les drapeaux rangés par continent', () => openEncFlags()]
-            : theme === 'Monuments' ? ['💌', 'Mes cartes postales', 'des albums de monuments à compléter', () => openEncPostcards()]
-            : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
+        const special = encSpecial(theme);
         const parts = [quick];
-        (special ? (Array.isArray(special[0]) ? special : [special]) : []).forEach(special => {   // frise, arbre, cartes… (13/11 : plusieurs possibles)
+        (special && !ENC_VITRINE ? (Array.isArray(special[0]) ? special : [special]) : []).forEach(special => {   // frise, arbre, cartes… (13/11 : plusieurs possibles)
             const b = el('button', 'enc-special');
             b.type = 'button';
             b.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
@@ -138,7 +184,8 @@ function openEncBook(theme, keep = false) {
         zone.append(...parts, sec, list);
     };
     search.addEventListener('input', () => { encState.search = search.value; draw(); });
-    const page = encPage(null, bar, tiles, search, zone);
+    const vit = ENC_VITRINE ? encVitrine(theme) : null;
+    const page = vit ? encPage(null, bar, vit, tiles, search, zone) : encPage(null, bar, tiles, search, zone);
     h.classList.add('enc-fixed-title');
     page.before(h);
     draw();
