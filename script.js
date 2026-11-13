@@ -940,7 +940,7 @@ function defaultData() {
 function normalizeData(data) {
     const base = defaultData();
     for (const key of ['dayXp', 'totals', 'best', 'inv']) data[key] = { ...base[key], ...data[key] };
-    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainTierWon', 'trainChests', 'trainMedals', 'trainCatchup', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone', 'duelStarted']) data[key] = data[key] || {};
+    for (const key of ['goalDays', 'daily', 'badges', 'claimedBadges', 'claimedGoals', 'stats', 'done', 'pairStats', 'orderStats', 'cards', 'chests', 'podium', 'trainTier', 'trainTierDay', 'trainTierWon', 'trainChests', 'trainMedals', 'trainCatchup', 'shinyCards', 'themeComplete', 'activeDays', 'frozenDays', 'events', 'duelsSeen', 'duelAnswers', 'duelsViewed', 'questDone', 'duelStarted', 'secrets', 'secretProg']) data[key] = data[key] || {};
     if (OLD_GOALS[data.goal]) data.goal = OLD_GOALS[data.goal];
     if (!GOAL_CHOICES.some(c => c.xp === data.goal)) data.goal = GOAL_CHOICES[1].xp;
     backfillActiveDays(data);
@@ -2126,6 +2126,7 @@ function badgeStats() {
         shinyTheme: shinyThemes().length > 0,
         eventsWon: Object.keys(d.events || {}).filter(id => d.events[id].won),
         duelsWon: d.totals.duelsWon || 0,
+        secrets: d.secrets || {},
         ...(BADGES_V2 ? medalCounts() : {})
     };
 }
@@ -2238,8 +2239,37 @@ const BADGES_NEW = [
     { id: 'avColl1',    icon: '🎨', name: 'Bien assorti',          desc: 'Avoir une collection d’avatar complète (cadre, fond et emoji)', test: s => s.avCollections >= 1 },
     { id: 'avColl5',    icon: '🖼️', name: 'Garde-robe de star',    desc: 'Avoir 5 collections d’avatar complètes', test: s => s.avCollections >= 5 }
 ];
+/* 13/11 : BADGES SECRETS (bac à sable d'abord, `SECRET_ON`) : montrés « ❓ Secret » avec un indice vague tant qu'ils ne sont pas trouvés ;
+   15 🪙 comme les autres. Trouvés via `secretFound(id)` → `state.data.secrets[id]` (date). */
+const SECRET_ON = BAC;
+const BADGES_SECRET = [
+    { id: 'sDecor',  icon: '🔎', name: 'Curieux de nature', desc: 'Toucher 15 décors différents du parcours', hint: 'Le parcours cache bien des histoires…', secret: true, test: s => !!s.secrets.sDecor },
+    { id: 'sTickle', icon: '🤭', name: 'Chatouilleux', desc: 'Toucher Kulti 10 fois d’affilée sur le parcours', hint: 'Kulti est très sensible…', secret: true, test: s => !!s.secrets.sTickle },
+    { id: 'sSpeed',  icon: '🚀', name: 'Fusée', desc: 'Réussir un niveau d’au moins 6 questions en moins de 25 secondes', hint: 'Plus vite que l’éclair…', secret: true, test: s => !!s.secrets.sSpeed },
+    { id: 'sNight',  icon: '🦉', name: 'Insomniaque', desc: 'Terminer une partie entre 3 h et 4 h du matin', hint: 'Les vrais curieux ne dorment jamais.', secret: true, test: s => !!s.secrets.sNight },
+    { id: 'sCombo',  icon: '⛓️', name: 'Inarrêtable', desc: '10 bonnes réponses d’affilée, du premier coup et sans indice', hint: 'Dix d’affilée, sans aucune aide.', secret: true, test: s => !!s.secrets.sCombo },
+    { id: 'sRooms',  icon: '🗝️', name: 'Visiteur des savoirs', desc: 'Entrer dans toutes les salles de l’encyclopédie', hint: 'Chaque livre cache une salle…', secret: true, test: s => !!s.secrets.sRooms },
+    { id: 'sRare',   icon: '💎', name: 'Perle rare', desc: 'Réussir du premier coup une des questions les plus dures du jeu', hint: 'Certaines questions font trembler même Kulti.', secret: true, test: s => !!s.secrets.sRare },
+];
+function secretFound(id) {
+    if (!SECRET_ON) return;
+    const d = state.data;
+    d.secrets = d.secrets || {};
+    if (d.secrets[id]) return;
+    d.secrets[id] = todayKey();
+    saveData();
+    checkBadges();
+}
+/** Progression des badges secrets à compteur (décors touchés, salles visitées). */
+function secretStep(kind, key, need, id) {
+    if (!SECRET_ON || state.data.secrets?.[id]) return;
+    state.data.secretProg = state.data.secretProg || {};
+    const list = state.data.secretProg[kind] = state.data.secretProg[kind] || [];
+    if (!list.includes(key)) { list.push(key); saveData(); }
+    if (list.length >= need) secretFound(id);
+}
 const TRAIN_THEMES_COUNT = () => THEME_DECOR.filter(({ theme }) => trainingBank(theme).length).length;
-const activeBadges = () => (BADGES_V2 ? BADGES.concat(BADGES_NEW) : BADGES);
+const activeBadges = () => (BADGES_V2 ? BADGES.concat(BADGES_NEW, SECRET_ON ? BADGES_SECRET : []) : BADGES);
 /* Familles : [icône, nom, unité de la phrase « Prochain », [[id, objectif court, valeur visée, valeur du joueur]]], du plus facile au plus dur. */
 const BADGE_FAMS = [
     // 11/11 : une famille = un seul compteur (avant : « Défis et modes », « Ligue et duels »… mélangeaient, on ne voyait pas ses duels)
@@ -2276,6 +2306,7 @@ const BADGE_FAMS = [
     ['🛒', 'Boutique', 'achats', [['shop', '1 achat', 1, s => s.purchases], ['shop10', '10 achats', 10, s => s.purchases],
         ['shop25', '25 achats', 25, s => s.purchases], ['shop50', '50 achats', 50, s => s.purchases]]],
     ['🎨', 'Avatar', 'collections complètes', [['avColl1', '1 collection', 1, s => s.avCollections], ['avColl5', '5 collections', 5, s => s.avCollections]]],
+    ['🕵️', 'Badges secrets', '', BADGES_SECRET.map(b => [b.id, 'trouvé', 1, s => +!!s.secrets[b.id]])],
     ['🎉', 'Événements', '', [['ev-halloween-2026', 'événement fini', 1, s => +s.eventsWon.includes('halloween-2026')],
         ['ev-maghreb-2026', 'événement fini', 1, s => +s.eventsWon.includes('maghreb-2026')]]]
 ];
@@ -2322,7 +2353,12 @@ function renderBadgesV2(grid) {
         sec.append(head);
         const nextI = list.findIndex(x => !x.has);
         const next = list[nextI];
-        if (next) {
+        const secretFam = list[0].b.secret;
+        if (secretFam) {   // 13/11 : badges secrets, pas de « Prochain » (ce serait les dévoiler)
+            const line = el('p', 'bdf-next is-secret');
+            line.textContent = done < list.length ? `${done} / ${list.length} trouvés · cachés dans le jeu, à toi de les dénicher !` : 'Tous trouvés, bravo, fin limier !';
+            sec.append(line);
+        } else if (next) {
             const line = el('p', 'bdf-next');
             const u = next.unit ?? unit;   // 11/11 : un badge peut avoir son propre compteur (10/10, thème brillant)
             line.textContent = `Prochain : ${next.b.icon} ${next.b.name} · ${nf(Math.min(next.val, next.target))} / ${nf(next.target)}${u ? ` ${u}` : ''}`;
@@ -2338,14 +2374,15 @@ function renderBadgesV2(grid) {
         if (waiting && !shown.includes(waiting)) shown = [waiting, ...list.slice(Math.max(0, nextI)).filter(x => x !== waiting)].slice(0, 3);
         const row = el('div', 'bdf-row');
         shown.forEach(x => {
-            const t = el('button', `bdf-tile${x.claim ? ' is-claim' : x.has ? '' : x === next ? ' is-next' : ' is-locked'}`);
+            const hid = x.b.secret && !x.has;   // badge secret pas encore trouvé : ni nom ni icône
+            const t = el('button', `bdf-tile${x.claim ? ' is-claim' : x.has ? '' : x === next && !hid ? ' is-next' : ' is-locked'}${hid ? ' is-secret' : ''}`);
             t.type = 'button';
             const ic = el('span', 'bdf-ic');
-            ic.textContent = x.b.icon;
+            ic.textContent = hid ? '❓' : x.b.icon;
             const nm = el('span', 'bdf-name');
-            nm.textContent = x.b.name;
+            nm.textContent = hid ? 'Secret' : x.b.name;
             const sub = el('span', 'bdf-sub');
-            sub.textContent = x.claim ? `🎁 +${coinBadge()} 🪙` : x.has ? `✓ ${x.goal}` : x === next ? `${nf(Math.min(x.val, x.target))} / ${nf(x.target)}` : `🔒 ${x.goal}`;
+            sub.textContent = x.claim ? `🎁 +${coinBadge()} 🪙` : hid ? '🔒 à trouver' : x.has ? `✓ ${x.goal}` : x === next ? `${nf(Math.min(x.val, x.target))} / ${nf(x.target)}` : `🔒 ${x.goal}`;
             t.append(ic, nm, sub);
             t.addEventListener('click', () => {
                 if (x.claim) { claimBadge(x.b); return; }
@@ -2358,7 +2395,7 @@ function renderBadgesV2(grid) {
         const det = list.find(x => x.b.id === badgeDetail);
         if (det) {
             const p = el('p', 'bdf-detail');
-            p.textContent = `${det.b.icon} ${det.b.name} : ${det.b.desc}.`;
+            p.textContent = det.b.secret && !det.has ? `❓ Badge secret. Indice : ${det.b.hint}` : `${det.b.icon} ${det.b.name} : ${det.b.desc}.`;
             sec.append(p);
         }
         if (list.length > 3) {
@@ -3707,7 +3744,15 @@ function placeMapKulti() {
         b.textContent = '!';
         btn.append(b);
     }
-    btn.addEventListener('click', e => { e.stopPropagation(); if (kultiPending() || BAC) openKultiDefi(); else kultiSay(btn); });
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (kultiPending()) { openKultiDefi(); return; }   // 13/11 : plus de défi à chaque tap dans le bac à sable (sinon on ne peut pas chatouiller Kulti)
+        const now = Date.now();
+        kultiTaps = now - kultiTapAt < 1500 ? kultiTaps + 1 : 1;
+        kultiTapAt = now;
+        if (SECRET_ON && kultiTaps >= 10) { kultiTaps = 0; kultiTickled(btn); return; }
+        kultiSay(btn);
+    });
     if (right) stop.classList.add('has-kulti-right');
     stop.append(btn);
 }
@@ -3839,6 +3884,14 @@ function kultiLines() {
         if (facts && facts.length) lines.push(`Le savais-tu ? ${facts[Math.floor(Math.random() * facts.length)]}`);
     }
     return lines;
+}
+let kultiTaps = 0, kultiTapAt = 0;
+/** 13/11 : 10 taps d'affilée sur Kulti = il rit (badge secret « Chatouilleux »). */
+function kultiTickled(btn) {
+    kultiSay(btn);
+    $('factText').textContent = nbspPunct('Hihihi ! Arrête, ça chatouille ! 🤭');
+    btn.classList.remove('is-tickled'); void btn.offsetWidth; btn.classList.add('is-tickled');
+    secretFound('sTickle');
 }
 function kultiSay(btn) {
     const lines = kultiLines();
@@ -7200,6 +7253,8 @@ function verify(skipped = false) {
     // Combo (bonnes réponses du 1er coup, sans indice, d'affilée) et « ⚡ Éclair ! » (juste en moins de 3 s)
     const clean = ok && !skipped && !state.failedIds.has(state.current.q.id) && state.hintUsed.size === 0;
     state.combo = clean ? (state.combo || 0) + 1 : ok ? state.combo || 0 : 0;
+    if (clean && state.combo >= 10) secretFound('sCombo');
+    if (clean && state.current.q.d >= 4.8 && !['placement'].includes(state.mode)) secretFound('sRare');
     const comboShow = clean && (COMBO_STEPS.includes(state.combo) || (state.combo > 10 && state.combo % 5 === 0));
     const flash = clean && !['sprint', 'daily', 'duel'].includes(state.mode) && Date.now() - (state.cardShownAt || 0) < FLASH_MS;
     renderStickers(comboShow ? state.combo : 0, flash, trainReadyNow(clean));
@@ -7661,6 +7716,8 @@ function endSession(win) {
     if (['level', 'pairs', 'order', 'challenge'].includes(state.mode) && state.level)
         mapFocusLevel = win ? Math.min(state.level + 1, MAX_LEVEL) : state.level;
     if (state.mode === 'kulti') win = true;   // défi de Kulti : toujours l'écran du défi (réussi ou raté)
+    if (win && state.mode === 'level' && state.total >= 6 && elapsedSeconds() < 25) secretFound('sSpeed');   // 13/11 : badges secrets
+    if (new Date().getHours() === 3 && state.mode !== 'placement') secretFound('sNight');
     queueStats(win ? 'won' : 'lost');
     state.phase = 'over';
     $('cardView').hidden = true;
@@ -12163,6 +12220,7 @@ function bindEvents() {
     $('mapDecor').addEventListener('click', e => {
         const badge = e.target.closest('.decor-badge');
         if (badge) badge.dataset.baby ? showBabyFact(badge) : badge.dataset.event ? showEventFact(badge) : showFact(badge.dataset.theme, badge);
+        if (badge) secretStep('facts', String([...$('mapDecor').querySelectorAll('.decor-badge')].indexOf(badge)), 15, 'sDecor');   // 13/11 : badge secret « Curieux de nature » (15 décors différents)
     });
     document.addEventListener('pointerdown', e => {
         if (!$('factBubble').hidden && !e.target.closest('.decor-badge') && !e.target.closest('.map-kulti')) $('factBubble').hidden = true;

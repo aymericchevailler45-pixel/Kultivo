@@ -37,6 +37,7 @@ const ENC_VITRINE_DECO = {
     'Arts': ['🎨', '🗿', '🖌️', '🏛️'], 'Cinéma': ['🍿', '🎞️', '🎥', '⭐'], 'Drapeaux': ['🏁', '🚩', '🎌', '🏴'], 'Monuments': ['🗼', '🗽', '🏛️', '📮'],
     'Géographie': ['🌍', '🧭', '⛰️', '🏝️'],
 };
+const ENC_ROOM_TOTAL = () => THEME_DECOR.reduce((n, { theme }) => { const sp = encSpecial(theme); return n + (!sp ? 0 : Array.isArray(sp[0]) ? sp.length : 1); }, 0);
 function encVitrine(theme) {
     const sp = encSpecial(theme);
     if (!sp) return null;
@@ -62,7 +63,10 @@ function encVitrine(theme) {
         const go = el('span', 'enc-vit-go');
         go.textContent = 'Entrer ›';
         b.append(tag, big, tx, shelf, go);
-        b.addEventListener('click', s[3]);
+        b.addEventListener('click', () => {
+            secretStep('rooms', `${theme}:${i}`, ENC_ROOM_TOTAL(), 'sRooms');   // 13/11 : badge secret « Visiteur des savoirs »
+            s[3]();
+        });
         box.append(b);
     });
     return box;

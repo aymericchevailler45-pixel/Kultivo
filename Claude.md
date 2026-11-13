@@ -426,6 +426,13 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   médailles inchangées). L'utilisateur n'est pas sûr des teintes : aperçu apercu-couleurs-themes.html.
 - 13/11 : arbre des dieux : la branche du dieu touché passe en BLEU (#3d8bff, `.enc-tree-line.is-hl`) au lieu du doré, qui ne veut
   plus dire qu'une chose : dieu dont toutes les questions sont sues (anneau doré). Couleurs des thèmes : l'utilisateur réfléchit (aperçu).
+- 13/11 : arbre des dieux : dieu dont tout est su = UN contour doré (avant : bord bleu nuit + anneau doré, « bizarre »).
+  BADGES SECRETS (BAC À SABLE, `SECRET_ON = BAC`, idée de l'utilisateur ; 15 🪙 comme les autres) : famille « 🕵️ Badges secrets »
+  (`BADGES_SECRET`, `secretFound(id)` → `secrets[id]`, `secretStep(kind, key, need, id)` → `secretProg`) ; pas trouvé = « ❓ Secret ·
+  🔒 à trouver », tap = indice vague (`hint`), pas de ligne « Prochain ». Les 7 : 🔎 15 décors différents touchés (clic sur #mapDecor),
+  🤭 Kulti touché 10 fois en < 1,5 s entre deux taps (`kultiTickled` : il rit et se tortille) — le bac à sable n'ouvre plus le défi
+  de Kulti à chaque tap —, 🚀 niveau (mode level, ≥ 6 questions) réussi en < 25 s, 🦉 partie finie entre 3 h et 4 h, ⛓️ combo 10,
+  🗝️ les 17 salles de l'encyclopédie (`ENC_ROOM_TOTAL`), 💎 question d ≥ 4,8 réussie du 1er coup (40 questions). Pour tous : `SECRET_ON = true`.
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées

@@ -4354,7 +4354,7 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-god span { color: var(--muted); }
 .enc-god.is-known i { border: 3px solid var(--c); background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--ink); font-size: 1.25rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
 .enc-god.is-known span { color: var(--ink); }
-.enc-god.is-full i { box-shadow: 0 0 0 3px #f3b400, 0 2px 6px rgba(0, 0, 0, 0.15); }
+.enc-god.is-full i { border-color: #f3b400; background: color-mix(in srgb, #f3b400 16%, var(--surface)); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }   /* 13/11 : un seul contour, doré (avant : bleu + anneau doré) */
 .enc-god.is-sel i { outline: 3px solid var(--ink); outline-offset: 2px; }
 .enc-god-panel { flex: 0 1 auto; max-height: 42%; overflow-y: auto; margin-top: 8px; }
 .enc-god-desc { margin: 0 0 4px; color: var(--muted); font-size: 0.8rem; font-weight: 700; }
@@ -4923,3 +4923,9 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .train-tile.is-tinted .train-name { color: color-mix(in srgb, var(--c) 70%, var(--ink)); }
 .train-tile.is-tinted .train-tier { color: color-mix(in srgb, var(--c) 70%, var(--ink)); }
 .train-tile.is-tinted .train-step i { background: var(--c); }
+
+/* 13/11 : badges secrets */
+.bdf-tile.is-secret .bdf-ic { filter: none; opacity: 0.8; }
+.bdf-next.is-secret { font-style: italic; }
+.map-kulti.is-tickled { animation: kultiTickle 0.6s ease-in-out; }
+@keyframes kultiTickle { 0%, 100% { transform: none; } 20% { transform: rotate(-14deg) scale(1.08); } 40% { transform: rotate(12deg) scale(1.08); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(6deg); } }
