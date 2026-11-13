@@ -4921,3 +4921,5 @@ section.bdf p.bdf-detail { margin-top: 10px; }
     box-shadow: inset 7px 0 0 var(--c), 0 3px 0 color-mix(in srgb, var(--c) 30%, var(--line)); padding-left: 17px; }
 .train-tile.is-tinted:active { box-shadow: inset 7px 0 0 var(--c); }
 .train-tile.is-tinted .train-name { color: color-mix(in srgb, var(--c) 70%, var(--ink)); }
+.train-tile.is-tinted .train-tier { color: color-mix(in srgb, var(--c) 70%, var(--ink)); }
+.train-tile.is-tinted .train-step i { background: var(--c); }
