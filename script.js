@@ -2247,7 +2247,7 @@ const BADGES_SECRET = [
     { id: 'sTickle', icon: '🤭', name: 'Chatouilleux', desc: 'Toucher Kulti 10 fois d’affilée sur le parcours', hint: 'Kulti est très sensible…', secret: true, test: s => !!s.secrets.sTickle },
     { id: 'sSpeed',  icon: '🚀', name: 'Fusée', desc: 'Réussir un niveau d’au moins 6 questions en moins de 25 secondes', hint: 'Plus vite que l’éclair…', secret: true, test: s => !!s.secrets.sSpeed },
     { id: 'sNight',  icon: '🦉', name: 'Insomniaque', desc: 'Terminer une partie entre 3 h et 4 h du matin', hint: 'Les vrais curieux ne dorment jamais.', secret: true, test: s => !!s.secrets.sNight },
-    { id: 'sCombo',  icon: '⛓️', name: 'Inarrêtable', desc: '10 bonnes réponses d’affilée, du premier coup et sans indice', hint: 'Dix d’affilée, sans aucune aide.', secret: true, test: s => !!s.secrets.sCombo },
+    { id: 'sCombo',  icon: '⛓️', name: 'Inarrêtable', desc: '10 bonnes réponses d’affilée, du premier coup et sans indice', hint: 'Quand on est lancé, plus rien ne nous arrête…', secret: true, test: s => !!s.secrets.sCombo },
     { id: 'sRooms',  icon: '🗝️', name: 'Visiteur des savoirs', desc: 'Entrer dans toutes les salles de l’encyclopédie', hint: 'Chaque livre cache une salle…', secret: true, test: s => !!s.secrets.sRooms },
     { id: 'sRare',   icon: '💎', name: 'Perle rare', desc: 'Réussir du premier coup une des questions les plus dures du jeu', hint: 'Certaines questions font trembler même Kulti.', secret: true, test: s => !!s.secrets.sRare },
 ];
@@ -2259,6 +2259,7 @@ function secretFound(id) {
     d.secrets[id] = todayKey();
     saveData();
     checkBadges();
+    updateNavNotifications();   // pastille « 1 » sur Profil tout de suite (avant : seulement au prochain affichage)
 }
 /** Progression des badges secrets à compteur (décors touchés, salles visitées). */
 function secretStep(kind, key, need, id) {

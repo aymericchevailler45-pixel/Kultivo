@@ -4354,7 +4354,9 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-god span { color: var(--muted); }
 .enc-god.is-known i { border: 3px solid var(--c); background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--ink); font-size: 1.25rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
 .enc-god.is-known span { color: var(--ink); }
-.enc-god.is-full i { border-color: #f3b400; background: color-mix(in srgb, #f3b400 16%, var(--surface)); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }   /* 13/11 : un seul contour, doré (avant : bleu + anneau doré) */
+/* 13/11 : tout est su = petite étoile dans le coin (le doré est réservé à la branche touchée ; les dieux égyptiens sont déjà jaunes) */
+.enc-god.is-full::before { content: "★"; position: absolute; top: -5px; left: calc(50% + 10px); z-index: 2; display: grid; place-items: center; width: 17px; height: 17px;
+    border-radius: 50%; background: #ffc800; color: #fff; font-size: 0.68rem; line-height: 1; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
 .enc-god.is-sel i { outline: 3px solid var(--ink); outline-offset: 2px; }
 .enc-god-panel { flex: 0 1 auto; max-height: 42%; overflow-y: auto; margin-top: 8px; }
 .enc-god-desc { margin: 0 0 4px; color: var(--muted); font-size: 0.8rem; font-weight: 700; }
@@ -4364,7 +4366,7 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-zoom-cover { transition: transform 0.6s ease-in 0.12s; }
 .enc-zoom.is-closing { transition-duration: 0.55s, 0.55s, 0.55s, 0.55s, 0.55s, 0.18s; }
 .enc-zoom.is-closing .enc-zoom-cover { transition: transform 0.45s ease-out 0.05s; }
-.enc-tree-line.is-hl { stroke: #3d8bff; stroke-width: 3; stroke-dasharray: none; opacity: 1; }   /* 13/11 : bleu, plus doré (le doré = dieu dont tout est su) */
+.enc-tree-line.is-hl { stroke: #f3b400; stroke-width: 3; stroke-dasharray: none; opacity: 1; }
 .enc-god-scroll.is-from-right { animation: encFromRight 0.25s ease-out; }
 .enc-god-scroll.is-from-left { animation: encFromLeft 0.25s ease-out; }
 
@@ -4430,13 +4432,13 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-tree.is-space .enc-god.is-known i { background: rgba(255, 255, 255, 0.12); border-color: #a78bfa; color: #fff; }
 .enc-god.is-disc i { width: var(--sz); height: var(--sz); border: 2px dashed rgba(255, 255, 255, 0.5); background: transparent; font-size: 0.8rem; }
 .enc-god.is-disc.is-known i, .enc-god.is-disc.is-empty i { border: 0; background: radial-gradient(circle at 35% 30%, #fff8, transparent 45%), var(--disc); box-shadow: 0 0 10px color-mix(in srgb, var(--disc) 60%, transparent); }
-.enc-god.is-disc.is-full i { box-shadow: 0 0 0 3px #f3b400, 0 0 12px var(--disc); }
+.enc-god.is-disc.is-full i { box-shadow: 0 0 12px var(--disc); }
 .enc-god.is-empty { opacity: 0.55; cursor: default; }
 .enc-god[data-id="soleil"] i { box-shadow: 0 0 30px 10px rgba(255, 207, 58, 0.5); }
 
 .enc-tree.is-space .enc-god.is-disc i { border: 2px dashed rgba(255, 255, 255, 0.5); background: transparent; }
 .enc-tree.is-space .enc-god.is-disc.is-known i, .enc-tree.is-space .enc-god.is-disc.is-empty i { border: 0; background: radial-gradient(circle at 35% 30%, #fff8, transparent 45%), var(--disc); box-shadow: 0 0 10px color-mix(in srgb, var(--disc) 60%, transparent); }
-.enc-tree.is-space .enc-god.is-disc.is-full i { box-shadow: 0 0 0 3px #f3b400, 0 0 12px var(--disc); }
+.enc-tree.is-space .enc-god.is-disc.is-full i { box-shadow: 0 0 12px var(--disc); }
 .enc-tree.is-space .enc-god.is-disc[data-id="soleil"].is-known i { box-shadow: 0 0 30px 10px rgba(255, 207, 58, 0.55); }
 
 /* 13/11 : dictionnaire de A à Z */
