@@ -439,7 +439,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (garde-robe + évolutions A aura / B il grandit, vrais dessins / C neurones) ; l'utilisateur : « l'évolution ne va pas si on ajoute des
   vêtements » → plutôt la garde-robe seule (+ quelques accessoires GAGNÉS = « évolution » légère). L'utilisateur HÉSITE (peur que ça
   fasse « trop ») : GARDÉ EN TÊTE, il en reparlera. Ne rien coder avant.
-- 13/11 : ESCALES = 1re GROSSE MISE À JOUR APRÈS LA SORTIE (décidé, « assez rapidement ») ; rien à coder avant la sortie.
+- 13/11 : ESCALES = 1re GROSSE MISE À JOUR APRÈS LA SORTIE (décidé) : à PRÉPARER PENDANT LES 14 JOURS DE TEST FERMÉ de Google,
+  pour sortir 2-3 semaines après le lancement (au lancement tout le monde part du niveau 1 : 1er billet au 20 ≈ 1 semaine de jeu).
   Mini-parcours de voyage (onglet « 🗺️ Parcours | 🧳 Escales ») : 15 niveaux par escale (3 blocs : questions, paires, frise, défi final),
   gouttes / cœurs / XP comme le parcours, décor + chapeau de Kulti propres ; récompense = tampon dans un CARNET DE VOYAGE (Profil) + carte
   de l'escale + badge, famille « 🧳 Globe-trotter » (3 / 6 / 10). OUVERTURE PAR BILLETS ✈️ (choix C) : 1 billet tous les 20 niveaux du
