@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kultivo · aperçu Couleur des bonnes réponses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root { --ink: #1b2745; --muted: #66728f; --line: #d9e1ec; --red: #ff4b4b; --red-ink: #c62828; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #dfe6f0; color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 700; }
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; }
+.lead { margin: 0 0 14px; color: var(--muted); max-width: 840px; line-height: 1.45; }
+.lead b, .note b { color: var(--ink); font-weight: 900; }
+h2 { margin: 36px 0 6px; font-size: 1.25rem; font-weight: 900; }
+.note { max-width: 840px; line-height: 1.5; margin: 0 0 12px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: .72rem; font-weight: 900; margin-left: 6px; vertical-align: 2px; }
+.tag.now { background: #e3ecff; color: #1c5bd6; } .tag.rec { background: #dcf6d2; color: #2a6b14; } .tag.warn { background: #ffe1e1; color: #b32020; }
+.pair { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+.pw { display: flex; flex-direction: column; gap: 6px; width: 270px; max-width: 100%; }
+.pw > b { font-size: .92rem; font-weight: 900; color: var(--muted); }
+.side { flex: 1; min-width: 240px; max-width: 360px; font-size: .9rem; line-height: 1.45; padding-top: 26px; }
+.side .plus { color: #2a6b14; } .side .moins { color: #b32020; }
+.side div { margin-bottom: 6px; }
+/* téléphone */
+.phone { position: relative; width: 270px; height: 560px; overflow: hidden; border-radius: 30px; border: 7px solid #1b2745; background: var(--bg); box-shadow: 0 14px 32px rgba(27, 39, 69, .22); display: flex; flex-direction: column; }
+.sys { flex: none; height: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: .66rem; font-weight: 900; }
+.sysnav { flex: none; height: 34px; display: flex; align-items: center; justify-content: space-around; font-size: .85rem; }
+.lh { flex: none; display: flex; align-items: center; gap: 9px; padding: 10px 12px 6px; }
+.lh .x { color: #9aa6bd; font-size: 1.1rem; font-weight: 900; }
+.prog { position: relative; flex: 1; height: 12px; border-radius: 6px; background: var(--track); }
+.prog i { position: absolute; left: 0; top: 0; bottom: 0; width: 45%; border-radius: 6px; }
+.prog svg { position: absolute; left: 45%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+.prog .flag { position: absolute; right: -6px; top: 50%; transform: translateY(-50%); font-size: .8rem; }
+.hearts { font-size: .78rem; letter-spacing: -1px; }
+.qz { flex: 1; padding: 6px 14px; position: relative; }
+.qtag { display: inline-block; padding: 3px 8px; border-radius: 8px; background: var(--chip); color: var(--chip-ink); font-size: .64rem; font-weight: 900; }
+.qt { margin: 10px 0 12px; font-size: 1.12rem; font-weight: 900; line-height: 1.3; }
+.inp { padding: 11px 12px; border-radius: 14px; border: 2px solid var(--line2); background: var(--surface); font-size: .95rem; color: var(--ink2); }
+.vbtn { position: absolute; left: 14px; right: 14px; bottom: 14px; padding: 12px; border-radius: 14px; text-align: center; color: #fff; font-weight: 900; }
+.fb { position: absolute; left: 7px; right: 7px; bottom: 7px; border-radius: 20px; background: var(--surface); padding: 12px 12px 12px; box-shadow: 0 10px 26px rgba(27, 39, 69, .2); border: 2px solid; }
+.fb .t { display: flex; align-items: center; gap: 7px; font-size: 1.15rem; font-weight: 900; }
+.fb .t svg { width: 30px; height: 30px; flex: none; }
+.fb .a { margin: 4px 0 2px; font-weight: 900; font-size: .86rem; }
+.fb .e { font-size: .78rem; color: var(--muted2); line-height: 1.35; margin-bottom: 10px; }
+.fb .c { padding: 11px; border-radius: 14px; text-align: center; color: #fff; font-weight: 900; }
+.dk { --bg: #131a2b; --surface: #1c2438; --ink2: #e8eefc; --line2: #33405c; --track: #2a3550; --muted2: #a5b1cc; color: #e8eefc; }
+.lt { --bg: #f4f7fb; --surface: #fff; --ink2: #1b2745; --line2: #d9e1ec; --track: #e3e9f2; --muted2: #66728f; }
+.q { max-width: 840px; background: #fff8e1; border: 2px solid #f1d27a; border-radius: 18px; padding: 12px 16px; line-height: 1.5; font-size: .92rem; }
+.q b { font-weight: 900; }
+.box { max-width: 840px; background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 12px 16px; line-height: 1.5; font-size: .92rem; }
+.box b { font-weight: 900; }
+.toggle { display: inline-flex; gap: 6px; margin: 4px 0 6px; }
+.toggle button { font: inherit; font-weight: 900; font-size: .85rem; padding: 7px 14px; border-radius: 12px; border: 2px solid var(--line); background: #fff; color: var(--muted); cursor: pointer; }
+.toggle button.on { background: #1b2745; color: #fff; border-color: #1b2745; }
+@media (max-width: 600px) { .side { padding-top: 0; } }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>✅ Couleur des bonnes réponses</h1>
+<p class="lead">Le souci : pendant une question, tout est <b>bleu</b> (la barre de progression, le bouton « Vérifier », la barre du téléphone en haut et en bas)…
+et d'un coup, quand on a bon, tout passe au <b>vert</b>. Voici 5 façons de régler ça. Pour chacune : la question, puis la bonne réponse.</p>
+<div class="toggle"><button class="on" data-m="lt">☀️ Clair</button><button data-m="dk">🌙 Sombre</button></div>
+<div id="opts"></div>
+
+<h2>Les barres du téléphone (en haut et en bas)</h2>
+<div class="box">
+  <b>Ce ne sont pas des barres du jeu</b> : c'est Android qui les dessine (l'heure et la batterie en haut, les 3 boutons en bas). Aujourd'hui, en appli web,
+  Chrome les colore avec la couleur de l'appli (<b>bleu #3d8bff</b>).<br><br>
+  <b>Avec Capacitor</b> (la vraie appli du Play Store), on décide nous-mêmes : leur couleur peut changer selon l'écran (bleu sur le parcours, couleur du fond
+  pendant une question) ou on peut même les <b>cacher pendant les leçons</b> (mode « plein écran » : elles reviennent d'un glissement du doigt). Elles ne
+  disparaissent pas toutes seules, mais on aura la main dessus.<br><br>
+  <b>Dès maintenant</b>, en appli web, je peux sûrement changer la barre du <b>haut</b> pendant les leçons (Chrome suit la couleur que le jeu lui donne) ; celle du
+  bas, ça dépend du téléphone. À essayer dans le bac à sable si tu choisis B, D ou E.
+</div>
+
+<h2>Mon avis</h2>
+<div class="q">
+  <b>B</b> : barres du téléphone de la couleur du fond pendant les leçons, barre de progression <b>verte</b> (elle se remplit avec tes réponses, comme la
+  réussite), bouton « Vérifier » <b>bleu</b> (c'est un bouton, comme partout dans le jeu). Le vert de la bonne réponse ne « surgit » plus : il est déjà là, dans la
+  barre. Et on garde le code que tout le monde connaît : <b>vert = juste, rouge = faux</b>.<br>
+  <b>C</b> marche aussi mais c'est exactement l'écran de Duolingo (tout vert) : à éviter. <b>D</b> (tout bleu) est cohérent, mais une bonne réponse en bleu se
+  remarque moins.
+</div>
+</div>
+
+<script>
+const BLUE = '#3d8bff', BLUE_D = '#2266d6', GREEN = '#4fc72c', GREEN_D = '#3a9a1f', GREEN_INK = '#2a6b14', EM = '#1fb86b', EM_D = '#14925a', EM_INK = '#0e6b42';
+const OPTS = [
+  { k: 'A', name: 'Comme aujourd’hui', tag: ['now', 'aujourd’hui'], sys: BLUE, prog: BLUE, verify: [BLUE, BLUE_D], ok: [GREEN, GREEN_D, GREEN_INK],
+    plus: ['Rien à changer.'], moins: ['Tout est bleu, puis tout passe au vert d’un coup : c’est le souci.', 'Les barres du téléphone restent bleues pendant les questions.'] },
+  { k: 'B', name: 'Barres neutres + progression verte', tag: ['rec', 'mon conseil'], sys: 'bg', prog: GREEN, verify: [BLUE, BLUE_D], ok: [GREEN, GREEN_D, GREEN_INK],
+    plus: ['Le vert est déjà là pendant la question (la barre) : il ne surgit plus.', 'Écran calme : seuls le bouton (bleu) et le verdict (vert / rouge) ont de la couleur.', 'Vert = juste, rouge = faux, comme partout.'],
+    moins: ['La barre de progression n’est plus bleue (le bleu reste pour les boutons).'] },
+  { k: 'C', name: 'Tout vert pendant les leçons', tag: ['warn', 'trop Duolingo'], sys: 'bg', prog: GREEN, verify: [GREEN, GREEN_D], ok: [GREEN, GREEN_D, GREEN_INK],
+    plus: ['Très cohérent : la leçon est « verte », le reste du jeu bleu.'], moins: ['C’est exactement l’écran de Duolingo (bouton vert, barre verte, bandeau vert).', 'Le bouton « Vérifier » est vert avant même de savoir si c’est juste.'] },
+  { k: 'D', name: 'Tout bleu (plus de vert)', tag: null, sys: 'bg', prog: BLUE, verify: [BLUE, BLUE_D], ok: [BLUE, BLUE_D, '#174a9e'],
+    plus: ['Une seule couleur dans tout le jeu : rien ne change d’un coup.', 'Bien à nous (Kultivo = bleu).'], moins: ['On perd le « vert = juste » que tout le monde comprend sans réfléchir.', 'Une bonne réponse en bleu se remarque moins (moins de plaisir).'] },
+  { k: 'E', name: 'Vert émeraude, plus doux', tag: null, sys: 'bg', prog: BLUE, verify: [BLUE, BLUE_D], ok: [EM, EM_D, EM_INK],
+    plus: ['Un vert plus froid, qui va mieux à côté du bleu que le vert pomme.', 'Garde vert = juste.'], moins: ['Le passage bleu → vert reste visible, juste plus doux.', 'Il faudrait changer ce vert partout (paires, frises, duels…).'] },
+];
+const kulti = (mood) => `<svg viewBox="0 0 42 42"><circle cx="21" cy="22" r="16" fill="#ff9cc0"/><path d="M10 12 Q15 6 21 9 Q27 5 32 12" stroke="#e27aa2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="15.5" cy="21" r="2.8" fill="#1b2745"/><circle cx="26.5" cy="21" r="2.8" fill="#1b2745"/>${mood === 'ok' ? '<path d="M14 28 Q21 35 28 28" stroke="#1b2745" stroke-width="2.6" fill="none" stroke-linecap="round"/>' : '<path d="M16 29 Q21 31 26 29" stroke="#1b2745" stroke-width="2.4" fill="none" stroke-linecap="round"/>'}</svg>`;
+function phone(o, state, mode) {
+  const dark = mode === 'dk';
+  const bg = dark ? '#131a2b' : '#f4f7fb';
+  const sys = o.sys === 'bg' ? bg : o.sys;
+  const sysInk = o.sys === 'bg' ? (dark ? '#e8eefc' : '#1b2745') : '#fff';
+  const ok = o.ok, okTitle = dark ? (o.k === 'D' ? '#9cc2ff' : o.k === 'E' ? '#6fe0a8' : '#a6ea6a') : ok[2];
+  const chip = dark ? ['#26314d', '#9cc2ff'] : ['#e3ecff', '#1c5bd6'];
+  return `<div class="phone ${mode}">
+    <div class="sys" style="background:${sys};color:${sysInk}"><span>14:32</span><span>📶 🔋</span></div>
+    <div class="lh"><span class="x">✕</span><div class="prog"><i style="background:linear-gradient(90deg,color-mix(in srgb,${o.prog} 70%,#fff),${o.prog})"></i>${kulti('n')}<span class="flag">🏁</span></div><span class="hearts">❤️❤️❤️</span></div>
+    <div class="qz" style="--chip:${chip[0]};--chip-ink:${chip[1]}">
+      <span class="qtag">🌍 Géographie</span>
+      <div class="qt">Quel est le plus long fleuve de France ?</div>
+      <div class="inp" style="${state === 'ok' ? `border-color:${ok[0]};color:${okTitle}` : ''}">la Loire</div>
+      ${state === 'q' ? `<div class="vbtn" style="background:${o.verify[0]};box-shadow:0 4px 0 ${o.verify[1]}">Vérifier</div>` :
+      `<div class="fb" style="border-color:${ok[0]}"><div class="t" style="color:${okTitle}">${kulti('ok')}Bien joué !</div>
+        <div class="a" style="color:${okTitle}">La Loire</div><div class="e">Environ 1 000 km, de l’Ardèche jusqu’à l’océan Atlantique.</div>
+        <div class="c" style="background:${ok[0]};box-shadow:0 4px 0 ${ok[1]}">Continuer</div></div>`}
+    </div>
+    <div class="sysnav" style="background:${sys};color:${sysInk}"><span>◀</span><span>●</span><span>■</span></div>
+  </div>`;
+}
+let mode = 'lt';
+function render() {
+  document.getElementById('opts').innerHTML = OPTS.map(o => `
+    <h2>${o.k}. ${o.name}${o.tag ? `<span class="tag ${o.tag[0]}">${o.tag[1]}</span>` : ''}</h2>
+    <div class="pair">
+      <div class="pw"><b>Pendant la question</b>${phone(o, 'q', mode)}</div>
+      <div class="pw"><b>Bonne réponse</b>${phone(o, 'ok', mode)}</div>
+      <div class="side">${o.plus.map(t => `<div class="plus">✓ ${t}</div>`).join('')}${o.moins.map(t => `<div class="moins">✗ ${t}</div>`).join('')}</div>
+    </div>`).join('');
+}
+document.querySelectorAll('.toggle button').forEach(b => b.onclick = () => {
+  mode = b.dataset.m; document.querySelectorAll('.toggle button').forEach(x => x.classList.toggle('on', x === b)); render();
+});
+render();
+</script>
+</body>
+</html>
