@@ -41,9 +41,9 @@
     .new { position: absolute; top: -8px; right: -4px; z-index: 5; font-size: .58rem; font-weight: 900; padding: 1px 6px; border-radius: 999px; background: #3d8bff; color: #fff; }
 
     /* Évolutions */
-    .evo-stage { position: relative; display: grid; place-items: center; height: 210px; border-radius: 18px; margin: 10px 0 6px; overflow: hidden;
+    .evo-stage { position: relative; display: grid; place-items: center; height: 240px; border-radius: 18px; margin: 10px 0 6px; overflow: hidden;
         background: radial-gradient(circle at 50% 60%, color-mix(in srgb, #3d8bff 10%, var(--surface)), var(--surface) 70%); border: 2px solid var(--line); }
-    .evo-stage .kw { width: 120px; height: 120px; }
+    .evo-stage .kw { width: 150px; height: 150px; }
     .evo-label { text-align: center; font-weight: 900; }
     .evo-label small { display: block; color: var(--muted); font-weight: 800; font-size: .8rem; }
     input[type=range] { width: 100%; accent-color: #3d8bff; margin: 8px 0 2px; }
@@ -103,7 +103,7 @@
         <p class="where" id="prices"></p>
     </article>
 
-    <article class="card">
+    <article class="card" id="evo">
         <h2>🌱 L'évolution de Kulti</h2>
         <p class="lead">Trois façons de le faire évoluer. Choisis une idée, puis fais glisser le curseur (ou touche une étape) pour voir Kulti changer. Il garde la tenue choisie plus haut, pour voir si ça va ensemble.</p>
         <div class="tabs" id="evoTabs"></div>
@@ -159,8 +159,9 @@ function kw(node, face, outfit = wear, evo = null) {
     node.className = 'kw';
     node.replaceChildren();
     if (evo?.before) node.insertAdjacentHTML('beforeend', evo.before);
-    const k = kultiEl(face, 'kulti-blink');
-    if (evo?.scale) k.style.transform = `scale(${evo.scale})`;
+    const k = kultiEl(evo?.face || face, 'kulti-blink');
+    node.style.transform = evo?.scale ? `scale(${evo.scale})` : '';
+    node.style.transformOrigin = '50% 85%';
     node.append(k);
     let extra = outfitSvg(outfit);
     if (evo?.after) extra = evo.after + extra;
@@ -168,6 +169,78 @@ function kw(node, face, outfit = wear, evo = null) {
     node.insertAdjacentHTML('beforeend', extra);
     if (evo?.cls) node.classList.add(evo.cls);
 }
+
+/* 13/11 : vrais dessins de l'évolution B (repère 36 × 36 de Kulti : yeux en 13 / 22,2 ; bouche vers 17,6 / 21 ; haut du cerveau y ≈ 4,5 ; bas y ≈ 31) */
+const G = (id, a, b, x2 = 0, y2 = 1) => `<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+const SV = (inner, back = false) => `<svg class="acc${back ? ' back' : ''}" viewBox="0 0 36 36" aria-hidden="true">${inner}</svg>`;
+const cheeks = (o = .45) => `<circle cx="9.4" cy="19.2" r="1.9" fill="#ff6f91" opacity="${o}"/><circle cx="25.8" cy="19.2" r="1.9" fill="#ff6f91" opacity="${o}"/>`;
+// --- Bébé : mèche, tétine, bavoir
+const BB_CURL = '<path d="M17.4 5.2 Q15.6 1.2 18 -.2 Q20.6 -1.2 20.6 1.2 Q20.4 2.6 19 2.2" stroke="#EA596E" stroke-width="1.3" fill="none" stroke-linecap="round"/>';
+const BB_PACI = `<defs>${G('bbT', '#bfe0ff', '#3d8bff')}</defs><circle cx="17.6" cy="25.3" r="2" fill="none" stroke="#ffc800" stroke-width="1"/><circle cx="17.6" cy="25.3" r="2" fill="none" stroke="#e0a800" stroke-width=".3"/>
+  <ellipse cx="17.6" cy="21.8" rx="3.9" ry="2.5" fill="url(#bbT)" stroke="#2a6fd6" stroke-width=".45"/><ellipse cx="16.3" cy="21" rx="1.4" ry=".55" fill="#fff" opacity=".75"/><circle cx="17.6" cy="22" r="1.1" fill="#fff"/><circle cx="17.6" cy="22" r=".45" fill="#bfe0ff"/>`;
+const BB_BIB = `<path d="M9.8 27 Q17.6 30.4 25.4 27 Q25.6 35.6 17.6 36.4 Q9.6 35.6 9.8 27Z" fill="#fff" stroke="#ff8fb1" stroke-width="1"/><path d="M11.4 28.8 Q17.6 31.4 23.8 28.8" stroke="#ffd1df" stroke-width=".6" fill="none" stroke-dasharray=".8 .6"/>
+  <path d="M17.6 34 C14.6 31.8 15 29.8 16.6 30 C17.2 30.1 17.6 30.7 17.6 30.7 C17.6 30.7 18 30.1 18.6 30 C20.2 29.8 20.6 31.8 17.6 34Z" fill="#ff8fb1"/>`;
+// --- Écolier : cartable en bandoulière, crayon sur l'oreille
+const EC_BAG = `<defs>${G('ecL', '#d0642f', '#8a3b1c')}${G('ecP', '#c75a28', '#7a3216')}</defs>
+  <path d="M4.6 8.6 L28.6 29.6" stroke="#6e2c12" stroke-width="2.9" stroke-linecap="round"/><path d="M4.6 8.6 L28.6 29.6" stroke="url(#ecL)" stroke-width="2.3" stroke-linecap="round"/>
+  <path d="M5.4 8.2 L29.2 29" stroke="#f3c79a" stroke-width=".25" stroke-dasharray=".7 .5"/>
+  <g transform="translate(23.4 25.2) rotate(-6)"><rect width="11.4" height="9" rx="1.6" fill="url(#ecP)" stroke="#5e240e" stroke-width=".4"/>
+  <path d="M0 1.4 Q0 0 1.6 0 H9.8 Q11.4 0 11.4 1.4 V4 Q5.7 6.4 0 4Z" fill="#a8461c" stroke="#5e240e" stroke-width=".35"/>
+  <rect x="4.7" y="3.2" width="2" height="2.6" rx=".4" fill="#ffc800" stroke="#c99a00" stroke-width=".3"/><rect x="5.3" y="3.9" width=".8" height="1.1" fill="#8a6a00"/></g>`;
+const EC_PENCIL = `<g transform="rotate(28 31 9)"><rect x="29.9" y="2.6" width="2.4" height="10" fill="#ffc800" stroke="#c99a00" stroke-width=".35"/><rect x="29.9" y="2.6" width=".8" height="10" fill="#ffe27a"/>
+  <path d="M29.9 12.6 L31.1 15.2 L32.3 12.6Z" fill="#f2d2a9" stroke="#c9a37a" stroke-width=".25"/><path d="M30.75 14.4 L31.1 15.2 L31.45 14.4Z" fill="#333"/>
+  <rect x="29.9" y="1.4" width="2.4" height="1.4" fill="#c0c0c0"/><rect x="29.9" y=".2" width="2.4" height="1.4" rx=".5" fill="#ff8fa3"/></g>`;
+// --- Étudiant : lunettes rectangulaires, écharpe de fac, pile de livres
+const ST_GLASSES = `<rect x="8.5" y="12.3" width="8.6" height="5.3" rx="1.5" fill="rgba(210,235,255,.28)" stroke="#2b2f3a" stroke-width=".85"/>
+  <rect x="18.1" y="12.3" width="8.6" height="5.3" rx="1.5" fill="rgba(210,235,255,.28)" stroke="#2b2f3a" stroke-width=".85"/><path d="M17.1 14 Q17.6 13.2 18.1 14" stroke="#2b2f3a" stroke-width=".85" fill="none"/>
+  <path d="M8.5 13.6 L5.8 12.8 M26.7 13.6 L29.4 12.8" stroke="#2b2f3a" stroke-width=".8"/><path d="M10 13.4 L12 13.4 M19.6 13.4 L21.6 13.4" stroke="#fff" stroke-width=".6" stroke-linecap="round" opacity=".8"/>`;
+const ST_SCARF = `<defs><pattern id="stS" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(90)"><rect width="3" height="3" fill="#1e3a8a"/><rect width="1.4" height="3" fill="#ffc800"/></pattern></defs>
+  <path d="M7.4 27.4 Q17.6 32.6 27.8 27.4 L28.2 31 Q17.6 36.6 7 31Z" fill="url(#stS)" stroke="#142a66" stroke-width=".4"/>
+  <path d="M21.4 32.2 L25.4 31 L27.4 39.4 L23.4 40.6Z" fill="url(#stS)" stroke="#142a66" stroke-width=".4"/><path d="M23.6 40.6 L23.8 42 M24.8 40.3 L25 41.7 M26 40 L26.2 41.4 M27.2 39.7 L27.4 41.1" stroke="#ffc800" stroke-width=".6"/>`;
+const ST_BOOKS = `<g transform="translate(-3.4 26)"><rect x=".4" y="5.6" width="11" height="2.6" rx=".4" fill="#4fae3a" stroke="#2f7a1f" stroke-width=".35"/><rect x="1" y="6.1" width="9.8" height=".5" fill="#e9f7e2"/>
+  <rect x="1.2" y="3" width="10" height="2.6" rx=".4" fill="#e5484d" stroke="#a3262b" stroke-width=".35"/><rect x="1.8" y="3.5" width="8.8" height=".5" fill="#ffe5e6"/>
+  <rect x="0" y=".4" width="10.4" height="2.6" rx=".4" fill="#3d8bff" stroke="#1d5fcc" stroke-width=".35"/><rect x=".6" y=".9" width="9.2" height=".5" fill="#e6f0ff"/><rect x="7.6" y=".4" width=".9" height="2.6" fill="#ffc800"/></g>`;
+// --- Savant : toque de diplômé, lunettes rondes, diplôme
+const SA_CAP = `<defs>${G('saC', '#3a3f4b', '#14161c')}</defs><path d="M10.6 7 L11.3 1.4 L23.9 1.4 L24.6 7 Q17.6 8.6 10.6 7Z" fill="url(#saC)"/>
+  <path d="M17.6 -5.4 L32.2 -1 L17.6 3.4 L3 -1Z" fill="#23262e" stroke="#0e1014" stroke-width=".4"/><path d="M17.6 -5.4 L32.2 -1 L17.6 -.2 L3 -1Z" fill="#2e323c"/>
+  <circle cx="17.6" cy="-1" r=".95" fill="#ffc800"/><path d="M17.6 -1 Q24.6 -.4 28.2 .8 L28.2 7.4" stroke="#ffc800" stroke-width=".85" fill="none"/>
+  <path d="M27.3 7 h1.8 l.5 3.6 h-2.8Z" fill="#ffc800"/><path d="M27.6 8.2 v2.2 M28.2 8.2 v2.4 M28.8 8.2 v2.2" stroke="#c99a00" stroke-width=".3"/>`;
+const SA_GLASSES = `<circle cx="13" cy="14.8" r="3.9" fill="rgba(220,240,255,.25)" stroke="#a87b00" stroke-width=".85"/><circle cx="22.2" cy="14.8" r="3.9" fill="rgba(220,240,255,.25)" stroke="#a87b00" stroke-width=".85"/>
+  <path d="M16.9 14.3 Q17.6 13.3 18.3 14.3" stroke="#a87b00" stroke-width=".85" fill="none"/><path d="M9.1 14.1 L6 13.3 M26.1 14.1 L29.2 13.3" stroke="#a87b00" stroke-width=".8"/>
+  <path d="M10.6 13 Q11.6 12 12.8 12" stroke="#fff" stroke-width=".55" fill="none" stroke-linecap="round"/><path d="M19.8 13 Q20.8 12 22 12" stroke="#fff" stroke-width=".55" fill="none" stroke-linecap="round"/>`;
+const SA_DIPLOMA = `<defs>${G('saD', '#fffaf0', '#ead9ad')}</defs><g transform="translate(22.6 30.2) rotate(-24)"><rect width="13" height="3.8" rx="1.9" fill="url(#saD)" stroke="#c9b27a" stroke-width=".4"/>
+  <ellipse cx="13" cy="1.9" rx=".9" ry="1.9" fill="#f5ead0" stroke="#c9b27a" stroke-width=".35"/><ellipse cx="13" cy="1.9" rx=".35" ry=".9" fill="#d9c48f"/>
+  <rect x="5.4" y="-.3" width="1.9" height="4.4" fill="#e5484d"/><path d="M6.35 4.1 L5.2 6.6 M6.35 4.1 L7.6 6.4" stroke="#e5484d" stroke-width=".8" stroke-linecap="round"/></g>`;
+// --- Sage : sourcils blancs, lunettes demi-lune, longue barbe et moustache
+const SG_BROWS = `<path d="M9.2 11.2 Q11.4 8.6 16.2 10.4" stroke="#bdbdbd" stroke-width="2.1" stroke-linecap="round" fill="none"/><path d="M9.2 11.2 Q11.4 8.6 16.2 10.4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M26 11.2 Q23.8 8.6 19 10.4" stroke="#bdbdbd" stroke-width="2.1" stroke-linecap="round" fill="none"/><path d="M26 11.2 Q23.8 8.6 19 10.4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none"/>`;
+const SG_HALF = `<path d="M9.4 15.6 A3.6 3.2 0 0 0 16.6 15.6 Z" fill="rgba(220,240,255,.3)" stroke="#a87b00" stroke-width=".8" stroke-linejoin="round"/>
+  <path d="M18.6 15.6 A3.6 3.2 0 0 0 25.8 15.6 Z" fill="rgba(220,240,255,.3)" stroke="#a87b00" stroke-width=".8" stroke-linejoin="round"/><path d="M16.6 15.6 Q17.6 14.8 18.6 15.6" stroke="#a87b00" stroke-width=".8" fill="none"/>
+  <path d="M9.4 15.6 L6.2 14 M25.8 15.6 L29 14" stroke="#a87b00" stroke-width=".7"/>`;
+const SG_BEARD = `<defs>${G('sgB', '#ffffff', '#d8d8d8')}${G('sgM', '#ffffff', '#e2e2e2')}</defs>
+  <path d="M8.2 18.8 Q7.4 26.4 10.8 31.4 Q13.4 37.4 16.2 39.8 Q17.6 41.2 19 39.8 Q21.8 37.4 24.4 31.4 Q27.8 26.4 27 18.8 Q24.4 23.8 17.6 23.6 Q10.8 23.8 8.2 18.8Z" fill="url(#sgB)" stroke="#bfbfbf" stroke-width=".55"/>
+  <path d="M11.4 25 Q12.6 30 14.6 33.6 M14.2 24.6 Q14.8 30.6 16.4 36.2 M17.6 24.4 Q17.6 31 17.6 38.4 M21 24.6 Q20.4 30.6 18.8 36.2 M23.8 25 Q22.6 30 20.6 33.6" stroke="#cfcfcf" stroke-width=".45" fill="none" stroke-linecap="round"/>
+  <path d="M11 21.6 Q13.8 19.2 17.6 20.8 Q21.4 19.2 24.2 21.6 Q25.2 23.6 23.6 23.8 Q21 22.6 17.6 23 Q14.2 22.6 11.6 23.8 Q10 23.6 11 21.6Z" fill="url(#sgM)" stroke="#bdbdbd" stroke-width=".5"/>
+  <path d="M17.6 20.8 L17.6 22.8" stroke="#cfcfcf" stroke-width=".4"/>`;
+// --- Légende : couronne de lauriers dorés + aura (dans la page)
+const LG_LAUREL = (() => {
+    let s = `<defs>${G('lgL', '#ffe680', '#d39a00', 1, 1)}</defs>`;
+    [-1, 1].forEach(side => {
+        for (let i = 0; i < 6; i++) {
+            const x = 17.6 + side * (3.2 + i * 2.15), y = 4.6 - i * 0.1 + i * i * 0.36, r = side * (-28 + i * 16);
+            s += `<ellipse cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" rx="2.1" ry="1" transform="rotate(${r} ${x.toFixed(2)} ${y.toFixed(2)})" fill="url(#lgL)" stroke="#a87700" stroke-width=".3"/>`;
+        }
+    });
+    return s + '<path d="M5.6 10 Q17.6 1.6 29.6 10" stroke="#a87700" stroke-width=".55" fill="none"/><circle cx="17.6" cy="3.4" r="1.1" fill="#e5484d" stroke="#a3262b" stroke-width=".3"/>';
+})();
+window.EVO_B = [
+    { scale: 0.74, face: 'content', top: SV(BB_CURL + cheeks(.5) + BB_BIB + BB_PACI) },
+    { scale: 0.84, face: 'content', top: SV(cheeks(.35) + EC_BAG + EC_PENCIL) },
+    { scale: 0.92, face: 'clin', top: SV(ST_SCARF + ST_GLASSES + ST_BOOKS) },
+    { scale: 1, face: 'fier', top: SV(SA_DIPLOMA + SA_GLASSES + SA_CAP) },
+    { scale: 1, face: 'content', top: SV(SG_BEARD + SG_HALF + SG_BROWS) },
+    { scale: 1.04, face: 'fier', before: '<div class="rays"></div><div class="aura a3"></div>', top: SV(SG_BEARD + SG_HALF + SG_BROWS + LG_LAUREL) + '<span class="spark" style="left:6%;top:8%">✨</span><span class="spark" style="left:84%;top:14%;animation-delay:-.6s">✨</span><span class="spark" style="left:88%;top:70%;animation-delay:-1.2s">✨</span><span class="spark" style="left:2%;top:66%;animation-delay:-.9s">✨</span>', cls: 'is-max' }
+];
 
 /* ---------- Évolutions : 3 idées, 6 étapes chacune ---------- */
 const sparks = (n, size = 1) => [[8, 12], [86, 18], [14, 76], [82, 70], [50, -4], [-4, 44], [100, 44], [30, 96]].slice(0, n)
@@ -190,16 +263,16 @@ const EVOS = {
         pros: ['Ça ne cache rien : la garde-robe se met par-dessus, tout se combine. Simple à faire, se voit de loin (parcours, profil des amis).', 'Moins « surprenant » qu’un vrai changement de Kulti : c’est un effet autour de lui.'],
         advice: '👉 Mon conseil : A. Elle montre bien la progression sans gêner la garde-robe, et l’aura des gros joueurs (Oracle, Légende) donne envie. Elle suit les titres que le jeu a déjà.' },
     B: { name: 'B · Il grandit', steps: [['Bébé', '0 XP'], ['Écolier', '700 XP'], ['Étudiant', '2 000 XP'], ['Savant', '6 000 XP'], ['Sage', '15 000 XP'], ['Légende', '25 000 XP']],
-        evo: [ { scale: 0.78, top: svgTop(curl) }, { scale: 0.86, top: svgTop(pencil) }, { scale: 0.93, top: svgTop(book) }, { top: svgTop(book) },
-               { top: svgTop(beard) }, { top: svgTop(beard) + sparks(5), before: '<div class="aura a3"></div>', cls: 'is-max' } ],
-        pros: ['Très parlant : on voit Kulti « vieillir avec toi », du bébé avec sa petite mèche au vieux sage barbu.', 'Les objets d’évolution (crayon, livre, barbe) peuvent se mélanger bizarrement avec la garde-robe ; il faut plus de dessins.'],
+        evo: window.EVO_B,
+        pros: ['Très parlant : Kulti « grandit avec toi » : bébé à tétine, écolier à cartable, étudiant, diplômé, vieux sage barbu, puis légende couronnée de lauriers.', 'Ses habits d’étape (toque, lunettes, écharpe, barbe) prennent la place de la garde-robe : il faudrait choisir, ou ne garder la garde-robe que pour ce qui ne gêne pas.'],
         advice: '👉 Plus amusante qu’A, mais plus lourde : chaque étape doit rester jolie avec chaque accessoire.' },
     C: { name: 'C · Ses neurones s’allument', steps: [['Niveau 1', 'parcours'], ['Niveau 50', 'parcours'], ['Niveau 100', 'parcours'], ['Niveau 150', 'parcours'], ['Niveau 200', 'parcours'], ['Niveau 300', 'sommet']],
         evo: [ { after: neur(0) }, { after: neur(5) }, { after: neur(10) }, { after: neur(16) }, { after: neur(23) }, { after: neur(30), cls: 'is-max' } ],
         pros: ['Très « Kultivo » : le cerveau se remplit de petites lumières à mesure que tu avances dans le parcours. Discret, ne gêne pas la garde-robe.', 'Petit : se voit mal quand Kulti est petit (parcours, liste d’amis).'],
         advice: '👉 Jolie idée, à garder pour le grand Kulti (écrans de fin, profil). Elle peut s’ajouter à A : neurones = parcours, aura = XP.' }
 };
-let evoKey = 'A', evoI = 3;
+let evoKey = new URLSearchParams(location.search).get('e') || 'A', evoI = +(new URLSearchParams(location.search).get('i') || 3);
+if (new URLSearchParams(location.search).get('w') === '0') { wear.eyes = null; wear.neck = null; }
 
 function renderWardrobe() {
     kw(document.getElementById('bigK'), MOODS[moodI]);
@@ -256,6 +329,8 @@ document.getElementById('evoRange').oninput = e => { evoI = +e.target.value; ren
 const all = Object.values(ITEMS).flat();
 document.getElementById('prices').textContent = `💰 Prix : accessoires simples 150-200 🪙, stylés 250-350 🪙, chics 400 🪙. Tout acheter : ${all.filter(i => i.price).reduce((s, i) => s + i.price, 0).toLocaleString('fr-FR')} 🪙 (environ 6 semaines pour un joueur régulier). À gagner, jamais vendus : ${all.filter(i => i.earn).map(i => i.name.toLowerCase()).join(', ')}.`;
 renderAll();
+if (new URLSearchParams(location.search).get('big')) document.head.insertAdjacentHTML('beforeend', '<style>.strip{grid-template-columns:repeat(3,1fr)!important}.st .kw{width:118px!important;height:118px!important;margin:22px 0 8px}.st{overflow:visible!important}</style>');
+if (new URLSearchParams(location.search).get('only') === 'evo') document.querySelectorAll('article:not(#evo)').forEach(a => a.remove());
 </script>
 </body>
 </html>
