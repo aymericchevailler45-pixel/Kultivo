@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Couleurs des thèmes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root { --bg: #eef1f6; --surface: #ffffff; --ink: #1b2745; --muted: #66728f; --line: #dfe4ee; --tint: 9%; }
+    :root[data-dark] { --bg: #111827; --surface: #1c2433; --ink: #eef2fa; --muted: #9aa6c0; --line: #2c3649; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; font-family: Nunito, system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+    .wrap { max-width: 440px; margin: 0 auto; }
+    h1 { margin: 0; font-size: 1.45rem; font-weight: 900; }
+    .lead { margin: 4px 0 12px; color: var(--muted); font-weight: 700; font-size: 0.9rem; line-height: 1.35; }
+    .bar { position: sticky; top: 0; z-index: 5; margin: 0 -16px 10px; padding: 10px 16px; background: var(--bg); box-shadow: 0 6px 10px -8px rgba(0,0,0,.25); }
+    .pals { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+    .pals button { flex: 0 0 auto; padding: 8px 12px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink);
+        font: inherit; font-weight: 900; font-size: 0.85rem; cursor: pointer; }
+    .pals button.on { border-color: #3d8bff; background: #3d8bff; color: #fff; }
+    .opts { display: flex; align-items: center; gap: 12px; margin-top: 8px; font-size: 0.8rem; font-weight: 800; color: var(--muted); flex-wrap: wrap; }
+    .opts input[type=range] { width: 110px; accent-color: #3d8bff; }
+    .opts label { display: flex; align-items: center; gap: 6px; }
+    .desc { margin: 4px 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); font-size: 0.88rem; font-weight: 700; line-height: 1.4; }
+    .desc b { font-weight: 900; }
+    .sw { display: grid; grid-template-columns: repeat(15, 1fr); height: 26px; border-radius: 10px; overflow: hidden; margin: 0 0 14px; }
+    .sec { margin: 16px 0 8px; font-size: 0.78rem; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    /* case d'entraînement (copie du style du jeu) */
+    .tile { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 12px 12px 12px 17px; border-radius: 18px; min-width: 0;
+        border: 2px solid color-mix(in srgb, var(--c) 30%, var(--line)); background: color-mix(in srgb, var(--c) var(--tint), var(--surface));
+        box-shadow: inset 7px 0 0 var(--c), 0 3px 0 color-mix(in srgb, var(--c) 30%, var(--line)); }
+    .head { display: flex; align-items: center; gap: 8px; }
+    .ic { font-size: 1.35rem; line-height: 1; }
+    .nm { font-size: 0.95rem; font-weight: 900; line-height: 1.15; color: color-mix(in srgb, var(--c) 70%, var(--ink)); }
+    .tier { font-size: 0.8rem; font-weight: 900; color: color-mix(in srgb, var(--c) 70%, var(--ink)); line-height: 1.3; }
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin: 4px 0 2px; }
+    .steps span { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+    .steps i { display: block; height: 100%; background: var(--c); border-radius: inherit; }
+    .foot { display: flex; align-items: center; gap: 4px; padding-top: 6px; border-top: 1px dashed var(--line); font-size: 0.72rem; font-weight: 900; color: var(--muted); }
+    .foot .m { font-size: 0.95rem; filter: grayscale(1); opacity: .55; }
+    .foot .m.on { filter: none; opacity: 1; }
+    .foot .pb { flex: 1; height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; margin: 0 4px; }
+    .foot .pb i { display: block; height: 100%; background: #f3b400; }
+    /* livre de l'encyclopédie */
+    .book { display: flex; flex-direction: column; gap: 2px; padding: 10px 10px 10px 16px; border-radius: 12px 16px 16px 12px; min-width: 0;
+        border: 2px solid color-mix(in srgb, var(--c) 30%, var(--line)); background: color-mix(in srgb, var(--c) var(--tint), var(--surface));
+        box-shadow: inset 7px 0 0 var(--c), 0 3px 0 color-mix(in srgb, var(--c) 30%, var(--line)); }
+    .book .n { font-size: 0.78rem; font-weight: 800; } .book .n b { font-size: 1rem; font-weight: 900; }
+    .book .bb { height: 6px; border-radius: 99px; background: color-mix(in srgb, var(--c) 18%, var(--line)); overflow: hidden; margin: 3px 0; }
+    .book .bb i { display: block; height: 100%; background: var(--c); }
+    .book small { font-size: 0.72rem; font-weight: 800; color: var(--muted); }
+    .note { margin-top: 18px; padding: 12px; border-radius: 14px; background: var(--surface); border: 2px dashed var(--line); font-size: 0.85rem; font-weight: 700; line-height: 1.45; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <h1>🎨 Couleurs des thèmes</h1>
+    <p class="lead">Les cases de l'entraînement et les livres de l'encyclopédie, avec plusieurs palettes. Touche une palette pour comparer ; le curseur règle la force du fond.</p>
+    <div class="bar">
+        <div class="pals" id="pals"></div>
+        <div class="opts">
+            <label>Fond <input type="range" id="tint" min="4" max="22" value="9"> <span id="tintV">9 %</span></label>
+            <label><input type="checkbox" id="dark"> Mode sombre</label>
+        </div>
+    </div>
+    <div class="desc" id="desc"></div>
+    <div class="sw" id="sw"></div>
+    <p class="sec">🎯 Entraînement</p>
+    <div class="grid" id="train"></div>
+    <p class="sec">📚 Encyclopédie</p>
+    <div class="grid" id="books"></div>
+    <p class="note">💡 Le bleu principal du jeu (#3d8bff : boutons, onglets) reste à part. Les couleurs choisies serviront partout où un thème a sa couleur : entraînement, encyclopédie, et plus tard ailleurs si tu veux.</p>
+</div>
+<script>
+const THEMES = [['Arts', '🎨'], ['Cinéma', '🎬'], ['Drapeaux', '🚩'], ['Gastronomie', '🧀'], ['Géographie', '🌍'], ['Histoire', '📜'], ['Jeux', '🎲'],
+    ['Langue française', '🗣️'], ['Littérature', '📚'], ['Monuments', '🏛️'], ['Musique', '🎼'], ['Mythologie', '⚡'], ['Sciences', '🔬'], ['Sport', '⚽'], ['Technologie', '💡']];
+// teinte (0-360) de chaque thème pour les palettes « régulières » ; [teinte, saturation à part] pour les thèmes « terre / pierre »
+const HUE = { 'Arts': 290, 'Cinéma': 355, 'Drapeaux': 22, 'Gastronomie': 43, 'Géographie': 135, 'Histoire': [28, 0.6], 'Jeux': 262, 'Langue française': 220,
+    'Littérature': 170, 'Monuments': [35, 0.18], 'Musique': 328, 'Mythologie': 240, 'Sciences': 192, 'Sport': 85, 'Technologie': [212, 0.25] };
+const hsl = (s, l) => Object.fromEntries(THEMES.map(([t]) => { const h = HUE[t]; const [hh, k] = Array.isArray(h) ? h : [h, 1]; return [t, `hsl(${hh} ${Math.round(s * k)}% ${l}%)`]; }));
+const PALS = [
+    { id: 'now', name: 'Actuelle', desc: '<b>Celle du jeu aujourd’hui.</b> Assez vive, mais un peu inégale : certaines couleurs sont claires (Gastronomie, Sport), d’autres très foncées (Mythologie, Histoire, Technologie).',
+      c: { 'Arts': '#c026d3', 'Cinéma': '#dc2626', 'Drapeaux': '#ea580c', 'Gastronomie': '#ca8a04', 'Géographie': '#15803d', 'Histoire': '#92400e', 'Jeux': '#7c3aed',
+           'Langue française': '#2563eb', 'Littérature': '#0f766e', 'Monuments': '#78716c', 'Musique': '#db2777', 'Mythologie': '#1e3a8a', 'Sciences': '#0891b2', 'Sport': '#65a30d', 'Technologie': '#4b5563' } },
+    { id: 'reg', name: 'A · Régulière', desc: '<b>Toutes à la même force</b> : même clarté, même éclat, teintes bien réparties sur le cercle des couleurs. Aucune ne crie plus fort que les autres. Mon conseil.', c: hsl(66, 45) },
+    { id: 'pastel', name: 'B · Pastel', desc: '<b>Douce et claire</b>, façon bonbon. Très agréable à l’œil ; les noms restent lisibles grâce au texte foncé.', c: hsl(62, 62) },
+    { id: 'bijou', name: 'C · Bijoux', desc: '<b>Profonde et élégante</b> : rubis, émeraude, saphir, améthyste… Plus « chic », un peu plus sombre.', c: hsl(64, 34) },
+    { id: 'terre', name: 'D · Nature', desc: '<b>Couleurs de la nature</b> : terracotta, olive, ocre, prune, ardoise. Chaleureuse et posée, moins « jeu vidéo ».',
+      c: { 'Arts': '#a4508b', 'Cinéma': '#b23a3a', 'Drapeaux': '#d0673a', 'Gastronomie': '#c08a2b', 'Géographie': '#5a8a3c', 'Histoire': '#8b5a3c', 'Jeux': '#6c5b9e',
+           'Langue française': '#3f6aa5', 'Littérature': '#2f7d73', 'Monuments': '#8a8172', 'Musique': '#c0587e', 'Mythologie': '#3d4f8a', 'Sciences': '#3b8ea5', 'Sport': '#7a9a2e', 'Technologie': '#5c6b7a' } },
+    { id: 'vif', name: 'E · Vive', desc: '<b>Franche et lumineuse</b>, très « appli de jeu ». Énergique, mais plus chargée quand les 15 cases sont ensemble.',
+      c: { 'Arts': '#d946ef', 'Cinéma': '#ef4444', 'Drapeaux': '#f97316', 'Gastronomie': '#eab308', 'Géographie': '#22c55e', 'Histoire': '#b45309', 'Jeux': '#8b5cf6',
+           'Langue française': '#3b82f6', 'Littérature': '#14b8a6', 'Monuments': '#a8a29e', 'Musique': '#ec4899', 'Mythologie': '#6366f1', 'Sciences': '#06b6d4', 'Sport': '#84cc16', 'Technologie': '#64748b' } },
+];
+const $ = id => document.getElementById(id);
+let cur = 'now';
+function tile(t, ic, col, k) {
+    const done = 1 + (k * 7) % 4, inStep = 20 + (k * 37) % 70;
+    const steps = Array.from({ length: 10 }, (_, i) => `<span><i style="width:${i < done ? 100 : i === done ? inStep : 0}%"></i></span>`).join('');
+    const med = ['🥉', '🥈', '🥇'].map((m, i) => `<span class="m${i < (k % 3) ? ' on' : ''}">${m}</span>`).join('');
+    const total = [84, 120, 50, 150, 100, 150, 100, 150, 150, 80, 150, 70, 150, 150, 150][k];
+    return `<div class="tile" style="--c:${col}"><div class="head"><span class="ic">${ic}</span><span class="nm">${t}</span></div>
+        <span class="tier">Palier ${done + 1} / 10<br>${['Curieux', 'Initié', 'Amateur', 'Confirmé'][done - 1]}</span>
+        <div class="steps">${steps}</div><div class="foot">${med}<span class="pb"><i style="width:${(k * 13) % 60 + 10}%"></i></span>${Math.round(total * ((k * 13) % 60 + 10) / 100)}/${total}</div></div>`;
+}
+function book(t, ic, col, k) {
+    const tot = [317, 409, 229, 396, 406, 441, 379, 405, 406, 295, 380, 300, 400, 388, 401][k], kn = Math.round(tot * (0.15 + (k * 0.23) % 0.7));
+    return `<div class="book" style="--c:${col}"><div class="head"><span class="ic">${ic}</span><span class="nm">${t}</span></div>
+        <span class="n"><b>${kn}</b> / ${tot}</span><small>questions sues</small><span class="bb"><i style="width:${Math.round(kn / tot * 100)}%"></i></span>
+        <small>✨ ${Math.round(kn / 5)} maîtrisés</small></div>`;
+}
+function draw() {
+    const p = PALS.find(x => x.id === cur);
+    $('pals').innerHTML = PALS.map(x => `<button type="button" data-id="${x.id}" class="${x.id === cur ? 'on' : ''}">${x.name}</button>`).join('');
+    $('desc').innerHTML = p.desc;
+    $('sw').innerHTML = THEMES.map(([t]) => `<span title="${t}" style="background:${p.c[t]}"></span>`).join('');
+    $('train').innerHTML = THEMES.map(([t, ic], k) => tile(t, ic, p.c[t], k)).join('');
+    $('books').innerHTML = THEMES.slice(0, 6).map(([t, ic], k) => book(t, ic, p.c[t], k)).join('');
+}
+$('pals').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { cur = b.dataset.id; draw(); } });
+$('tint').addEventListener('input', e => { document.documentElement.style.setProperty('--tint', `${e.target.value}%`); $('tintV').textContent = `${e.target.value} %`; });
+$('dark').addEventListener('change', e => { if (e.target.checked) document.documentElement.setAttribute('data-dark', ''); else document.documentElement.removeAttribute('data-dark'); });
+draw();
+</script>
+</body>
+</html>
