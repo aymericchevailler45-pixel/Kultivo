@@ -4891,7 +4891,7 @@ section.bdf p.bdf-detail { margin-top: 10px; }
   background: radial-gradient(circle at 85% 0%, rgba(255, 255, 255, 0.28), transparent 55%), linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 62%, #000));
   box-shadow: 0 4px 0 color-mix(in srgb, var(--c) 55%, #000), 0 8px 18px color-mix(in srgb, var(--c) 30%, transparent); font: inherit; }
 .enc-vit-card:active { transform: translateY(3px); box-shadow: 0 1px 0 color-mix(in srgb, var(--c) 55%, #000); }
-.enc-vit-tag { grid-area: tag; justify-self: start; padding: 2px 8px; border-radius: 99px; background: rgba(255, 255, 255, 0.22); font-size: 0.66rem; font-weight: 900;
+.enc-vit-tag { grid-area: tag; justify-self: start; margin-bottom: 6px; padding: 2px 8px; border-radius: 99px; background: rgba(255, 255, 255, 0.22); font-size: 0.66rem; font-weight: 900;
   letter-spacing: 0.04em; text-transform: uppercase; }
 .enc-vit-e { grid-area: e; font-size: 2.2rem; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)); }
 .enc-vit-t { grid-area: t; min-width: 0; }
