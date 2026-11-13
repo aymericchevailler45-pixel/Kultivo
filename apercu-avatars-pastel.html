@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kultivo · aperçu Avatars pastel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root { --ink: #1b2745; --muted: #66728f; --line: #d9e1ec; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #dfe6f0; color: var(--ink); font-family: Nunito, system-ui, sans-serif; font-weight: 700; }
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; }
+.lead { margin: 0 0 14px; color: var(--muted); max-width: 840px; line-height: 1.45; }
+.lead b, .note b { color: var(--ink); font-weight: 900; }
+h2 { margin: 34px 0 6px; font-size: 1.25rem; font-weight: 900; }
+.note { max-width: 840px; line-height: 1.5; margin: 0 0 12px; font-size: .92rem; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: .72rem; font-weight: 900; margin-left: 6px; vertical-align: 2px; }
+.tag.now { background: #e3ecff; color: #1c5bd6; } .tag.rec { background: #dcf6d2; color: #2a6b14; }
+.toggle { display: inline-flex; gap: 6px; margin: 4px 0 6px; }
+.toggle button { font: inherit; font-weight: 900; font-size: .85rem; padding: 7px 14px; border-radius: 12px; border: 2px solid var(--line); background: #fff; color: var(--muted); cursor: pointer; }
+.toggle button.on { background: #1b2745; color: #fff; border-color: #1b2745; }
+.row { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+.card { border-radius: 20px; padding: 14px; width: 360px; max-width: 100%; background: var(--surface); color: var(--ink2); box-shadow: 0 8px 22px rgba(27,39,69,.12); }
+.card h3 { margin: 0 0 10px; font-size: .95rem; font-weight: 900; color: var(--muted2); }
+.lt { --surface: #fff; --bg2: #f4f7fb; --ink2: #1b2745; --muted2: #66728f; --line2: #d9e1ec; }
+.dk { --surface: #1c2438; --bg2: #131a2b; --ink2: #e8eefc; --muted2: #a5b1cc; --line2: #33405c; }
+.grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.av { --h: 200; position: relative; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; flex: none; font-weight: 900; border: 3px solid var(--surface); }
+.av img { width: 62%; height: 62%; }
+.grid .av { width: 100%; aspect-ratio: 1; font-size: 1.15rem; box-shadow: 0 0 0 2px var(--line2); }
+/* les styles comparés */
+.s-A .av { background: hsl(var(--h) 65% 52%); color: #fff; }
+.s-B .av { background: hsl(var(--h) 75% 86%); color: hsl(var(--h) 55% 32%); }
+.s-C .av { background: hsl(var(--h) 70% 76%); color: hsl(var(--h) 60% 26%); }
+.s-D .av { background: linear-gradient(150deg, hsl(var(--h) 85% 90%), hsl(var(--h) 70% 76%)); color: hsl(var(--h) 60% 28%); }
+.dk.s-B .av { background: hsl(var(--h) 45% 74%); }
+.dk.s-C .av { background: hsl(var(--h) 45% 64%); }
+.dk.s-D .av { background: linear-gradient(150deg, hsl(var(--h) 50% 80%), hsl(var(--h) 45% 64%)); }
+/* en situation : liste d'amis */
+.list { margin-top: 14px; border-top: 1px solid var(--line2); }
+.li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line2); }
+.li .av { width: 40px; height: 40px; font-size: 1.05rem; border-width: 2px; }
+.li b { display: block; font-size: .9rem; font-weight: 900; }
+.li small { color: var(--muted2); font-size: .74rem; font-weight: 800; }
+.li .sp { flex: 1; }
+.li .fl { font-size: .8rem; font-weight: 900; color: #ff9600; }
+/* podium */
+.pod { display: flex; justify-content: center; align-items: flex-end; gap: 14px; margin-top: 14px; padding: 12px 0 4px; border-radius: 16px; background: var(--bg2); }
+.pod div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .72rem; font-weight: 900; }
+.pod .av { width: 50px; height: 50px; font-size: 1.3rem; }
+.pod .first .av { width: 62px; height: 62px; font-size: 1.6rem; box-shadow: 0 0 0 3px #ffbe2e; }
+.pod .second .av { box-shadow: 0 0 0 3px #b8c2d3; } .pod .third .av { box-shadow: 0 0 0 3px #d08a4f; }
+.pod .cr { font-size: 1rem; margin-bottom: -6px; }
+.side { flex: 1; min-width: 240px; max-width: 380px; font-size: .9rem; line-height: 1.45; padding-top: 6px; }
+.side .plus { color: #2a6b14; } .side .moins { color: #b32020; } .side div { margin-bottom: 6px; }
+.q { max-width: 840px; background: #fff8e1; border: 2px solid #f1d27a; border-radius: 18px; padding: 12px 16px; line-height: 1.5; font-size: .92rem; }
+.q b { font-weight: 900; }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>🎨 Fonds d'avatar : vifs ou pastel ?</h1>
+<p class="lead">Les <b>24 couleurs unies</b> des avatars (celles du départ et celles gagnées sur le parcours) : aujourd'hui en couleurs vives avec une lettre blanche,
+à côté de 3 versions pastel avec la lettre <b>de la même couleur, en foncé</b>. Les fonds spéciaux de la boutique (dégradés, motifs) ne changent pas.
+Chaque version est montrée avec les 24 couleurs, puis dans la liste d'amis et sur le podium.</p>
+<div class="toggle"><button class="on" data-m="lt">☀️ Clair</button><button data-m="dk">🌙 Sombre</button></div>
+<div id="opts"></div>
+
+<h2>Mon avis</h2>
+<div class="q">
+  <b>C (pastel moyen)</b> : plus doux et plus moderne que les couleurs vives, mais les couleurs restent bien <b>différentes les unes des autres</b> et la lettre
+  se lit bien. <b>B</b> (très clair) est joli mais les couleurs se ressemblent beaucoup (on distingue mal le jaune du vert clair, le rose du violet), et sur
+  fond blanc les avatars « disparaissent » un peu. <b>D</b> ajoute un léger dégradé : plus « bonbon », à toi de voir.<br>
+  En mode sombre, le pastel est un peu assombri pour ne pas éblouir.<br>
+  À savoir : avec le pastel, les <b>dessins</b> (🦉, 🦊…) ressortent mieux, car leurs couleurs ne se battent plus avec un fond très vif.
+</div>
+</div>
+
+<script>
+const OPTS = [
+  { k: 'A', name: 'Comme aujourd’hui (vif, lettre blanche)', tag: ['now', 'aujourd’hui'],
+    plus: ['Très visible, beaucoup de peps.'], moins: ['Les couleurs vives et nombreuses donnent un côté un peu « chargé » dans les listes.', 'La lettre blanche se lit mal sur le jaune et le vert clair.'] },
+  { k: 'B', name: 'Pastel très clair', tag: null,
+    plus: ['Très doux, très « propre ».', 'Lettre foncée bien lisible.'], moins: ['Les couleurs se ressemblent : difficile de reconnaître un ami à sa couleur.', 'Sur fond blanc, les avatars ressortent peu.'] },
+  { k: 'C', name: 'Pastel moyen', tag: ['rec', 'mon conseil'],
+    plus: ['Doux mais les 24 couleurs restent bien distinctes.', 'Lettre foncée lisible sur toutes les couleurs, jaune compris.', 'Les dessins ressortent mieux.'], moins: ['Un peu moins « flashy » qu’aujourd’hui.'] },
+  { k: 'D', name: 'Pastel en léger dégradé', tag: null,
+    plus: ['Effet « bonbon », un peu de relief.', 'Va bien avec les fonds spéciaux de la boutique (eux aussi en dégradé).'], moins: ['Les couleurs unies ressemblent moins à des couleurs « unies » : moins de différence avec les fonds achetés.'] },
+];
+const HUES = Array.from({ length: 24 }, (_, i) => i * 15);
+const LETTERS = 'ALEXMARCSOPHIEJULIENTHÉO'.split('');
+const EMO = { 3: '1f989', 7: '1f98a', 11: '1f680', 14: '1f431', 18: '1f427', 21: '1f984' };
+const av = (h, i) => `<span class="av" style="--h:${h}">${EMO[i] ? `<img src="emoji/${EMO[i]}.svg" alt="">` : LETTERS[i]}</span>`;
+const FRIENDS = [['Léa', 330, 'L', 'Érudit', 12], ['Hugo', 45, 'H', 'Curieux', 4], ['Inès', 120, '🦊', 'Expert', 31], ['Malik', 210, 'M', 'Amateur', 7], ['Zoé', 270, '🦉', 'Initié', 2]];
+const fav = (h, x, cls = '') => `<span class="av ${cls}" style="--h:${h}">${x.length > 1 && x.codePointAt(0) > 255 ? `<img src="emoji/${x.codePointAt(0).toString(16)}.svg" alt="">` : x}</span>`;
+let mode = 'lt';
+function render() {
+  document.getElementById('opts').innerHTML = OPTS.map(o => `
+    <h2>${o.k}. ${o.name}${o.tag ? `<span class="tag ${o.tag[0]}">${o.tag[1]}</span>` : ''}</h2>
+    <div class="row">
+      <div class="card ${mode} s-${o.k}"><h3>Les 24 couleurs</h3><div class="grid">${HUES.map(av).join('')}</div></div>
+      <div class="card ${mode} s-${o.k}"><h3>Ligue des amis</h3>
+        <div class="pod"><div class="second">${fav(45, 'H')}Hugo</div><div class="first"><span class="cr">👑</span>${fav(330, 'L')}Léa</div><div class="third">${fav(120, '🦊')}Inès</div></div>
+        <div class="list">${FRIENDS.map(([n, h, x, t, s]) => `<div class="li">${fav(h, x)}<span class="sp"><b>${n}</b><small>${t}</small></span><span class="fl">🔥 ${s}</span></div>`).join('')}</div>
+      </div>
+      <div class="side">${o.plus.map(t => `<div class="plus">✓ ${t}</div>`).join('')}${o.moins.map(t => `<div class="moins">✗ ${t}</div>`).join('')}</div>
+    </div>`).join('');
+}
+document.querySelectorAll('.toggle button').forEach(b => b.onclick = () => {
+  mode = b.dataset.m; document.querySelectorAll('.toggle button').forEach(x => x.classList.toggle('on', x === b)); render();
+});
+render();
+</script>
+</body>
+</html>
