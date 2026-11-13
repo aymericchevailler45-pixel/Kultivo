@@ -17,6 +17,7 @@ const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs
 // Bac à sable (?bac=1, 2026-10-25) : copie de la vraie partie dans une sauvegarde à part, toutes les nouveautés actives,
 // RIEN envoyé en ligne (sauvegarde, classement, duels, statistiques). Pour essayer avant les autres.
 const BAC = (() => { try { return new URLSearchParams(location.search).get('bac') === '1'; } catch (err) { return false; } })();
+if (BAC) document.documentElement.classList.add('av-pastel');   // 13/11 : fonds d'avatar pastel (essai, bac à sable)
 const STORAGE_KEY = BAC ? 'kultivo_bac' : 'cultureG_v2';
 // 11/11 : nouvelles couleurs (Bleu électrique) — classe posée par index.html dans le bac à sable ; logo bleu qui va avec
 const PAL_ELEC = document.documentElement.classList.contains('pal-elec');

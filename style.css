@@ -4943,3 +4943,16 @@ body.has-feedback .card-view.is-tf .question { margin-block: 0 auto; }
 .train-tile.is-tinted .train-meds { gap: 3px; }
 .train-tile.is-tinted .train-slot { width: 19px; height: 19px; }
 .train-mnum.is-long { font-size: 0.66rem; letter-spacing: -0.02em; }
+
+/* ===== 13/11 : fonds d'avatar PASTEL (choix C de apercu-avatars-pastel.html), bac à sable seulement (classe .av-pastel posée par script.js)
+   Les fonds de la boutique (classes bg-…) gardent leur style. Pour tous : poser la classe toujours. ===== */
+.av-pastel .league-avatar:not([class*="bg-"]) { background: hsl(var(--hue) 70% 76%); color: hsl(var(--hue) 60% 26%); }
+.av-pastel .avatar-swatch { background: hsl(var(--hue) 70% 76%); }
+@media (prefers-color-scheme: dark) {
+    :root.av-pastel:not([data-theme="light"]) .league-avatar:not([class*="bg-"]),
+    :root.av-pastel:not([data-theme="light"]) .avatar-swatch { background: hsl(var(--hue) 45% 64%); }
+    :root.av-pastel:not([data-theme="light"]) .league-avatar:not([class*="bg-"]) { color: hsl(var(--hue) 60% 18%); }
+}
+:root.av-pastel[data-theme="dark"] .league-avatar:not([class*="bg-"]),
+:root.av-pastel[data-theme="dark"] .avatar-swatch { background: hsl(var(--hue) 45% 64%); }
+:root.av-pastel[data-theme="dark"] .league-avatar:not([class*="bg-"]) { color: hsl(var(--hue) 60% 18%); }
