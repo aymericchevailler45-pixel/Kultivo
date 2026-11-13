@@ -4915,3 +4915,9 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 @keyframes enc-vit-shine { 0% { transform: translateX(-120%); } 35%, 100% { transform: translateX(120%); } }
 @keyframes enc-vit-bob { 50% { transform: translateY(-3px); } }
 @media (prefers-reduced-motion: reduce) { .enc-vit-shelf i, .enc-vit-card::after { animation: none; } }
+
+/* 13/11 (bac à sable) : cases d'entraînement à la couleur du thème, comme les livres de l'encyclopédie (barre et médailles inchangées) */
+.train-tile.is-tinted { border-color: color-mix(in srgb, var(--c) 30%, var(--line)); background: color-mix(in srgb, var(--c) 9%, var(--surface));
+    box-shadow: inset 7px 0 0 var(--c), 0 3px 0 color-mix(in srgb, var(--c) 30%, var(--line)); padding-left: 17px; }
+.train-tile.is-tinted:active { box-shadow: inset 7px 0 0 var(--c); }
+.train-tile.is-tinted .train-name { color: color-mix(in srgb, var(--c) 70%, var(--ink)); }

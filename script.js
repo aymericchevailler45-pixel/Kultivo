@@ -9675,8 +9675,9 @@ function renderTraining() {
     grid.replaceChildren();
     [...THEME_DECOR].sort((a, b) => byThemeName(a.theme, b.theme)).forEach(({ theme, icon }) => {
         const bank = trainingBank(theme);
-        const tile = el('button', `train-tile${bank.length ? '' : ' is-soon'}`);
+        const tile = el('button', `train-tile${bank.length ? '' : ' is-soon'}${BAC ? ' is-tinted' : ''}`);
         tile.type = 'button';
+        if (BAC) tile.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');   // 13/11 (bac à sable) : couleur du thème, comme les livres
         const head = el('div', 'train-head');
         const ic = el('span', 'train-icon');
         ic.textContent = icon;
