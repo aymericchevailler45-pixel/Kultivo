@@ -830,8 +830,10 @@ async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
     const panel = el('div', 'enc-map-panel enc-god-panel');
     const btns = {};
     let spotBefore = null;   // 13/11 : position du dessin avant la 1re sélection (rendue quand on referme)
+    let selNode = null;
     const clearSel = () => {
-        if (!page.classList.contains('has-sel')) return;
+        if (!page.classList.contains('has-sel') && !selNode) return;
+        selNode = null;
         Object.values(btns).forEach(b => b.classList.remove('is-sel'));
         lines.forEach(l => l.el.classList.remove('is-hl'));
         panel.replaceChildren();
@@ -840,8 +842,16 @@ async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
         spotBefore = null;
         requestAnimationFrame(() => { scroller.scrollTop = top; });
     };
+    // 13/11 : la croix ferme seulement la fiche ; la branche reste dorée (pour bien voir les liens) jusqu'à un autre dieu ou un tap à côté
+    const closePanel = () => {
+        panel.replaceChildren();
+        page.classList.remove('has-sel');
+        const n = selNode;
+        if (n) requestAnimationFrame(() => { scroller.scrollTop = Math.max(0, n.y - scroller.clientHeight / 2); });
+    };
     const show = n => {
-        if (btns[n.id]?.classList.contains('is-sel')) { clearSel(); return; }
+        if (btns[n.id]?.classList.contains('is-sel') && page.classList.contains('has-sel')) { clearSel(); return; }
+        selNode = n;
         if (spotBefore === null) spotBefore = scroller.scrollTop;
         Object.values(btns).forEach(b => b.classList.remove('is-sel'));
         // 12/11 : la branche du dieu touché s'allume (ses ancêtres jusqu'en haut, et ses enfants)
@@ -862,7 +872,7 @@ async function openEncSpots(set, tab = null, keepId = null, keepScroll = null) {
         const ct = el('span');
         ct.textContent = `· ${n.s.k} / ${n.s.n} ${n.s.n > 1 ? 'questions sues' : 'question sue'}`;
         hd.append(nm, ct);
-        encPanelX(hd, clearSel);
+        encPanelX(hd, closePanel);
         card.append(hd);
         if (known.length && n.desc) { const d = el('p', 'enc-god-desc'); d.textContent = n.desc; card.append(d); }
         const ret = { label: cfg.back, fn: () => openSelf(tab, n.id) };

@@ -2241,7 +2241,7 @@ const BADGES_NEW = [
 ];
 /* 13/11 : BADGES SECRETS (bac à sable d'abord, `SECRET_ON`) : montrés « ❓ Secret » avec un indice vague tant qu'ils ne sont pas trouvés ;
    15 🪙 comme les autres. Trouvés via `secretFound(id)` → `state.data.secrets[id]` (date). */
-const SECRET_ON = BAC;
+const SECRET_ON = true;   // en ligne pour tous le 13/11
 const BADGES_SECRET = [
     { id: 'sDecor',  icon: '🔎', name: 'Curieux de nature', desc: 'Toucher 15 décors différents du parcours', hint: 'Le parcours cache bien des histoires…', secret: true, test: s => !!s.secrets.sDecor },
     { id: 'sTickle', icon: '🤭', name: 'Chatouilleux', desc: 'Toucher Kulti 10 fois d’affilée sur le parcours', hint: 'Kulti est très sensible…', secret: true, test: s => !!s.secrets.sTickle },
