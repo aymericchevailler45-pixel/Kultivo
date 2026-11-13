@@ -456,8 +456,8 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   `markDuelsViewed`) + au début de `renderBadgesV2` (sécurité : tout badge atteint est donné avant d'être affiché).
 - 13/11 : « Vrai ou faux » de Kulti : `#cardView.is-tf` = affirmation dans une carte AU MILIEU (« 🤔 Vrai ou faux ? »), boutons Vrai /
   Faux EN BAS, « Vrai » en vert de réussite (`btn-ok`). Clavier ouvert pendant une question : `.lesson` limitée à la hauteur visible
-  (`--kbvh` posé par `fitToKeyboard`, règle `body.keyboard-open:not(.has-feedback) .lesson`) → plus de défilement dans le vide sous la
-  question. À FAIRE CONFIRMER sur téléphone (impossible à simuler sans clavier) ; en cas de souci, retirer cette règle CSS.
+  (`--kbvh`, min-height de .lesson) : ESSAYÉ puis RETIRÉ le 13/11 (on défilait toujours ET l'écran de fin était remonté) ; ne pas
+  retenter. Cases teintées : « 150/300 » des médailles en plus petit (`.train-mnum.is-long`).
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
