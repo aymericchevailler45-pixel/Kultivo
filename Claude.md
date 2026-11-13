@@ -439,6 +439,17 @@ Propriétaire : francophone. Répondre en français, expliquer simplement, pas d
   (garde-robe + évolutions A aura / B il grandit, vrais dessins / C neurones) ; l'utilisateur : « l'évolution ne va pas si on ajoute des
   vêtements » → plutôt la garde-robe seule (+ quelques accessoires GAGNÉS = « évolution » légère). L'utilisateur HÉSITE (peur que ça
   fasse « trop ») : GARDÉ EN TÊTE, il en reparlera. Ne rien coder avant.
+- 13/11 : ESCALES = 1re GROSSE MISE À JOUR APRÈS LA SORTIE (décidé, « assez rapidement ») ; rien à coder avant la sortie.
+  Mini-parcours de voyage (onglet « 🗺️ Parcours | 🧳 Escales ») : 15 niveaux par escale (3 blocs : questions, paires, frise, défi final),
+  gouttes / cœurs / XP comme le parcours, décor + chapeau de Kulti propres ; récompense = tampon dans un CARNET DE VOYAGE (Profil) + carte
+  de l'escale + badge, famille « 🧳 Globe-trotter » (3 / 6 / 10). OUVERTURE PAR BILLETS ✈️ (choix C) : 1 billet tous les 20 niveaux du
+  parcours (rétroactif : un joueur au 70 reçoit 3 billets), un billet = l'escale de son choix ; jamais attaché à un endroit de la carte.
+  Contenu : voyages d'abord (Maghreb à REVOIR : d moyen 2,45 et 21 questions ≥ 3, trop dur → remplacer la plupart par des classiques ;
+  puis Japon, Italie, États-Unis, Royaume-Uni, Grèce, Égypte, Québec, Espagne, Brésil, Inde, Australie) ; ~100 questions par escale,
+  d ≈ 1,8 en moyenne (1,4 → 2,6), 3-4 dures au plus, GRANDS CLASSIQUES DU PAYS AUTORISÉS même s'ils existent ailleurs (pas la même
+  question exacte). 3 escales à la sortie de la mise à jour, puis 1 tous les 1-2 mois. Halloween et Noël RESTENT des événements annuels
+  (pas recyclés). Refusés le 13/11 : choix de difficulté / questions adaptatives, « saut proposé aux forts » (pas fan), niveaux faciles 1-80
+  (abandonné). Ajouter des niveaux au parcours seulement quand de vrais joueurs arrivent au bout (« Au-delà du sommet », à la fin).
 - IDÉES GARDÉES EN TÊTE (09/11, ordre conseillé, validé « garde en tête ») : 1) NOËL à préparer avant le 1er/12 (calendrier de l’Avent + événement + collection) ; 2) HABILLER KULTI avec les pièces (aperçu apercu-kulti-habits.html : 3 emplacements tête / yeux / cou, rayon « Garde-robe de Kulti » toujours ouvert, 150-400 🪙, ~3 200 🪙 en tout, couronne / toque / médaille à gagner, chapeau d’événement par-dessus, tenue visible des amis) — EN ATTENTE de son avis ; 3) limiter « J’avais juste » (3 par partie, ne compte pas comme réussite) ; 4) paliers 6-10 de l’entraînement ; 5) corriger les difficultés avec la vue questions_les_plus_ratees (capture à demander). Plus tard : Qui suis-je ?, blocs faciles 1-80.
 - ENTRAÎNEMENT À 10 PALIERS (décidé le 09/11) : 10 paliers PARTOUT (pas de nombre différent selon le thème), la taille d'un palier
   = questions du thème / 10 (15 au minimum, 2/3 à réussir) ; conversion « palier N sur 5 » → « palier 2N sur 10 » ; médailles inchangées
