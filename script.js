@@ -2328,6 +2328,7 @@ function claimBadge(b) {
     showToast(`🎁 +${coinBadge()} 🪙 pour le badge ${b.name} !`);
 }
 function renderBadgesV2(grid) {
+    checkBadges();   // 13/11 : sécurité — un badge atteint (ex. 50 / 50) est toujours donné avant d'être affiché
     const data = state.data;
     const s = badgeStats();
     const byId = Object.fromEntries(activeBadges().map(b => [b.id, b]));
@@ -8523,6 +8524,8 @@ async function endDuel() {
                 d.coins += duelPrize(res);
                 if (res > 0) { d.totals.duelsWon = (d.totals.duelsWon || 0) + 1; launchConfetti(); }
                 saveData();
+                checkBadges();   // 13/11 : badges des duels (avant : jamais vérifiés après une victoire)
+                updateNavNotifications();
                 renderHeader();
                 $('endEmoji').classList.remove('is-kulti');
                 $('endEmoji').textContent = res > 0 ? '🏆' : res < 0 ? '😅' : '🤝';
@@ -8560,6 +8563,7 @@ function markDuelsViewed(otherId) {
     });
     if (news.length) {
         saveData();
+        checkBadges();   // 13/11 : badges des duels gagnés (« 50 / 50 » restait violet)
         renderHeader();
         updateNavNotifications();
         if (!$('leagueScreen').hidden) renderLeague();
