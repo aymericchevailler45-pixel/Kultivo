@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="fr" class="pal-elec">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kulti grandit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=ke1">
+<!-- Page d'APERÇU (2026-11-13) : garde-robe de Kulti + 3 idées d'évolution avec l'XP / les niveaux. Rien n'est dans le jeu. -->
+<style>
+    body { padding: 16px; }
+    .wrap { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    h1, h2 { margin: 0 0 6px; }
+    .lead { margin: 0; color: var(--muted); font-weight: 700; line-height: 1.4; }
+    ul.lead { padding-left: 20px; display: grid; gap: 4px; }
+    .where { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: .9rem; line-height: 1.4; }
+    .pick { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, #3d8bff 10%, var(--surface)); border: 2px solid color-mix(in srgb, #3d8bff 35%, var(--line)); font-weight: 800; font-size: .9rem; line-height: 1.4; }
+
+    .kw { position: relative; display: inline-block; }
+    .kw .kulti { position: relative; z-index: 2; width: 100%; height: 100%; }
+    .acc { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 3; }
+    .acc.back { z-index: 1; }
+
+    /* Cabine d'essayage */
+    .stage { position: relative; display: grid; place-items: center; padding: 40px 0 14px; border-radius: 18px; background: linear-gradient(180deg, #e3eeff, var(--surface)); margin: 10px 0; overflow: hidden; }
+    .stage .kw { width: 130px; height: 130px; cursor: pointer; }
+    .stage-name { margin-top: 12px; font-weight: 900; text-align: center; min-height: 1.3em; }
+    .tabs { display: flex; gap: 6px; margin: 4px 0 10px; flex-wrap: wrap; }
+    .tabs button { flex: 1; padding: 8px 6px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); font: inherit; font-weight: 900; cursor: pointer; color: var(--ink); white-space: nowrap; }
+    .tabs button.is-on { border-color: #3d8bff; background: color-mix(in srgb, #3d8bff 12%, var(--surface)); color: #1d5fcc; }
+    .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+    .item { position: relative; display: grid; justify-items: center; gap: 4px; padding: 14px 4px 8px; border-radius: 14px; border: 2px solid var(--line); background: var(--surface);
+        font: inherit; cursor: pointer; color: var(--ink); }
+    .item.is-on { border-color: #3d8bff; box-shadow: 0 0 0 2px #3d8bff inset; }
+    .item .kw { width: 52px; height: 52px; }
+    .item b { font-size: .78rem; line-height: 1.1; text-align: center; }
+    .item small { font-size: .75rem; font-weight: 900; color: var(--muted); text-align: center; }
+    .item.is-earn small { color: #8b5cf6; }
+    .item.is-none .kw { opacity: .5; }
+    .new { position: absolute; top: -8px; right: -4px; z-index: 5; font-size: .58rem; font-weight: 900; padding: 1px 6px; border-radius: 999px; background: #3d8bff; color: #fff; }
+
+    /* Évolutions */
+    .evo-stage { position: relative; display: grid; place-items: center; height: 210px; border-radius: 18px; margin: 10px 0 6px; overflow: hidden;
+        background: radial-gradient(circle at 50% 60%, color-mix(in srgb, #3d8bff 10%, var(--surface)), var(--surface) 70%); border: 2px solid var(--line); }
+    .evo-stage .kw { width: 120px; height: 120px; }
+    .evo-label { text-align: center; font-weight: 900; }
+    .evo-label small { display: block; color: var(--muted); font-weight: 800; font-size: .8rem; }
+    input[type=range] { width: 100%; accent-color: #3d8bff; margin: 8px 0 2px; }
+    .strip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+    .st { overflow: hidden; display: grid; justify-items: center; gap: 3px; padding: 8px 2px 6px; border-radius: 12px; background: var(--bg); border: 2px solid transparent; cursor: pointer; font: inherit; color: var(--ink); }
+    .st.is-on { border-color: #3d8bff; background: color-mix(in srgb, #3d8bff 8%, var(--surface)); }
+    .st .kw { width: 44px; height: 44px; }
+    .st b { font-size: .64rem; line-height: 1.1; text-align: center; }
+    .st small { font-size: .6rem; font-weight: 800; color: var(--muted); text-align: center; line-height: 1.1; }
+    .pros { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; font-size: .84rem; font-weight: 700; line-height: 1.35; }
+    .pros div { padding: 8px 10px; border-radius: 12px; background: var(--bg); }
+    .pros b { display: block; margin-bottom: 2px; }
+    @media (max-width: 420px) { .strip { grid-template-columns: repeat(3, minmax(0, 1fr)); } .pros { grid-template-columns: 1fr; } }
+
+    /* Auras (idée A) */
+    .aura { position: absolute; inset: -30%; z-index: 0; border-radius: 50%; pointer-events: none; }
+    .aura.a1 { background: radial-gradient(circle, rgba(61,139,255,.22), transparent 62%); }
+    .aura.a2 { background: radial-gradient(circle, rgba(61,139,255,.35), rgba(139,92,246,.12) 45%, transparent 66%); animation: pulse 2.6s ease-in-out infinite; }
+    .aura.a3 { background: radial-gradient(circle, rgba(255,200,0,.45), rgba(255,150,0,.15) 45%, transparent 66%); animation: pulse 2.2s ease-in-out infinite; }
+    .aura.a4 { background: conic-gradient(from 0deg, #ff6b6b55, #ffd93d55, #6bcB7755, #4d96ff55, #b26bff55, #ff6b6b55); filter: blur(10px); animation: spin 6s linear infinite; inset: -22%; }
+    .rays { position: absolute; inset: -40%; z-index: 0; background: repeating-conic-gradient(rgba(255,200,0,.18) 0 10deg, transparent 10deg 30deg); border-radius: 50%; animation: spin 14s linear infinite;
+        -webkit-mask: radial-gradient(circle, #000 35%, transparent 68%); mask: radial-gradient(circle, #000 35%, transparent 68%); }
+    .spark { position: absolute; z-index: 4; font-size: .9em; animation: twinkle 1.8s ease-in-out infinite; pointer-events: none; }
+    .orbit { position: absolute; inset: -18%; z-index: 4; animation: spin 7s linear infinite; pointer-events: none; }
+    .orbit i { position: absolute; font-style: normal; font-size: .75em; }
+    @keyframes pulse { 50% { transform: scale(1.08); opacity: .8; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.1); } }
+    @media (prefers-reduced-motion: reduce) { .aura, .rays, .spark, .orbit { animation: none !important; } }
+    /* Neurones (idée C) */
+    .neur { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: visible; }
+    .neur circle.on { fill: #ffe066; filter: drop-shadow(0 0 .8px #ffc800); animation: glow 2s ease-in-out infinite; }
+    .neur circle { fill: rgba(255,255,255,.0); }
+    @keyframes glow { 50% { opacity: .55; } }
+    .kw.is-max .kulti { filter: drop-shadow(0 0 6px rgba(255, 200, 0, .7)); }
+</style>
+<script src="kulti.js?v=ke1"></script>
+</head>
+<body>
+<div class="wrap">
+    <article class="card">
+        <h1>🧠 Kulti : garde-robe et évolution</h1>
+        <p class="lead">Aperçu à juger : rien n'est dans le jeu. Deux idées qui peuvent se compléter :</p>
+        <ul class="lead" style="margin-top:8px">
+            <li><b>La garde-robe</b> : tu habilles Kulti avec tes pièces (tête, yeux, cou). C'est toi qui choisis.</li>
+            <li><b>L'évolution</b> : Kulti change tout seul quand tu progresses. C'est ta progression qui se voit.</li>
+        </ul>
+    </article>
+
+    <article class="card">
+        <h2>🎩 La garde-robe</h2>
+        <p class="lead">Touche un accessoire pour l'essayer, touche Kulti pour changer son humeur. Achat une fois, pour toujours ; changement gratuit.</p>
+        <div class="stage"><div class="kw" id="bigK"></div><div class="stage-name" id="outfitName"></div></div>
+        <div class="tabs" id="tabs"></div>
+        <div class="items" id="items"></div>
+        <p class="where">Dans le jeu : un rayon « 🎩 Garde-robe de Kulti » dans la Boutique (toujours ouvert), et un bouton « Habiller Kulti » dans le Profil. Kulti garde sa tenue partout : parcours, écrans de fin, bulles d'explication, et le profil vu par tes amis. Pendant un événement, le chapeau de la fête passe par-dessus.</p>
+        <p class="where" id="prices"></p>
+    </article>
+
+    <article class="card">
+        <h2>🌱 L'évolution de Kulti</h2>
+        <p class="lead">Trois façons de le faire évoluer. Choisis une idée, puis fais glisser le curseur (ou touche une étape) pour voir Kulti changer. Il garde la tenue choisie plus haut, pour voir si ça va ensemble.</p>
+        <div class="tabs" id="evoTabs"></div>
+        <div class="evo-stage" id="evoStage"><div class="kw" id="evoK"></div></div>
+        <div class="evo-label" id="evoLabel"></div>
+        <input type="range" id="evoRange" min="0" max="5" value="0">
+        <div class="strip" id="strip"></div>
+        <div class="pros" id="pros"></div>
+        <p class="pick" id="advice"></p>
+    </article>
+</div>
+<script>
+/* Accessoires dans le même repère 36 × 36 que Kulti (yeux en 13 / 22,2 ; haut du cerveau vers y = 4,5 ; bas vers y = 31) */
+const S = (inner, back = false) => `<svg class="acc${back ? ' back' : ''}" viewBox="0 0 36 36" aria-hidden="true">${inner}</svg>`;
+const heart = (x, y) => `<path transform="translate(${x} ${y})" d="M0 1.2 C0 -1.4 -4.2 -1.8 -4.2 1.1 C-4.2 3.4 -1.2 5 0 6.2 C1.2 5 4.2 3.4 4.2 1.1 C4.2 -1.8 0 -1.4 0 1.2Z" fill="rgba(255,64,129,.78)" stroke="#d81b60" stroke-width=".7"/>`;
+const ITEMS = {
+    head: [
+        { id: 'beret', name: 'Béret', price: 150, svg: S('<g transform="rotate(-10 17.5 5)"><ellipse cx="17.5" cy="4.6" rx="9.6" ry="3.4" fill="#1f2a44"/><ellipse cx="16.5" cy="3.6" rx="7" ry="1.6" fill="#2d3b5e"/><rect x="17" y="-.4" width="1.3" height="2.4" rx=".6" fill="#1f2a44"/></g>') },
+        { id: 'cap', name: 'Casquette', price: 200, svg: S('<path d="M9.5 6.6 Q10 -3 18 -3.2 Q26 -3 26.5 6.6 Z" fill="#3d8bff"/><path d="M9.5 6.6 Q4 5.2 1.5 7.4 Q6 8.6 11 7.6 Z" fill="#2563c9"/><path d="M18 -3.2 L18 6.6" stroke="#2563c9" stroke-width=".5"/><circle cx="18" cy="-3.2" r="1.1" fill="#2563c9"/>') },
+        { id: 'bonnet', name: 'Bonnet', price: 200, svg: S('<path d="M8 7 Q9 -4 17.5 -4.4 Q26 -4 27 7 Z" fill="#8b5cf6"/><path d="M12 -1 L12 5 M15 -3 L15 5 M18 -3.6 L18 5 M21 -3 L21 5 M24 -1 L24 5" stroke="#7448e0" stroke-width=".6"/><rect x="7.4" y="4.4" width="20.2" height="3.6" rx="1.8" fill="#6d3fd6"/><circle cx="17.5" cy="-5.2" r="2.8" fill="#fff"/>') },
+        { id: 'headset', name: 'Casque audio', price: 250, isNew: true, svg: S('<path d="M5.2 15 Q5 -1.5 17.6 -1.8 Q30.2 -1.5 30 15" stroke="#2b2f3a" stroke-width="2" fill="none"/><rect x="2.4" y="11.4" width="5" height="8" rx="2.2" fill="#e5484d"/><rect x="27.8" y="11.4" width="5" height="8" rx="2.2" fill="#e5484d"/><rect x="3.4" y="12.6" width="1.4" height="5.6" rx=".7" fill="#ff8a8e"/>') },
+        { id: 'cowboy', name: 'Cowboy', price: 300, svg: S('<path d="M10.8 6 Q10 -4.2 14 -4.2 Q17.5 -2.2 21 -4.2 Q25 -4.2 24.2 6 Z" fill="#b8733a"/><rect x="10.6" y="3" width="13.8" height="2" fill="#5b3415"/><path d="M2 3.6 Q6 8 17.5 7.8 Q29 8 33 3.6 Q32 9.2 17.5 9.6 Q3 9.2 2 3.6Z" fill="#a0612b"/>') },
+        { id: 'wizard', name: 'Chapeau de magicien', price: 350, isNew: true, svg: S('<path d="M8.5 7 L18.5 -11 Q20 -12.5 21 -10.6 L27 7 Z" fill="#4c2a9e"/><ellipse cx="17.8" cy="6.8" rx="11.4" ry="2.4" fill="#3a1f7a"/><path d="M15 -1 l.6 1.3 1.4.1 -1.1.9.4 1.4 -1.3-.8 -1.3.8.4-1.4 -1.1-.9 1.4-.1z" fill="#ffc800"/><circle cx="21.5" cy="2.6" r=".8" fill="#ffc800"/><circle cx="19" cy="-6" r=".6" fill="#ffc800"/>') },
+        { id: 'tophat', name: 'Haut-de-forme', price: 400, svg: S('<rect x="11.5" y="-8.5" width="12" height="14" rx="1" fill="#222"/><ellipse cx="17.5" cy="-8.5" rx="6" ry="1.4" fill="#3a3a3a"/><rect x="11.5" y="1.8" width="12" height="2.4" fill="#e5484d"/><ellipse cx="17.5" cy="5.8" rx="10.4" ry="2.2" fill="#111"/>') },
+        { id: 'crown', name: 'Couronne du sommet', earn: 'Finir le parcours', svg: S('<path d="M9.6 6.4 L9 -3.2 L13.2 .8 L17.5 -5.4 L21.8 .8 L26 -3.2 L25.4 6.4 Z" fill="#ffc800" stroke="#c99a00" stroke-width=".7" stroke-linejoin="round"/><circle cx="17.5" cy="3" r="1.3" fill="#e5484d"/><circle cx="12.6" cy="3.6" r=".9" fill="#3d8bff"/><circle cx="22.4" cy="3.6" r=".9" fill="#4fc72c"/><circle cx="9" cy="-3.2" r="1" fill="#ffc800"/><circle cx="17.5" cy="-5.4" r="1" fill="#ffc800"/><circle cx="26" cy="-3.2" r="1" fill="#ffc800"/>') },
+        { id: 'laurel', name: 'Lauriers', earn: '5× 1er de la Ligue', isNew: true, svg: S([-1, 1].map(s => [0, 1, 2, 3, 4].map(i => `<ellipse cx="${17.5 + s * (5 + i * 1.9)}" cy="${3.4 - i * 0.2 + i * i * 0.45}" rx="1.9" ry=".9" transform="rotate(${s * (-25 + i * 18)} ${17.5 + s * (5 + i * 1.9)} ${3.4 - i * 0.2 + i * i * 0.45})" fill="#4fae3a"/>`).join('')).join('') + '<path d="M7.6 8.4 Q17.5 1 27.4 8.4" stroke="#3a8a2a" stroke-width=".6" fill="none"/>') }
+    ],
+    eyes: [
+        { id: 'round', name: 'Lunettes rondes', price: 150, svg: S('<circle cx="13" cy="14.8" r="4" fill="rgba(255,255,255,.18)" stroke="#2b1a22" stroke-width=".9"/><circle cx="22.2" cy="14.8" r="4" fill="rgba(255,255,255,.18)" stroke="#2b1a22" stroke-width=".9"/><path d="M17 14.4 Q17.6 13.4 18.2 14.4" stroke="#2b1a22" stroke-width=".9" fill="none"/><path d="M9 14.2 L6 13.4 M26.2 14.2 L29.2 13.4" stroke="#2b1a22" stroke-width=".9"/>') },
+        { id: 'sun', name: 'Lunettes de soleil', price: 250, svg: S('<rect x="8.4" y="12.2" width="8.8" height="5.6" rx="2.2" fill="#1b1b1b"/><rect x="18" y="12.2" width="8.8" height="5.6" rx="2.2" fill="#1b1b1b"/><path d="M17.2 13.6 L18 13.6" stroke="#1b1b1b" stroke-width="1.2"/><path d="M8.4 13.4 L5.8 12.6 M26.8 13.4 L29.4 12.6" stroke="#1b1b1b" stroke-width=".9"/><path d="M10 13.6 L12.4 13.6 M19.6 13.6 L22 13.6" stroke="rgba(255,255,255,.55)" stroke-width=".8" stroke-linecap="round"/>') },
+        { id: '3d', name: 'Lunettes 3D', price: 200, isNew: true, svg: S('<rect x="7.8" y="11.6" width="20" height="6.6" rx="1.4" fill="#f4f4f4" stroke="#222" stroke-width=".7"/><rect x="9" y="12.6" width="7.4" height="4.6" rx=".8" fill="rgba(229,72,77,.75)"/><rect x="19.2" y="12.6" width="7.4" height="4.6" rx=".8" fill="rgba(61,139,255,.75)"/>') },
+        { id: 'hearts', name: 'Lunettes cœur', price: 250, svg: S(heart(13, 12.4) + heart(22.2, 12.4) + '<path d="M16.9 14 Q17.6 13.2 18.3 14" stroke="#d81b60" stroke-width=".8" fill="none"/>') },
+        { id: 'mask', name: 'Masque de héros', price: 300, svg: S('<path fill-rule="evenodd" d="M5.5 13.2 Q17.6 9.6 29.6 13.2 L29.2 17.4 Q17.6 20 5.9 17.4 Z M9.6 14.8 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z M18.8 14.8 a3.4 3.4 0 1 0 6.8 0 a3.4 3.4 0 1 0 -6.8 0 Z" fill="#e5484d"/><path d="M5.6 15 L2.4 13.4 M5.6 15.6 L2.6 17.6" stroke="#e5484d" stroke-width="1" stroke-linecap="round"/>') },
+        { id: 'monocle', name: 'Monocle', price: 400, svg: S('<circle cx="22.2" cy="14.8" r="4.1" fill="rgba(255,255,255,.22)" stroke="#c99a00" stroke-width=".9"/><path d="M25.6 17.2 Q28.6 22 26.6 28.4" stroke="#c99a00" stroke-width=".5" fill="none" stroke-dasharray=".9 .5"/>') }
+    ],
+    neck: [
+        { id: 'bow', name: 'Nœud papillon', price: 150, svg: S('<path d="M17.5 31.4 L12 28.4 L12 34.4 Z M17.5 31.4 L23 28.4 L23 34.4 Z" fill="#e5484d" stroke="#b3262b" stroke-width=".5" stroke-linejoin="round"/><circle cx="17.5" cy="31.4" r="1.6" fill="#b3262b"/>') },
+        { id: 'tie', name: 'Cravate', price: 200, isNew: true, svg: S('<path d="M16 29.4 L19 29.4 L18.4 31.2 L20.2 38.4 L17.5 40.6 L14.8 38.4 L16.6 31.2 Z" fill="#3d8bff" stroke="#1d5fcc" stroke-width=".5" stroke-linejoin="round"/><path d="M15.6 34 L19.4 32.4 M15.2 37 L19.8 35.2" stroke="#9cc3ff" stroke-width=".7"/>') },
+        { id: 'scarf', name: 'Écharpe', price: 200, svg: S('<path d="M7.6 28 Q17.5 33 27.4 28 L27.8 31.4 Q17.5 36.6 7.2 31.4 Z" fill="#e5484d"/><path d="M11 30.2 L11 33 M15 31.4 L15 34.4 M19 31.6 L19 34.6 M23 30.6 L23 33.6" stroke="#fff" stroke-width=".9"/><path d="M22 32.4 L25.6 31.4 L27.4 38.6 L23.8 39.6 Z" fill="#d33a3f"/>') },
+        { id: 'lei', name: 'Collier de fleurs', price: 250, svg: S([[8,28.4,'#ff4081'],[10.6,30.2,'#ffc800'],[13.4,31.4,'#ff7043'],[16.2,32,'#ff4081'],[19,32,'#ffc800'],[21.8,31.4,'#ff7043'],[24.6,30.2,'#ff4081'],[27.2,28.4,'#ffc800']].map(([x,y,c]) => `<circle cx="${x}" cy="${y}" r="1.7" fill="${c}"/><circle cx="${x}" cy="${y}" r=".6" fill="#fff59d"/>`).join('')) },
+        { id: 'cape', name: 'Cape de héros', price: 350, isNew: true, svg: S('<path d="M7 27 Q17.5 31 28 27 L33 40 Q17.5 44 2 40 Z" fill="#e5484d"/><path d="M7 27 Q17.5 31 28 27" stroke="#b3262b" stroke-width="1.2" fill="none"/>', true) },
+        { id: 'medal', name: 'Médaille', earn: '3 médailles d’or', svg: S('<path d="M12.6 28 L16.4 34.6 L18.4 33.6 L15 27.4 Z" fill="#3d8bff"/><path d="M22.4 28 L18.6 34.6 L16.6 33.6 L20 27.4 Z" fill="#e5484d"/><circle cx="17.5" cy="36" r="3.2" fill="#ffc800" stroke="#c99a00" stroke-width=".6"/><path d="M17.5 34.2 L18.1 35.5 L19.5 35.6 L18.4 36.5 L18.8 37.9 L17.5 37.1 L16.2 37.9 L16.6 36.5 L15.5 35.6 L16.9 35.5 Z" fill="#fff6d6"/>') }
+    ]
+};
+const TABS = [['head', '🎩 Tête'], ['eyes', '👓 Yeux'], ['neck', '🎀 Cou']];
+const wear = { head: null, eyes: 'round', neck: 'bow' };
+let tab = 'head', moodI = 0;
+const MOODS = ['content', 'fier', 'clin', 'parle', 'surpris'];
+const find = (slot, id) => ITEMS[slot].find(i => i.id === id);
+const outfitSvg = (outfit) => ['neck', 'eyes', 'head'].map(s => { const it = outfit[s] && find(s, outfit[s]); return it ? it.svg : ''; }).join('');
+
+function kw(node, face, outfit = wear, evo = null) {
+    node.className = 'kw';
+    node.replaceChildren();
+    if (evo?.before) node.insertAdjacentHTML('beforeend', evo.before);
+    const k = kultiEl(face, 'kulti-blink');
+    if (evo?.scale) k.style.transform = `scale(${evo.scale})`;
+    node.append(k);
+    let extra = outfitSvg(outfit);
+    if (evo?.after) extra = evo.after + extra;
+    if (evo?.top) extra += evo.top;
+    node.insertAdjacentHTML('beforeend', extra);
+    if (evo?.cls) node.classList.add(evo.cls);
+}
+
+/* ---------- Évolutions : 3 idées, 6 étapes chacune ---------- */
+const sparks = (n, size = 1) => [[8, 12], [86, 18], [14, 76], [82, 70], [50, -4], [-4, 44], [100, 44], [30, 96]].slice(0, n)
+    .map(([x, y], i) => `<span class="spark" style="left:${x}%;top:${y}%;animation-delay:${i * -0.4}s;font-size:${size}em">✨</span>`).join('');
+const orbit = (emo, n) => `<div class="orbit">${Array.from({ length: n }, (_, i) => { const a = i / n * Math.PI * 2; return `<i style="left:${50 + 50 * Math.cos(a) - 4}%;top:${50 + 50 * Math.sin(a) - 4}%">${emo}</i>`; }).join('')}</div>`;
+// neurones : points dans le cerveau (repère 36 × 36)
+const NEUR = [[9,9],[14,7],[20,6],[25,8],[29,11],[31,16],[30,21],[26,24],[21,25],[16,26],[11,24],[7,21],[5,16],[6,12],[12,11],[18,10],[24,11],[27,15],[9,17],[28,19],[15,8.5],[22,8.5],[8,14],[29.5,13.5],[10,22],[24,22.5],[13,25],[19,24.6],[4.6,19],[31.2,18.6]];
+const neur = n => `<svg class="neur" viewBox="0 0 36 36">${NEUR.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="${i < n ? 0.85 : 0}" class="${i < n ? 'on' : ''}" style="animation-delay:${(i % 7) * -0.3}s"/>`).join('')}</svg>`;
+const beard = '<path d="M11 21.4 Q11.4 30.4 17.6 31.6 Q23.8 30.4 24.2 21.4 Q21.6 24.6 17.6 24.4 Q13.6 24.6 11 21.4 Z" fill="#f4f4f4" stroke="#d6d6d6" stroke-width=".5"/><path d="M14.6 20.6 Q17.6 22.4 20.6 20.6" stroke="#2b1a22" stroke-width=".8" fill="none"/>';
+const curl = '<path d="M18 5 Q16 0.6 18.6 -0.6 Q21 -1.4 20.4 1.2" stroke="#EA596E" stroke-width="1.3" fill="none" stroke-linecap="round"/>';
+const pencil = '<g transform="rotate(35 27 4)"><rect x="25.4" y="-4" width="2.6" height="11" fill="#ffc800" stroke="#c99a00" stroke-width=".4"/><path d="M25.4 7 L26.7 9.6 L28 7 Z" fill="#f2d2a9"/><rect x="25.4" y="-5.4" width="2.6" height="1.6" fill="#ff8fa3"/></g>';
+const book = '<g transform="translate(23 22) rotate(-12)"><rect width="10" height="7" rx=".6" fill="#3d8bff"/><rect x=".8" y=".8" width="8.4" height="5.4" fill="#fff"/><path d="M5 .8 L5 6.2" stroke="#3d8bff" stroke-width=".5"/><path d="M1.8 2.4 h2.2 M1.8 3.8 h2.2 M6 2.4 h2.2 M6 3.8 h2.2" stroke="#9cb4d8" stroke-width=".35"/></g>';
+const svgTop = inner => `<svg class="acc" viewBox="0 0 36 36">${inner}</svg>`;
+const STEPS = [['Curieux', '0 XP'], ['Lettré', '700 XP'], ['Savant', '2 000 XP'], ['Encyclopédie vivante', '6 000 XP'], ['Oracle', '15 000 XP'], ['Légende', '25 000 XP']];
+const EVOS = {
+    A: { name: 'A · Il brille', steps: STEPS,
+        evo: [ {}, { before: '<div class="aura a1"></div>' }, { before: '<div class="aura a2"></div>', top: sparks(2) },
+               { before: '<div class="aura a2"></div>', top: sparks(4) + orbit('⭐', 5) }, { before: '<div class="rays"></div><div class="aura a3"></div>', top: sparks(5) + orbit('⭐', 6) },
+               { before: '<div class="aura a4"></div><div class="rays"></div>', top: sparks(8, 1.1) + orbit('🌟', 8), cls: 'is-max' } ],
+        pros: ['Ça ne cache rien : la garde-robe se met par-dessus, tout se combine. Simple à faire, se voit de loin (parcours, profil des amis).', 'Moins « surprenant » qu’un vrai changement de Kulti : c’est un effet autour de lui.'],
+        advice: '👉 Mon conseil : A. Elle montre bien la progression sans gêner la garde-robe, et l’aura des gros joueurs (Oracle, Légende) donne envie. Elle suit les titres que le jeu a déjà.' },
+    B: { name: 'B · Il grandit', steps: [['Bébé', '0 XP'], ['Écolier', '700 XP'], ['Étudiant', '2 000 XP'], ['Savant', '6 000 XP'], ['Sage', '15 000 XP'], ['Légende', '25 000 XP']],
+        evo: [ { scale: 0.78, top: svgTop(curl) }, { scale: 0.86, top: svgTop(pencil) }, { scale: 0.93, top: svgTop(book) }, { top: svgTop(book) },
+               { top: svgTop(beard) }, { top: svgTop(beard) + sparks(5), before: '<div class="aura a3"></div>', cls: 'is-max' } ],
+        pros: ['Très parlant : on voit Kulti « vieillir avec toi », du bébé avec sa petite mèche au vieux sage barbu.', 'Les objets d’évolution (crayon, livre, barbe) peuvent se mélanger bizarrement avec la garde-robe ; il faut plus de dessins.'],
+        advice: '👉 Plus amusante qu’A, mais plus lourde : chaque étape doit rester jolie avec chaque accessoire.' },
+    C: { name: 'C · Ses neurones s’allument', steps: [['Niveau 1', 'parcours'], ['Niveau 50', 'parcours'], ['Niveau 100', 'parcours'], ['Niveau 150', 'parcours'], ['Niveau 200', 'parcours'], ['Niveau 300', 'sommet']],
+        evo: [ { after: neur(0) }, { after: neur(5) }, { after: neur(10) }, { after: neur(16) }, { after: neur(23) }, { after: neur(30), cls: 'is-max' } ],
+        pros: ['Très « Kultivo » : le cerveau se remplit de petites lumières à mesure que tu avances dans le parcours. Discret, ne gêne pas la garde-robe.', 'Petit : se voit mal quand Kulti est petit (parcours, liste d’amis).'],
+        advice: '👉 Jolie idée, à garder pour le grand Kulti (écrans de fin, profil). Elle peut s’ajouter à A : neurones = parcours, aura = XP.' }
+};
+let evoKey = 'A', evoI = 3;
+
+function renderWardrobe() {
+    kw(document.getElementById('bigK'), MOODS[moodI]);
+    const names = ['head', 'eyes', 'neck'].map(s => wear[s] && find(s, wear[s]).name).filter(Boolean);
+    document.getElementById('outfitName').textContent = names.length ? names.join(' · ') : 'Kulti tout simple';
+    const tabs = document.getElementById('tabs');
+    tabs.replaceChildren(...TABS.map(([k, label]) => {
+        const b = document.createElement('button'); b.type = 'button'; b.textContent = label; if (k === tab) b.className = 'is-on';
+        b.onclick = () => { tab = k; renderWardrobe(); }; return b;
+    }));
+    const box = document.getElementById('items');
+    const none = document.createElement('button');
+    none.type = 'button'; none.className = 'item is-none' + (!wear[tab] ? ' is-on' : '');
+    const nk = document.createElement('div'); kw(nk, 'content', {});
+    none.append(nk, Object.assign(document.createElement('b'), { textContent: 'Rien' }), Object.assign(document.createElement('small'), { textContent: 'gratuit' }));
+    none.onclick = () => { wear[tab] = null; renderAll(); };
+    box.replaceChildren(none, ...ITEMS[tab].map(it => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'item' + (it.earn ? ' is-earn' : '') + (wear[tab] === it.id ? ' is-on' : '');
+        const k = document.createElement('div'); kw(k, 'content', { [tab]: it.id });
+        const n = document.createElement('b'); n.textContent = it.name;
+        const p = document.createElement('small'); p.textContent = it.earn ? `🔒 ${it.earn}` : `${it.price} 🪙`;
+        b.append(k, n, p);
+        if (it.isNew) b.insertAdjacentHTML('beforeend', '<span class="new">nouveau</span>');
+        b.onclick = () => { wear[tab] = it.id; renderAll(); };
+        return b;
+    }));
+}
+function renderEvo() {
+    const E = EVOS[evoKey];
+    const t = document.getElementById('evoTabs');
+    t.replaceChildren(...Object.entries(EVOS).map(([k, e]) => {
+        const b = document.createElement('button'); b.type = 'button'; b.textContent = e.name; if (k === evoKey) b.className = 'is-on';
+        b.onclick = () => { evoKey = k; renderEvo(); }; return b;
+    }));
+    kw(document.getElementById('evoK'), evoI === 5 ? 'fier' : 'content', wear, E.evo[evoI]);
+    const [nm, cond] = E.steps[evoI];
+    document.getElementById('evoLabel').innerHTML = `${nm}<small>${cond}</small>`;
+    document.getElementById('evoRange').value = evoI;
+    const strip = document.getElementById('strip');
+    strip.replaceChildren(...E.steps.map(([n, c], i) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'st' + (i === evoI ? ' is-on' : '');
+        const k = document.createElement('div'); kw(k, 'content', {}, E.evo[i]);
+        b.append(k, Object.assign(document.createElement('b'), { textContent: n }), Object.assign(document.createElement('small'), { textContent: c }));
+        b.onclick = () => { evoI = i; renderEvo(); };
+        return b;
+    }));
+    document.getElementById('pros').innerHTML = `<div><b>👍 Pour</b>${E.pros[0]}</div><div><b>🤔 Contre</b>${E.pros[1]}</div>`;
+    document.getElementById('advice').textContent = E.advice;
+}
+function renderAll() { renderWardrobe(); renderEvo(); }
+document.getElementById('bigK').onclick = () => { moodI = (moodI + 1) % MOODS.length; renderWardrobe(); };
+document.getElementById('evoRange').oninput = e => { evoI = +e.target.value; renderEvo(); };
+const all = Object.values(ITEMS).flat();
+document.getElementById('prices').textContent = `💰 Prix : accessoires simples 150-200 🪙, stylés 250-350 🪙, chics 400 🪙. Tout acheter : ${all.filter(i => i.price).reduce((s, i) => s + i.price, 0).toLocaleString('fr-FR')} 🪙 (environ 6 semaines pour un joueur régulier). À gagner, jamais vendus : ${all.filter(i => i.earn).map(i => i.name.toLowerCase()).join(', ')}.`;
+renderAll();
+</script>
+</body>
+</html>
