@@ -4883,7 +4883,7 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-lib-h.is-done > b::before, .enc-obj-h.is-done > b::before, .enc-rows-h.is-done > b::before { content: "✓ "; }
 .enc-lib-h.is-done > b, .enc-obj-h.is-done > b, .enc-rows-h.is-done > b { padding: 0 6px; font-size: 0.72rem; }
 
-/* 13/11 (bac à sable) : salle spéciale en vitrine en haut du livre */
+/* 13/11 (bac à sable) : salle spéciale en vitrine au-dessus des chapitres */
 .enc-vit { display: grid; gap: 8px; margin: 10px 0 4px; }
 .enc-vit.is-two { grid-template-columns: 1fr 1fr; }
 .enc-vit-card { position: relative; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "tag tag" "e t" "shelf shelf" "go go"; align-items: center; gap: 4px 10px;
@@ -4908,12 +4908,9 @@ section.bdf p.bdf-detail { margin-top: 10px; }
 .enc-vit.is-two .enc-vit-t small { font-size: 0.7rem; }
 .enc-vit.is-two .enc-vit-shelf i { font-size: 1.1rem; }
 .enc-vit.is-two .enc-vit-go { justify-self: stretch; text-align: center; }
-.enc-vit-card.is-fresh::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 48%, transparent 66%);
-  transform: translateX(-120%); animation: enc-vit-shine 1.6s ease-in-out 0.5s 3; pointer-events: none; }
-@keyframes enc-vit-shine { to { transform: translateX(120%); } }
+.enc-vit-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 48%, transparent 66%);
+  transform: translateX(-120%); animation: enc-vit-shine 4.5s ease-in-out 0.6s infinite; pointer-events: none; }
+.enc-vit.is-two .enc-vit-card:nth-child(2)::after { animation-delay: 1s; }
+@keyframes enc-vit-shine { 0% { transform: translateX(-120%); } 35%, 100% { transform: translateX(120%); } }
 @keyframes enc-vit-bob { 50% { transform: translateY(-3px); } }
-@media (prefers-reduced-motion: reduce) { .enc-vit-shelf i, .enc-vit-card.is-fresh::after { animation: none; } }
-.enc-book.has-room .enc-book-head { width: 100%; padding-right: 30px; }
-.enc-book-room { position: absolute; right: 7px; top: 7px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15); font-size: 0.95rem; line-height: 1; }
-.enc-book.has-room.is-full::after { right: 40px; }
+@media (prefers-reduced-motion: reduce) { .enc-vit-shelf i, .enc-vit-card::after { animation: none; } }

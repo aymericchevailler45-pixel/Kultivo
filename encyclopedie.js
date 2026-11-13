@@ -29,7 +29,7 @@ function encSpecial(theme) {
         : theme === 'Monuments' ? ['💌', 'Mes cartes postales', 'des albums de monuments à compléter', () => openEncPostcards()]
         : ENC_MAP_THEMES.includes(theme) ? ['🗺️', 'Ma carte du monde', 'les pays que tu connais', () => openEncMap(theme)] : null;
 }
-/** 13/11 (bac à sable) : la salle spéciale en « vitrine » en haut du livre, avec un petit décor ; brille la 1re fois. */
+/** 13/11 (bac à sable) : la salle spéciale en « vitrine » au-dessus des chapitres, avec un petit décor et un reflet qui passe. */
 const ENC_VITRINE_DECO = {
     'Histoire': ['🏺', '🏰', '👑', '⚔️'], 'Mythologie': ['⚡', '🔱', '🦉', '🐍'], 'Sciences': [['🫁', '🧠', '🦴'], ['☀️', '🪐', '🌙']],
     'Langue française': ['🔤', '✒️', '📜', '💬'], 'Gastronomie': [['🥖', '🍷', '🥐'], ['🍣', '🌮', '🍝']], 'Littérature': ['📕', '📗', '📘', '📙'],
@@ -42,13 +42,9 @@ function encVitrine(theme) {
     if (!sp) return null;
     const list = Array.isArray(sp[0]) ? sp : [sp];
     const deco = ENC_VITRINE_DECO[theme] || [];
-    let seen = {};
-    try { seen = JSON.parse(localStorage.getItem('kultivo_enc_vitrine') || '{}'); } catch (e) { /* rien */ }
-    const fresh = !seen[theme];
-    if (fresh) { seen[theme] = 1; try { localStorage.setItem('kultivo_enc_vitrine', JSON.stringify(seen)); } catch (e) { /* rien */ } }
     const box = el('div', `enc-vit${list.length > 1 ? ' is-two' : ''}`);
     list.forEach((s, i) => {
-        const b = el('button', `enc-vit-card${fresh ? ' is-fresh' : ''}`);
+        const b = el('button', 'enc-vit-card');
         b.type = 'button';
         b.style.setProperty('--c', ENC_COLORS[theme] || '#3d8bff');
         const tag = el('span', 'enc-vit-tag');
@@ -163,6 +159,8 @@ function openEncBook(theme, keep = false) {
         });
         const special = encSpecial(theme);
         const parts = [quick];
+        const vit = ENC_VITRINE ? encVitrine(theme) : null;   // 13/11 : la vitrine reste juste au-dessus des chapitres (choix de l'utilisateur)
+        if (vit) parts.push(vit);
         (special && !ENC_VITRINE ? (Array.isArray(special[0]) ? special : [special]) : []).forEach(special => {   // frise, arbre, cartes… (13/11 : plusieurs possibles)
             const b = el('button', 'enc-special');
             b.type = 'button';
@@ -184,8 +182,7 @@ function openEncBook(theme, keep = false) {
         zone.append(...parts, sec, list);
     };
     search.addEventListener('input', () => { encState.search = search.value; draw(); });
-    const vit = ENC_VITRINE ? encVitrine(theme) : null;
-    const page = vit ? encPage(null, bar, vit, tiles, search, zone) : encPage(null, bar, tiles, search, zone);
+    const page = encPage(null, bar, tiles, search, zone);
     h.classList.add('enc-fixed-title');
     page.before(h);
     draw();
