@@ -2106,7 +2106,7 @@ function badgeStats() {
     const doneLevels = Object.keys(d.done).map(Number).filter(n => d.done[n]);
     const daily = Object.values(d.daily);
     return {
-        levelsDone: doneLevels.filter(n => !isChallenge(n)).length,
+        levelsDone: doneLevels.length,   // 13/11 : défis compris, comme « x / 300 » du Profil (avant : sans les défis, chiffres différents)
         challengesDone: doneLevels.filter(isChallenge).length,
         bestStreak: Math.max(d.best.streak, currentStreak()),
         right: d.totals.right,
