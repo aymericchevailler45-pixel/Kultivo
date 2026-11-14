@@ -5125,11 +5125,10 @@ function placeProgressRider(pct) {
     if (!rider) {
         rider = el('span', 'progress-rider');
         rider.append(kultiEl('content', 'kulti-blink'));
-        const flag = el('span', 'progress-flag');
-        flag.textContent = '🏁';
-        bar.append(rider, flag);
+        bar.append(rider);   // 14/11 : plus de drapeau 🏁 au bout (Kulti s'y superposait)
     }
-    rider.style.left = `${pct}%`;
+    // 14/11 : Kulti reste DANS la barre (de 0 à largeur − 28 px) : à 100 %, il ne touche plus le 1er cœur
+    rider.style.left = `calc((100% - 28px) * ${pct / 100})`;
 }
 
 /* 11/11 (bac à sable) : pointillés entre les niveaux du parcours (dorés sur la partie faite). Recalculés après chaque dessin. */
