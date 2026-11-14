@@ -7139,7 +7139,8 @@ function updateProgress() {
     } else {
         pct = state.total ? Math.round((state.done / state.total) * 100) : 0;
     }
-    $('progressBar').style.width = `${pct}%`;
+    // 14/11 : avec Kulti sur la barre, la partie remplie va jusqu'au bord droit de Kulti (28 px) : à 100 %, les deux finissent ensemble au bout
+    $('progressBar').style.width = PAL_ELEC ? `calc(28px + (100% - 28px) * ${pct / 100})` : `${pct}%`;
     $('progress').setAttribute('aria-valuenow', String(pct));
     if (PAL_ELEC) placeProgressRider(pct);
 }
