@@ -19,6 +19,9 @@ const REVIEW_SESSION_SIZE = 10;  // taille de la session « Réviser mes erreurs
 const BAC = (() => { try { return new URLSearchParams(location.search).get('bac') === '1'; } catch (err) { return false; } })();
 const AV_TONE_ON = true;   // 13/11 : interrupteur « Vif | Pastel » des couleurs unies d'avatar (EN LIGNE POUR TOUS)
 const STORAGE_KEY = BAC ? 'kultivo_bac' : 'cultureG_v2';
+// 14/11 : copie de secours sur l'appareil = la partie telle qu'elle était avant la 1re sauvegarde du jour (« la veille »),
+// reprise seulement si la sauvegarde principale existe mais est illisible (abîmée). Format : « AAAA-MM-JJ|<json> ».
+const BACKUP_KEY = STORAGE_KEY + '_veille';
 // 11/11 : nouvelles couleurs (Bleu électrique) — classe posée par index.html dans le bac à sable ; logo bleu qui va avec
 const PAL_ELEC = document.documentElement.classList.contains('pal-elec');
 const LOGO_SRC = PAL_ELEC ? 'icons/logo-bleu.svg' : 'icons/logo.svg';
@@ -1077,7 +1080,7 @@ function wipeBeforeReset() {
         const old = raw ? JSON.parse(raw) : null;
         const legacy = localStorage.getItem('cultureG_unlockedLevel') !== null;
         if ((old && old.resetEpoch !== RESET_EPOCH) || (!old && legacy)) {
-            ['cultureG_v2', 'kultivo_cloud', 'kultivo_league', 'kultivo_auth', 'kultivo_invite',
+            ['cultureG_v2', 'cultureG_v2_veille', 'kultivo_cloud', 'kultivo_league', 'kultivo_auth', 'kultivo_invite',
              'cultureG_unlockedLevel', 'cultureG_streak', 'cultureG_lastReview', 'cultureG_data']
                 .forEach(k => localStorage.removeItem(k));
         }
@@ -1094,20 +1097,50 @@ function loadData() {
             if (real && (!copy || xpOf(real) > xpOf(copy))) localStorage.setItem(STORAGE_KEY, real);
         } catch (err) { /* tant pis */ }
     } else wipeBeforeReset();
+    let raw = null;
     try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        raw = localStorage.getItem(STORAGE_KEY);
         const data = raw ? { ...defaultData(), ...JSON.parse(raw) } : migrateV1();
         return normalizeData(data);
     } catch (err) {
+        // 14/11 : sauvegarde abîmée (illisible) → on repart de la copie de la veille plutôt que de zéro
+        try {
+            const bak = localStorage.getItem(BACKUP_KEY);
+            const json = bak && bak.slice(bak.indexOf('|') + 1);
+            const old = json && JSON.parse(json);
+            if (raw && old && old.resetEpoch === RESET_EPOCH) {
+                console.warn('[sauvegarde] illisible : copie de la veille reprise');
+                return normalizeData({ ...defaultData(), ...old });
+            }
+        } catch (e) { /* la copie est illisible aussi */ }
         return defaultData();
     }
 }
 
-function saveData() {
+/** 14/11 : une fois par jour, avant la 1re sauvegarde du jour, la partie déjà enregistrée est gardée comme copie de secours. */
+function keepDailyBackup() {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+        const today = todayKey();
+        const bak = localStorage.getItem(BACKUP_KEY);
+        if (bak && bak.slice(0, bak.indexOf('|')) === today) return;
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        JSON.parse(raw);   // on ne garde pas une copie abîmée
+        localStorage.setItem(BACKUP_KEY, today + '|' + raw);
     } catch (err) {
-        /* stockage indisponible (navigation privée…) : on continue sans sauvegarder */
+        try { localStorage.removeItem(BACKUP_KEY); } catch (e) { /* tant pis */ }
+    }
+}
+
+function saveData() {
+    keepDailyBackup();
+    const json = JSON.stringify(state.data);
+    try {
+        localStorage.setItem(STORAGE_KEY, json);
+    } catch (err) {
+        // stockage plein : la copie de secours passe après la vraie sauvegarde
+        try { localStorage.removeItem(BACKUP_KEY); localStorage.setItem(STORAGE_KEY, json); }
+        catch (e) { /* stockage indisponible (navigation privée…) : on continue sans sauvegarder */ }
     }
     cloudChanged();   // si un compte est connecté : envoi en ligne quelques secondes plus tard
 }
@@ -9186,6 +9219,7 @@ async function cloudLogout() {
     // Appareil remis à zéro (comme un nouveau joueur) ; la clé de sauvegarde reste la même
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizeData(defaultData())));
+        localStorage.removeItem(BACKUP_KEY);   // la copie de secours est celle de l'ancien compte
         localStorage.removeItem(CLOUD_META_KEY);
         localStorage.removeItem(LEAGUE_KEY);
     } catch (err) { /* tant pis */ }
@@ -12507,7 +12541,7 @@ function initBac() {
         const hopIt = await askConfirm({ title: '🧪 Bac à sable', text: 'Voir Kulti ouvrir le niveau suivant (comme après un niveau réussi) ?', yes: 'Voir Kulti', no: 'Plus d’options' });
         if (hopIt) { showScreen('map'); setTimeout(() => playKultiHop(Math.min(state.data.unlocked, MAX_LEVEL) - 1, Math.min(state.data.unlocked, MAX_LEVEL)), 400); return; }
         const reset = await askConfirm({ title: '🧪 Bac à sable', text: 'Recommencer le test avec une nouvelle copie de ta vraie partie ?', yes: 'Recommencer le test', no: 'Plus d’options' });
-        if (reset) { try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* tant pis */ } location.reload(); return; }
+        if (reset) { try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(BACKUP_KEY); } catch (err) { /* tant pis */ } location.reload(); return; }
         const leave = await askConfirm({ title: '🧪 Bac à sable', text: 'Revenir au vrai jeu ? (ta copie du bac à sable est gardée)', yes: 'Revenir au vrai jeu', no: 'Fermer' });
         if (leave) location.href = location.pathname;
     });
