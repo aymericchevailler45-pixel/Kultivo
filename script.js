@@ -5127,7 +5127,7 @@ function placeProgressRider(pct) {
         rider.append(kultiEl('content', 'kulti-blink'));
         bar.append(rider);   // 14/11 : plus de drapeau 🏁 au bout (Kulti s'y superposait)
     }
-    rider.style.left = `calc((100% - 8px) * ${pct / 100})`;   // centré sur le bout du bleu comme avant, juste 8 px plus court à la fin (sinon il touchait le 1er cœur)
+    rider.style.left = `${pct}%`;
 }
 
 /* 11/11 (bac à sable) : pointillés entre les niveaux du parcours (dorés sur la partie faite). Recalculés après chaque dessin. */
