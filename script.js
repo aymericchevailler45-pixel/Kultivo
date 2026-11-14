@@ -5128,7 +5128,7 @@ function placeProgressRider(pct) {
         bar.append(rider);   // 14/11 : plus de drapeau 🏁 au bout (Kulti s'y superposait)
     }
     // 14/11 : Kulti reste DANS la barre (de 0 à largeur − 28 px) : à 100 %, il ne touche plus le 1er cœur
-    rider.style.left = `calc((100% - 28px) * ${pct / 100})`;
+    rider.style.left = `calc((100% - 24px) * ${pct / 100})`;   // 24 et pas 28 : le dessin ne remplit pas son carré à droite, il doit couvrir le bout de la barre
 }
 
 /* 11/11 (bac à sable) : pointillés entre les niveaux du parcours (dorés sur la partie faite). Recalculés après chaque dessin. */
@@ -7140,7 +7140,7 @@ function updateProgress() {
         pct = state.total ? Math.round((state.done / state.total) * 100) : 0;
     }
     // 14/11 : avec Kulti sur la barre, la partie remplie va jusqu'au bord droit de Kulti (28 px) : à 100 %, les deux finissent ensemble au bout
-    $('progressBar').style.width = PAL_ELEC ? `calc(28px + (100% - 28px) * ${pct / 100})` : `${pct}%`;
+    $('progressBar').style.width = PAL_ELEC ? `calc(24px + (100% - 24px) * ${pct / 100})` : `${pct}%`;
     $('progress').setAttribute('aria-valuenow', String(pct));
     if (PAL_ELEC) placeProgressRider(pct);
 }
