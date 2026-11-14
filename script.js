@@ -5127,7 +5127,7 @@ function placeProgressRider(pct) {
         rider.append(kultiEl('content', 'kulti-blink'));
         bar.append(rider);   // 14/11 : plus de drapeau 🏁 au bout (Kulti s'y superposait)
     }
-    rider.style.left = `${pct}%`;
+    rider.style.left = pct >= 100 ? 'calc(100% - 8px)' : `${pct}%`;   // 14/11 : au bout, 8 px en arrière pour ne pas toucher le 1er cœur
 }
 
 /* 11/11 (bac à sable) : pointillés entre les niveaux du parcours (dorés sur la partie faite). Recalculés après chaque dessin. */
@@ -7783,6 +7783,7 @@ function endSession(win) {
     }
 
     $('progressBar').style.width = '100%';
+    if (PAL_ELEC) placeProgressRider(100);   // 14/11 : Kulti va au bout avec la barre (avant, il restait à la question d'avant)
     if (mode !== 'kulti') bumpStreak();   // le défi de Kulti (1 à 5 questions) ne compte pas pour la série
     let confettiOn = mode !== 'review';   // confettis (pas pour une simple révision)
 
