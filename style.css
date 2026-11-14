@@ -4955,3 +4955,11 @@ body.has-feedback .card-view.is-tf .question { margin-block: 0 auto; }
 .av-tone { grid-column: 1 / -1; display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--line); }
 .av-tone-btn { flex: 1; padding: 8px 0; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: inherit; font-size: 0.9rem; font-weight: 900; cursor: pointer; }
 .av-tone-btn.is-on { background: var(--surface); color: var(--ink); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); }
+
+/* 14/11 : très petits écrans (≤ 340 px : vieux téléphones, ou « taille d'affichage » agrandie dans les réglages) */
+@media (max-width: 340px) {
+    .profile-tabs { gap: 2px; }
+    .profile-tab { min-width: 0; padding: 8px 1px; font-size: 0.72rem; overflow: hidden; text-overflow: ellipsis; }
+    .stop-label { max-width: 44vw; text-align: center; }
+    .stop-name { font-size: 1rem; }
+}
