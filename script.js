@@ -5669,7 +5669,7 @@ function renderProfile() {
         const pct = Math.round(((data.xp - current.xp) / span) * 100);
         $('titleBar').style.width = `${pct}%`;
         $('titleMeter').setAttribute('aria-valuenow', String(pct));
-        $('profileNext').textContent = `Encore ${next.xp - data.xp} XP pour devenir « ${next.name} ».`;
+        $('profileNext').textContent = `Encore ${next.xp - data.xp} XP pour devenir « ${next.name} ».`;   // espaces insécables : pas de « seul en fin de ligne
     } else {
         $('titleBar').style.width = '100%';
         $('titleMeter').setAttribute('aria-valuenow', '100');
@@ -11947,7 +11947,7 @@ function setThemePref(pref) {
 function renderThemeBtn() {
     const btn = $('themeBtn');
     if (!btn) return;
-    const small = window.innerWidth <= 400;   // téléphone : 3 boutons sur une ligne, on raccourcit
+    const small = window.innerWidth <= 480;   // téléphone : 3 boutons sur une ligne, on raccourcit (14/11 : 480 et plus 400, les Pixel font 412 px)
     btn.textContent = themeIsDark() ? (small ? '🌙 Sombre' : '🌙 Mode sombre') : (small ? '☀️ Clair' : '☀️ Mode clair');
     btn.title = 'Affichage clair ou sombre : toucher pour choisir';
 }
