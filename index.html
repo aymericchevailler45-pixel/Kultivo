@@ -13,7 +13,10 @@
     // même page de l'autre côté : /Kultivo/confidentialite.html → /confidentialite.html
     let path = location.pathname.replace(/^\/Kultivo\/?/i, '');
     if (path === 'index.html') path = '';
-    const search = location.search, hash = location.hash;
+    // ouverte depuis l'ancienne icône installée ? Le jeu expliquera (une fois) comment la réinstaller
+    const sp = new URLSearchParams(location.search);
+    try { if (['standalone', 'fullscreen', 'minimal-ui'].some(m => matchMedia(`(display-mode: ${m})`).matches)) sp.set('kpwa', '1'); } catch (e) {}
+    const search = sp.toString() ? '?' + sp : '', hash = location.hash;
     // filet de sécurité : quoi qu'il arrive, on part au bout de 4 s (sans la mémoire : elle est dans le compte)
     setTimeout(() => location.replace(NEW + path + search + hash), 4000);
     const upTo = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);   // une étape ne bloque jamais
