@@ -1,54 +1,40 @@
 <!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kultivo · Supprimer son compte</title>
-<link rel="icon" href="icons/logo-bleu.svg">
-<style>
-:root { --bg: #eef3f8; --surface: #fff; --ink: #1b2745; --muted: #5d6987; --line: #d9e1ec; --blue: #3d8bff; --red: #e5484d; }
-@media (prefers-color-scheme: dark) { :root { --bg: #11182e; --surface: #1c2540; --ink: #e8edf8; --muted: #a3afc9; --line: #2e3a5c; --blue: #6aa6ff; } }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-main { max-width: 680px; margin: 0 auto; padding: 24px 16px 60px; }
-header { display: flex; align-items: center; gap: 12px; }
-header img { width: 48px; height: 48px; border-radius: 12px; }
-h1 { margin: 0; font-size: 1.6rem; }
-h2 { margin: 24px 0 8px; font-size: 1.15rem; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 4px 18px 14px; margin-top: 14px; }
-ol li, ul li { margin-bottom: 6px; }
-.muted { color: var(--muted); }
-a { color: var(--blue); }
-</style>
-</head>
-<body>
-<main>
-<header><img src="icons/logo-bleu.svg" alt=""><h1>Supprimer son compte Kultivo</h1></header>
-
-<div class="card">
-<h2>Depuis le jeu (le plus simple)</h2>
-<ol>
-  <li>Ouvre Kultivo et va dans l'onglet <b>Profil</b>.</li>
-  <li>Touche <b>☁️ Mon compte</b>.</li>
-  <li>Touche <b>Supprimer mon compte</b>, puis confirme deux fois.</li>
-</ol>
-<p>Ton compte et toutes tes données sont effacés <b>immédiatement et définitivement</b>.</p>
-</div>
-
-<div class="card">
-<h2>Sans le jeu</h2>
-<p>Si tu n'as plus accès au jeu, écris à <b><a href="mailto:appkultivo@gmail.com">appkultivo@gmail.com</a></b> depuis l'adresse e-mail de ton compte, avec l'objet « Supprimer mon compte ». La suppression est faite sous 7 jours au plus, et tu reçois une confirmation.</p>
-</div>
-
-<div class="card">
-<h2>Ce qui est effacé</h2>
-<ul>
-  <li>Ton compte (adresse e-mail et mot de passe).</li>
-  <li>Ta partie sauvegardée et ses copies de secours.</li>
-  <li>Ton pseudo, ton avatar, tes amis, tes duels, tes scores et tes quêtes entre duo.</li>
-</ul>
-<p>Restent seulement les statistiques anonymes des questions et les signalements, qui ne sont liés à personne. <a href="confidentialite.html">Politique de confidentialité</a></p>
-</div>
-</main>
-</body>
-</html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kultivo</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://kultivo-app.github.io/">
+<style>html,body{margin:0;height:100%;background:#3d8bff;color:#fff;font:700 18px system-ui,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center}a{color:#fff}</style>
+</head><body><p>Kultivo a déménagé…<br><a id="go" href="https://kultivo-app.github.io/">kultivo-app.github.io</a></p>
+<script>
+/* 19/11 : Kultivo a changé d'adresse. Cette page (ancienne adresse) emporte la mémoire du joueur (sauvegarde, connexion,
+   réglages) vers la nouvelle adresse, qui la recopie sans rien remplacer (migration.html), puis ouvre la même page là-bas. */
+(async () => {
+    const NEW = 'https://kultivo-app.github.io/';
+    // même page de l'autre côté : /Kultivo/confidentialite.html → /confidentialite.html
+    let path = location.pathname.replace(/^\/Kultivo\/?/i, '');
+    if (path === 'index.html') path = '';
+    const search = location.search, hash = location.hash;
+    try { if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); } catch (e) {}
+    try { if (window.caches) for (const k of await caches.keys()) await caches.delete(k); } catch (e) {}
+    const dump = {};
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (/^kultivo_bac/.test(k)) continue;   // copie du bac à sable : inutile, refaite toute seule
+            dump[k] = localStorage.getItem(k);
+        }
+    } catch (e) {}
+    if (path || !Object.keys(dump).length) { location.replace(NEW + path + search + hash); return; }
+    dump.__hash = hash;   // ex. lien « mot de passe oublié » : il suit le joueur
+    let data, z = 0;
+    const raw = new TextEncoder().encode(JSON.stringify(dump));
+    try {
+        data = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()); z = 1;
+    } catch (e) { data = raw; }
+    let bin = '';
+    for (let i = 0; i < data.length; i += 0x8000) bin += String.fromCharCode.apply(null, data.subarray(i, i + 0x8000));
+    const b64 = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    location.replace(NEW + 'migration.html' + search + '#kmig=' + b64 + '&z=' + z);
+})();
+</script>
+</body></html>

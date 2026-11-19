@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kultivo</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://kultivo-app.github.io/">
+<style>html,body{margin:0;height:100%;background:#3d8bff;color:#fff;font:700 18px system-ui,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center}a{color:#fff}</style>
+</head><body><p>Kultivo a déménagé…<br><a id="go" href="https://kultivo-app.github.io/">kultivo-app.github.io</a></p>
+<script>
+/* 19/11 : Kultivo a changé d'adresse. Cette page (ancienne adresse) emporte la mémoire du joueur (sauvegarde, connexion,
+   réglages) vers la nouvelle adresse, qui la recopie sans rien remplacer (migration.html), puis ouvre la même page là-bas. */
+(async () => {
+    const NEW = 'https://kultivo-app.github.io/';
+    // même page de l'autre côté : /Kultivo/confidentialite.html → /confidentialite.html
+    let path = location.pathname.replace(/^\/Kultivo\/?/i, '');
+    if (path === 'index.html') path = '';
+    const search = location.search, hash = location.hash;
+    try { if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); } catch (e) {}
+    try { if (window.caches) for (const k of await caches.keys()) await caches.delete(k); } catch (e) {}
+    const dump = {};
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (/^kultivo_bac/.test(k)) continue;   // copie du bac à sable : inutile, refaite toute seule
+            dump[k] = localStorage.getItem(k);
+        }
+    } catch (e) {}
+    if (path || !Object.keys(dump).length) { location.replace(NEW + path + search + hash); return; }
+    dump.__hash = hash;   // ex. lien « mot de passe oublié » : il suit le joueur
+    let data, z = 0;
+    const raw = new TextEncoder().encode(JSON.stringify(dump));
+    try {
+        data = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()); z = 1;
+    } catch (e) { data = raw; }
+    let bin = '';
+    for (let i = 0; i < data.length; i += 0x8000) bin += String.fromCharCode.apply(null, data.subarray(i, i + 0x8000));
+    const b64 = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    location.replace(NEW + 'migration.html' + search + '#kmig=' + b64 + '&z=' + z);
+})();
+</script>
+</body></html>
